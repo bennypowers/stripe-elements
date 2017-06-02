@@ -9,7 +9,6 @@ Polymer wrapper for Stripe.js v3 Elements. Creates a `card` element such as http
 ```
 <custom-element-demo>
   <template>
-    <link rel="import" href="polymer/polymer.html">
     <link rel="import" href="../paper-input/paper-input.html">
     <link rel="import" href="../show-json/show-json.html">
     <link rel="import" href="stripe-elements.html">
