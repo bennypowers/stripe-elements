@@ -80,11 +80,18 @@ will load stripe.js if it hasn't already been loaded.
           observer: '_publishableKeyChanged',
         },
 
+        /**
+         * Whether or not to hide the postal code field.
+         * Useful when you gather shipping info elsewhere.
+         */
         hidePostalCode: {
           type: Boolean,
           value: false,
         },
 
+        /**
+         * Whether to hide icons in the Stripe form.
+         */
         hideIcon: {
           type: Boolean,
           value: false,
@@ -98,6 +105,9 @@ will load stripe.js if it hasn't already been loaded.
           value: 'default',
         },
 
+        /**
+         * Prefilled values for form. Example {postalCode: '90210'}
+         */
         value: {
           type: Object,
           value: {},
