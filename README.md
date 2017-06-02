@@ -13,15 +13,15 @@ Polymer wrapper for Stripe.js v3 Elements. Creates a `card` element such as http
     <link rel="import" href="../paper-input/paper-input.html">
     <link rel="import" href="../show-json/show-json.html">
     <link rel="import" href="stripe-elements.html">
-    <next-code-block></next-code-block>
+    <template is="dom-bind">
+      <next-code-block></next-code-block>
+    </template>
   </template>
 </custom-element-demo>
 ```
 -->
 ```html
-<template is="dom-bind">
   <paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
   <stripe-elements publishable-key="[[key]]" token="{{token}}"></stripe-elements>
   <show-json hide-copy-button json="[[token]]"></show-json>
-</template>
 ```
