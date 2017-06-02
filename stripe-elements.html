@@ -1,7 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-button/paper-button.html">
-<link rel="import" href="./stripe-script.html">
 
 <!--
 `stripe-elements`
@@ -155,6 +154,14 @@ will load stripe.js if it hasn't already been loaded.
        */
 
       ready: function() {
+        if (!window.Stripe) {
+          const stripeScript = this.resolveUrl('./stripe-script.html');
+          this.importHref(stripeScript, /* eslint-disable no-console */ /* eslint-disable max-len */
+            () => console.warn('Stripe.js loaded via stripe-elements. It is recommended to load stripe.js in index.html'), // eslint-disable-line max-len
+            () => console.warn('Could not load Stripe!'), /* eslint-enable no-console */ /* eslint-enable max-len */
+            true
+          );
+        }
         this.style = {
           base: {
             fontSize: '16px',
