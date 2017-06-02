@@ -1,0 +1,299 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="./stripe-script.html">
+
+<!--
+`stripe-elements`
+Polymer wrapper for Stripe.js v3 Elements
+
+# Usage:
+
+    <stripe-elements publishable-key="[[pk]]" token="{{token}}"></stripe-elements>
+
+Note, Stripe recommends that you load stripe.js on all pages of your site,
+For SPAs, the ideal is to load it in index.html. Nonetheless, `stripe-elements`
+will load stripe.js if it hasn't already been loaded.
+
+@demo demo/index.html
+-->
+<dom-module id="stripe-elements">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .StripeElement {
+        background-color: white;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid transparent;
+        box-shadow: 0 1px 3px 0 #e6ebf1;
+        -webkit-transition: box-shadow 150ms ease;
+        transition: box-shadow 150ms ease;
+        width: 100%;
+        @apply --layout;
+        @apply --stripe-elements-element;
+      }
+
+      .StripeElement--focus {
+        box-shadow: 0 1px 3px 0 #cfd7df;
+        @apply --stripe-elements-element-focus;
+      }
+
+      .StripeElement--invalid {
+        border-color: #fa755a;
+        @apply --stripe-elements-element-invalid;
+      }
+
+      .StripeElement--webkit-autofill {
+        background-color: #fefde5 !important;
+        @apply --stripe-elements-element-webkit-autofill;
+      }
+
+      form {
+        @apply --layout;
+        @apply --layout-flex;
+      }
+    </style>
+
+    <form id="form" action="[[action]]" method="post">
+      <div id="card" aria-label="Credit or Debit Card">
+        <!-- Stripe will inject form here -->
+      </div>
+      <div id="errors" role="alert">[[error]]</div>
+      <paper-button raised on-tap="submit">Submit</paper-button>
+      <input type="hidden" name="stripeToken" value="[[token]]">
+    </form>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'stripe-elements',
+      properties: {
+        /**
+         * Stripe Publishable Key. EG. pk_test_XXXXXXXXXXXXXXXXXXXXXXXX
+         */
+        publishableKey: {
+          type: String,
+          observer: '_publishableKeyChanged',
+        },
+
+        hidePostalCode: {
+          type: Boolean,
+          value: false,
+        },
+
+        hideIcon: {
+          type: Boolean,
+          value: false,
+        },
+
+        /**
+         * Stripe icon style. 'solid' or 'default'.
+         */
+        iconStyle: {
+          type: Object,
+          value: 'default',
+        },
+
+        value: {
+          type: Object,
+          value: {},
+        },
+
+        /**
+         * Error message from Stripe.
+         */
+        error: {
+          type: String,
+          notify: true,
+          readOnly: true,
+        },
+
+        /**
+         * Stripe token
+         */
+        token: {
+          type: Object,
+          notify: true,
+          readOnly: true,
+        },
+
+        /**
+         * The URL to the form action. Example '/charges'.
+         * If blank or undefined will not submit charges immediately.
+         * @type {Object}
+         */
+        action: {
+          type: String,
+        },
+
+        _stripe: Object,
+        _elements: Object,
+        _card: Object,
+
+      },
+
+      listeners: {
+        'change': '_handleChange',
+      },
+
+      /**
+       * LIFECYCLE CALLBACKS
+       */
+
+      ready: function() {
+        this.style = {
+          base: {
+            fontSize: '16px',
+            lineHeight: '24px',
+          },
+        };
+        if (this.publishableKey) {
+          this._initStripe();
+          this._mountCard();
+        }
+      },
+
+      /**
+       * PUBLIC METHODS
+       */
+
+      /**
+       * Submit credit card information to generate a token,
+       * then submit payment with the token.
+       * @param  {Event} e Submit event.
+       */
+      submit: function(e) {
+        // Get the token
+        this._stripe.createToken(this._card).then((result) => {
+          this._setToken(result.token);
+          // Fire success event
+          this.dispatchEvent(new CustomEvent('stripe-token',
+            {bubbles: true, composed: true, detail: this.token}
+          ));
+          // Submit the form
+          return this.action ? this.$.form.submit() : true;
+        }).catch((error) => {
+          // Show error in UI
+          this._setError(error.error);
+          // Fire error event
+          this.dispatchEvent(new CustomEvent('stripe-error',
+            {bubbles: true, composed: true, detail: error}
+          ));
+          return false;
+        });
+      },
+
+      /**
+       * OBSERVERS
+       */
+
+      _publishableKeyChanged: function(key, ov) {
+        if (!key) {return this._unmountCard();}
+        this._unmountCard();
+        this._stripe = {};
+        this._initStripe();
+        this._mountCard();
+      },
+
+      _styleChanged: function(style, ov) {
+        if (!style || ov === undefined) {return;}
+        this._mountCard();
+      },
+
+      /**
+       * EVENT HANDLERS
+       */
+
+      _handleChange: function(e) {
+        this.error = e.error;
+      },
+
+      /**
+       * PRIVATE METHODS
+       */
+
+      _initStripe: function() {
+        this._stripe = Stripe(this.publishableKey);
+        this._elements = this._stripe.elements();
+      },
+
+      _mountCard: function() {
+        const hidePostalCode = this.hidePostalCode;
+        const hideIcon = this.hideIcon;
+        const iconStyle = this.iconStyle;
+        const value = this.value;
+        const style = { /* eslint-disable max-len */
+          base: {
+            color: this.customStyle['--stripe-elements-base-color'],
+            fontFamily: this.customStyle['--stripe-elements-base-color-font-family'],
+            fontSize: this.customStyle['--stripe-elements-base-font-size'],
+            fontSmoothing: this.customStyle['--stripe-elements-base-font-smoothing'],
+            fontVariant: this.customStyle['--stripe-elements-base-font-variant'],
+            iconColor: this.customStyle['--stripe-elements-base-icon-color'],
+            lineHeight: this.customStyle['--stripe-elements-base-line-height'],
+            letterSpacing: this.customStyle['--stripe-elements-base-letter-spacing'],
+            textDecoration: this.customStyle['--stripe-elements-base-text-decoration'],
+            textShadow: this.customStyle['--stripe-elements-base-text-shadow'],
+            textTransform: this.customStyle['--stripe-elements-base-text-transform'],
+          },
+          complete: {
+            color: this.customStyle['--stripe-elements-complete-color'],
+            fontFamily: this.customStyle['--stripe-elements-complete-color-font-family'],
+            fontSize: this.customStyle['--stripe-elements-complete-font-size'],
+            fontSmoothing: this.customStyle['--stripe-elements-complete-font-smoothing'],
+            fontVariant: this.customStyle['--stripe-elements-complete-font-variant'],
+            iconColor: this.customStyle['--stripe-elements-complete-icon-color'],
+            lineHeight: this.customStyle['--stripe-elements-complete-line-height'],
+            letterSpacing: this.customStyle['--stripe-elements-complete-letter-spacing'],
+            textDecoration: this.customStyle['--stripe-elements-complete-text-decoration'],
+            textShadow: this.customStyle['--stripe-elements-complete-text-shadow'],
+            textTransform: this.customStyle['--stripe-elements-complete-text-transform'],
+          },
+          empty: {
+            color: this.customStyle['--stripe-elements-empty-color'],
+            fontFamily: this.customStyle['--stripe-elements-empty-color-font-family'],
+            fontSize: this.customStyle['--stripe-elements-empty-font-size'],
+            fontSmoothing: this.customStyle['--stripe-elements-empty-font-smoothing'],
+            fontVariant: this.customStyle['--stripe-elements-empty-font-variant'],
+            iconColor: this.customStyle['--stripe-elements-empty-icon-color'],
+            lineHeight: this.customStyle['--stripe-elements-empty-line-height'],
+            letterSpacing: this.customStyle['--stripe-elements-empty-letter-spacing'],
+            textDecoration: this.customStyle['--stripe-elements-empty-text-decoration'],
+            textShadow: this.customStyle['--stripe-elements-empty-text-shadow'],
+            textTransform: this.customStyle['--stripe-elements-empty-text-transform'],
+          },
+          invalid: {
+            color: this.customStyle['--stripe-elements-invalid-color'],
+            fontFamily: this.customStyle['--stripe-elements-invalid-color-font-family'],
+            fontSize: this.customStyle['--stripe-elements-invalid-font-size'],
+            fontSmoothing: this.customStyle['--stripe-elements-invalid-font-smoothing'],
+            fontVariant: this.customStyle['--stripe-elements-invalid-font-variant'],
+            iconColor: this.customStyle['--stripe-elements-invalid-icon-color'],
+            lineHeight: this.customStyle['--stripe-elements-invalid-line-height'],
+            letterSpacing: this.customStyle['--stripe-elements-invalid-letter-spacing'],
+            textDecoration: this.customStyle['--stripe-elements-invalid-text-decoration'],
+            textShadow: this.customStyle['--stripe-elements-invalid-text-shadow'],
+            textTransform: this.customStyle['--stripe-elements-invalid-text-transform'],
+          },
+        }; /* eslint-enable max-len */
+        this._card = this._elements.create('card',
+          {hidePostalCode, hideIcon, iconStyle, style, value});
+        this._card.mount(this.$.card);
+      },
+
+      _unmountCard: function() {
+        if (this._card && this._card.unmount) { this._card.unmount();}
+        this._card = undefined;
+      },
+
+    });
+    /**
+     * @fires 'stripe-token'
+     * @fires 'stripe-error'
+     */
+  </script>
+</dom-module>

@@ -1,0 +1,28 @@
+{
+  "extends": ["eslint:recommended", "google"],
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "plugins": [
+    "html"
+  ],
+  "rules": {
+    "brace-style": "off",
+    "new-cap": ["error", { "capIsNewExceptions": ["Polymer", "Stripe"] }],
+    "no-var": "off",
+    "require-jsdoc": "off",
+    "max-len": ["warn", {
+      "ignoreTemplateLiterals": true,
+      "ignoreTrailingComments": true,
+      "ignoreUrls": true
+      }]
+  },
+  "globals": {
+    "Polymer": true,
+    "Stripe": true
+  }
+}

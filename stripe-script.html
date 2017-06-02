@@ -1,0 +1,8 @@
+<script>
+  if (!window.Stripe) {
+    let script = document.createElement('script');
+      script.src = 'https://js.stripe.com/v3/';
+      script.onload = () => console.warn('Stripe.js loaded via stripe-elements. It is recommended to load stripe.js in index.html'); // eslint-disable-line
+      document.body.appendChild(script);
+  }
+</script>
