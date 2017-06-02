@@ -19,9 +19,9 @@ Polymer wrapper for Stripe.js v3 Elements. Creates a `card` element such as http
 ```
 -->
 ```html
-<dom-bind>
+<template is="dom-bind">
   <paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
   <stripe-elements publishable-key="[[key]]" token="{{token}}"></stripe-elements>
   <show-json hide-copy-button json="[[token]]"></show-json>
-</dom-bind>
+</template>
 ```
