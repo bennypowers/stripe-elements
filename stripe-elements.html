@@ -105,7 +105,6 @@ The following custom properties and mixins are available for styling:
         -webkit-transition: box-shadow 150ms ease;
         transition: box-shadow 150ms ease;
         width: 100%;
-        @apply --layout;
         @apply --stripe-elements-element;
       }
 
@@ -247,19 +246,8 @@ The following custom properties and mixins are available for styling:
 
       ready: function() {
         if (!window.Stripe) {
-          const stripeScript = this.resolveUrl('./stripe-script.html');
-          this.importHref(stripeScript, /* eslint-disable no-console */ /* eslint-disable max-len */
-            () => console.warn('Stripe.js loaded via stripe-elements. It is recommended to load stripe.js in index.html'), // eslint-disable-line max-len
-            () => console.warn('Could not load Stripe!'), /* eslint-enable no-console */ /* eslint-enable max-len */
-            true
-          );
+          this._loadStripeJs();
         }
-        this.style = {
-          base: {
-            fontSize: '16px',
-            lineHeight: '24px',
-          },
-        };
         if (this.publishableKey) {
           this._initStripe();
           this._mountCard();
@@ -324,6 +312,19 @@ The following custom properties and mixins are available for styling:
       /**
        * PRIVATE METHODS
        */
+
+      _loadStripeJs: function() {
+        /* eslint-disable no-console */
+        const stripeScript = this.resolveUrl('./stripe-script.html');
+        const onSuccess = () => console.warn(
+          'Stripe.js loaded in stripe-elements component. ' +
+          'It is recommended to load stripe.js in index.html'
+        );
+        const onError = () => console.warn('Could not load Stripe!');
+        const loadAsync = false;
+        this.importHref(stripeScript, onSuccess, onError, loadAsync);
+        /* eslint-enable no-console */
+      },
 
       _initStripe: function() {
         this._stripe = Stripe(this.publishableKey);
