@@ -54,7 +54,6 @@ The following custom properties and mixins are available for styling:
 | `--stripe-elements-element-focus` | Mixin applied to the Stripe Element in its focussed state. | {} |
 | `--stripe-elements-element-invalid` | Mixin applied to the Stripe Element in ins invalid state | {} |
 | `--stripe-elements-element-webkit-autofill | Mixin applied to the Stripe Element's webkit autofill. | {} |
-|
 | `--stripe-elements-base-color` | Base styles are inherited by all other variants | '' |
 | `--stripe-elements-base-color-font-family` | Base styles are inherited by all other variants | '' |
 | `--stripe-elements-base-font-size` | Base styles are inherited by all other variants | '' |
