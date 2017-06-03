@@ -23,6 +23,7 @@
   },
   "globals": {
     "Polymer": true,
+    "ShadyCSS": true,
     "Stripe": true
   }
 }
