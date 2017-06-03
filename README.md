@@ -12,9 +12,11 @@ Polymer wrapper for Stripe.js v3 Elements. Creates a `card` element such as http
     <link rel="import" href="../paper-input/paper-input.html">
     <link rel="import" href="../show-json/show-json.html">
     <link rel="import" href="stripe-elements.html">
-    <template is="dom-bind">
-      <next-code-block></next-code-block>
-    </template>
+    <body>
+      <template is="dom-bind">
+        <next-code-block></next-code-block>
+      </template>
+    </body>
   </template>
 </custom-element-demo>
 ```
