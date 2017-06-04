@@ -129,6 +129,10 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
         @apply --stripe-elements-element-webkit-autofill;
       }
 
+      paper-toast {
+        margin: 0;
+      }
+
       form {
         @apply --layout;
         @apply --layout-wrap;
@@ -141,14 +145,14 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
         <!-- Stripe will inject form here -->
       </div>
 
-      <paper-toast id="toast" text="[[error]]" duration="Infinity" opened="{{error}}">
+      <paper-toast id="toast" text="[[error]]" duration="Infinity" opened="[[error]]">
         <paper-icon-button icon="close" on-tap="reset"></paper-icon-button>
       </paper-toast>
 
       <slot name="beforeSubmit"></slot>
 
       <paper-button raised on-tap="submit" disabled="[[disabled]]">
-        <slot>Submit</slot>
+        <slot name="buttonLabel">Submit</slot>
       </paper-button>
 
       <input type="hidden" name="stripeToken" value="[[token]]">
@@ -313,7 +317,7 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
       },
 
       reset: function() {
-        this.error = undefined;
+        this._setError(undefined);
       },
 
       /**
