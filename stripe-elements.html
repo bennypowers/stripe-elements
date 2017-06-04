@@ -1,6 +1,8 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-toast/paper-toast.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
 
 <!--
 `stripe-elements`
@@ -137,8 +139,11 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
       <div id="card" aria-label="Credit or Debit Card">
         <!-- Stripe will inject form here -->
       </div>
-      <div id="errors" role="alert">[[error]]</div>
       <paper-button raised on-tap="submit">Submit</paper-button>
+
+      <paper-toast id="toast" text="[[error]]" duration="Infinity" opened="{{error}}">
+        <paper-icon-button icon="close" on-tap="reset"></paper-icon-button>
+      </paper-toast>
       <input type="hidden" name="stripeToken" value="[[token]]">
     </form>
 
@@ -279,13 +284,18 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
           return this.action ? this.$.form.submit() : true;
         }).catch((error) => {
           // Show error in UI
-          this._setError(error.error);
+          this.$.toast.fitInto = this.$.form;
+          this._setError(error.message);
           // Fire error event
           this.dispatchEvent(new CustomEvent('stripe-error',
             {bubbles: true, composed: true, detail: error}
           ));
           return false;
         });
+      },
+
+      reset: function() {
+        this.error = undefined;
       },
 
       /**
