@@ -140,11 +140,17 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
       <div id="card" aria-label="Credit or Debit Card">
         <!-- Stripe will inject form here -->
       </div>
-      <paper-button raised on-tap="submit">Submit</paper-button>
 
       <paper-toast id="toast" text="[[error]]" duration="Infinity" opened="{{error}}">
         <paper-icon-button icon="close" on-tap="reset"></paper-icon-button>
       </paper-toast>
+
+      <slot name="beforeSubmit"></slot>
+
+      <paper-button raised on-tap="submit" disabled="[[disabled]]">
+        <slot>Submit</slot>
+      </paper-button>
+
       <input type="hidden" name="stripeToken" value="[[token]]">
     </form>
 
@@ -210,6 +216,15 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
           type: Object,
           notify: true,
           readOnly: true,
+        },
+
+        /**
+         * Whether the submit button is disabled
+         */
+        disabled: {
+          type: Boolean,
+          notify: true,
+          value: false,
         },
 
         /**
