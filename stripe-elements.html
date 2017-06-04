@@ -99,7 +99,7 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
   <template>
     <style>
       :host {
-        display: block;
+        @apply --layout;
       }
 
       .StripeElement {
@@ -131,6 +131,7 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
 
       form {
         @apply --layout;
+        @apply --layout-wrap;
         @apply --layout-flex;
       }
     </style>
@@ -256,6 +257,8 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
       ready: function() {
         if (!window.Stripe) {
           this._loadStripeJs();
+        } else {
+          console.info('Stripe is available on window');
         }
         if (this.publishableKey) {
           this._initStripe();
