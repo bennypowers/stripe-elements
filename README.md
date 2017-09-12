@@ -4,6 +4,19 @@
 
 Polymer wrapper for Stripe.js v3 Elements. Creates a `card` element such as https://stripe.com/docs/elements
 
+## :fire: Restrictions :fire:
+
+The stripe script doesn't work with ShadowDOM, so for now we have to force the ShadyDOM polyfill. Modify your webcomponentsjs include to match the following.
+
+```html
+<script>
+  window.customElements = window.customElements || {};
+  window.customElements.forcePolyfill = true;
+  window.ShadyDOM = {force: true};
+</script>
+<script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+```
+
 ## Usage
 <!--
 ```
