@@ -234,7 +234,6 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
         /**
          * The URL to the form action. Example '/charges'.
          * If blank or undefined will not submit charges immediately.
-         * @type {Object}
          */
         action: {
           type: String,
@@ -318,6 +317,7 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
 
       reset: function() {
         this._setError(undefined);
+        this._card.clear();
       },
 
       /**
