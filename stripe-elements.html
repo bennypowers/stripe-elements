@@ -130,6 +130,10 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
         @apply --stripe-elements-element-webkit-autofill;
       }
 
+      stripe-card {
+        width: 100%;
+      }
+
       paper-toast {
         margin: 0;
       }
@@ -145,6 +149,7 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
       <div id="card" aria-label="Credit or Debit Card">
         <!-- Stripe will inject form here -->
       </div>
+      <stripe-card id="shadowstripe" publishable-key="[[publishableKey]]" hide-zip="[[hidePostalCode]]" hide-submit></stripe-card>
 
       <paper-toast id="toast" text="[[error]]" duration="Infinity" opened="[[error]]">
         <paper-icon-button icon="close" on-tap="reset"></paper-icon-button>
@@ -240,6 +245,15 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
           type: String,
         },
 
+        /**
+         * Whether to use stripe elements.js or the shadowDOM compatible version.
+         * Might influence your PCI compliance
+         */
+        shadowPci: {
+          type: Boolean,
+          value: false,
+        },
+
         _stripe: Object,
         _elements: Object,
         _card: Object,
@@ -274,14 +288,23 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
        */
 
       ready: function() {
-        if (!window.Stripe) {
-          this._loadStripeJs();
+        if (this.shadowPci) {
+          if (!Polymer.Element) {
+            console.info('The Stripe shadowDOM version needs Polymer >2');
+          } else {
+            console.info('Using Stripe shadowDOM version');
+          }
+          this._loadStripeShadow();
         } else {
-          console.info('Stripe is available on window');
-        }
-        if (this.publishableKey) {
-          this._initStripe();
-          this._mountCard();
+          if (!window.Stripe) {
+            this._loadStripeJs();
+          } else {
+            console.info('Stripe is available on window');
+          }
+          if (this.publishableKey) {
+            this._initStripe();
+            this._mountCard();
+          }
         }
       },
 
@@ -326,6 +349,7 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
        */
 
       _publishableKeyChanged: function(key, ov) {
+        if (this.shadowPci) { return; }
         if (!key) {return this._unmountCard();}
         this._unmountCard();
         this._stripe = {};
@@ -334,6 +358,7 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
       },
 
       _styleChanged: function(style, ov) {
+        if (this.shadowPci) { return; }
         if (!style || ov === undefined) {return;}
         this._mountCard();
       },
@@ -361,6 +386,12 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
         const loadAsync = false;
         this.importHref(stripeScript, onSuccess, onError, loadAsync);
         /* eslint-enable no-console */
+      },
+
+      _loadStripeShadow: function() {
+        const stripeElement = this.resolveUrl('../stripe-shadow/stripe-card.html');
+        this.importHref(stripeElement);
+        this._stripe = this.$.shadowstripe;
       },
 
       _initStripe: function() {
