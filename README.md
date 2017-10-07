@@ -6,7 +6,11 @@ Polymer wrapper for Stripe.js v3 Elements. Creates a `card` element such as http
 
 ## :fire: Restrictions :fire:
 
-The stripe script doesn't work with ShadowDOM, so for now we have to force the ShadyDOM polyfill. Modify your webcomponentsjs include to match the following.
+The stripe script doesn't work with ShadowDOM, there are two options to work around it.
+
+### 1. Force ShadyDOM polyfill
+
+Modify your webcomponentsjs include to match the following.
 
 ```html
 <script>
@@ -16,6 +20,10 @@ The stripe script doesn't work with ShadowDOM, so for now we have to force the S
 </script>
 <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
 ```
+
+### 2. Directly talk with the Stripe API
+
+You can enable a Polymer 2 replacement by setting `shadow-pci` on the Element. As the name suggests it might change your PCI Compliance Level (more infos needed).
 
 ## Usage
 <!--
