@@ -149,7 +149,7 @@ When you apply CSS to the custom properties below, they're parsed and sent to St
       <div id="card" aria-label="Credit or Debit Card">
         <!-- Stripe will inject form here -->
       </div>
-      <stripe-card id="shadowstripe" publishable-key="[[publishableKey]]" hide-zip="[[hidePostalCode]]" hide-submit></stripe-card>
+      <stripe-card id="shadowstripe" publishable-key="[[publishableKey]]" hide-zip="[[hidePostalCode]]" hide-submit mask-card></stripe-card>
 
       <paper-toast id="toast" text="[[error]]" duration="Infinity" opened="[[error]]">
         <paper-icon-button icon="close" on-tap="reset"></paper-icon-button>
