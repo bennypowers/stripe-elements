@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/mixins/template-stamp.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-toast/paper-toast.html">
@@ -49,11 +50,16 @@
       }
     </style>
 
-    <form id="form" action="[[action]]" method="post">
-      <div id="card" aria-label="Credit or Debit Card">
-        <!-- Stripe will inject form here -->
+    <template id="stripeCardTemplate">
+      <div slot="stripe-card">
+        <div id="card" aria-label="Credit or Debit Card">
+          <!-- Stripe will inject form here -->
+        </div>
       </div>
+    </template>
 
+    <form id="form" action="[[action]]" method="post">
+      <slot name="stripe-card"></slot>
       <paper-toast id="toast" text="[[error]]" duration="Infinity" opened="[[error]]">
         <paper-button on-tap="reset">OK</paper-button>
       </paper-toast>
@@ -171,8 +177,9 @@
    * @polymer
    * @customElement
    * @extends Polymer.Element
+   * @appliesMixin Polymer.TemplateStamp
    */
-  class StripeElements extends Polymer.Element {
+  class StripeElements extends Polymer.TemplateStamp(Polymer.Element) {
     static get is() {return 'stripe-elements';}
     static get properties() {
       return {
@@ -291,6 +298,27 @@
 
     connectedCallback() {
       super.connectedCallback();
+      // stamp stripe template
+      this._stripeTemplate = this._stampTemplate(this.$.stripeCardTemplate);
+
+      // trace each shadow boundary between us and the document
+      let host = this;
+      let shadowHosts = [this];
+      while (host = host.getRootNode().host) {
+          host && shadowHosts.push(host);
+      }
+
+      // append template to `app-shell` (as light DOM)
+      shadowHosts.pop().appendChild(this._stripeTemplate);
+
+      // leave breadcrumbs
+      shadowHosts.forEach((host) => {
+        const slot = document.createElement('slot');
+              slot.setAttribute('slot', 'stripe-card');
+              slot.setAttribute('name', 'stripe-card');
+        host.appendChild(slot);
+      });
+
       this.addEventListener('change', (event) => this.onChange(event));
     }
 
@@ -384,7 +412,7 @@
       const style = this._getStripeElementStyles();
       const init = {hidePostalCode, hideIcon, iconStyle, style, value};
       this._card = this._elements.create('card', init);
-      this._card.mount(this.$.card);
+      this._card.mount(this._stripeTemplate.getElementById('card'));
     }
 
     _unmountCard() {

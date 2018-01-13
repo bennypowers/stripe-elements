@@ -12,7 +12,7 @@
   ],
   "rules": {
     "brace-style": "off",
-    "new-cap": ["error", { "capIsNewExceptions": ["Polymer", "Stripe"] }],
+    "new-cap": ["error", { "capIsNewExceptions": ["Polymer", "TemplateStamp", "Stripe"] }],
     "no-var": "off",
     "require-jsdoc": "off",
     "max-len": ["warn", {
