@@ -39,8 +39,7 @@
         box-shadow: 0 1px 3px 0 #e6ebf1;
         -webkit-transition: box-shadow 150ms ease;
         transition: box-shadow 150ms ease;
-        width: 100%;
-        min-width: 400px;
+        min-width: var(--stripe-elements-width, 300px);
         @apply --stripe-elements-element;
       }
 
@@ -109,6 +108,7 @@
    *
    * | Custom property | Description | Default |
    * | --- | --- | --- |
+   * | `--stripe-elements-width` | Min-width of the stripe-element | 300px |
    * | `--stripe-elements-element` | Mixin applied to the Stripe Element | {} |
    * | `--stripe-elements-element-focus` | Mixin applied to the Stripe Element in its focussed state. | {} |
    * | `--stripe-elements-element-invalid` | Mixin applied to the Stripe Element in ins invalid state | {} |
