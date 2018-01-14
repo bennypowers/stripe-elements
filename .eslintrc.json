@@ -17,7 +17,7 @@
     "require-jsdoc": "off",
     "max-len": ["warn", {
       "ignoreTemplateLiterals": true,
-      "ignoreTrailingComments": true,
+      "ignoreComments": true,
       "ignoreUrls": true
       }]
   },

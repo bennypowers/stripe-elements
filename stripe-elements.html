@@ -41,6 +41,8 @@
 
       paper-toast {
         margin: 0;
+        max-width: 100%;
+        display: flex;
       }
 
       form {
@@ -184,9 +186,7 @@
     static get properties() {
       return {
 
-        /**
-         * Stripe Publishable Key. EG. pk_test_XXXXXXXXXXXXXXXXXXXXXXXX
-         */
+        /** Stripe Publishable Key. EG. pk_test_XXXXXXXXXXXXXXXXXXXXXXXX */
         publishableKey: {
           type: String,
           observer: '_publishableKeyChanged',
@@ -201,51 +201,39 @@
           value: false,
         },
 
-        /**
-         * Whether to hide icons in the Stripe form.
-         */
+        /** Whether to hide icons in the Stripe form. */
         hideIcon: {
           type: Boolean,
           value: false,
         },
 
-        /**
-         * Stripe icon style. 'solid' or 'default'.
-         */
+        /** Stripe icon style. 'solid' or 'default'. */
         iconStyle: {
           type: Object,
           value: 'default',
         },
 
-        /**
-         * Prefilled values for form. Example {postalCode: '90210'}
-         */
+        /** Prefilled values for form. Example {postalCode: '90210'} */
         value: {
           type: Object,
           value: () => ({}),
         },
 
-        /**
-         * Error message from Stripe.
-         */
+        /** Error message from Stripe. */
         error: {
           type: String,
           notify: true,
           readOnly: true,
         },
 
-        /**
-         * Stripe token
-         */
+        /** Stripe token. */
         token: {
           type: Object,
           notify: true,
           readOnly: true,
         },
 
-        /**
-         * Whether the submit button is disabled
-         */
+        /** Whether the submit button is disabled. */
         disabled: {
           type: Boolean,
           notify: true,
@@ -288,19 +276,8 @@
 
     /** LIFECYCLE CALLBACKS */
 
-    constructor() {
-      super();
-      window.Stripe
-        // eslint-disable-next-line no-console
-        ? console.info('Stripe is available on window')
-        : this._loadStripeJs();
-    }
-
     connectedCallback() {
       super.connectedCallback();
-      // stamp stripe template
-      this._stripeTemplate = this._stampTemplate(this.$.stripeCardTemplate);
-
       // trace each shadow boundary between us and the document
       let host = this;
       let shadowHosts = [this];
@@ -309,7 +286,9 @@
       }
 
       // append template to `app-shell` (as light DOM)
-      shadowHosts.pop().appendChild(this._stripeTemplate);
+      // stamp stripe template
+      this._stripeTemplate = this._stampTemplate(this.$.stripeCardTemplate);
+      shadowHosts.pop().appendChild(this._stripeTemplate.firstElementChild);
 
       // leave breadcrumbs
       shadowHosts.forEach((host) => {
@@ -320,6 +299,7 @@
       });
 
       this.addEventListener('change', (event) => this.onChange(event));
+      if (this.publishableKey) this._publishableKeyChanged(this.publishableKey);
     }
 
     /** PUBLIC METHODS */
@@ -365,6 +345,7 @@
     /** OBSERVERS */
 
     _publishableKeyChanged(key, ov) {
+      if (!this.isConnected) return;
       if (!key) return this._unmountCard();
       this._unmountCard();
       this._stripe = {};
@@ -385,24 +366,9 @@
 
     /** PRIVATE METHODS */
 
-    _loadStripeJs() {
-      // eslint-disable-next-line no-console
-      console.warn(
-        'Stripe.js loaded in stripe-elements component.',
-        'It is recommended to load stripe.js in index.html'
-      );
-      const stripeScript = this.resolveUrl('./stripe-script.html');
-      Polymer.importHref(
-        stripeScript,
-        this._initStripe.bind(this),
-        // eslint-disable-next-line no-console
-        () => console.warn('Could not load Stripe!'),
-        false
-      );
-    }
-
     _initStripe() {
-      if (!window.Stripe) return this._loadStripeJs();
+      // eslint-disable-next-line no-console
+      if (!window.Stripe) return console.warn(`<stripe-elements> requires that Stripe.js be loaded in index.html`);
       this._stripe = Stripe(this.publishableKey);
       this._elements = this._stripe.elements();
     }
@@ -411,8 +377,10 @@
       const {hidePostalCode, hideIcon, iconStyle, value} = this;
       const style = this._getStripeElementStyles();
       const init = {hidePostalCode, hideIcon, iconStyle, style, value};
+      const mount = document.querySelector('div[slot="stripe-card"]');
+      if (!mount) return;
       this._card = this._elements.create('card', init);
-      this._card.mount(this._stripeTemplate.getElementById('card'));
+      this._card.mount(mount);
     }
 
     _unmountCard() {
