@@ -4,18 +4,9 @@
 
 Polymer wrapper for Stripe.js v3 Elements. Creates a `card` element such as https://stripe.com/docs/elements
 
-## :fire: Restrictions :fire:
+## Note Before Using
 
-The stripe script doesn't work with ShadowDOM, so for now we have to force the ShadyDOM polyfill. Modify your webcomponentsjs include to match the following.
-
-```html
-<script>
-  window.customElements = window.customElements || {};
-  window.customElements.forcePolyfill = true;
-  window.ShadyDOM = {force: true};
-</script>
-<script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
-```
+You should make sure to load stripe.js on your app's index.html, as per Stripe's recommendation, before loading `<stripe-elements>`.
 
 ## Usage
 <!--
@@ -66,7 +57,7 @@ The following custom properties and mixins are available for styling the `<strip
 | `--stripe-elements-element` | Mixin applied to the Stripe Element | {} |
 | `--stripe-elements-element-focus` | Mixin applied to the Stripe Element in its focussed state. | {} |
 | `--stripe-elements-element-invalid` | Mixin applied to the Stripe Element in ins invalid state | {} |
-| `--stripe-elements-element-webkit-autofill | Mixin applied to the Stripe Element's webkit autofill. | {} |
+| `--stripe-elements-element-webkit-autofill` | Mixin applied to the Stripe Element's webkit autofill. | {} |
 
 When you apply CSS to the custom properties below, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame. Base styles are inherited by all other variants. `complete` styles are applies when the Stripe Element has valid input. `empty` styles are applied when the Stripe Element has no user input. `invalid` styles are applied when the Stripe Element has invalid input.
 
