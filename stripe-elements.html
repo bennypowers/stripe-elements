@@ -12,6 +12,25 @@
         @apply --layout;
       }
 
+      paper-toast {
+        margin: 0;
+        max-width: 100%;
+        display: flex;
+      }
+
+      #card {
+        width: 100%;
+      }
+
+    </style>
+
+    <template id="stripeCardTemplate">
+      <div slot="stripe-card">
+        <div id="card" aria-label="Credit or Debit Card">
+          <!-- Stripe will inject form here -->
+        </div>
+      </div>
+      <style id="stripe-styles">
       .StripeElement {
         background-color: white;
         padding: 8px 12px;
@@ -21,6 +40,7 @@
         -webkit-transition: box-shadow 150ms ease;
         transition: box-shadow 150ms ease;
         width: 100%;
+        min-width: 400px;
         @apply --stripe-elements-element;
       }
 
@@ -38,43 +58,16 @@
         background-color: #fefde5 !important;
         @apply --stripe-elements-element-webkit-autofill;
       }
-
-      paper-toast {
-        margin: 0;
-        max-width: 100%;
-        display: flex;
-      }
-
-      form {
-        @apply --layout;
-        @apply --layout-wrap;
-        @apply --layout-flex;
-      }
-    </style>
-
-    <template id="stripeCardTemplate">
-      <div slot="stripe-card">
-        <div id="card" aria-label="Credit or Debit Card">
-          <!-- Stripe will inject form here -->
-        </div>
-      </div>
+      </style>
     </template>
 
-    <form id="form" action="[[action]]" method="post">
-      <slot name="stripe-card"></slot>
-      <paper-toast id="toast" text="[[error]]" duration="Infinity" opened="[[error]]">
-        <paper-button on-tap="reset">OK</paper-button>
-      </paper-toast>
+    <slot name="stripe-card"></slot>
 
-      <slot name="beforeSubmit"></slot>
+    <input type="hidden" name="stripeToken" value="[[token]]">
 
-      <paper-button raised on-tap="submit" disabled="[[disabled]]">
-        <slot name="buttonLabel">Submit</slot>
-      </paper-button>
-
-      <input type="hidden" name="stripeToken" value="[[token]]">
-    </form>
-
+    <paper-toast id="toast" text="[[error]]" duration="Infinity" opened="[[error]]">
+      <paper-button on-tap="reset">OK</paper-button>
+    </paper-toast>
   </template>
   <script>
   /**
@@ -288,7 +281,7 @@
       // append template to `app-shell` (as light DOM)
       // stamp stripe template
       this._stripeTemplate = this._stampTemplate(this.$.stripeCardTemplate);
-      shadowHosts.pop().appendChild(this._stripeTemplate.firstElementChild);
+      shadowHosts.pop().appendChild(this._stripeTemplate);
 
       // leave breadcrumbs
       shadowHosts.forEach((host) => {
@@ -377,7 +370,7 @@
       const {hidePostalCode, hideIcon, iconStyle, value} = this;
       const style = this._getStripeElementStyles();
       const init = {hidePostalCode, hideIcon, iconStyle, style, value};
-      const mount = document.querySelector('div[slot="stripe-card"]');
+      const mount = document.querySelector('div[slot="stripe-card"] #card');
       if (!mount) return;
       this._card = this._elements.create('card', init);
       this._card.mount(mount);
