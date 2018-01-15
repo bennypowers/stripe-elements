@@ -121,14 +121,15 @@
    * | --- | --- | --- |
    * | `--stripe-elements-width` | Min-width of the stripe-element | 300px |
    * | `--stripe-elements-element` | Mixin applied to the Stripe Element | {} |
-   * | `--stripe-elements-element-focus` | Mixin applied to the Stripe Element in its focussed state. | {} |
+   * | `--stripe-elements-element-focus` | Mixin applied to the Stripe Element in its focused state. | {} |
    * | `--stripe-elements-element-invalid` | Mixin applied to the Stripe Element in its invalid state | {} |
    * | `--stripe-elements-element-webkit-autofill` | Mixin applied to the Stripe Element's webkit autofill. | {} |
    *
    * When you apply CSS to the custom properties below, they're parsed and sent
    * to Stripe, who should apply them to the Stripe Element they return in the
-   * iFrame. Base styles are inherited by all other variants.
-   * `complete` styles are applies when the Stripe Element has valid input.
+   * iFrame.
+   * `base` styles are inherited by all other variants.
+   * `complete` styles are applied when the Stripe Element has valid input.
    * `empty` styles are applied when the Stripe Element has no user input.
    * `invalid` styles are applied when the Stripe Element has invalid input.
    *
