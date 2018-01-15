@@ -313,26 +313,27 @@
 
     connectedCallback() {
       super.connectedCallback();
-      // trace each shadow boundary between us and the document
-      let host = this;
-      let shadowHosts = [this];
-      while (host = host.getRootNode().host) {
-          host && shadowHosts.push(host);
+      if (!ShadyDOM) {
+        // trace each shadow boundary between us and the document
+        let host = this;
+        let shadowHosts = [this];
+        while (host = host.getRootNode().host) {
+            host && shadowHosts.push(host);
+        }
+
+        // append template to `app-shell` (as light DOM)
+        // stamp stripe template
+        this.__stripeTemplate = this._stampTemplate(this.$.stripeCardTemplate);
+        shadowHosts.pop().appendChild(this.__stripeTemplate);
+
+        // leave breadcrumbs
+        shadowHosts.forEach((host) => {
+          const slot = document.createElement('slot');
+                slot.setAttribute('slot', 'stripe-card');
+                slot.setAttribute('name', 'stripe-card');
+          host.appendChild(slot);
+        });
       }
-
-      // append template to `app-shell` (as light DOM)
-      // stamp stripe template
-      this.__stripeTemplate = this._stampTemplate(this.$.stripeCardTemplate);
-      shadowHosts.pop().appendChild(this.__stripeTemplate);
-
-      // leave breadcrumbs
-      shadowHosts.forEach((host) => {
-        const slot = document.createElement('slot');
-              slot.setAttribute('slot', 'stripe-card');
-              slot.setAttribute('name', 'stripe-card');
-        host.appendChild(slot);
-      });
-
       if (this.publishableKey) this.publishableKeyChanged(this.publishableKey);
     }
 
