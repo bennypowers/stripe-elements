@@ -313,7 +313,7 @@
 
     connectedCallback() {
       super.connectedCallback();
-      if (!ShadyDOM) {
+      if (!window.ShadyDOM) {
         // trace each shadow boundary between us and the document
         let host = this;
         let shadowHosts = [this];
