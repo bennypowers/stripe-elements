@@ -26,9 +26,11 @@
 
     <template id="stripeCardTemplate">
       <div slot="stripe-card">
-        <div id="card" aria-label="Credit or Debit Card">
-          <!-- Stripe will inject form here -->
-        </div>
+        <form id="form" action="[[action]]" method="post">
+          <div id="card" aria-label="Credit or Debit Card">
+            <!-- Stripe will inject form here -->
+          </div>
+        </form>
       </div>
       <custom-style>
         <style id="stripe-styles">
