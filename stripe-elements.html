@@ -27,9 +27,13 @@
     <template id="stripeCardTemplate">
       <div slot="stripe-card">
         <form id="form" action="[[action]]" method="post">
+
           <div id="card" aria-label="Credit or Debit Card">
             <!-- Stripe will inject form here -->
           </div>
+
+          <input type="hidden" name="stripeToken" value="[[token]]">
+
         </form>
       </div>
       <custom-style>
@@ -65,8 +69,6 @@
     </template>
 
     <slot name="stripe-card"></slot>
-
-    <input type="hidden" name="stripeToken" value="[[token]]">
 
     <paper-toast id="toast" text="[[error.message]]" duration="Infinity" opened="[[error]]">
       <paper-button on-tap="reset">OK</paper-button>
