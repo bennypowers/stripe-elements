@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../polymer/lib/mixins/template-stamp.html">
+<link rel="import" href="../polymer/lib/elements/custom-style.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-toast/paper-toast.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
@@ -29,34 +30,36 @@
           <!-- Stripe will inject form here -->
         </div>
       </div>
-      <style id="stripe-styles">
-      .StripeElement {
-        background-color: white;
-        padding: 8px 12px;
-        border-radius: 4px;
-        border: 1px solid transparent;
-        box-shadow: 0 1px 3px 0 #e6ebf1;
-        -webkit-transition: box-shadow 150ms ease;
-        transition: box-shadow 150ms ease;
-        min-width: var(--stripe-elements-width, 300px);
-        @apply --stripe-elements-element;
-      }
+      <custom-style>
+        <style id="stripe-styles">
+        .StripeElement {
+          background-color: white;
+          padding: 8px 12px;
+          border-radius: 4px;
+          border: 1px solid transparent;
+          box-shadow: 0 1px 3px 0 #e6ebf1;
+          -webkit-transition: box-shadow 150ms ease;
+          transition: box-shadow 150ms ease;
+          min-width: var(--stripe-elements-width, 300px);
+          @apply --stripe-elements-element;
+        }
 
-      .StripeElement--focus {
-        box-shadow: 0 1px 3px 0 #cfd7df;
-        @apply --stripe-elements-element-focus;
-      }
+        .StripeElement--focus {
+          box-shadow: 0 1px 3px 0 #cfd7df;
+          @apply --stripe-elements-element-focus;
+        }
 
-      .StripeElement--invalid {
-        border-color: #fa755a;
-        @apply --stripe-elements-element-invalid;
-      }
+        .StripeElement--invalid {
+          border-color: #fa755a;
+          @apply --stripe-elements-element-invalid;
+        }
 
-      .StripeElement--webkit-autofill {
-        background-color: #fefde5 !important;
-        @apply --stripe-elements-element-webkit-autofill;
-      }
-      </style>
+        .StripeElement--webkit-autofill {
+          background-color: #fefde5 !important;
+          @apply --stripe-elements-element-webkit-autofill;
+        }
+        </style>
+      </custom-style>
     </template>
 
     <slot name="stripe-card"></slot>
@@ -388,26 +391,16 @@
     }
 
     _getStripeElementStyles() {
-      let base = {};
-      let complete = {};
-      let empty = {};
-      let invalid = {};
-      for (let style of this._allowedStyles) {
+      const retVal = {base: {}, complete: {}, empty: {}, invalid: {}};
+      this._allowedStyles.forEach((style) => {
         const dash = style.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
-        base[style] = ShadyCSS
-          ? ShadyCSS.getComputedStyleValue(this, '--something')
-          : getComputedStyle(this).getPropertyValue(`--stripe-elements-base-${dash}`);
-        complete[style] = ShadyCSS
-          ? ShadyCSS.getComputedStyleValue(this, '--something')
-          : getComputedStyle(this).getPropertyValue(`--stripe-elements-complete-${dash}`);
-        empty[style] = ShadyCSS
-          ? ShadyCSS.getComputedStyleValue(this, '--something')
-          : getComputedStyle(this).getPropertyValue(`--stripe-elements-empty-${dash}`);
-        invalid[style] = ShadyCSS
-          ? ShadyCSS.getComputedStyleValue(this, '--something')
-          : getComputedStyle(this).getPropertyValue(`--stripe-elements-invalud-${dash}`);
-      }
-      return {base, complete, empty, invalid};
+        ['base', 'complete', 'empty', 'invalid'].forEach((prefix) => {
+          retVal[prefix][style] = ShadyCSS
+            ? ShadyCSS.getComputedStyleValue(this, `--stripe-elements-${prefix}-${dash}`)
+            : getComputedStyle(this).getPropertyValue(`--stripe-elements-${prefix}-${dash}`);
+        });
+      });
+      return retVal;
     }
   }
 
