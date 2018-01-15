@@ -188,7 +188,7 @@
         /** Stripe Publishable Key. EG. pk_test_XXXXXXXXXXXXXXXXXXXXXXXX */
         publishableKey: {
           type: String,
-          observer: '_publishableKeyChanged',
+          observer: 'publishableKeyChanged',
         },
 
         /**
@@ -223,6 +223,7 @@
           type: String,
           notify: true,
           readOnly: true,
+          observer: 'errorChanged',
         },
 
         /** Stripe token. */
@@ -247,11 +248,40 @@
           type: String,
         },
 
-        _stripe: Object,
-        _elements: Object,
-        _card: Object,
+        /**
+         * Stripe instance
+         * @protected
+         */
+        stripe: {
+          type: Object,
+          readOnly: true,
+        },
 
-        _allowedStyles: {
+        /**
+         * Stripe elements instance
+         * @protected
+         */
+        elements: {
+          type: Object,
+          readOnly: true,
+        },
+
+        /**
+         * Reference to the card.
+         * @protected
+         */
+        card: {
+          type: Object,
+          readOnly: true,
+        },
+
+
+        /**
+         * Permitted style names.
+         * @type {Array}
+         * @protected
+         */
+        allowedStyles: {
           type: Array,
           readOnly: true,
           value: [
@@ -273,8 +303,6 @@
       };
     }
 
-    /** LIFECYCLE CALLBACKS */
-
     connectedCallback() {
       super.connectedCallback();
       // trace each shadow boundary between us and the document
@@ -286,8 +314,8 @@
 
       // append template to `app-shell` (as light DOM)
       // stamp stripe template
-      this._stripeTemplate = this._stampTemplate(this.$.stripeCardTemplate);
-      shadowHosts.pop().appendChild(this._stripeTemplate);
+      this.__stripeTemplate = this._stampTemplate(this.$.stripeCardTemplate);
+      shadowHosts.pop().appendChild(this.__stripeTemplate);
 
       // leave breadcrumbs
       shadowHosts.forEach((host) => {
@@ -297,107 +325,151 @@
         host.appendChild(slot);
       });
 
-      if (this.publishableKey) this._publishableKeyChanged(this.publishableKey);
+      if (this.publishableKey) this.publishableKeyChanged(this.publishableKey);
     }
 
-    /** PUBLIC METHODS */
-
     /**
-     * Submit credit card information to generate a token,
-     * then submit payment with the token.
+     * Submit credit card information to generate a token
      * @param  {Event} event Submit event.
      */
     submit(event) {
-      const bubbles = true;
-      const composed = true;
-      const handleResponse = ({error, token}) => {
-        if (error) {
-          this._setError(error);
-          this.dispatchEvent(
-            new ErrorEvent('stripe-error', {error, bubbles, composed})
-          );
-        } else {
-          this._setToken(token);
-          this.dispatchEvent(
-            new CustomEvent('stripe-token', {token, bubbles, composed})
-          );
-          // Submit the form
-          return this.action ? this.$.form.submit() : true;
-        }
-      };
-
-      const handleError = (error) => {
-        // Show error in UI
-        this.$.toast.fitInto = this;
-        this._setError(error.message);
-        this.dispatchEvent(new ErrorEvent('stripe-error', {error, bubbles, composed}));
-        return false;
-      };
-
-      // Get the token
-      this._stripe.createToken(this._card)
-        .then(handleResponse)
-        .catch(handleError);
+      this.stripe.createToken(this.card)
+        .then(this.handleResponse.bind(this))
+        .catch(this.handleError.bind(this));
     }
 
+    /** Resets the Stripe card. */
     reset() {
       this._setError(undefined);
-      this._card.clear();
+      this.card && this.card.clear && this.card.clear();
     }
 
-    /** OBSERVERS */
-
-    _publishableKeyChanged(key, ov) {
-      if (!this.isConnected) return;
-      if (!key) return this._unmountCard();
-      this._unmountCard();
-      this._stripe = {};
-      this._initStripe();
-      this._mountCard();
-    }
-
-    _styleChanged(style, ov) {
-      if (!style || ov === undefined) {return;}
-      this._mountCard();
-    }
-
-    /** EVENT HANDLERS */
-
-    onChange(event) {
-      if (event.error) {
-        this._setError(event.error);
-        this.$.toast.open();
+    /**
+     * Reinitializes Stripe and mounts the card.
+     * @param  {String} publishableKey Stripe publishable key
+     * @protected
+     */
+    publishableKeyChanged(publishableKey) {
+      if (publishableKey) {
+        this.unmountCard();
+        this.initStripe(this.publishableKey);
+        this.mountCard();
+      } else {
+        this.unmountCard();
       }
     }
 
-    /** PRIVATE METHODS */
-
-    _initStripe() {
-      // eslint-disable-next-line no-console
-      if (!window.Stripe) return console.warn(`<stripe-elements> requires that Stripe.js be loaded in index.html`);
-      this._stripe = Stripe(this.publishableKey);
-      this._elements = this._stripe.elements();
+    /**
+     * Opens the toast with the error message
+     * @param  {Object} error Stripe error.
+     * @protected
+     */
+    errorChanged(error) {
+      if (error) {
+        this.$.toast.open();
+        this.$.toast.positionTarget = this;
+      }
     }
 
-    _mountCard() {
-      const {hidePostalCode, hideIcon, iconStyle, value} = this;
-      const style = this._getStripeElementStyles();
-      const init = {hidePostalCode, hideIcon, iconStyle, style, value};
+    /**
+     * Sets the error and opens the toast, if needed
+     * @param  {Boolean}       event.empty     true if value is empty
+     * @param  {Boolean}       event.complete  true if value is well-formed and potentially complete.
+     * @param  {String}        event.brand     brand of the card being entered e.g. 'visa' or 'amex'
+     * @param  {Object}        event.error     The current validation error, if any.
+     * @param  {String|Object} event.value     Value of the form. Only non-sensitive information e.g. postalCode is present.
+     */
+    onChange({empty, complete, brand, error, value} = {}) {
+      if (error) {
+        this._setError(error);
+      }
+    }
+
+    /**
+     * Sets the token or error from the response.
+     * @param  {Object} response.error Stripe error
+     * @param  {Object} response.token Stripe token
+     * @protected
+     */
+    handleResponse({error, token}) {
+      const bubbles = true;
+      const composed = true;
+      if (error) {
+        this._setError(error);
+        this.dispatchEvent(new ErrorEvent('stripe-error', {error, bubbles, composed}));
+      } else {
+        this._setToken(token);
+        this.dispatchEvent(new CustomEvent('stripe-token', {token, bubbles, composed}));
+        // Submit the form
+        this.action && this.$.form.submit();
+      }
+    }
+
+    /**
+     * Sets the error and opens the toast.
+     * @param  {Object} error
+     * @protected
+     */
+    handleError(error) {
+      const bubbles = true;
+      const composed = true;
+      this.dispatchEvent(new ErrorEvent('stripe-error', {error, bubbles, composed}));
+      // Show error in UI
+      this._setError(error.message);
+    }
+
+    /**
+     * Initializes Stripe and elements.
+     * @param {String} publishableKey Stripe publishable key.
+     * @protected
+     */
+    initStripe(publishableKey = this.publishableKey) {
+      if (this.stripe) this._setStripe(null);
+      if (window.Stripe) {
+        const stripe = Stripe(publishableKey);
+        const elements = stripe.elements();
+        this._setStripe(stripe);
+        this._setElements(elements);
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(`<stripe-elements> requires that Stripe.js be loaded in index.html`);
+      }
+    }
+
+    /**
+     * Creates and mounts Stripe Elements card.
+     * @protected
+     */
+    mountCard() {
       const mount = document.querySelector('div[slot="stripe-card"] #card');
-      if (!mount) return;
-      this._card = this._elements.create('card', init);
-      this._card.mount(mount);
-      this._card.addEventListener('change', this.onChange.bind(this));
+      if (mount) {
+        const {hidePostalCode, hideIcon, iconStyle, value} = this;
+        const style = this.getStripeElementsStyles();
+        const init = {hidePostalCode, hideIcon, iconStyle, style, value};
+        const card = this.elements.create('card', init);
+        this._setCard(card);
+        card.mount(mount);
+        card.addEventListener('change', this.onChange.bind(this));
+      }
     }
 
-    _unmountCard() {
-      if (this._card && this._card.unmount) this._card.unmount();
-      this._card = null;
+    /**
+     * Unmounts and nullifies the card.
+     * @protected
+     */
+    unmountCard() {
+      this.card && this.card.unmount && this.card.unmount();
+      this._setCard(null);
     }
 
-    _getStripeElementStyles() {
+    /**
+     * Returns a Stripe-friendly style object computed from CSS custom properties
+     * @return {Object} Stripe Style initialization object.
+     * @protected
+     */
+    getStripeElementsStyles() {
       const retVal = {base: {}, complete: {}, empty: {}, invalid: {}};
-      this._allowedStyles.forEach((style) => {
+      this.allowedStyles.forEach((style) => {
         const dash = style.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
         ['base', 'complete', 'empty', 'invalid'].forEach((prefix) => {
           retVal[prefix][style] = ShadyCSS
@@ -411,9 +483,5 @@
 
   customElements.define(StripeElements.is, StripeElements);
 
-  /**
-   * @fires 'stripe-token'
-   * @fires 'stripe-error'
-   */
   </script>
 </dom-module>
