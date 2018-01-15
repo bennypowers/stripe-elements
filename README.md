@@ -57,7 +57,7 @@ The following custom properties and mixins are available for styling the `<strip
 When you apply CSS to the custom properties below, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame. Base styles are inherited by all other variants. `complete` styles are applies when the Stripe Element has valid input. `empty` styles are applied when the Stripe Element has no user input. `invalid` styles are applied when the Stripe Element has invalid input.
 
 | Custom property |
-| --- | --- |
+| --- |
 | `--stripe-elements-base-color` |
 | `--stripe-elements-base-font-family` |
 | `--stripe-elements-base-font-size` |
