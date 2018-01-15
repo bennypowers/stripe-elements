@@ -6,7 +6,8 @@
 
     <title>stripe-elements demo</title>
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
 
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
@@ -36,8 +37,13 @@
               }
             </style>
           </custom-style>
+
           <paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
-          <stripe-elements publishable-key="[[key]]" token="{{token}}"></stripe-elements>
+          <stripe-elements id="stripe"
+              publishable-key="[[key]]"
+              token="{{token}}"
+          ></stripe-elements>
+          <paper-button onclick="stripe.submit()"></paper-button>
           <show-json hide-copy-button json="[[token]]"></show-json>
         </template>
       </demo-snippet>
