@@ -73,10 +73,10 @@
     <paper-toast id="toast"
         text="[[error.message]]"
         duration="Infinity"
-        opened="[[error]]"
+        opened="{{toastOpened}}"
         no-overlap
         vertical-align="bottom">
-      <paper-button on-tap="reset">OK</paper-button>
+      <paper-button toggles active="{{toastOpened}}">OK</paper-button>
     </paper-toast>
   </template>
   <script>
