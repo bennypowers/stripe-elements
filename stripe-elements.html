@@ -68,7 +68,7 @@
 
     <input type="hidden" name="stripeToken" value="[[token]]">
 
-    <paper-toast id="toast" text="[[error]]" duration="Infinity" opened="[[error]]">
+    <paper-toast id="toast" text="[[error.message]]" duration="Infinity" opened="[[error]]">
       <paper-button on-tap="reset">OK</paper-button>
     </paper-toast>
   </template>
@@ -295,7 +295,6 @@
         host.appendChild(slot);
       });
 
-      this.addEventListener('change', (event) => this.onChange(event));
       if (this.publishableKey) this._publishableKeyChanged(this.publishableKey);
     }
 
@@ -329,9 +328,7 @@
         // Show error in UI
         this.$.toast.fitInto = this;
         this._setError(error.message);
-        this.dispatchEvent(
-          new ErrorEvent('stripe-error', {error, bubbles, composed})
-        );
+        this.dispatchEvent(new ErrorEvent('stripe-error', {error, bubbles, composed}));
         return false;
       };
 
@@ -365,7 +362,10 @@
     /** EVENT HANDLERS */
 
     onChange(event) {
-      this._setError(event.error);
+      if (event.error) {
+        this._setError(event.error);
+        this.$.toast.open();
+      }
     }
 
     /** PRIVATE METHODS */
@@ -385,6 +385,7 @@
       if (!mount) return;
       this._card = this._elements.create('card', init);
       this._card.mount(mount);
+      this._card.addEventListener('change', this.onChange.bind(this));
     }
 
     _unmountCard() {
