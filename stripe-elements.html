@@ -303,31 +303,38 @@
      * @param  {Event} event Submit event.
      */
     submit(event) {
-      const fire = (type, detail) => this.dispatchEvent(new CustomEvent(type, {
-        bubbles: true,
-        composed: true,
-        detail,
-      }));
-
-      const tokenReceived = ({token}) => {
-        this._setToken(token);
-        fire('stripe-token', token);
-        // Submit the form
-        return this.action ? this.$.form.submit() : true;
+      const bubbles = true;
+      const composed = true;
+      const handleResponse = ({error, token}) => {
+        if (error) {
+          this._setError(error);
+          this.dispatchEvent(
+            new ErrorEvent('stripe-error', {error, bubbles, composed})
+          );
+        } else {
+          this._setToken(token);
+          this.dispatchEvent(
+            new CustomEvent('stripe-token', {token, bubbles, composed})
+          );
+          // Submit the form
+          return this.action ? this.$.form.submit() : true;
+        }
       };
 
-      const tokenError = (error) => {
+      const handleError = (error) => {
         // Show error in UI
-        this.$.toast.fitInto = this.$.form;
+        this.$.toast.fitInto = this;
         this._setError(error.message);
-        fire('stripe-error', error);
+        this.dispatchEvent(
+          new ErrorEvent('stripe-error', {error, bubbles, composed})
+        );
         return false;
       };
 
       // Get the token
       this._stripe.createToken(this._card)
-        .then(tokenReceived)
-        .catch(tokenError);
+        .then(handleResponse)
+        .catch(handleError);
     }
 
     reset() {
@@ -354,7 +361,7 @@
     /** EVENT HANDLERS */
 
     onChange(event) {
-      this.error = event.error;
+      this._setError(event.error);
     }
 
     /** PRIVATE METHODS */
