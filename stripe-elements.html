@@ -122,7 +122,7 @@
    * | `--stripe-elements-width` | Min-width of the stripe-element | 300px |
    * | `--stripe-elements-element` | Mixin applied to the Stripe Element | {} |
    * | `--stripe-elements-element-focus` | Mixin applied to the Stripe Element in its focussed state. | {} |
-   * | `--stripe-elements-element-invalid` | Mixin applied to the Stripe Element in ins invalid state | {} |
+   * | `--stripe-elements-element-invalid` | Mixin applied to the Stripe Element in its invalid state | {} |
    * | `--stripe-elements-element-webkit-autofill` | Mixin applied to the Stripe Element's webkit autofill. | {} |
    *
    * When you apply CSS to the custom properties below, they're parsed and sent
@@ -132,58 +132,60 @@
    * `empty` styles are applied when the Stripe Element has no user input.
    * `invalid` styles are applied when the Stripe Element has invalid input.
    *
-   * | Custom property | Default |
-   * | --- | --- |
-   * | `--stripe-elements-base-color` | '' |
-   * | `--stripe-elements-base-color-font-family` | '' |
-   * | `--stripe-elements-base-font-size` | '' |
-   * | `--stripe-elements-base-font-smoothing` | '' |
-   * | `--stripe-elements-base-font-variant` | '' |
-   * | `--stripe-elements-base-icon-color` | '' |
-   * | `--stripe-elements-base-line-height` | '' |
-   * | `--stripe-elements-base-letter-spacing` | '' |
-   * | `--stripe-elements-base-text-decoration` | '' |
-   * | `--stripe-elements-base-text-shadow` | '' |
-   * | `--stripe-elements-base-text-transform` | '' |
-   * | `--stripe-elements-complete-color` | '' |
-   * | `--stripe-elements-complete-color-font-family` | '' |
-   * | `--stripe-elements-complete-font-size` | '' |
-   * | `--stripe-elements-complete-font-smoothing` | '' |
-   * | `--stripe-elements-complete-font-variant` | '' |
-   * | `--stripe-elements-complete-icon-color` | '' |
-   * | `--stripe-elements-complete-line-height` | '' |
-   * | `--stripe-elements-complete-letter-spacing` | '' |
-   * | `--stripe-elements-complete-text-decoration` | '' |
-   * | `--stripe-elements-complete-text-shadow` | '' |
-   * | `--stripe-elements-complete-text-transform` | '' |
-   * | `--stripe-elements-empty-color` | '' |
-   * | `--stripe-elements-empty-color-font-family` | '' |
-   * | `--stripe-elements-empty-font-size` | '' |
-   * | `--stripe-elements-empty-font-smoothing` | '' |
-   * | `--stripe-elements-empty-font-variant` | '' |
-   * | `--stripe-elements-empty-icon-color` | '' |
-   * | `--stripe-elements-empty-line-height` | '' |
-   * | `--stripe-elements-empty-letter-spacing` | '' |
-   * | `--stripe-elements-empty-text-decoration` | '' |
-   * | `--stripe-elements-empty-text-shadow` | '' |
-   * | `--stripe-elements-empty-text-transform` | '' |
-   * | `--stripe-elements-invalid-color` | '' |
-   * | `--stripe-elements-invalid-color-font-family` | '' |
-   * | `--stripe-elements-invalid-font-size` | '' |
-   * | `--stripe-elements-invalid-font-smoothing` | '' |
-   * | `--stripe-elements-invalid-font-variant` | '' |
-   * | `--stripe-elements-invalid-icon-color` | '' |
-   * | `--stripe-elements-invalid-line-height` | '' |
-   * | `--stripe-elements-invalid-letter-spacing` | '' |
-   * | `--stripe-elements-invalid-text-decoration` | '' |
-   * | `--stripe-elements-invalid-text-shadow` | '' |
-   * | `--stripe-elements-invalid-text-transform` | '' |
+   * | Custom property |
+   * | --- |
+   * | `--stripe-elements-base-color` |
+   * | `--stripe-elements-base-font-family` |
+   * | `--stripe-elements-base-font-size` |
+   * | `--stripe-elements-base-font-smoothing` |
+   * | `--stripe-elements-base-font-variant` |
+   * | `--stripe-elements-base-icon-color` |
+   * | `--stripe-elements-base-line-height` |
+   * | `--stripe-elements-base-letter-spacing` |
+   * | `--stripe-elements-base-text-decoration` |
+   * | `--stripe-elements-base-text-shadow` |
+   * | `--stripe-elements-base-text-transform` |
+   * | `--stripe-elements-complete-color` |
+   * | `--stripe-elements-complete-font-family` |
+   * | `--stripe-elements-complete-font-size` |
+   * | `--stripe-elements-complete-font-smoothing` |
+   * | `--stripe-elements-complete-font-variant` |
+   * | `--stripe-elements-complete-icon-color` |
+   * | `--stripe-elements-complete-line-height` |
+   * | `--stripe-elements-complete-letter-spacing` |
+   * | `--stripe-elements-complete-text-decoration` |
+   * | `--stripe-elements-complete-text-shadow` |
+   * | `--stripe-elements-complete-text-transform` |
+   * | `--stripe-elements-empty-color` |
+   * | `--stripe-elements-empty-font-family` |
+   * | `--stripe-elements-empty-font-size` |
+   * | `--stripe-elements-empty-font-smoothing` |
+   * | `--stripe-elements-empty-font-variant` |
+   * | `--stripe-elements-empty-icon-color` |
+   * | `--stripe-elements-empty-line-height` |
+   * | `--stripe-elements-empty-letter-spacing` |
+   * | `--stripe-elements-empty-text-decoration` |
+   * | `--stripe-elements-empty-text-shadow` |
+   * | `--stripe-elements-empty-text-transform` |
+   * | `--stripe-elements-invalid-color` |
+   * | `--stripe-elements-invalid-font-family` |
+   * | `--stripe-elements-invalid-font-size` |
+   * | `--stripe-elements-invalid-font-smoothing` |
+   * | `--stripe-elements-invalid-font-variant` |
+   * | `--stripe-elements-invalid-icon-color` |
+   * | `--stripe-elements-invalid-line-height` |
+   * | `--stripe-elements-invalid-letter-spacing` |
+   * | `--stripe-elements-invalid-text-decoration` |
+   * | `--stripe-elements-invalid-text-shadow` |
+   * | `--stripe-elements-invalid-text-transform` |
    *
    * @demo demo/index.html
    * @polymer
    * @customElement
    * @extends Polymer.Element
    * @appliesMixin Polymer.TemplateStamp
+   * @fires 'stripe-token'
+   * @fires 'stripe-error'
    */
   class StripeElements extends Polymer.TemplateStamp(Polymer.Element) {
     static get is() {return 'stripe-elements';}

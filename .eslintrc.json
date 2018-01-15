@@ -18,6 +18,7 @@
     "max-len": ["warn", {
       "ignoreTemplateLiterals": true,
       "ignoreComments": true,
+      "ignoreStrings": true,
       "ignoreUrls": true
       }]
   },
