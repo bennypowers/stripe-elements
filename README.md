@@ -27,28 +27,19 @@ You should make sure to load stripe.js on your app's index.html, as per Stripe's
 ```
 -->
 ```html
-<custom-style>
-  <style>
-    html {
-      --stripe-elements-base-color: var(--paper-grey-700);
-      --stripe-elements-base-text-transform: uppercase;
-      --stripe-elements-base-font-family: 'Georgia';
-      --stripe-elements-base-font-style: italic;
-      --stripe-elements-element: {
-        padding: 14px;
-        background-color: #c0fefe;
-      }
-    }
-  </style>
-</custom-style>
+<p>Insert a test key to create the element, then use a <a href="https://stripe.com/docs/testing#cards">test card</a> to generate a token.</p>
 
 <paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
 
-<stripe-elements id="stripe" publishable-key="[[key]]" token="{{token}}"></stripe-elements>
+<div style="display:flex;">
 
-<paper-button onclick="stripe.submit();"></paper-button>
+  <stripe-elements id="stripe" stripe-ready="{{ready}}" publishable-key="[[key]]" token="{{token}}"></stripe-elements>
 
-<show-json hide-copy-button json="[[token]]"></show-json>
+  <paper-button disabled="[[!ready]]" onclick="stripe.submit();">Get Token</paper-button>
+
+</div>
+
+<paper-toast opened="[[token]]" text="Token received for 💳 [[token.card.last4]]! 🤑"></paper-toast>
 ```
 
 ## Styling

@@ -39,14 +39,24 @@
                       background-color: #c0fefe;
                     }
                   }
+                  .form {
+                    display: flex;
+                  }
                 </style>
               </custom-style>
 
+              <p>Insert a test key to create the element, then use a <a href="https://stripe.com/docs/testing#cards">test card</a> to generate a token.</p>
+
               <paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
 
-              <stripe-elements id="stripe" publishable-key="[[key]]" token="{{token}}"></stripe-elements>
+              <div class="form">
 
-              <paper-button onclick="stripe.submit();"></paper-button>
+                <stripe-elements id="stripe" stripe-ready="{{ready}}" publishable-key="[[key]]" token="{{token}}"></stripe-elements>
+
+                <paper-button disabled="[[!ready]]" onclick="stripe.submit();">Get Token</paper-button>
+
+              </div>
+
 
               <show-json hide-copy-button json="[[token]]"></show-json>
             </template>
