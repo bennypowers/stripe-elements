@@ -269,6 +269,15 @@
           readOnly: true,
         },
 
+        /** True when the stripe element is ready to receive focus. */
+        stripeReady: {
+          type: Boolean,
+          readOnly: true,
+          notify: true,
+          reflectToAttribute: true,
+          value: false,
+        },
+
         /**
          * Stripe elements instance
          * @protected
@@ -353,8 +362,12 @@
 
     /** Resets the Stripe card. */
     reset() {
-      this._setError(undefined);
-      this.card && this.card.clear && this.card.clear();
+      try {
+        this.card && this.card.clear && this.card.clear();
+        this._setError(undefined);
+      } catch (error) {
+        throw new Error(error);
+      }
     }
 
     /**
@@ -363,12 +376,10 @@
      * @protected
      */
     publishableKeyChanged(publishableKey) {
+      this.unmountCard();
       if (publishableKey) {
-        this.unmountCard();
         this.initStripe(this.publishableKey);
         this.mountCard();
-      } else {
-        this.unmountCard();
       }
     }
 
@@ -396,6 +407,14 @@
       if (error) {
         this._setError(error);
       }
+    }
+
+    /**
+     * Sets the stripeReady property when the stripe element is ready to receive focus.
+     * @param  {Event} event
+     */
+    onReady(event) {
+      this._setStripeReady(true);
     }
 
     /**
@@ -462,6 +481,7 @@
         const card = this.elements.create('card', init);
         this._setCard(card);
         card.mount(mount);
+        card.addEventListener('ready', this.onReady.bind(this));
         card.addEventListener('change', this.onChange.bind(this));
       }
     }
@@ -471,8 +491,16 @@
      * @protected
      */
     unmountCard() {
-      this.card && this.card.unmount && this.card.unmount();
-      this._setCard(null);
+      try {
+        this.card.unmount();
+      } catch (error) {
+        !error.message.startsWith('Cannot read property \'unmount\'') &&
+        // eslint-disable-next-line no-console
+        console.error(error);
+      } finally {
+        this._setCard(null);
+        this._setStripeReady(false);
+      }
     }
 
     /**
