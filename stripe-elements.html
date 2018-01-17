@@ -31,7 +31,7 @@
       <div slot="stripe-card">
         <form id="form" action="[[action]]" method="post">
 
-          <div id="card" aria-label="Credit or Debit Card">
+          <div id="stripe-elements-mount-point" aria-label="Credit or Debit Card">
             <!-- Stripe will inject form here -->
           </div>
 
@@ -258,6 +258,7 @@
          */
         action: {
           type: String,
+          value: '',
         },
 
         /**
@@ -326,7 +327,26 @@
 
     connectedCallback() {
       super.connectedCallback();
-      if (!window.ShadyDOM) {
+      this.prepare({shady: !!window.ShadyDOM});
+      if (this.publishableKey) this.publishableKeyChanged(this.publishableKey);
+    }
+
+    /**
+     * Prepares to mount Stripe Elements in light DOM.
+     * @param  {Boolean} $0.shady If shady DOM is in use.
+     * @protected
+     */
+    prepare({shady}) {
+      // const target = shady ? this.root : document.head; target.appendChild(this._stampTemplate(this.$.stripeStylesTemplate));
+      if (shady) {
+        if (!this.__shadyDomMount) {
+          const mount = document.createElement('div');
+                mount.id = 'stripe-elements-mount-point';
+          this.__shadyDomMount = mount;
+        }
+        const slot = this.root.querySelector('[name="stripe-card"]');
+        slot.appendChild(this.__shadyDomMount);
+      } else {
         // trace each shadow boundary between us and the document
         let host = this;
         let shadowHosts = [this];
@@ -347,7 +367,6 @@
           host.appendChild(slot);
         });
       }
-      if (this.publishableKey) this.publishableKeyChanged(this.publishableKey);
     }
 
     /**
@@ -473,7 +492,8 @@
      * @protected
      */
     mountCard() {
-      const mount = document.querySelector('div[slot="stripe-card"] #card');
+      const mount = (window.ShadyDOM ? this.root : document)
+        .getElementById('stripe-elements-mount-point');
       if (mount) {
         const {hidePostalCode, hideIcon, iconStyle, value} = this;
         const style = this.getStripeElementsStyles();
@@ -492,9 +512,8 @@
      */
     unmountCard() {
       try {
-        this.card.unmount();
+        this.card && this.card.unmount && this.card.unmount();
       } catch (error) {
-        !error.message.startsWith('Cannot read property \'unmount\'') &&
         // eslint-disable-next-line no-console
         console.error(error);
       } finally {
