@@ -64,6 +64,7 @@ The following custom properties and mixins are available for styling the `<strip
 | Custom property | Description | Default |
 | --- | --- | --- |
 | `--stripe-elements-width` | Min-width of the stripe-element | 300px |
+| `--stripe-elements-height` | Min-width of the stripe-element | 50px |
 | `--stripe-elements-element` | Mixin applied to the Stripe Element | {} |
 | `--stripe-elements-element-focus` | Mixin applied to the Stripe Element in its focused state. | {} |
 | `--stripe-elements-element-invalid` | Mixin applied to the Stripe Element in its invalid state | {} |
