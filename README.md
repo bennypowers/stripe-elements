@@ -13,6 +13,7 @@ You should make sure to load stripe.js on your app's index.html, as per Stripe's
 ```
 <custom-element-demo>
   <template>
+    <script src="https://js.stripe.com/v3/"></script>
     <link rel="import" href="../paper-input/paper-input.html">
     <link rel="import" href="../show-json/show-json.html">
     <link rel="import" href="stripe-elements.html">
@@ -26,14 +27,28 @@ You should make sure to load stripe.js on your app's index.html, as per Stripe's
 ```
 -->
 ```html
-  <script src="https://js.stripe.com/v3/"></script>
-  <paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
-  <stripe-elements id="stripe"
-      publishable-key="[[key]]"
-      token="{{token}}"
-  ></stripe-elements>
-  <paper-button disabled="[[!key]]" onclick="stripe.submit()"></paper-button>
-  <show-json hide-copy-button json="[[token]]"></show-json>
+<custom-style>
+  <style>
+    html {
+      --stripe-elements-base-color: var(--paper-grey-700);
+      --stripe-elements-base-text-transform: uppercase;
+      --stripe-elements-base-font-family: 'Georgia';
+      --stripe-elements-base-font-style: italic;
+      --stripe-elements-element: {
+        padding: 14px;
+        background-color: #c0fefe;
+      }
+    }
+  </style>
+</custom-style>
+
+<paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
+
+<stripe-elements id="stripe" publishable-key="[[key]]" token="{{token}}"></stripe-elements>
+
+<paper-button onclick="stripe.submit();"></paper-button>
+
+<show-json hide-copy-button json="[[token]]"></show-json>
 ```
 
 ## Styling
