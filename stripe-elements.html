@@ -1,9 +1,9 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../polymer/lib/mixins/template-stamp.html">
-<link rel="import" href="../polymer/lib/elements/custom-style.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-toast/paper-toast.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="./stripe-elements-custom-styles.html">
 
 <dom-module id="stripe-elements">
   <template>
@@ -21,10 +21,6 @@
         display: flex;
       }
 
-      #card {
-        width: 100%;
-      }
-
     </style>
 
     <template id="stripeCardTemplate">
@@ -39,39 +35,11 @@
 
         </form>
       </div>
-      <custom-style>
-        <style id="stripe-styles">
-        .StripeElement {
-          background-color: white;
-          padding: 8px 12px;
-          border-radius: 4px;
-          border: 1px solid transparent;
-          box-shadow: 0 1px 3px 0 #e6ebf1;
-          -webkit-transition: box-shadow 150ms ease;
-          transition: box-shadow 150ms ease;
-          min-width: var(--stripe-elements-width, 300px);
-          @apply --stripe-elements-element;
-        }
-
-        .StripeElement--focus {
-          box-shadow: 0 1px 3px 0 #cfd7df;
-          @apply --stripe-elements-element-focus;
-        }
-
-        .StripeElement--invalid {
-          border-color: #fa755a;
-          @apply --stripe-elements-element-invalid;
-        }
-
-        .StripeElement--webkit-autofill {
-          background-color: #fefde5 !important;
-          @apply --stripe-elements-element-webkit-autofill;
-        }
-        </style>
-      </custom-style>
     </template>
 
     <slot name="stripe-card"></slot>
+
+    <div id="error">[[error.message]]</div>
 
     <paper-toast id="toast"
         text="[[error.message]]"
