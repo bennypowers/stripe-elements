@@ -13,9 +13,9 @@ You should make sure to load stripe.js on your app's index.html, as per Stripe's
 ```
 <custom-element-demo>
   <template>
-    <script src="https://js.stripe.com/v3/"></script>
     <link rel="import" href="../paper-input/paper-input.html">
-    <link rel="import" href="../show-json/show-json.html">
+    <link rel="import" href="../paper-button/paper-button.html">
+    <link rel="import" href="../paper-toast/paper-toast.html">
     <link rel="import" href="stripe-elements.html">
     <body>
       <template is="dom-bind">
@@ -27,6 +27,8 @@ You should make sure to load stripe.js on your app's index.html, as per Stripe's
 ```
 -->
 ```html
+<script src="https://js.stripe.com/v3/"></script>
+
 <p>Insert a test key to create the element, then use a <a href="https://stripe.com/docs/testing#cards">test card</a> to generate a token.</p>
 
 <paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
