@@ -165,61 +165,6 @@
     static get properties() {
       return {
 
-        /** Stripe Publishable Key. EG. pk_test_XXXXXXXXXXXXXXXXXXXXXXXX */
-        publishableKey: {
-          type: String,
-          observer: 'publishableKeyChanged',
-        },
-
-        /**
-         * Whether or not to hide the postal code field.
-         * Useful when you gather shipping info elsewhere.
-         */
-        hidePostalCode: {
-          type: Boolean,
-          value: false,
-        },
-
-        /** Whether to hide icons in the Stripe form. */
-        hideIcon: {
-          type: Boolean,
-          value: false,
-        },
-
-        /** Stripe icon style. 'solid' or 'default'. */
-        iconStyle: {
-          type: Object,
-          value: 'default',
-        },
-
-        /** Prefilled values for form. Example {postalCode: '90210'} */
-        value: {
-          type: Object,
-          value: () => ({}),
-        },
-
-        /** Error message from Stripe. */
-        error: {
-          type: String,
-          notify: true,
-          readOnly: true,
-          observer: 'errorChanged',
-        },
-
-        /** Stripe token. */
-        token: {
-          type: Object,
-          notify: true,
-          readOnly: true,
-        },
-
-        /** Whether the submit button is disabled. */
-        disabled: {
-          type: Boolean,
-          notify: true,
-          value: false,
-        },
-
         /**
          * The URL to the form action. Example '/charges'.
          * If blank or undefined will not submit charges immediately.
@@ -228,43 +173,6 @@
           type: String,
           value: '',
         },
-
-        /**
-         * Stripe instance
-         * @protected
-         */
-        stripe: {
-          type: Object,
-          readOnly: true,
-        },
-
-        /** True when the stripe element is ready to receive focus. */
-        stripeReady: {
-          type: Boolean,
-          readOnly: true,
-          notify: true,
-          reflectToAttribute: true,
-          value: false,
-        },
-
-        /**
-         * Stripe elements instance
-         * @protected
-         */
-        elements: {
-          type: Object,
-          readOnly: true,
-        },
-
-        /**
-         * Reference to the card.
-         * @protected
-         */
-        card: {
-          type: Object,
-          readOnly: true,
-        },
-
 
         /**
          * Permitted style names.
@@ -290,6 +198,98 @@
           ],
         },
 
+        /**
+         * Reference to the card.
+         * @protected
+         */
+        card: {
+          type: Object,
+          readOnly: true,
+        },
+
+
+        /** Whether the submit button is disabled. */
+        disabled: {
+          type: Boolean,
+          notify: true,
+          value: false,
+        },
+
+        /**
+         * Stripe elements instance
+         * @protected
+         */
+        elements: {
+          type: Object,
+          readOnly: true,
+        },
+
+        /** Error message from Stripe. */
+        error: {
+          type: String,
+          notify: true,
+          readOnly: true,
+          observer: 'errorChanged',
+        },
+
+        /** Whether to hide icons in the Stripe form. */
+        hideIcon: {
+          type: Boolean,
+          value: false,
+        },
+
+        /**
+         * Whether or not to hide the postal code field.
+         * Useful when you gather shipping info elsewhere.
+         */
+        hidePostalCode: {
+          type: Boolean,
+          value: false,
+        },
+
+        /** Stripe icon style. 'solid' or 'default'. */
+        iconStyle: {
+          type: Object,
+          value: 'default',
+        },
+
+        /** Stripe Publishable Key. EG. pk_test_XXXXXXXXXXXXXXXXXXXXXXXX */
+        publishableKey: {
+          type: String,
+          observer: 'publishableKeyChanged',
+        },
+
+        /**
+         * Stripe instance
+         * @protected
+         */
+        stripe: {
+          type: Object,
+          readOnly: true,
+        },
+
+        /** True when the stripe element is ready to receive focus. */
+        stripeReady: {
+          type: Boolean,
+          readOnly: true,
+          notify: true,
+          reflectToAttribute: true,
+          value: false,
+        },
+
+        /** Stripe token. */
+        token: {
+          type: Object,
+          notify: true,
+          readOnly: true,
+        },
+
+        /** Prefilled values for form. Example {postalCode: '90210'} */
+        value: {
+          type: Object,
+          value: () => ({}),
+        },
+
       };
     }
 
@@ -297,6 +297,127 @@
       super.connectedCallback();
       this.prepare({shady: !!window.ShadyDOM});
       if (this.publishableKey) this.publishableKeyChanged(this.publishableKey);
+    }
+
+    /**
+     * Opens the toast with the error message
+     * @param  {Object} error Stripe error.
+     * @protected
+     */
+    errorChanged(error) {
+      if (error) {
+        this.$.toast.open();
+        this.$.toast.positionTarget = this;
+      }
+    }
+
+    /**
+     * Returns a Stripe-friendly style object computed from CSS custom properties
+     * @return {Object} Stripe Style initialization object.
+     * @protected
+     */
+    getStripeElementsStyles() {
+      const retVal = {base: {}, complete: {}, empty: {}, invalid: {}};
+      this.allowedStyles.forEach((style) => {
+        const dash = style.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
+        ['base', 'complete', 'empty', 'invalid'].forEach((prefix) => {
+          retVal[prefix][style] = ShadyCSS
+            ? ShadyCSS.getComputedStyleValue(this, `--stripe-elements-${prefix}-${dash}`)
+            : getComputedStyle(this).getPropertyValue(`--stripe-elements-${prefix}-${dash}`);
+        });
+      });
+      return retVal;
+    }
+    /**
+     * Sets the error and opens the toast.
+     * @param  {Object} error
+     * @protected
+     */
+    handleError(error) {
+      const bubbles = true;
+      const composed = true;
+      this.dispatchEvent(new ErrorEvent('stripe-error', {error, bubbles, composed}));
+      // Show error in UI
+      this._setError(error.message);
+    }
+
+    /**
+     * Sets the token or error from the response.
+     * @param  {Object} response.error Stripe error
+     * @param  {Object} response.token Stripe token
+     * @protected
+     */
+    handleResponse({error, token}) {
+      const bubbles = true;
+      const composed = true;
+      if (error) {
+        this._setError(error);
+        this.dispatchEvent(new ErrorEvent('stripe-error', {error, bubbles, composed}));
+      } else {
+        this._setToken(token);
+        this.dispatchEvent(new CustomEvent('stripe-token', {token, bubbles, composed}));
+        // Submit the form
+        this.action && this.$.form.submit();
+      }
+    }
+
+    /**
+     * Initializes Stripe and elements.
+     * @param {String} publishableKey Stripe publishable key.
+     * @protected
+     */
+    initStripe(publishableKey = this.publishableKey) {
+      if (this.stripe) this._setStripe(null);
+      if (window.Stripe) {
+        const stripe = Stripe(publishableKey);
+        const elements = stripe.elements();
+        this._setStripe(stripe);
+        this._setElements(elements);
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(`<stripe-elements> requires that Stripe.js be loaded in index.html`);
+      }
+    }
+
+    /**
+     * Creates and mounts Stripe Elements card.
+     * @protected
+     */
+    mountCard() {
+      const mount = (window.ShadyDOM ? this.root : document)
+        .getElementById('stripe-elements-mount-point');
+      if (mount) {
+        const {hidePostalCode, hideIcon, iconStyle, value} = this;
+        const style = this.getStripeElementsStyles();
+        const init = {hidePostalCode, hideIcon, iconStyle, style, value};
+        const card = this.elements.create('card', init);
+        this._setCard(card);
+        card.mount(mount);
+        card.addEventListener('ready', this.onReady.bind(this));
+        card.addEventListener('change', this.onChange.bind(this));
+      }
+    }
+
+    /**
+     * Sets the error and opens the toast, if needed
+     * @param  {Boolean}       event.empty     true if value is empty
+     * @param  {Boolean}       event.complete  true if value is well-formed and potentially complete.
+     * @param  {String}        event.brand     brand of the card being entered e.g. 'visa' or 'amex'
+     * @param  {Object}        event.error     The current validation error, if any.
+     * @param  {String|Object} event.value     Value of the form. Only non-sensitive information e.g. postalCode is present.
+     */
+    onChange({empty, complete, brand, error, value} = {}) {
+      if (error) {
+        this._setError(error);
+      }
+    }
+
+    /**
+     * Sets the stripeReady property when the stripe element is ready to receive focus.
+     * @param  {Event} event
+     */
+    onReady(event) {
+      this._setStripeReady(true);
     }
 
     /**
@@ -338,13 +459,16 @@
     }
 
     /**
-     * Submit credit card information to generate a token
-     * @param  {Event} event Submit event.
+     * Reinitializes Stripe and mounts the card.
+     * @param  {String} publishableKey Stripe publishable key
+     * @protected
      */
-    submit(event) {
-      this.stripe.createToken(this.card)
-        .then(this.handleResponse.bind(this))
-        .catch(this.handleError.bind(this));
+    publishableKeyChanged(publishableKey) {
+      this.unmountCard();
+      if (publishableKey) {
+        this.initStripe(this.publishableKey);
+        this.mountCard();
+      }
     }
 
     /** Resets the Stripe card. */
@@ -358,120 +482,13 @@
     }
 
     /**
-     * Reinitializes Stripe and mounts the card.
-     * @param  {String} publishableKey Stripe publishable key
-     * @protected
+     * Submit credit card information to generate a token
+     * @param  {Event} event Submit event.
      */
-    publishableKeyChanged(publishableKey) {
-      this.unmountCard();
-      if (publishableKey) {
-        this.initStripe(this.publishableKey);
-        this.mountCard();
-      }
-    }
-
-    /**
-     * Opens the toast with the error message
-     * @param  {Object} error Stripe error.
-     * @protected
-     */
-    errorChanged(error) {
-      if (error) {
-        this.$.toast.open();
-        this.$.toast.positionTarget = this;
-      }
-    }
-
-    /**
-     * Sets the error and opens the toast, if needed
-     * @param  {Boolean}       event.empty     true if value is empty
-     * @param  {Boolean}       event.complete  true if value is well-formed and potentially complete.
-     * @param  {String}        event.brand     brand of the card being entered e.g. 'visa' or 'amex'
-     * @param  {Object}        event.error     The current validation error, if any.
-     * @param  {String|Object} event.value     Value of the form. Only non-sensitive information e.g. postalCode is present.
-     */
-    onChange({empty, complete, brand, error, value} = {}) {
-      if (error) {
-        this._setError(error);
-      }
-    }
-
-    /**
-     * Sets the stripeReady property when the stripe element is ready to receive focus.
-     * @param  {Event} event
-     */
-    onReady(event) {
-      this._setStripeReady(true);
-    }
-
-    /**
-     * Sets the token or error from the response.
-     * @param  {Object} response.error Stripe error
-     * @param  {Object} response.token Stripe token
-     * @protected
-     */
-    handleResponse({error, token}) {
-      const bubbles = true;
-      const composed = true;
-      if (error) {
-        this._setError(error);
-        this.dispatchEvent(new ErrorEvent('stripe-error', {error, bubbles, composed}));
-      } else {
-        this._setToken(token);
-        this.dispatchEvent(new CustomEvent('stripe-token', {token, bubbles, composed}));
-        // Submit the form
-        this.action && this.$.form.submit();
-      }
-    }
-
-    /**
-     * Sets the error and opens the toast.
-     * @param  {Object} error
-     * @protected
-     */
-    handleError(error) {
-      const bubbles = true;
-      const composed = true;
-      this.dispatchEvent(new ErrorEvent('stripe-error', {error, bubbles, composed}));
-      // Show error in UI
-      this._setError(error.message);
-    }
-
-    /**
-     * Initializes Stripe and elements.
-     * @param {String} publishableKey Stripe publishable key.
-     * @protected
-     */
-    initStripe(publishableKey = this.publishableKey) {
-      if (this.stripe) this._setStripe(null);
-      if (window.Stripe) {
-        const stripe = Stripe(publishableKey);
-        const elements = stripe.elements();
-        this._setStripe(stripe);
-        this._setElements(elements);
-      } else {
-        // eslint-disable-next-line no-console
-        console.warn(`<stripe-elements> requires that Stripe.js be loaded in index.html`);
-      }
-    }
-
-    /**
-     * Creates and mounts Stripe Elements card.
-     * @protected
-     */
-    mountCard() {
-      const mount = (window.ShadyDOM ? this.root : document)
-        .getElementById('stripe-elements-mount-point');
-      if (mount) {
-        const {hidePostalCode, hideIcon, iconStyle, value} = this;
-        const style = this.getStripeElementsStyles();
-        const init = {hidePostalCode, hideIcon, iconStyle, style, value};
-        const card = this.elements.create('card', init);
-        this._setCard(card);
-        card.mount(mount);
-        card.addEventListener('ready', this.onReady.bind(this));
-        card.addEventListener('change', this.onChange.bind(this));
-      }
+    submit(event) {
+      this.stripe.createToken(this.card)
+        .then(this.handleResponse.bind(this))
+        .catch(this.handleError.bind(this));
     }
 
     /**
@@ -488,24 +505,6 @@
         this._setCard(null);
         this._setStripeReady(false);
       }
-    }
-
-    /**
-     * Returns a Stripe-friendly style object computed from CSS custom properties
-     * @return {Object} Stripe Style initialization object.
-     * @protected
-     */
-    getStripeElementsStyles() {
-      const retVal = {base: {}, complete: {}, empty: {}, invalid: {}};
-      this.allowedStyles.forEach((style) => {
-        const dash = style.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
-        ['base', 'complete', 'empty', 'invalid'].forEach((prefix) => {
-          retVal[prefix][style] = ShadyCSS
-            ? ShadyCSS.getComputedStyleValue(this, `--stripe-elements-${prefix}-${dash}`)
-            : getComputedStyle(this).getPropertyValue(`--stripe-elements-${prefix}-${dash}`);
-        });
-      });
-      return retVal;
     }
   }
 
