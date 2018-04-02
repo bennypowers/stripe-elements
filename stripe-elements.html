@@ -308,6 +308,8 @@
       if (error) {
         this.$.toast.open();
         this.$.toast.positionTarget = this;
+      }else{
+        this.$.toast.close();
       }
     }
 
@@ -409,6 +411,10 @@
     onChange({empty, complete, brand, error, value} = {}) {
       if (error) {
         this._setError(error);
+      }
+
+      if (error === undefined && this.error !== undefined){
+        this._setError(undefined);
       }
     }
 
