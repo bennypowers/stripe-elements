@@ -13,6 +13,7 @@
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../../paper-input/paper-input.html">
+    <link rel="import" href="../../paper-button/paper-button.html">
     <link rel="import" href="../../show-json/show-json.html">
     <link rel="import" href="../stripe-elements.html">
 
@@ -27,36 +28,47 @@
         <template>
           <dom-bind>
             <template>
-              <custom-style>
-                <style>
-                  html {
-                    --stripe-elements-base-color: var(--paper-grey-700);
-                    --stripe-elements-base-text-transform: uppercase;
-                    --stripe-elements-base-font-family: 'Georgia';
-                    --stripe-elements-base-font-style: italic;
-                    --stripe-elements-element: {
-                      padding: 14px;
-                      background-color: #c0fefe;
-                    }
+              <style>
+                html {
+                  --stripe-elements-base-color: var(--paper-grey-700);
+                  --stripe-elements-base-text-transform: uppercase;
+                  --stripe-elements-base-font-family: 'Georgia';
+                  --stripe-elements-base-font-style: italic;
+                  --stripe-elements-element: {
+                    padding: 14px;
+                    background-color: #c0fefe;
                   }
-                  .form {
-                    display: flex;
-                  }
-                </style>
-              </custom-style>
+                }
 
-              <p>Insert a test key to create the element, then use a <a href="https://stripe.com/docs/testing#cards">test card</a> to generate a token.</p>
+                .form {
+                  padding: 1em;
+                }
 
-              <paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
+              </style>
+
+              <h2>Instructions</h2>
+              <ol>
+                <li>Input a Stripe test key to create the element</li>
+                <li>Input a <a href="https://stripe.com/docs/testing#cards">test card number</a></li>
+                <li>Press "Get Token" to generate a token.</li>
+              </ol>
+
+              <paper-input id="keyInput"
+                  label="Input Stripe Publishable Key Here"
+                  value="{{key}}"></paper-input>
 
               <div class="form">
 
-                <stripe-elements id="stripe" stripe-ready="{{ready}}" publishable-key="[[key]]" token="{{token}}"></stripe-elements>
+                <stripe-elements id="stripe"
+                    stripe-ready="{{ready}}"
+                    publishable-key="[[key]]"
+                    token="{{token}}"></stripe-elements>
 
-                <paper-button disabled="[[!ready]]" onclick="stripe.submit();">Get Token</paper-button>
+                <paper-button id="button"
+                    disabled="[[!ready]]"
+                    onclick="stripe.submit();">Get Token</paper-button>
 
               </div>
-
 
               <show-json hide-copy-button json="[[token]]"></show-json>
             </template>
