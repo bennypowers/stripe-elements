@@ -18,7 +18,14 @@
     "web-component-tester": "^6.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
     "paper-input": "PolymerElements/paper-input#^2.0.0",
+    "paper-button": "PolymerElements/paper-button#^2.0.0",
     "show-json": "ryanburns23/show-json#^2",
     "paper-button": "PolymerElements/paper-button#^2.0.0"
+  },
+  "resolutions": {
+    "paper-fab": "^2.0.0",
+    "marked-element": "^2.0.0",
+    "prism-element": "^2.0.0",
+    "iron-iconset-svg": "^2.0.0"
   }
 }
