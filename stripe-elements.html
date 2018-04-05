@@ -176,10 +176,12 @@
 
         /**
          * Mount Point Element id
+         * @type {String}
+         * @protected
          */
         mountElementId: {
           type: String,
-          computed: 'generateRandomMountElementId()',
+          readOnly: true,
         },
 
         /**
@@ -303,6 +305,7 @@
 
     connectedCallback() {
       super.connectedCallback();
+      this._setMountElementId(this.generateRandomMountElementId());
       this.prepare({shady: !!window.ShadyDOM});
       if (this.publishableKey) this.publishableKeyChanged(this.publishableKey);
     }
@@ -392,7 +395,7 @@
      * @protected
      */
     mountCard() {
-      const mount = this.mountPoint();
+      const mount = (window.ShadyDOM ? this.root : document).getElementById(this.mountElementId);
       if (mount) {
         const {hidePostalCode, hideIcon, iconStyle, value} = this;
         const style = this.getStripeElementsStyles();
@@ -403,15 +406,6 @@
         card.addEventListener('ready', this.onReady.bind(this));
         card.addEventListener('change', this.onChange.bind(this));
       }
-    }
-
-    /**
-     * Returns the mount point for Stripe Elements
-     * @return {Object} DOM element at the current mountElementId
-     */
-    mountPoint() {
-      return (window.ShadyDOM ? this.root : document)
-        .getElementById(this.mountElementId);
     }
 
     /**
