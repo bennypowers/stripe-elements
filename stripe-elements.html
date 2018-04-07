@@ -27,7 +27,7 @@
       <div slot="stripe-card">
         <form id="form" action="[[action]]" method="post">
 
-          <div id="stripe-elements-mount-point" aria-label="Credit or Debit Card">
+          <div id="[[mountElementId]]" aria-label="Credit or Debit Card">
             <!-- Stripe will inject form here -->
           </div>
 
@@ -175,6 +175,16 @@
         },
 
         /**
+         * Mount Point Element id
+         * @type {String}
+         * @protected
+         */
+        mountElementId: {
+          type: String,
+          readOnly: true,
+        },
+
+        /**
          * Permitted style names.
          * @type {Array}
          * @protected
@@ -295,6 +305,7 @@
 
     connectedCallback() {
       super.connectedCallback();
+      this._setMountElementId(this.generateRandomMountElementId());
       this.prepare({shady: !!window.ShadyDOM});
       if (this.publishableKey) this.publishableKeyChanged(this.publishableKey);
     }
@@ -386,8 +397,7 @@
      * @protected
      */
     mountCard() {
-      const mount = (window.ShadyDOM ? this.root : document)
-        .getElementById('stripe-elements-mount-point');
+      const mount = (window.ShadyDOM ? this.root : document).getElementById(this.mountElementId);
       if (mount) {
         const {hidePostalCode, hideIcon, iconStyle, value} = this;
         const style = this.getStripeElementsStyles();
@@ -436,7 +446,7 @@
       if (shady) {
         if (!this.__shadyDomMount) {
           const mount = document.createElement('div');
-                mount.id = 'stripe-elements-mount-point';
+                mount.id = this.mountElementId;
           this.__shadyDomMount = mount;
         }
         const slot = this.root.querySelector('[name="stripe-card"]');
@@ -475,6 +485,17 @@
         this.initStripe(this.publishableKey);
         this.mountCard();
       }
+    }
+
+    /**
+     * Generates a random mount point (UUID v4) for Stripe Elements. This will allow multiple
+     * Elements forms to be embedded on a single page.
+     * @return {String} mount element id
+     */
+    generateRandomMountElementId() {
+      return 'stripe-elements-mount-point-'+([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      );
     }
 
     /** Resets the Stripe card. */
