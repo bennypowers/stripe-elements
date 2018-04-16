@@ -251,6 +251,45 @@
           observer: 'errorChanged',
         },
 
+        /**
+         * Check if the form is empty.
+         * @protected
+         */
+        isEmpty: {
+          type: Boolean,
+          value: true,
+          readOnly: true,
+        },
+
+        /**
+         * Check if the form is complete.
+         * @protected
+         */
+        isComplete: {
+          type: Boolean,
+          value: false,
+          readOnly: true,
+        },
+
+        /**
+         * Check if the form has an error.
+         * @protected
+         */
+        hasError: {
+          type: Boolean,
+          value: false,
+          readOnly: true,
+        },
+
+        /**
+         * The card brand detected by Stripe
+         * @protected
+         */
+        brand: {
+          type: String,
+          readOnly: true,
+        },
+
         /** Whether to hide icons in the Stripe form. */
         hideIcon: {
           type: Boolean,
@@ -428,13 +467,21 @@
      * @param  {String|Object} event.value     Value of the form. Only non-sensitive information e.g. postalCode is present.
      */
     onChange({empty, complete, brand, error, value} = {}) {
+
+      this._setIsEmpty(empty);
+      this._setIsComplete(complete);
+      this._setBrand(brand);
+
       if (error) {
+        this._setHasError(true);
         this._setError(error);
       }
 
       if (error === undefined && this.error !== undefined) {
+        this._setHasError(false);
         this._setError(undefined);
       }
+
     }
 
     /**
@@ -505,6 +552,28 @@
       return 'stripe-elements-mount-point-'+([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
       );
+    }
+
+    /**
+     * Checks if the Stripe form is valid.
+     * @return {Boolean} true if the Stripe form is valid
+     */
+    validate() {
+      const isValid = this.isComplete && !this.isEmpty && !this.hasError;
+      if (!isValid) {
+        this._setError({message: "Credit card information is invalid."});
+      }
+      return isValid;
+    }
+
+    /**
+     * Checks for potential validity. A potentially valid form is one that
+     * is not empty, not complete and has no error. A validated form also counts
+     * as potentially valid.
+     * @return {Boolean} true if the Stripe form is potentially valid
+     */
+    isPotentiallyValid() {
+      return (!this.isComplete && !this.isEmpty && !this.hasError) || this.validate();
     }
 
     /** Resets the Stripe card. */
