@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>stripe-elements demo</title>
+
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../paper-input/paper-input.html">
+    <link rel="import" href="../../paper-button/paper-button.html">
+    <link rel="import" href="../../show-json/show-json.html">
+    <link rel="import" href="../stripe-elements.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+    </style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic stripe-elements demo</h3>
+      <demo-snippet>
+
+        <template>
+          <dom-bind>
+            <template>
+              <style>
+                html {
+                  --stripe-elements-base-color: var(--paper-grey-700);
+                  --stripe-elements-base-text-transform: uppercase;
+                  --stripe-elements-base-font-family: 'Georgia';
+                  --stripe-elements-base-font-style: italic;
+                  --stripe-elements-element: {
+                    padding: 14px;
+                    background-color: #c0fefe;
+                  }
+                }
+
+                .form {
+                  padding: 1em;
+                }
+
+                .grid {
+                  display: flex;
+                  justify-content: space-between;
+                }
+
+                .grid .col {
+                  width: 32%;
+                }
+
+              </style>
+
+              <h2>Instructions</h2>
+              <ol>
+                <li>Input a Stripe test key to create the element</li>
+                <li>Input a <a href="https://stripe.com/docs/testing#cards">test card number</a></li>
+                <li>Press "Get Token" to generate a token.</li>
+              </ol>
+
+              <paper-input id="keyInput"
+                  label="Input Stripe Publishable Key Here"
+                  value="{{key}}"></paper-input>
+
+              <paper-input
+                  class="col"
+                  label="Cardholder Name"
+                  value="{{cardData.name::input}}"></paper-input>
+
+              <div class="grid">
+                <paper-input
+                  class="col"
+                  label="Cardholder Address Line1"
+                  value="{{cardData.address_line1::input}}"></paper-input>
+                <paper-input
+                    class="col"
+                    label="Cardholder Address Line2"
+                    value="{{cardData.address_line2::input}}"></paper-input>
+
+                <paper-input
+                    class="col"
+                    label="Cardholder Address City"
+                    value="{{cardData.address_city::input}}"></paper-input>
+              </div>
+              <div class="grid">
+                <paper-input
+                    class="col"
+                    label="Cardholder Address State"
+                    value="{{cardData.address_state::input}}"></paper-input>
+                <paper-input
+                    class="col"
+                    label="Cardholder Address Zip"
+                    value="{{cardData.address_zip::input}}"></paper-input>
+                <paper-input
+                    class="col"
+                    label="Cardholder Address Country"
+                    value="{{cardData.address_country::input}}"></paper-input>
+              </div>
+
+              <div class="form">
+
+                <stripe-elements id="stripe"
+                    stripe-ready="{{ready}}"
+                    publishable-key="[[key]]"
+                    card-data="[[cardData]]"
+                    hide-postal-code
+                    token="{{token}}"></stripe-elements>
+
+                <paper-button id="button"
+                    disabled="[[!ready]]"
+                    onclick="stripe.submit();">Get Token</paper-button>
+
+              </div>
+
+              <show-json hide-copy-button json="[[token]]"></show-json>
+            </template>
+            <script>
+                var autobind = document.querySelector('dom-bind');
+                // set data property on dom-bind
+                autobind.cardData = {
+                  name: 'test name',
+                  address_line1: 'test line1',
+                  address_line2: '',
+                  address_city: '',
+                  address_state: '',
+                  address_zip: '',
+                  address_country: '',
+                };
+              </script>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>
