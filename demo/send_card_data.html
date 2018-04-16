@@ -44,6 +44,15 @@
                   padding: 1em;
                 }
 
+                .grid {
+                  display: flex;
+                  justify-content: space-between;
+                }
+
+                .grid .col {
+                  width: 32%;
+                }
+
               </style>
 
               <h2>Instructions</h2>
@@ -57,11 +66,48 @@
                   label="Input Stripe Publishable Key Here"
                   value="{{key}}"></paper-input>
 
+              <paper-input
+                  class="col"
+                  label="Cardholder Name"
+                  value="{{cardData.name::input}}"></paper-input>
+
+              <div class="grid">
+                <paper-input
+                  class="col"
+                  label="Cardholder Address Line1"
+                  value="{{cardData.address_line1::input}}"></paper-input>
+                <paper-input
+                    class="col"
+                    label="Cardholder Address Line2"
+                    value="{{cardData.address_line2::input}}"></paper-input>
+
+                <paper-input
+                    class="col"
+                    label="Cardholder Address City"
+                    value="{{cardData.address_city::input}}"></paper-input>
+              </div>
+              <div class="grid">
+                <paper-input
+                    class="col"
+                    label="Cardholder Address State"
+                    value="{{cardData.address_state::input}}"></paper-input>
+                <paper-input
+                    class="col"
+                    label="Cardholder Address Zip"
+                    value="{{cardData.address_zip::input}}"></paper-input>
+                <paper-input
+                    class="col"
+                    label="Cardholder Address Country"
+                    value="{{cardData.address_country::input}}"></paper-input>
+              </div>
+
               <div class="form">
 
                 <stripe-elements id="stripe"
                     stripe-ready="{{ready}}"
                     publishable-key="[[key]]"
+                    card-data="[[cardData]]"
+                    hide-postal-code
                     token="{{token}}"></stripe-elements>
 
                 <paper-button id="button"
@@ -72,6 +118,19 @@
 
               <show-json hide-copy-button json="[[token]]"></show-json>
             </template>
+            <script>
+                var autobind = document.querySelector('dom-bind');
+                // set data property on dom-bind
+                autobind.cardData = {
+                  name: 'test name',
+                  address_line1: 'test line1',
+                  address_line2: '',
+                  address_city: '',
+                  address_state: '',
+                  address_zip: '',
+                  address_country: '',
+                };
+              </script>
           </dom-bind>
         </template>
       </demo-snippet>
