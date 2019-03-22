@@ -1,0 +1,14 @@
+{
+  "presets": [
+    ["@babel/env", {
+      "targets": {
+      "browsers": ["last 2 chrome versions"]
+      }
+    }]
+  ],
+  "plugins": [
+    "@babel/plugin-proposal-private-methods",
+    "@babel/plugin-proposal-class-properties",
+    [ "@babel/plugin-proposal-decorators", { "decoratorsBeforeExport": false } ]
+  ]
+}
