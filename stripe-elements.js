@@ -169,6 +169,24 @@ class StripeElements extends TemplateStampMixin(LitElement) {
   @property({ type: String }) action = '';
 
   /**
+   * The card brand detected by Stripe
+   * @readonly
+   */
+  @property({ type: String }) brand;
+  get brand() { return this.#brand; }
+  set brand(_) { }
+  #brand = null;
+
+  /**
+   * Reference to the Stripe card.
+   * @readonly
+   */
+  @property({ type: Object }) card;
+  get card() { return this.#card; }
+  set card(_) { }
+  #card = null;
+
+  /**
    * Card billing info to be passed to createToken() (optional)
    * More information here https://stripe.com/docs/stripe-js/reference#stripe-create-token
    * @type {Object}
@@ -176,48 +194,39 @@ class StripeElements extends TemplateStampMixin(LitElement) {
   @property({ type: Object }) cardData;
 
   /**
-   * Reference to the card.
-   * @protected
-   */
-  @property({ type: Object }) card;
-
-
-  /** Whether the submit button is disabled. */
-  @property({ type: Boolean }) disabled = false;
-
-  /**
    * Error message from Stripe.
    * @readonly
    */
   @property({ type: String }) error;
+  get error() { return this.#error; }
+  set error(_) { }
 
   /**
-   * Check if the form is empty.
+   * If the form has an error.
    * @readonly
-   * @protected
    */
-  @property({ type: Boolean, attribute: 'is-empty' }) isEmpty = false;
+  @property({ type: Boolean, attribute: 'has-error', reflect: true }) hasError;
+  get hasError() { return this.#hasError; }
+  set hasError(_) { }
+  #hasError = false;
 
   /**
-   * Check if the form is complete.
+   * If the form is complete.
    * @readonly
-   * @protected
    */
-  @property({ type: Boolean, attribute: 'is-complete' }) isComplete = false;
+  @property({ type: Boolean, attribute: 'is-complete', reflect: true }) isComplete;
+  get isComplete() { return this.#isComplete; }
+  set isComplete(_) { }
+  #isComplete = false;
 
   /**
-   * Check if the form has an error.
-   * @protected
+   * If the form is empty.
    * @readonly
    */
-  @property({ type: Boolean, attribute: 'has-error' }) hasError = false;
-
-  /**
-   * The card brand detected by Stripe
-   * @protected
-   * @readonly
-   */
-  @property({ type: String }) brand;
+  @property({ type: Boolean, attribute: 'is-empty', reflect: true }) isEmpty;
+  get isEmpty() { return this.#isEmpty; }
+  set isEmpty(_) { }
+  #isEmpty = false;
 
   /** Whether to hide icons in the Stripe form. */
   @property({ type: Boolean, attribute: 'hide-icon' }) hideIcon = false;
@@ -235,10 +244,19 @@ class StripeElements extends TemplateStampMixin(LitElement) {
   @property({ type: String, attribute: 'publishable-key' }) publishableKey;
 
   /** True when the stripe element is ready to receive focus. */
-  @property({ type: Boolean, reflect: true, attribute: 'stripe-ready' }) #stripeReady = false;
+  @property({ type: Boolean, attribute: 'stripe-ready', reflect: true }) stripeReady;
+  get stripeReady() { return this.#stripeReady; }
+  set stripeReady(_) { }
+  #stripeReady = false;
 
-  /** Stripe token. */
+  /**
+   * Stripe token
+   * @readonly
+   */
   @property({ type: Object }) token;
+  get token() { return this.#token; }
+  set token(_) { }
+  #token = null;
 
   /** Prefilled values for form. Example {postalCode: '90210'} */
   @property({ type: Object }) value = {};
@@ -258,13 +276,21 @@ class StripeElements extends TemplateStampMixin(LitElement) {
   /**
    * Stripe instance
    * @type {Object}
+   * @readonly
    */
+  @property({ type: Object }) stripe;
+  get stripe() { return this.#stripe; }
+  set stripe(_) { }
   #stripe = null;
 
   /**
    * Stripe Elements instance
    * @type {Object}
+   * @readonly
    */
+  @property({ type: Object }) elements;
+  get elements() { return this.#elements; }
+  set elements(_) { }
   #elements = null;
 
   get #root() {
@@ -283,35 +309,29 @@ class StripeElements extends TemplateStampMixin(LitElement) {
     `;
   }
 
-  constructor() {
-    super();
-
-    // TODO: setters
-
-    // token readonly
-    // brand readonly
-    // error readonly
-    // card readonly
-
-    // hasError readonly
-    // isComplete readonly
-    // isEmpty readonly
-
-  }
-
   connectedCallback() {
     super.connectedCallback();
-    this.#prepare();
+    if (!!ShadyDOM) {
+        if (!this.#shadyDomMount) this.#initShadyDomMount();
+        this.#stripeSlot.appendChild(this.#shadyDomMount);
+    } else {
+      this.#prepareMountPoints();
+    }
   }
 
   updated(changed) {
-    if (changed.has('publishableKey')) this.#publishableKeyChanged(this.publishableKey);
-    if (changed.has('#stripeReady')) this.#fire('stripe-ready-changed', this.stripeReady);
-    if (changed.has('token')) this.#fire('token-changed', this.token);
-    if (changed.has('disabled')) this.#fire('disabled-changed', this.disabled);
+    if (changed.has('stripeReady')) this.#fire('stripe-ready-changed', this.stripeReady);
+    if (changed.has('publishableKey')) {
+      this.#fire('publishable-key-changed', this.publishableKey);
+      this.#publishableKeyChanged(this.publishableKey);
+    }
+    if (changed.has('token')) {
+      this.#fire('token-changed', this.token);
+      this.dispatchEvent(new CustomEvent('stripe-token', { bubbles, composed, token }));
+    }
     if (changed.has('error')) {
       this.#fire('error-changed', this.error);
-      this.#errorChanged(this.error);
+      this.#fireError(this.error);
     }
   }
 
@@ -329,13 +349,10 @@ class StripeElements extends TemplateStampMixin(LitElement) {
 
   /** Resets the Stripe card. */
   reset() {
-    try {
-      this.card && this.card.clear && this.card.clear();
-      // TODO: implement readonly
-      this._setError(undefined);
-    } catch (error) {
-      throw new Error(error);
-    }
+    this.card && typeof this.card.clear === 'function' && this.card.clear();
+    let old = this.#error
+    this.#error = undefined;
+    this.requestUpdate('error', old);
   }
 
   /**
@@ -354,8 +371,11 @@ class StripeElements extends TemplateStampMixin(LitElement) {
    */
   validate() {
     const isValid = this.isComplete && !this.isEmpty && !this.hasError;
-    // TODO: implement readonly
-    if (!isValid) this._setError({ message: 'Credit card information is invalid.' });
+    if (!isValid) {
+      let oldError = this.#error;
+      this.#error = { message: 'Credit card information is invalid.' };
+      this.requestUpdate('error', oldError)
+    }
     return isValid;
   }
 
@@ -397,7 +417,9 @@ class StripeElements extends TemplateStampMixin(LitElement) {
   @bound #handleError(error) {
     this.#fireError(error);
     // Show error in UI
-    this.error = error.message;
+    const oldError = this.#error;
+    this.#error = error.message;
+    this.requestUpdate('error', oldError);
   }
 
   /**
@@ -408,11 +430,13 @@ class StripeElements extends TemplateStampMixin(LitElement) {
    */
   @bound #handleResponse({ error, token }) {
     if (error) {
-      this.error = error;
-      this.#fireError(error);
+      const oldError = this.#error;
+      this.#error = error;
+      this.requestUpdate('error', oldError);
     } else {
-      this.token = token;
-      this.dispatchEvent(new CustomEvent('stripe-token', { bubbles, composed, token }));
+      const oldToken = this.#token;
+      this.#token = token;
+      this.requestUpdate('token', oldToken);
       // Submit the form
       if (this.action) this.#form.submit();
     }
@@ -430,14 +454,18 @@ class StripeElements extends TemplateStampMixin(LitElement) {
    * @param {String} publishableKey Stripe publishable key.
    */
   #initStripe(publishableKey = this.publishableKey) {
+    const oldStripe = this.#stripe;
+    const oldElements = this.#elements;
     if (this.#stripe) this.#stripe = null;
-    if (window.Stripe) {
-      this.#stripe = Stripe(publishableKey);
-      this.#elements = this.#stripe.elements();
-    } else {
+    if (!window.Stripe) {
       // eslint-disable-next-line no-console
       console.warn(`<stripe-elements> requires Stripe.js to be loaded first.`);
+    } else {
+      this.#stripe = Stripe(publishableKey);
+      this.#elements = this.#stripe.elements();
+      this.requestUpdate('elements', oldElements)
     }
+    this.requestUpdate('stripe', oldStripe)
   }
 
   /** Creates and mounts Stripe Elements card. */
@@ -446,16 +474,18 @@ class StripeElements extends TemplateStampMixin(LitElement) {
     if (mount) {
       const { hidePostalCode, hideIcon, iconStyle, value } = this;
       const style = this.#getStripeElementsStyles();
-      this.card = this.#elements.create('card', {
+      const oldCard = this.#card;
+      this.#card = this.#elements.create('card', {
         hideIcon,
         hidePostalCode,
         iconStyle,
         style,
         value,
       });
-      this.card.mount(mount);
-      this.card.addEventListener('ready', this.#onReady);
-      this.card.addEventListener('change', this.#onChange);
+      this.requestUpdate('card', oldCard)
+      this.#card.mount(mount);
+      this.#card.addEventListener('ready', this.#onReady);
+      this.#card.addEventListener('change', this.#onChange);
     }
   }
 
@@ -468,26 +498,23 @@ class StripeElements extends TemplateStampMixin(LitElement) {
    * @param  {String|Object} event.value     Value of the form. Only non-sensitive information e.g. postalCode is present.
    */
   @bound #onChange({ empty, complete, brand, error, value } = {}) {
-    // TODO: implement readonly
-    this._setIsEmpty(empty);
-    // TODO: implement readonly
-    this._setIsComplete(complete);
-    // TODO: implement readonly
-    this._setBrand(brand);
+    const oldBrand = this.#brand
+    const oldError = this.#error;
+    const oldHasError = this.#hasError;
+    const oldIsComplete = this.#isComplete
+    const oldIsEmpty = this.#isEmpty
 
-    if (error) {
-      // TODO: implement readonly
-      this._setHasError(true);
-      // TODO: implement readonly
-      this._setError(error);
-    }
+    this.#brand = brand;
+    this.#error = error;
+    this.#hasError = !!error;
+    this.#isComplete = complete;
+    this.#isEmpty = empty;
 
-    if (error === undefined && this.error !== undefined) {
-      // TODO: implement readonly
-      this._setHasError(false);
-      // TODO: implement readonly
-      this._setError(undefined);
-    }
+    this.requestUpdate('brand', oldBrand);
+    this.requestUpdate('error', oldError);
+    this.requestUpdate('hasError', oldHasError);
+    this.requestUpdate('isComplete', oldIsComplete);
+    this.requestUpdate('isEmpty', oldIsEmpty);
   }
 
   /**
@@ -495,40 +522,35 @@ class StripeElements extends TemplateStampMixin(LitElement) {
    * @param  {Event} event
    */
   @bound #onReady(event) {
-    // TODO: implement readonly
+    const oldStripeReady = this.#stripeReady
     this.#stripeReady = true;
-    this.#fire('stripe-ready')
+    this.requestUpdate('stripeReady', oldStripeReady);
+    this.#fire('stripe-ready');
   }
 
   /**
    * Prepares to mount Stripe Elements in light DOM.
-   * @param  {Boolean} $0.shady If shady DOM is in use.
    * @protected
    */
-  #prepare(shady = ShadyDOM) {
-    if (shady) {
-      if (!this.#shadyDomMount) this.#initShadyDomMount();
-      this.#stripeSlot.appendChild(this.#shadyDomMount);
-    } else {
-      // trace each shadow boundary between us and the document
-      let host = this;
-      const shadowHosts = [this];
-      while (host = host.getRootNode().host) {
-        if (host) shadowHosts.push(host);
-      }
-
-      // append template to first shadow room under document (as light DOM)
-      // stamp stripe template
-
-      const { action, token, id: #mountElementId } = this;
-      appendTemplate(stripeCardTemplate({ action, id, token }), shadowHosts.pop())
-
-      const slotTemplate =
-        html`<slot slot="stripe-card" name="stripe-card"></slot>`
-
-      // leave breadcrumbs
-      shadowHosts.forEach(host => appendTemplate(slotTemplate, host));
+  #prepareMountPoints() {
+    // trace each shadow boundary between us and the document
+    let host = this;
+    const shadowHosts = [this];
+    // eslint-disable-next-line no-loops/no-loops
+    while (host = host.getRootNode().host) {
+      if (host) shadowHosts.push(host);
     }
+
+    // append mount point to first shadow host under document (as light child)
+    // and slot breadcrumbs to each shadowroot in turn, until our shadow host.
+
+    const { action, token, id: #mountElementId } = this;
+    const mountTemplate = stripeCardTemplate({ action, id, token });
+    const slotTemplate =
+      html`<slot slot="stripe-card" name="stripe-card"></slot>`;
+
+    appendTemplate(mountTemplate, shadowHosts.pop());
+    shadowHosts.forEach(host => appendTemplate(slotTemplate, host));
   }
 
   /**
@@ -551,10 +573,12 @@ class StripeElements extends TemplateStampMixin(LitElement) {
       // eslint-disable-next-line no-console
       console.error(error);
     } finally {
-      // TODO: implement readonly
-      this._setCard(null);
-      // TODO: implement readonly
-      this._setStripeReady(false);
+      const oldCard = this.#card
+      this.#card = null;
+      this.requestUpdate('card', oldCard);
+      const oldStripeReady = this.#stripeReady;
+      this.#stripeReady = false;
+      this.requestUpdate('stripeReady', oldStripeReady);
     }
   }
 }
