@@ -63,7 +63,9 @@
     "polymer-cli": "^1.9.7",
     "rollup": "^1.7.0",
     "rollup-plugin-babel": "^4.3.2",
-    "rollup-plugin-node-resolve": "^4.0.1"
+    "rollup-plugin-node-resolve": "^4.0.1",
+    "sinon": "^7.3.0",
+    "sinon-chai": "^3.3.0"
   },
   "dependencies": {
     "@webcomponents/webcomponentsjs": "^2.2.7",

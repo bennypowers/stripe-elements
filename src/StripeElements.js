@@ -461,7 +461,9 @@ export class StripeElements extends LitElement {
    * @param  {Event} event Submit event.
    */
   submit(event) {
-    this.stripe.createToken(this.card, this.cardData)
+    if (!this.isComplete) return;
+    if (!this.stripe) throw new Error('Cannot submit before initializing Stripe');
+    this.stripe.createToken(this.#card, this.cardData)
       .then(this.#handleResponse.bind(this))
       .catch(this.#handleError.bind(this));
   }
@@ -529,7 +531,7 @@ export class StripeElements extends LitElement {
    * @param  {Object} response.token Stripe token
    * @protected
    */
-  #handleResponse({ error, token }) {
+  #handleResponse({ error, token } = {}) {
     if (error) {
       const oldError = this.#error;
       this.#error = error;
@@ -589,14 +591,20 @@ export class StripeElements extends LitElement {
     const oldElements = this.#elements;
     if (this.#stripe) this.#stripe = null;
     if (!window.Stripe) {
+      const message = `<stripe-elements> requires Stripe.js to be loaded first.`
+      const oldError = this.#error;
+      this.#error = { message };
+      this.requestUpdate('error', oldError)
       // eslint-disable-next-line no-console
-      console.warn(`<stripe-elements> requires Stripe.js to be loaded first.`);
-    } else {
+      console.warn(message);
+    } else if (publishableKey) {
       this.#stripe = Stripe(publishableKey);
       this.#elements = this.#stripe.elements();
-      this.requestUpdate('elements', oldElements)
+    } else {
+      this.#elements = null;
     }
     this.requestUpdate('stripe', oldStripe)
+    this.requestUpdate('elements', oldElements)
   }
 
   /** Creates and mounts Stripe Elements card. */
@@ -665,9 +673,9 @@ export class StripeElements extends LitElement {
    */
   #publishableKeyChanged(publishableKey) {
     this.#unmountCard();
+    this.#initStripe(this.publishableKey);
     if (publishableKey) {
-      this.#initStripe(this.publishableKey);
-      this.#mountCard();
+      if (this.stripe) this.#mountCard();
     }
   }
 

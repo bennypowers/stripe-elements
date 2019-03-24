@@ -471,7 +471,9 @@ class StripeElements extends LitElement {
 
 
   submit(event) {
-    this.stripe.createToken(this.card, this.cardData).then(_classPrivateFieldLooseBase(this, _handleResponse)[_handleResponse].bind(this)).catch(_classPrivateFieldLooseBase(this, _handleError)[_handleError].bind(this));
+    if (!this.isComplete) return;
+    if (!this.stripe) throw new Error('Cannot submit before initializing Stripe');
+    this.stripe.createToken(_classPrivateFieldLooseBase(this, _card)[_card], this.cardData).then(_classPrivateFieldLooseBase(this, _handleResponse)[_handleResponse].bind(this)).catch(_classPrivateFieldLooseBase(this, _handleError)[_handleError].bind(this));
   }
   /**
    * Checks if the Stripe form is valid.
@@ -773,7 +775,7 @@ var _handleError2 = function _handleError2(error) {
 var _handleResponse2 = function _handleResponse2({
   error,
   token
-}) {
+} = {}) {
   if (error) {
     const oldError = _classPrivateFieldLooseBase(this, _error)[_error];
 
@@ -846,15 +848,25 @@ var _initStripe2 = function _initStripe2(publishableKey = this.publishableKey) {
   if (_classPrivateFieldLooseBase(this, _stripe)[_stripe]) _classPrivateFieldLooseBase(this, _stripe)[_stripe] = null;
 
   if (!window.Stripe) {
-    // eslint-disable-next-line no-console
-    console.warn(`<stripe-elements> requires Stripe.js to be loaded first.`);
-  } else {
+    const message = `<stripe-elements> requires Stripe.js to be loaded first.`;
+
+    const oldError = _classPrivateFieldLooseBase(this, _error)[_error];
+
+    _classPrivateFieldLooseBase(this, _error)[_error] = {
+      message
+    };
+    this.requestUpdate('error', oldError); // eslint-disable-next-line no-console
+
+    console.warn(message);
+  } else if (publishableKey) {
     _classPrivateFieldLooseBase(this, _stripe)[_stripe] = Stripe(publishableKey);
     _classPrivateFieldLooseBase(this, _elements)[_elements] = _classPrivateFieldLooseBase(this, _stripe)[_stripe].elements();
-    this.requestUpdate('elements', oldElements);
+  } else {
+    _classPrivateFieldLooseBase(this, _elements)[_elements] = null;
   }
 
   this.requestUpdate('stripe', oldStripe);
+  this.requestUpdate('elements', oldElements);
 };
 
 var _mountCard2 = function _mountCard2() {
@@ -930,10 +942,10 @@ var _onReady2 = function _onReady2(event) {
 var _publishableKeyChanged2 = function _publishableKeyChanged2(publishableKey) {
   _classPrivateFieldLooseBase(this, _unmountCard)[_unmountCard]();
 
-  if (publishableKey) {
-    _classPrivateFieldLooseBase(this, _initStripe)[_initStripe](this.publishableKey);
+  _classPrivateFieldLooseBase(this, _initStripe)[_initStripe](this.publishableKey);
 
-    _classPrivateFieldLooseBase(this, _mountCard)[_mountCard]();
+  if (publishableKey) {
+    if (this.stripe) _classPrivateFieldLooseBase(this, _mountCard)[_mountCard]();
   }
 };
 

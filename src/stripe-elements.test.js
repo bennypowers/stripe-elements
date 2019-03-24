@@ -1,5 +1,11 @@
-import { expect, fixture, oneEvent } from '@open-wc/testing';
+import { expect, fixture, oneEvent, chai, nextFrame } from '@open-wc/testing';
+import sinonChai from 'sinon-chai';
+import { spy, stub, mock } from 'sinon';
 import './stripe-elements';
+
+import { render, html } from 'lit-html';
+
+chai.use(sinonChai);
 
 customElements.define('x-host', class XHost extends HTMLElement {
   constructor() {
@@ -9,6 +15,53 @@ customElements.define('x-host', class XHost extends HTMLElement {
     this.stripeElements = this.shadowRoot.firstElementChild;
   }
 });
+
+const PUBLISHABLE_KEY = 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX';
+const SHOULD_ERROR_KEY = 'SHOULD_ERROR_KEY';
+const TOKEN_ERROR_KEY = 'TOKEN_ERROR_KEY';
+const NO_STRIPE_JS = `<stripe-elements> requires Stripe.js to be loaded first.`;
+
+class MockedStripeAPI {
+  constructor(key, opts) {
+    this.key = key;
+    this.opts = opts;
+    this.__card = null;
+    return this;
+  }
+
+  elements({ fonts, locale } = {}) {
+    return {
+      create(type, { value, hidePostalCode, iconStyle, hideIcon, disabled } = {}) {
+        return {
+          addEventListener(type, handler) {
+            return this.__card.addEventListener(type, handler);
+          },
+          mount(node) {
+            render(html`<div></div>`, node);
+            this.__card = node.firstElementChild;
+          },
+          on() {},
+          blur() {},
+          clear() {},
+          destroy() {},
+          focus() {},
+          unmount() {},
+          update() {},
+        };
+      },
+    };
+  }
+
+  async createToken(card, cardData) {
+    if (this.key === SHOULD_ERROR_KEY) throw new Error(SHOULD_ERROR_KEY);
+    else if (this.key === TOKEN_ERROR_KEY) return { error: TOKEN_ERROR_KEY };
+    else return { token: 'howdy!' };
+  }
+
+  createSource() {
+    return {};
+  }
+}
 
 afterEach(() => {
   const globalStyles = document.getElementById('stripe-elements-custom-css-properties');
@@ -132,9 +185,263 @@ describe('stripe-elements', function() {
       const target = document.querySelector('[aria-label="Credit or Debit Card"]');
       const [slottedChild] = element.querySelector('slot').assignedNodes();
 
-      // console.log(element, element.shadowRoot, slot.assignedNodes());
-
       expect(slottedChild).to.contain(target);
+    });
+  });
+
+  describe('with a publishable key', function apiKey() {
+    describe('without Stripe.js', function withoutStripe() {
+      beforeEach(function stubConsole() {
+        stub(console, 'warn');
+      });
+
+      afterEach(function restoreConsole() {
+        console.warn.restore();
+      });
+
+      it('logs a warning', async function logsWarning() {
+        const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+        expect(console.warn).to.have.been.calledWith(NO_STRIPE_JS);
+        expect(element.stripe).to.not.be.ok;
+      });
+
+      it('does not initialize stripe instance', async function noStripeInit() {
+        const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+        expect(element.stripe).to.not.be.ok;
+      });
+
+      it('does not mount card', async function noCard() {
+        const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+        expect(element.card).to.not.be.ok;
+      });
+
+      it('sets the error', async function setsError() {
+        const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+        expect(element.error).to.eql({ message: NO_STRIPE_JS });
+      });
+    });
+
+    describe('with mocked Stripe.js', function withMockedStripeJs() {
+      beforeEach(function mockStripe() {
+        window.Stripe = (key, opts) => new MockedStripeAPI(key, opts);
+      });
+
+      afterEach(function restoreMock() {
+        delete window.Stripe;
+      });
+
+      it('initializes stripe instance', async function stripeInit() {
+        const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+        expect(element.stripe).to.be.ok;
+      });
+
+      it('initializes elements instance', async function elementsInit() {
+        const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+        expect(element.elements).to.be.ok;
+      });
+
+      it('mounts a card into the target', async function cardInit() {
+        const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+        expect(element.card).to.be.ok;
+      });
+
+      describe('when pk is reset', function pkReset() {
+        it('reinitializes stripe', async function() {
+          const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+          const initial = element.stripe;
+          element.publishableKey = 'foo';
+          await element.updateComplete;
+          expect(element.stripe).to.not.equal(initial);
+        });
+      });
+
+      describe('when pk is unset', function pkReset() {
+        it('unsets stripe instance', async function() {
+          const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+          element.publishableKey = '';
+          await element.updateComplete;
+          expect(element.stripe).to.be.null;
+        });
+
+        it('unsets element instance', async function() {
+          const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+          element.publishableKey = '';
+          await element.updateComplete;
+          expect(element.elements).to.be.null;
+        });
+
+        it('unsets card', async function() {
+          const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+          element.publishableKey = '';
+          await element.updateComplete;
+          expect(element.card).to.be.null;
+        });
+      });
+
+      describe('when card is ready', function cardReady() {
+        it('fires stripe-ready event', async function() {
+          const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+          setTimeout(() => {
+            // synthetic event
+            element.card.__card.dispatchEvent(new CustomEvent('ready', {
+              empty: true,
+              complete: false,
+            }));
+          });
+          const ev = await oneEvent(element, 'stripe-ready');
+          expect(ev).to.be.ok;
+        });
+
+        it('fires stripe-ready-changed event', async function() {
+          const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+          setTimeout(() => {
+            // synthetic event
+            element.card.__card.dispatchEvent(new CustomEvent('ready'));
+          });
+          const ev = await oneEvent(element, 'stripe-ready-changed');
+          expect(ev.detail.value).to.be.true;
+        });
+
+        it('sets stripeReady', async function() {
+          const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+          element.card.__card.dispatchEvent(new CustomEvent('ready'));
+          expect(element.stripeReady).to.be.true;
+        });
+      });
+
+      describe('when card changes', function cardChange() {
+        describe('when empty changes', function emptyChange() {
+          it('fires is-empty-changed event', async function isEmptyChanged() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            const synth = Math.random() + 1;
+            setTimeout(() => {
+              // synthetic event
+              const event = new CustomEvent('change');
+              event.empty = synth;
+              element.card.__card.dispatchEvent(event);
+            });
+            const ev = await oneEvent(element, 'is-empty-changed');
+            expect(ev.detail.value).to.equal(synth);
+          });
+
+          it('sets isEmpty', async function setsIsEmpty() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            const event = new CustomEvent('change');
+            event.empty = true;
+            element.card.__card.dispatchEvent(event);
+            expect(element.isEmpty).to.be.true;
+          });
+        });
+
+        describe('when complete changes', function emptyChange() {
+          it('fires is-complete-changed event', async function isEmptyChanged() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            const synth = Math.random() + 1;
+            setTimeout(() => {
+              // synthetic event
+              const event = new CustomEvent('change');
+              event.complete = synth;
+              element.card.__card.dispatchEvent(event);
+            });
+            const ev = await oneEvent(element, 'is-complete-changed');
+            expect(ev.detail.value).to.equal(synth);
+          });
+
+          it('sets isComplete', async function setsIsEmpty() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            const event = new CustomEvent('change');
+            event.complete = true;
+            element.card.__card.dispatchEvent(event);
+            expect(element.isComplete).to.be.true;
+          });
+        });
+
+        describe('when brand changes', function brandChange() {
+          it('fires brand-changed event', async function brandChanged() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            const synth = Math.random() + 1;
+            setTimeout(() => {
+              // synthetic event
+              const event = new CustomEvent('change');
+              event.brand = synth;
+              element.card.__card.dispatchEvent(event);
+            });
+            const ev = await oneEvent(element, 'brand-changed');
+            expect(ev.detail.value).to.equal(synth);
+          });
+
+          it('sets brand', async function setsBrand() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            const event = new CustomEvent('change');
+            event.brand = 'visa';
+            element.card.__card.dispatchEvent(event);
+            expect(element.brand).to.equal('visa');
+          });
+        });
+
+        describe('when error changes', function errorChange() {
+          it('fires error-changed event', async function errorChanged() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            const synth = Math.random() + 1;
+            setTimeout(() => {
+              // synthetic event
+              const event = new CustomEvent('change');
+              event.error = synth;
+              element.card.__card.dispatchEvent(event);
+            });
+            const ev = await oneEvent(element, 'error-changed');
+            expect(ev.detail.value).to.equal(synth);
+          });
+
+          it('sets error', async function setsError() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            const event = new CustomEvent('change');
+            event.error = { message: 'foo' };
+            element.card.__card.dispatchEvent(event);
+            expect(element.error).to.eql({ message: 'foo' });
+          });
+
+          it('sets hasError', async function setsError() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            const event = new CustomEvent('change');
+            event.error = { message: 'foo' };
+            element.card.__card.dispatchEvent(event);
+            expect(element.hasError).to.be.true;
+          });
+        });
+      });
+
+      describe('when submit called', function submitting() {
+        describe('when createToken throws', function throws() {
+          it('sets error', async function() {
+            const element = await fixture(`<stripe-elements publishable-key="${SHOULD_ERROR_KEY}"></stripe-elements>`);
+            const event = new CustomEvent('change');
+            event.brand = 'visa';
+            event.complete = true;
+            event.empty = false;
+            element.card.__card.dispatchEvent(event);
+            element.submit();
+            await nextFrame();
+            await element.updateComplete;
+            expect(element.error).to.eql(SHOULD_ERROR_KEY);
+          });
+        });
+
+        describe('when createToken returns error', function throws() {
+          it('sets error', async function() {
+            const element = await fixture(`<stripe-elements publishable-key="${TOKEN_ERROR_KEY}"></stripe-elements>`);
+            const event = new CustomEvent('change');
+            event.brand = 'visa';
+            event.complete = true;
+            event.empty = false;
+            element.card.__card.dispatchEvent(event);
+            element.submit();
+            await nextFrame();
+            await element.updateComplete;
+            expect(element.error).to.eql(TOKEN_ERROR_KEY);
+          });
+        });
+      });
     });
   });
 });
