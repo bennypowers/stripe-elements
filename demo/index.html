@@ -8,17 +8,16 @@
 
     <script src="https://js.stripe.com/v3/"></script>
 
-    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
 
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-    <link rel="import" href="../../paper-input/paper-input.html">
-    <link rel="import" href="../../paper-button/paper-button.html">
-    <link rel="import" href="../../show-json/show-json.html">
-    <link rel="import" href="../stripe-elements.html">
+    <script type="module" src="/node_modules/@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+    <script type="module" src="/node_modules/@polymer/iron-demo-helpers/demo-snippet.js"></script>
+    <script type="module" src="/node_modules/@polymer/paper-input/paper-input.js"></script>
+    <script type="module" src="/node_modules/@polymer/paper-button/paper-button.js"></script>
+    <script type="module" src="../stripe-elements.js"></script>
+    <script type="module" src="/node_modules/@lrnwebcomponents/json-editor/json-editor.js"></script>
 
-    <style is="custom-style" include="demo-pages-shared-styles">
-    </style>
+    <style is="custom-style" include="demo-pages-shared-styles"></style>
   </head>
   <body>
     <div class="vertical-section-container centered">
@@ -34,10 +33,8 @@
                   --stripe-elements-base-text-transform: uppercase;
                   --stripe-elements-base-font-family: 'Georgia';
                   --stripe-elements-base-font-style: italic;
-                  --stripe-elements-element: {
-                    padding: 14px;
-                    background-color: #c0fefe;
-                  }
+                  --stripe-elements-element-padding: 14px;
+                  --stripe-elements-element-background: #c0fefe;
                 }
 
                 .form {
@@ -55,24 +52,37 @@
 
               <paper-input id="keyInput"
                   label="Input Stripe Publishable Key Here"
-                  value="{{key}}"></paper-input>
+                  value="{{key}}">
+
+                <paper-button id="button"
+                    slot="suffix"
+                    disabled="[[!stripeReady]]"
+                    onclick="stripe.submit();">Get Token</paper-button>
+
+              </paper-input>
 
               <div class="form">
 
                 <stripe-elements id="stripe"
-                    stripe-ready="{{ready}}"
+                    stripe-ready="{{stripeReady}}"
                     publishable-key="[[key]]"
-                    token="{{token}}"></stripe-elements>
-
-                <paper-button id="button"
-                    disabled="[[!ready]]"
-                    onclick="stripe.submit();">Get Token</paper-button>
+                    token="{{token}}"
+                    brand="{{brand}}"
+                    card="{{card}}"
+                ></stripe-elements>
 
               </div>
 
-              <show-json hide-copy-button json="[[token]]"></show-json>
+              <output><pre>[[token.card.country]] [[token.card.brand]] [[token.card.funding]] [[token.card.last4]]</pre></output>
+
+              <json-editor value="[[stringify(token)]]" label="Token"></json-editor>
             </template>
           </dom-bind>
+          <script>
+          const bind = document.querySelector('dom-bind');
+          bind.token = null;
+          bind.stringify = o => JSON.stringify(o, null, 2);
+          </script>
         </template>
       </demo-snippet>
     </div>

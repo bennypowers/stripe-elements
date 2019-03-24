@@ -3,7 +3,7 @@
 
 # \<stripe-elements\>
 
-Polymer wrapper for Stripe.js v3 Elements. Creates a `card` element à la https://stripe.com/docs/elements
+Custom element wrapper for Stripe.js v3 Elements. Creates a `card` element à la https://stripe.com/docs/elements
 
 ## Note Before Using
 
