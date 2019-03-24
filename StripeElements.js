@@ -1,6 +1,7 @@
 import { classPrivateFieldLooseBase as _classPrivateFieldLooseBase, classPrivateFieldLooseKey as _classPrivateFieldLooseKey } from './_virtual/_rollupPluginBabelHelpers.js';
 import { html, css, LitElement } from 'lit-element';
 import { render } from 'lit-html';
+import { ifDefined } from 'lit-html/directives/if-defined';
 
 const bubbles = true;
 const composed = true;
@@ -47,9 +48,9 @@ const stripeCardTemplate = ({
   token
 }) => html`
 <div slot="stripe-card">
-  <form action="${action}" method="post">
+  <form action="${ifDefined(action || undefined)}" method="post">
     <div id="${id}" aria-label="Credit or Debit Card"></div>
-    <input type="hidden" name="stripeToken" value="${token}">
+    <input type="hidden" name="stripeToken" value="${ifDefined(token || undefined)}">
   </form>
 </div>
 `;
@@ -76,17 +77,19 @@ function generateRandomMountElementId() {
 }
 /**
  * `stripe-elements`
- * Polymer wrapper for Stripe.js v3 Elements
+ * Custom element wrapper for Stripe.js v3 Elements
  *
  * ## Usage
  *
  * ```html
- *   <paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
- *   <stripe-elements
- *       publishable-key="[[key]]"
- *       token="{{token}}"
- *   ></stripe-elements>
- *   <show-json hide-copy-button json="[[token]]"></show-json>
+ *   <label>Stripe Publishable Key <input id="pubkey"/></label>
+ *   <stripe-elements id="stripe"></stripe-elements>
+ *   <script>
+ *     const onKey = ({ target: { value } })) => stripe.publishableKey = value;
+ *     const onToken = ({ detail: token })) => console.log(token);
+ *     pubkey.addEventListener('change', onKey);
+ *     stripe.addEventListener('stripe-token', onToken);
+ *   </script>
  * ```
  *
  * ## Styling
@@ -252,6 +255,12 @@ class StripeElements extends LitElement {
     Object.defineProperty(this, _publishableKeyChanged, {
       value: _publishableKeyChanged2
     });
+    Object.defineProperty(this, _onReady, {
+      value: _onReady2
+    });
+    Object.defineProperty(this, _onChange, {
+      value: _onChange2
+    });
     Object.defineProperty(this, _mountCard, {
       value: _mountCard2
     });
@@ -406,7 +415,7 @@ class StripeElements extends LitElement {
       this.dispatchEvent(new CustomEvent('stripe-token', {
         bubbles,
         composed,
-        token
+        detail: token
       }));
     }
 
@@ -489,62 +498,6 @@ class StripeElements extends LitElement {
   /** Fires an event with a polymer-style changed event */
 
 
-  /**
-   * Sets the error.
-   * @param  {Boolean}       event.empty     true if value is empty
-   * @param  {Boolean}       event.complete  true if value is well-formed and potentially complete.
-   * @param  {String}        event.brand     brand of the card being entered e.g. 'visa' or 'amex'
-   * @param  {Object}        event.error     The current validation error, if any.
-   * @param  {String|Object} event.value     Value of the form. Only non-sensitive information e.g. postalCode is present.
-   */
-  onChange({
-    empty,
-    complete,
-    brand,
-    error,
-    value
-  } = {}) {
-    const oldBrand = _classPrivateFieldLooseBase(this, _brand)[_brand];
-
-    const oldError = _classPrivateFieldLooseBase(this, _error)[_error];
-
-    const oldHasError = _classPrivateFieldLooseBase(this, _hasError)[_hasError];
-
-    const oldIsComplete = _classPrivateFieldLooseBase(this, _isComplete)[_isComplete];
-
-    const oldIsEmpty = _classPrivateFieldLooseBase(this, _isEmpty)[_isEmpty];
-
-    _classPrivateFieldLooseBase(this, _brand)[_brand] = brand;
-    _classPrivateFieldLooseBase(this, _error)[_error] = error;
-    _classPrivateFieldLooseBase(this, _hasError)[_hasError] = !!error;
-    _classPrivateFieldLooseBase(this, _isComplete)[_isComplete] = complete;
-    _classPrivateFieldLooseBase(this, _isEmpty)[_isEmpty] = empty;
-    this.requestUpdate('brand', oldBrand);
-    this.requestUpdate('error', oldError);
-    this.requestUpdate('hasError', oldHasError);
-    this.requestUpdate('isComplete', oldIsComplete);
-    this.requestUpdate('isEmpty', oldIsEmpty);
-  }
-  /**
-   * Sets the stripeReady property when the stripe element is ready to receive focus.
-   * @param  {Event} event
-   */
-
-
-  onReady(event) {
-    const oldStripeReady = _classPrivateFieldLooseBase(this, _stripeReady)[_stripeReady];
-
-    _classPrivateFieldLooseBase(this, _stripeReady)[_stripeReady] = true;
-    this.requestUpdate('stripeReady', oldStripeReady);
-
-    _classPrivateFieldLooseBase(this, _fire)[_fire]('stripe-ready');
-  }
-  /**
-   * Reinitializes Stripe and mounts the card.
-   * @param  {String} publishableKey Stripe publishable key
-   */
-
-
 }
 
 var _brand = _classPrivateFieldLooseKey("brand");
@@ -594,6 +547,10 @@ var _initShadyDomMount = _classPrivateFieldLooseKey("initShadyDomMount");
 var _initStripe = _classPrivateFieldLooseKey("initStripe");
 
 var _mountCard = _classPrivateFieldLooseKey("mountCard");
+
+var _onChange = _classPrivateFieldLooseKey("onChange");
+
+var _onReady = _classPrivateFieldLooseKey("onReady");
 
 var _publishableKeyChanged = _classPrivateFieldLooseKey("publishableKeyChanged");
 
@@ -926,10 +883,48 @@ var _mountCard2 = function _mountCard2() {
 
     _classPrivateFieldLooseBase(this, _card)[_card].mount(mount);
 
-    _classPrivateFieldLooseBase(this, _card)[_card].addEventListener('ready', this.onReady.bind(this));
+    _classPrivateFieldLooseBase(this, _card)[_card].addEventListener('ready', _classPrivateFieldLooseBase(this, _onReady)[_onReady].bind(this));
 
-    _classPrivateFieldLooseBase(this, _card)[_card].addEventListener('change', this.onChange.bind(this));
+    _classPrivateFieldLooseBase(this, _card)[_card].addEventListener('change', _classPrivateFieldLooseBase(this, _onChange)[_onChange].bind(this));
   }
+};
+
+var _onChange2 = function _onChange2({
+  empty,
+  complete,
+  brand,
+  error,
+  value
+} = {}) {
+  const oldBrand = _classPrivateFieldLooseBase(this, _brand)[_brand];
+
+  const oldError = _classPrivateFieldLooseBase(this, _error)[_error];
+
+  const oldHasError = _classPrivateFieldLooseBase(this, _hasError)[_hasError];
+
+  const oldIsComplete = _classPrivateFieldLooseBase(this, _isComplete)[_isComplete];
+
+  const oldIsEmpty = _classPrivateFieldLooseBase(this, _isEmpty)[_isEmpty];
+
+  _classPrivateFieldLooseBase(this, _brand)[_brand] = brand;
+  _classPrivateFieldLooseBase(this, _error)[_error] = error;
+  _classPrivateFieldLooseBase(this, _hasError)[_hasError] = !!error;
+  _classPrivateFieldLooseBase(this, _isComplete)[_isComplete] = complete;
+  _classPrivateFieldLooseBase(this, _isEmpty)[_isEmpty] = empty;
+  this.requestUpdate('brand', oldBrand);
+  this.requestUpdate('error', oldError);
+  this.requestUpdate('hasError', oldHasError);
+  this.requestUpdate('isComplete', oldIsComplete);
+  this.requestUpdate('isEmpty', oldIsEmpty);
+};
+
+var _onReady2 = function _onReady2(event) {
+  const oldStripeReady = _classPrivateFieldLooseBase(this, _stripeReady)[_stripeReady];
+
+  _classPrivateFieldLooseBase(this, _stripeReady)[_stripeReady] = true;
+  this.requestUpdate('stripeReady', oldStripeReady);
+
+  _classPrivateFieldLooseBase(this, _fire)[_fire]('stripe-ready');
 };
 
 var _publishableKeyChanged2 = function _publishableKeyChanged2(publishableKey) {

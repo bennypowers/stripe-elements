@@ -14,6 +14,7 @@ module.exports = config => {
           {
             test: /\.js$/,
             loader: 'babel-loader',
+            options: babelrc,
           },
         ],
       },

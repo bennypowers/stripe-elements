@@ -1,6 +1,14 @@
 import { expect, fixture, oneEvent } from '@open-wc/testing';
-// import { StripeElements } from './StripeElements';
 import './stripe-elements';
+
+customElements.define('x-host', class XHost extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    this.shadowRoot.innerHTML = `<stripe-elements></stripe-elements>`;
+    this.stripeElements = this.shadowRoot.firstElementChild;
+  }
+});
 
 afterEach(() => {
   const globalStyles = document.getElementById('stripe-elements-custom-css-properties');
@@ -113,6 +121,20 @@ describe('stripe-elements', function() {
       const element = await fixture(`<stripe-elements></stripe-elements>`);
       element.firstUpdated();
       expect(element.querySelectorAll('form').length).to.equal(1);
+      delete window.ShadyDOM;
+    });
+  });
+
+  describe('Shadow DOM support', function shadowDOM() {
+    it('leaves breadcrumbs on its way up to the document', async function breadcrumbs() {
+      const host = await fixture(`<x-host></x-host>`);
+      const element = host.stripeElements;
+      const target = document.querySelector('[aria-label="Credit or Debit Card"]');
+      const [slottedChild] = element.querySelector('slot').assignedNodes();
+
+      // console.log(element, element.shadowRoot, slot.assignedNodes());
+
+      expect(slottedChild).to.contain(target);
     });
   });
 });

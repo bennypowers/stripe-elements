@@ -1,7 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
 import { render } from 'lit-html';
-
-// <link rel="import" href="./stripe-elements-custom-styles.html">
+import { ifDefined } from 'lit-html/directives/if-defined';
 
 const bubbles = true;
 const composed = true;
@@ -46,9 +45,9 @@ const style = css`
 
 const stripeCardTemplate = ({ action, id, token }) => html`
 <div slot="stripe-card">
-  <form action="${action}" method="post">
+  <form action="${ifDefined(action || undefined)}" method="post">
     <div id="${id}" aria-label="Credit or Debit Card"></div>
-    <input type="hidden" name="stripeToken" value="${token}">
+    <input type="hidden" name="stripeToken" value="${ifDefined(token || undefined)}">
   </form>
 </div>
 `;
@@ -90,17 +89,19 @@ function generateRandomMountElementId() {
 
 /**
  * `stripe-elements`
- * Polymer wrapper for Stripe.js v3 Elements
+ * Custom element wrapper for Stripe.js v3 Elements
  *
  * ## Usage
  *
  * ```html
- *   <paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
- *   <stripe-elements
- *       publishable-key="[[key]]"
- *       token="{{token}}"
- *   ></stripe-elements>
- *   <show-json hide-copy-button json="[[token]]"></show-json>
+ *   <label>Stripe Publishable Key <input id="pubkey"/></label>
+ *   <stripe-elements id="stripe"></stripe-elements>
+ *   <script>
+ *     const onKey = ({ target: { value } })) => stripe.publishableKey = value;
+ *     const onToken = ({ detail: token })) => console.log(token);
+ *     pubkey.addEventListener('change', onKey);
+ *     stripe.addEventListener('stripe-token', onToken);
+ *   </script>
  * ```
  *
  * ## Styling
@@ -417,7 +418,7 @@ export class StripeElements extends LitElement {
     if (changed.has('token')) {
       const { token } = this;
       this.#fire('token-changed', token);
-      this.dispatchEvent(new CustomEvent('stripe-token', { bubbles, composed, token }));
+      this.dispatchEvent(new CustomEvent('stripe-token', { bubbles, composed, detail: token }));
     }
     if (changed.has('error')) {
       this.#fire('error-changed', this.error);
@@ -614,8 +615,8 @@ export class StripeElements extends LitElement {
       });
       this.requestUpdate('card', oldCard)
       this.#card.mount(mount);
-      this.#card.addEventListener('ready', this.onReady.bind(this));
-      this.#card.addEventListener('change', this.onChange.bind(this));
+      this.#card.addEventListener('ready', this.#onReady.bind(this));
+      this.#card.addEventListener('change', this.#onChange.bind(this));
     }
   }
 
@@ -627,7 +628,7 @@ export class StripeElements extends LitElement {
    * @param  {Object}        event.error     The current validation error, if any.
    * @param  {String|Object} event.value     Value of the form. Only non-sensitive information e.g. postalCode is present.
    */
-  onChange({ empty, complete, brand, error, value } = {}) {
+  #onChange({ empty, complete, brand, error, value } = {}) {
     const oldBrand = this.#brand
     const oldError = this.#error;
     const oldHasError = this.#hasError;
@@ -651,7 +652,7 @@ export class StripeElements extends LitElement {
    * Sets the stripeReady property when the stripe element is ready to receive focus.
    * @param  {Event} event
    */
-  onReady(event) {
+  #onReady(event) {
     const oldStripeReady = this.#stripeReady
     this.#stripeReady = true;
     this.requestUpdate('stripeReady', oldStripeReady);

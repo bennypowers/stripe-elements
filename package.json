@@ -45,6 +45,7 @@
     "@babel/plugin-proposal-private-methods": "^7.4.0",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/preset-env": "^7.4.2",
+    "@babel/runtime": "^7.4.2",
     "@lrnwebcomponents/json-editor": "^2.0.8",
     "@open-wc/testing": "^0.10.1",
     "@open-wc/testing-karma": "^0.4.15",
