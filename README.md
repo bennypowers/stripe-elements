@@ -50,9 +50,9 @@ const onClick = () => document.getElementById('stripe').submit();
 const template = html`
   <button disabled @click="${onClick}">Get Token</button>
   <stripe-elements id="stripe"
-    @stripe-change="${onChange}"
-    publishable-key="${PUBLISHABLE_KEY}"
-    action="/payment"
+      @stripe-change="${onChange}"
+      publishable-key="${PUBLISHABLE_KEY}"
+      action="/payment"
   ></stripe-elements>
 `
 render(template, document.body)
@@ -62,15 +62,22 @@ In a Polymer Template
 ```html
 <paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
 
-<div style="display:flex;">
+<stripe-elements id="stripe"
+    stripe-ready="{{ready}}"
+    publishable-key="[[key]]"
+    token="{{token}}"
+></stripe-elements>
 
-  <stripe-elements id="stripe" stripe-ready="{{ready}}" publishable-key="[[key]]" token="{{token}}"></stripe-elements>
+<paper-button id="submit"
+    disabled="[[!ready]]"
+    onclick="stripe.submit()">
+  Get Token
+</paper-button>
 
-  <paper-button disabled="[[!ready]]" onclick="stripe.submit();">Get Token</paper-button>
-
-</div>
-
-<paper-toast opened="[[token]]" text="Token received for 💳 [[token.card.last4]]! 🤑"></paper-toast>
+<paper-toast
+    opened="[[token]]"
+    text="Token received for 💳 [[token.card.last4]]! 🤑"
+></paper-toast>
 ```
 
 ## Styling
@@ -79,16 +86,16 @@ A word about nomenclature before we list custom properties and mixins. Stripe v3
 Introduces 'Stripe Elements'. These are not custom elements, but rather forms
 hosted by stripe and injected into your page via an iFrame. When we refer to the
 'Stripe Element' in this document, we are referring to the hosted Stripe form,
-not the `<stripe-element>` custom element.
+not the `<stripe-element>` custom element. But when I mentions the 'element', I mean the custom element.
 
 The following custom properties are available for styling the `<stripe-elements>` component:
 
 | Custom property | Description | Default |
 | --- | --- | --- |
-| `--stripe-elements-width` | Min-width of the stripe-element | `300px` |
-| `--stripe-elements-height` | Min-width of the stripe-element | `50px` |
-| `--stripe-elements-element-padding` | Padding for the stripe-element | `14px`;
-| `--stripe-elements-element-background` | Background for the stripe-element | `initial` |
+| `--stripe-elements-width` | Min-width of the element | `300px` |
+| `--stripe-elements-height` | Min-width of the element | `50px` |
+| `--stripe-elements-element-padding` | Padding for the element | `14px` |
+| `--stripe-elements-element-background` | Background for the element | `initial` |
 
 When you apply CSS to the custom properties below, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame.  
 
