@@ -5,6 +5,11 @@ import { ifDefined } from 'lit-html/directives/if-defined';
 const bubbles = true;
 const composed = true;
 
+const removeEl = el => el.remove();
+const removeAllMounts = host =>
+  host.querySelectorAll('[slot="stripe-card" name="stripe-card"]')
+    .forEach(removeEl)
+
 const stripeElementsCustomCssProperties = html`
 <style id="stripe-elements-custom-css-properties">
 .StripeElement {
@@ -344,6 +349,12 @@ export class StripeElements extends LitElement {
   #mountElementId = generateRandomMountElementId();
 
   /**
+   * Breadcrumbs back up to the document.
+   * @type {Array}
+   */
+  #shadowHosts = [];
+
+  /**
    * Stripe Element mount point for Polyfilled browsers
    * @type {Element}
    */
@@ -451,18 +462,15 @@ export class StripeElements extends LitElement {
   /** Resets the Stripe card. */
   reset() {
     if (this.card && typeof this.card.clear === 'function') this.card.clear();
-    let old = this.#error
-    this.#error = undefined;
-    this.requestUpdate('error', old);
+    this.#setError(null);
   }
 
   /**
    * Submit credit card information to generate a token
-   * @param  {Event} event Submit event.
    */
-  submit(event) {
-    if (!this.isComplete) return;
+  submit() {
     if (!this.stripe) throw new Error('Cannot submit before initializing Stripe');
+    if (!this.isComplete) return;
     this.stripe.createToken(this.#card, this.cardData)
       .then(this.#handleResponse.bind(this))
       .catch(this.#handleError.bind(this));
@@ -473,11 +481,13 @@ export class StripeElements extends LitElement {
    * @return {Boolean} true if the Stripe form is valid
    */
   validate() {
-    const isValid = this.isComplete && !this.isEmpty && !this.hasError;
-    if (!isValid) {
-      let oldError = this.#error;
-      this.#error = { message: 'Credit card information is invalid.' };
-      this.requestUpdate('error', oldError)
+    const { isComplete, isEmpty, hasError, error } = this;
+    const isValid = !hasError && isComplete && !isEmpty;
+    if (!isValid && !hasError) {
+      this.#setError(
+          isEmpty ? 'Credit Card information is empty.'
+        : 'Credit card information is incomplete.'
+      )
     }
     return isValid;
   }
@@ -518,11 +528,7 @@ export class StripeElements extends LitElement {
    * @protected
    */
   #handleError(error) {
-    this.#fireError(error);
-    // Show error in UI
-    const oldError = this.#error;
-    this.#error = error.message;
-    this.requestUpdate('error', oldError);
+    this.#setError(error.message)
   }
 
   /**
@@ -531,18 +537,11 @@ export class StripeElements extends LitElement {
    * @param  {Object} response.token Stripe token
    * @protected
    */
-  #handleResponse({ error, token } = {}) {
-    if (error) {
-      const oldError = this.#error;
-      this.#error = error;
-      this.requestUpdate('error', oldError);
-    } else {
-      const oldToken = this.#token;
-      this.#token = token;
-      this.requestUpdate('token', oldToken);
-      // Submit the form
-      if (this.action) this.#form.submit();
-    }
+  #handleResponse(response) {
+    if (response.error) return this.#setError(response.error);
+    this.#setToken(response.token);
+    // Submit the form
+    if (this.action) this.#form.submit();
   }
 
   #initMountPoints() {
@@ -554,11 +553,9 @@ export class StripeElements extends LitElement {
   #initShadowDomMounts() {
     // trace each shadow boundary between us and the document
     let host = this;
-    const shadowHosts = [this];
+    this.#shadowHosts = [this];
     // eslint-disable-next-line no-loops/no-loops
-    while (host = host.getRootNode().host) {
-      if (host) shadowHosts.push(host);
-    }
+    while (host = host.getRootNode().host) this.#shadowHosts.push(host);
 
     // append mount point to first shadow host under document (as light child)
     // and slot breadcrumbs to each shadowroot in turn, until our shadow host.
@@ -569,8 +566,8 @@ export class StripeElements extends LitElement {
     const slotTemplate =
       html`<slot slot="stripe-card" name="stripe-card"></slot>`;
 
-    appendTemplate(mountTemplate, shadowHosts.pop());
-    shadowHosts.forEach(host => appendTemplate(slotTemplate, host));
+    appendTemplate(mountTemplate, this.#shadowHosts.pop());
+    this.#shadowHosts.forEach(host => appendTemplate(slotTemplate, host));
   }
 
   /** Creates a mounting div for the shady dom stripe elements container */
@@ -586,19 +583,17 @@ export class StripeElements extends LitElement {
    * Initializes Stripe and elements.
    * @param {String} publishableKey Stripe publishable key.
    */
-  #initStripe(publishableKey = this.publishableKey) {
+  #initStripe() {
     const oldStripe = this.#stripe;
     const oldElements = this.#elements;
     if (this.#stripe) this.#stripe = null;
     if (!window.Stripe) {
       const message = `<stripe-elements> requires Stripe.js to be loaded first.`
-      const oldError = this.#error;
-      this.#error = { message };
-      this.requestUpdate('error', oldError)
+      this.#setError({message})
       // eslint-disable-next-line no-console
       console.warn(message);
-    } else if (publishableKey) {
-      this.#stripe = Stripe(publishableKey);
+    } else if (this.publishableKey) {
+      this.#stripe = Stripe(this.publishableKey);
       this.#elements = this.#stripe.elements();
     } else {
       this.#elements = null;
@@ -610,22 +605,24 @@ export class StripeElements extends LitElement {
   /** Creates and mounts Stripe Elements card. */
   #mountCard() {
     const mount = this.#root.getElementById(this.#mountElementId);
-    if (mount) {
-      const { hidePostalCode, hideIcon, iconStyle, value } = this;
-      const style = this.#getStripeElementsStyles();
-      const oldCard = this.#card;
-      this.#card = this.#elements.create('card', {
-        hideIcon,
-        hidePostalCode,
-        iconStyle,
-        style,
-        value,
-      });
-      this.requestUpdate('card', oldCard)
-      this.#card.mount(mount);
-      this.#card.addEventListener('ready', this.#onReady.bind(this));
-      this.#card.addEventListener('change', this.#onChange.bind(this));
+    if (!mount) {
+      this.#unmountCard();
+      this.#initMountPoints();
     }
+    const { hidePostalCode, hideIcon, iconStyle, value } = this;
+    const style = this.#getStripeElementsStyles();
+
+    this.#setCard(this.#elements.create('card', {
+      hideIcon,
+      hidePostalCode,
+      iconStyle,
+      style,
+      value,
+    }));
+
+    this.#card.mount(mount);
+    this.#card.addEventListener('ready', this.#onReady.bind(this));
+    this.#card.addEventListener('change', this.#onChange.bind(this));
   }
 
   /**
@@ -636,24 +633,12 @@ export class StripeElements extends LitElement {
    * @param  {Object}        event.error     The current validation error, if any.
    * @param  {String|Object} event.value     Value of the form. Only non-sensitive information e.g. postalCode is present.
    */
-  #onChange({ empty, complete, brand, error, value } = {}) {
-    const oldBrand = this.#brand
-    const oldError = this.#error;
-    const oldHasError = this.#hasError;
-    const oldIsComplete = this.#isComplete
-    const oldIsEmpty = this.#isEmpty
-
-    this.#brand = brand;
-    this.#error = error;
-    this.#hasError = !!error;
-    this.#isComplete = complete;
-    this.#isEmpty = empty;
-
-    this.requestUpdate('brand', oldBrand);
-    this.requestUpdate('error', oldError);
-    this.requestUpdate('hasError', oldHasError);
-    this.requestUpdate('isComplete', oldIsComplete);
-    this.requestUpdate('isEmpty', oldIsEmpty);
+  #onChange(event) {
+    const { empty, complete, brand, error, value } = event;
+    this.#setError(error)
+    this.#setBrand(brand)
+    this.#setIsComplete(complete);
+    this.#setIsEmpty(empty);
   }
 
   /**
@@ -661,9 +646,7 @@ export class StripeElements extends LitElement {
    * @param  {Event} event
    */
   #onReady(event) {
-    const oldStripeReady = this.#stripeReady
-    this.#stripeReady = true;
-    this.requestUpdate('stripeReady', oldStripeReady);
+    this.#setStripReady(true);
     this.#fire('stripe-ready');
   }
 
@@ -673,26 +656,63 @@ export class StripeElements extends LitElement {
    */
   #publishableKeyChanged(publishableKey) {
     this.#unmountCard();
-    this.#initStripe(this.publishableKey);
-    if (publishableKey) {
-      if (this.stripe) this.#mountCard();
-    }
+    this.#initStripe();
+    if (publishableKey && this.stripe) this.#mountCard();
   }
 
   /** Unmounts and nullifies the card. */
   #unmountCard() {
-    try {
-      this.card && this.card.unmount && this.card.unmount();
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(error);
-    } finally {
-      const oldCard = this.#card
-      this.#card = null;
-      this.requestUpdate('card', oldCard);
-      const oldStripeReady = this.#stripeReady;
-      this.#stripeReady = false;
-      this.requestUpdate('stripeReady', oldStripeReady);
-    }
+    if (window.ShadyDOM) this.#shadyDomMount.remove();
+    else this.#shadowHosts.forEach(removeAllMounts)
+    if (this.card) this.card.unmount();
+    this.#setCard(null);
+    this.#setStripReady(false);
+  }
+
+  /** READONLY SETTERS */
+
+  #setBrand(newVal) {
+    const oldBrand = this.#brand
+    this.#brand = newVal;
+    this.requestUpdate('brand', oldBrand);
+  }
+
+  #setCard(newVal) {
+    const oldCard = this.#card;
+    this.#card = newVal;
+    this.requestUpdate('card', oldCard);
+  }
+
+  #setError(newVal) {
+    const oldError = this.#error;
+    this.#error = newVal;
+    this.requestUpdate('error', oldError);
+    const oldHasError = this.#hasError;
+    this.#hasError = !!newVal;
+    this.requestUpdate('hasError', oldHasError);
+  }
+
+  #setIsComplete(newVal) {
+    const oldIsComplete = this.#isComplete;
+    this.#isComplete = newVal;
+    this.requestUpdate('isComplete', oldIsComplete);
+  }
+
+  #setIsEmpty(newVal) {
+    const oldIsEmpty = this.#isEmpty;
+    this.#isEmpty = newVal;
+    this.requestUpdate('isEmpty', oldIsEmpty);
+  }
+
+  #setStripReady(newVal) {
+    const oldStripeReady = this.#stripeReady;
+    this.#stripeReady = newVal;
+    this.requestUpdate('stripeReady', oldStripeReady);
+  }
+
+  #setToken(newVal) {
+    const oldToken = this.#token;
+    this.#token = newVal;
+    this.requestUpdate('token', oldToken);
   }
 }

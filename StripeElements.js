@@ -5,6 +5,11 @@ import { ifDefined } from 'lit-html/directives/if-defined';
 
 const bubbles = true;
 const composed = true;
+
+const removeEl = el => el.remove();
+
+const removeAllMounts = host => host.querySelectorAll('[slot="stripe-card" name="stripe-card"]').forEach(removeEl);
+
 const stripeElementsCustomCssProperties = html`
 <style id="stripe-elements-custom-css-properties">
 .StripeElement {
@@ -249,6 +254,27 @@ class StripeElements extends LitElement {
   /** @inheritdoc */
   constructor() {
     super();
+    Object.defineProperty(this, _setToken, {
+      value: _setToken2
+    });
+    Object.defineProperty(this, _setStripReady, {
+      value: _setStripReady2
+    });
+    Object.defineProperty(this, _setIsEmpty, {
+      value: _setIsEmpty2
+    });
+    Object.defineProperty(this, _setIsComplete, {
+      value: _setIsComplete2
+    });
+    Object.defineProperty(this, _setError, {
+      value: _setError2
+    });
+    Object.defineProperty(this, _setCard, {
+      value: _setCard2
+    });
+    Object.defineProperty(this, _setBrand, {
+      value: _setBrand2
+    });
     Object.defineProperty(this, _unmountCard, {
       value: _unmountCard2
     });
@@ -329,6 +355,10 @@ class StripeElements extends LitElement {
     Object.defineProperty(this, _mountElementId, {
       writable: true,
       value: generateRandomMountElementId()
+    });
+    Object.defineProperty(this, _shadowHosts, {
+      writable: true,
+      value: []
     });
     Object.defineProperty(this, _shadyDomMount, {
       writable: true,
@@ -459,20 +489,16 @@ class StripeElements extends LitElement {
   reset() {
     if (this.card && typeof this.card.clear === 'function') this.card.clear();
 
-    let old = _classPrivateFieldLooseBase(this, _error)[_error];
-
-    _classPrivateFieldLooseBase(this, _error)[_error] = undefined;
-    this.requestUpdate('error', old);
+    _classPrivateFieldLooseBase(this, _setError)[_setError](null);
   }
   /**
    * Submit credit card information to generate a token
-   * @param  {Event} event Submit event.
    */
 
 
-  submit(event) {
-    if (!this.isComplete) return;
+  submit() {
     if (!this.stripe) throw new Error('Cannot submit before initializing Stripe');
+    if (!this.isComplete) return;
     this.stripe.createToken(_classPrivateFieldLooseBase(this, _card)[_card], this.cardData).then(_classPrivateFieldLooseBase(this, _handleResponse)[_handleResponse].bind(this)).catch(_classPrivateFieldLooseBase(this, _handleError)[_handleError].bind(this));
   }
   /**
@@ -482,15 +508,16 @@ class StripeElements extends LitElement {
 
 
   validate() {
-    const isValid = this.isComplete && !this.isEmpty && !this.hasError;
+    const {
+      isComplete,
+      isEmpty,
+      hasError,
+      error
+    } = this;
+    const isValid = !hasError && isComplete && !isEmpty;
 
-    if (!isValid) {
-      let oldError = _classPrivateFieldLooseBase(this, _error)[_error];
-
-      _classPrivateFieldLooseBase(this, _error)[_error] = {
-        message: 'Credit card information is invalid.'
-      };
-      this.requestUpdate('error', oldError);
+    if (!isValid && !hasError) {
+      _classPrivateFieldLooseBase(this, _setError)[_setError](isEmpty ? 'Credit Card information is empty.' : 'Credit card information is incomplete.');
     }
 
     return isValid;
@@ -519,6 +546,8 @@ var _stripeReady = _classPrivateFieldLooseKey("stripeReady");
 var _token = _classPrivateFieldLooseKey("token");
 
 var _mountElementId = _classPrivateFieldLooseKey("mountElementId");
+
+var _shadowHosts = _classPrivateFieldLooseKey("shadowHosts");
 
 var _shadyDomMount = _classPrivateFieldLooseKey("shadyDomMount");
 
@@ -557,6 +586,20 @@ var _onReady = _classPrivateFieldLooseKey("onReady");
 var _publishableKeyChanged = _classPrivateFieldLooseKey("publishableKeyChanged");
 
 var _unmountCard = _classPrivateFieldLooseKey("unmountCard");
+
+var _setBrand = _classPrivateFieldLooseKey("setBrand");
+
+var _setCard = _classPrivateFieldLooseKey("setCard");
+
+var _setError = _classPrivateFieldLooseKey("setError");
+
+var _setIsComplete = _classPrivateFieldLooseKey("setIsComplete");
+
+var _setIsEmpty = _classPrivateFieldLooseKey("setIsEmpty");
+
+var _setStripReady = _classPrivateFieldLooseKey("setStripReady");
+
+var _setToken = _classPrivateFieldLooseKey("setToken");
 
 StripeElements.is = 'stripe-elements';
 StripeElements.properties = {
@@ -763,32 +806,16 @@ var _getStripeElementsStyles2 = function _getStripeElementsStyles2() {
 };
 
 var _handleError2 = function _handleError2(error) {
-  _classPrivateFieldLooseBase(this, _fireError)[_fireError](error); // Show error in UI
-
-
-  const oldError = _classPrivateFieldLooseBase(this, _error)[_error];
-
-  _classPrivateFieldLooseBase(this, _error)[_error] = error.message;
-  this.requestUpdate('error', oldError);
+  _classPrivateFieldLooseBase(this, _setError)[_setError](error.message);
 };
 
-var _handleResponse2 = function _handleResponse2({
-  error,
-  token
-} = {}) {
-  if (error) {
-    const oldError = _classPrivateFieldLooseBase(this, _error)[_error];
+var _handleResponse2 = function _handleResponse2(response) {
+  if (response.error) return _classPrivateFieldLooseBase(this, _setError)[_setError](response.error);
 
-    _classPrivateFieldLooseBase(this, _error)[_error] = error;
-    this.requestUpdate('error', oldError);
-  } else {
-    const oldToken = _classPrivateFieldLooseBase(this, _token)[_token];
+  _classPrivateFieldLooseBase(this, _setToken)[_setToken](response.token); // Submit the form
 
-    _classPrivateFieldLooseBase(this, _token)[_token] = token;
-    this.requestUpdate('token', oldToken); // Submit the form
 
-    if (this.action) _classPrivateFieldLooseBase(this, _form)[_form].submit();
-  }
+  if (this.action) _classPrivateFieldLooseBase(this, _form)[_form].submit();
 };
 
 var _initMountPoints2 = function _initMountPoints2() {
@@ -798,11 +825,9 @@ var _initMountPoints2 = function _initMountPoints2() {
 var _initShadowDomMounts2 = function _initShadowDomMounts2() {
   // trace each shadow boundary between us and the document
   let host = this;
-  const shadowHosts = [this]; // eslint-disable-next-line no-loops/no-loops
+  _classPrivateFieldLooseBase(this, _shadowHosts)[_shadowHosts] = [this]; // eslint-disable-next-line no-loops/no-loops
 
-  while (host = host.getRootNode().host) {
-    if (host) shadowHosts.push(host);
-  } // append mount point to first shadow host under document (as light child)
+  while (host = host.getRootNode().host) _classPrivateFieldLooseBase(this, _shadowHosts)[_shadowHosts].push(host); // append mount point to first shadow host under document (as light child)
   // and slot breadcrumbs to each shadowroot in turn, until our shadow host.
 
 
@@ -819,8 +844,9 @@ var _initShadowDomMounts2 = function _initShadowDomMounts2() {
     token
   });
   const slotTemplate = html`<slot slot="stripe-card" name="stripe-card"></slot>`;
-  appendTemplate(mountTemplate, shadowHosts.pop());
-  shadowHosts.forEach(host => appendTemplate(slotTemplate, host));
+  appendTemplate(mountTemplate, _classPrivateFieldLooseBase(this, _shadowHosts)[_shadowHosts].pop());
+
+  _classPrivateFieldLooseBase(this, _shadowHosts)[_shadowHosts].forEach(host => appendTemplate(slotTemplate, host));
 };
 
 var _initShadyDomMount2 = function _initShadyDomMount2() {
@@ -840,7 +866,7 @@ var _initShadyDomMount2 = function _initShadyDomMount2() {
   _classPrivateFieldLooseBase(this, _shadyDomMount)[_shadyDomMount] = appendTemplate(mountTemplate, this);
 };
 
-var _initStripe2 = function _initStripe2(publishableKey = this.publishableKey) {
+var _initStripe2 = function _initStripe2() {
   const oldStripe = _classPrivateFieldLooseBase(this, _stripe)[_stripe];
 
   const oldElements = _classPrivateFieldLooseBase(this, _elements)[_elements];
@@ -850,16 +876,14 @@ var _initStripe2 = function _initStripe2(publishableKey = this.publishableKey) {
   if (!window.Stripe) {
     const message = `<stripe-elements> requires Stripe.js to be loaded first.`;
 
-    const oldError = _classPrivateFieldLooseBase(this, _error)[_error];
-
-    _classPrivateFieldLooseBase(this, _error)[_error] = {
+    _classPrivateFieldLooseBase(this, _setError)[_setError]({
       message
-    };
-    this.requestUpdate('error', oldError); // eslint-disable-next-line no-console
+    }); // eslint-disable-next-line no-console
+
 
     console.warn(message);
-  } else if (publishableKey) {
-    _classPrivateFieldLooseBase(this, _stripe)[_stripe] = Stripe(publishableKey);
+  } else if (this.publishableKey) {
+    _classPrivateFieldLooseBase(this, _stripe)[_stripe] = Stripe(this.publishableKey);
     _classPrivateFieldLooseBase(this, _elements)[_elements] = _classPrivateFieldLooseBase(this, _stripe)[_stripe].elements();
   } else {
     _classPrivateFieldLooseBase(this, _elements)[_elements] = null;
@@ -872,69 +896,56 @@ var _initStripe2 = function _initStripe2(publishableKey = this.publishableKey) {
 var _mountCard2 = function _mountCard2() {
   const mount = _classPrivateFieldLooseBase(this, _root)[_root].getElementById(_classPrivateFieldLooseBase(this, _mountElementId)[_mountElementId]);
 
-  if (mount) {
-    const {
-      hidePostalCode,
-      hideIcon,
-      iconStyle,
-      value
-    } = this;
+  if (!mount) {
+    _classPrivateFieldLooseBase(this, _unmountCard)[_unmountCard]();
 
-    const style = _classPrivateFieldLooseBase(this, _getStripeElementsStyles)[_getStripeElementsStyles]();
-
-    const oldCard = _classPrivateFieldLooseBase(this, _card)[_card];
-
-    _classPrivateFieldLooseBase(this, _card)[_card] = _classPrivateFieldLooseBase(this, _elements)[_elements].create('card', {
-      hideIcon,
-      hidePostalCode,
-      iconStyle,
-      style,
-      value
-    });
-    this.requestUpdate('card', oldCard);
-
-    _classPrivateFieldLooseBase(this, _card)[_card].mount(mount);
-
-    _classPrivateFieldLooseBase(this, _card)[_card].addEventListener('ready', _classPrivateFieldLooseBase(this, _onReady)[_onReady].bind(this));
-
-    _classPrivateFieldLooseBase(this, _card)[_card].addEventListener('change', _classPrivateFieldLooseBase(this, _onChange)[_onChange].bind(this));
+    _classPrivateFieldLooseBase(this, _initMountPoints)[_initMountPoints]();
   }
+
+  const {
+    hidePostalCode,
+    hideIcon,
+    iconStyle,
+    value
+  } = this;
+
+  const style = _classPrivateFieldLooseBase(this, _getStripeElementsStyles)[_getStripeElementsStyles]();
+
+  _classPrivateFieldLooseBase(this, _setCard)[_setCard](_classPrivateFieldLooseBase(this, _elements)[_elements].create('card', {
+    hideIcon,
+    hidePostalCode,
+    iconStyle,
+    style,
+    value
+  }));
+
+  _classPrivateFieldLooseBase(this, _card)[_card].mount(mount);
+
+  _classPrivateFieldLooseBase(this, _card)[_card].addEventListener('ready', _classPrivateFieldLooseBase(this, _onReady)[_onReady].bind(this));
+
+  _classPrivateFieldLooseBase(this, _card)[_card].addEventListener('change', _classPrivateFieldLooseBase(this, _onChange)[_onChange].bind(this));
 };
 
-var _onChange2 = function _onChange2({
-  empty,
-  complete,
-  brand,
-  error,
-  value
-} = {}) {
-  const oldBrand = _classPrivateFieldLooseBase(this, _brand)[_brand];
+var _onChange2 = function _onChange2(event) {
+  const {
+    empty,
+    complete,
+    brand,
+    error,
+    value
+  } = event;
 
-  const oldError = _classPrivateFieldLooseBase(this, _error)[_error];
+  _classPrivateFieldLooseBase(this, _setError)[_setError](error);
 
-  const oldHasError = _classPrivateFieldLooseBase(this, _hasError)[_hasError];
+  _classPrivateFieldLooseBase(this, _setBrand)[_setBrand](brand);
 
-  const oldIsComplete = _classPrivateFieldLooseBase(this, _isComplete)[_isComplete];
+  _classPrivateFieldLooseBase(this, _setIsComplete)[_setIsComplete](complete);
 
-  const oldIsEmpty = _classPrivateFieldLooseBase(this, _isEmpty)[_isEmpty];
-
-  _classPrivateFieldLooseBase(this, _brand)[_brand] = brand;
-  _classPrivateFieldLooseBase(this, _error)[_error] = error;
-  _classPrivateFieldLooseBase(this, _hasError)[_hasError] = !!error;
-  _classPrivateFieldLooseBase(this, _isComplete)[_isComplete] = complete;
-  _classPrivateFieldLooseBase(this, _isEmpty)[_isEmpty] = empty;
-  this.requestUpdate('brand', oldBrand);
-  this.requestUpdate('error', oldError);
-  this.requestUpdate('hasError', oldHasError);
-  this.requestUpdate('isComplete', oldIsComplete);
-  this.requestUpdate('isEmpty', oldIsEmpty);
+  _classPrivateFieldLooseBase(this, _setIsEmpty)[_setIsEmpty](empty);
 };
 
 var _onReady2 = function _onReady2(event) {
-  const oldStripeReady = _classPrivateFieldLooseBase(this, _stripeReady)[_stripeReady];
-
-  _classPrivateFieldLooseBase(this, _stripeReady)[_stripeReady] = true;
-  this.requestUpdate('stripeReady', oldStripeReady);
+  _classPrivateFieldLooseBase(this, _setStripReady)[_setStripReady](true);
 
   _classPrivateFieldLooseBase(this, _fire)[_fire]('stripe-ready');
 };
@@ -942,30 +953,72 @@ var _onReady2 = function _onReady2(event) {
 var _publishableKeyChanged2 = function _publishableKeyChanged2(publishableKey) {
   _classPrivateFieldLooseBase(this, _unmountCard)[_unmountCard]();
 
-  _classPrivateFieldLooseBase(this, _initStripe)[_initStripe](this.publishableKey);
+  _classPrivateFieldLooseBase(this, _initStripe)[_initStripe]();
 
-  if (publishableKey) {
-    if (this.stripe) _classPrivateFieldLooseBase(this, _mountCard)[_mountCard]();
-  }
+  if (publishableKey && this.stripe) _classPrivateFieldLooseBase(this, _mountCard)[_mountCard]();
 };
 
 var _unmountCard2 = function _unmountCard2() {
-  try {
-    this.card && this.card.unmount && this.card.unmount();
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-  } finally {
-    const oldCard = _classPrivateFieldLooseBase(this, _card)[_card];
+  if (window.ShadyDOM) _classPrivateFieldLooseBase(this, _shadyDomMount)[_shadyDomMount].remove();else _classPrivateFieldLooseBase(this, _shadowHosts)[_shadowHosts].forEach(removeAllMounts);
+  if (this.card) this.card.unmount();
 
-    _classPrivateFieldLooseBase(this, _card)[_card] = null;
-    this.requestUpdate('card', oldCard);
+  _classPrivateFieldLooseBase(this, _setCard)[_setCard](null);
 
-    const oldStripeReady = _classPrivateFieldLooseBase(this, _stripeReady)[_stripeReady];
+  _classPrivateFieldLooseBase(this, _setStripReady)[_setStripReady](false);
+};
 
-    _classPrivateFieldLooseBase(this, _stripeReady)[_stripeReady] = false;
-    this.requestUpdate('stripeReady', oldStripeReady);
-  }
+var _setBrand2 = function _setBrand2(newVal) {
+  const oldBrand = _classPrivateFieldLooseBase(this, _brand)[_brand];
+
+  _classPrivateFieldLooseBase(this, _brand)[_brand] = newVal;
+  this.requestUpdate('brand', oldBrand);
+};
+
+var _setCard2 = function _setCard2(newVal) {
+  const oldCard = _classPrivateFieldLooseBase(this, _card)[_card];
+
+  _classPrivateFieldLooseBase(this, _card)[_card] = newVal;
+  this.requestUpdate('card', oldCard);
+};
+
+var _setError2 = function _setError2(newVal) {
+  const oldError = _classPrivateFieldLooseBase(this, _error)[_error];
+
+  _classPrivateFieldLooseBase(this, _error)[_error] = newVal;
+  this.requestUpdate('error', oldError);
+
+  const oldHasError = _classPrivateFieldLooseBase(this, _hasError)[_hasError];
+
+  _classPrivateFieldLooseBase(this, _hasError)[_hasError] = !!newVal;
+  this.requestUpdate('hasError', oldHasError);
+};
+
+var _setIsComplete2 = function _setIsComplete2(newVal) {
+  const oldIsComplete = _classPrivateFieldLooseBase(this, _isComplete)[_isComplete];
+
+  _classPrivateFieldLooseBase(this, _isComplete)[_isComplete] = newVal;
+  this.requestUpdate('isComplete', oldIsComplete);
+};
+
+var _setIsEmpty2 = function _setIsEmpty2(newVal) {
+  const oldIsEmpty = _classPrivateFieldLooseBase(this, _isEmpty)[_isEmpty];
+
+  _classPrivateFieldLooseBase(this, _isEmpty)[_isEmpty] = newVal;
+  this.requestUpdate('isEmpty', oldIsEmpty);
+};
+
+var _setStripReady2 = function _setStripReady2(newVal) {
+  const oldStripeReady = _classPrivateFieldLooseBase(this, _stripeReady)[_stripeReady];
+
+  _classPrivateFieldLooseBase(this, _stripeReady)[_stripeReady] = newVal;
+  this.requestUpdate('stripeReady', oldStripeReady);
+};
+
+var _setToken2 = function _setToken2(newVal) {
+  const oldToken = _classPrivateFieldLooseBase(this, _token)[_token];
+
+  _classPrivateFieldLooseBase(this, _token)[_token] = newVal;
+  this.requestUpdate('token', oldToken);
 };
 
 export { StripeElements };

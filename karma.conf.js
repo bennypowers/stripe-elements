@@ -26,7 +26,7 @@ module.exports = config => {
 
   newConf.webpack.module.rules
     .find(({ loader }) => loader === 'istanbul-instrumenter-loader')
-    .exclude = /node_modules|bower_components|_virtual|\.(spec|test)\.js$/;
+    .exclude = /node_modules|bower_components|_virtual|test|\.(spec|test)\.js$/;
 
   config.set(newConf);
 

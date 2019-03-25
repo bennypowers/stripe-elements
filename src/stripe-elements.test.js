@@ -1,9 +1,16 @@
-import { expect, fixture, oneEvent, chai, nextFrame } from '@open-wc/testing';
-import sinonChai from 'sinon-chai';
-import { spy, stub, mock } from 'sinon';
 import './stripe-elements';
 
-import { render, html } from 'lit-html';
+import { expect, fixture, oneEvent, chai, nextFrame } from '@open-wc/testing';
+import { stub } from 'sinon';
+import sinonChai from 'sinon-chai';
+
+import {
+  INCOMPLETE_CARD_KEY,
+  MockedStripeAPI,
+  PUBLISHABLE_KEY,
+  SHOULD_ERROR_KEY,
+  TOKEN_ERROR_KEY,
+} from '../test/mock-stripe';
 
 chai.use(sinonChai);
 
@@ -16,52 +23,9 @@ customElements.define('x-host', class XHost extends HTMLElement {
   }
 });
 
-const PUBLISHABLE_KEY = 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX';
-const SHOULD_ERROR_KEY = 'SHOULD_ERROR_KEY';
-const TOKEN_ERROR_KEY = 'TOKEN_ERROR_KEY';
 const NO_STRIPE_JS = `<stripe-elements> requires Stripe.js to be loaded first.`;
-
-class MockedStripeAPI {
-  constructor(key, opts) {
-    this.key = key;
-    this.opts = opts;
-    this.__card = null;
-    return this;
-  }
-
-  elements({ fonts, locale } = {}) {
-    return {
-      create(type, { value, hidePostalCode, iconStyle, hideIcon, disabled } = {}) {
-        return {
-          addEventListener(type, handler) {
-            return this.__card.addEventListener(type, handler);
-          },
-          mount(node) {
-            render(html`<div></div>`, node);
-            this.__card = node.firstElementChild;
-          },
-          on() {},
-          blur() {},
-          clear() {},
-          destroy() {},
-          focus() {},
-          unmount() {},
-          update() {},
-        };
-      },
-    };
-  }
-
-  async createToken(card, cardData) {
-    if (this.key === SHOULD_ERROR_KEY) throw new Error(SHOULD_ERROR_KEY);
-    else if (this.key === TOKEN_ERROR_KEY) return { error: TOKEN_ERROR_KEY };
-    else return { token: 'howdy!' };
-  }
-
-  createSource() {
-    return {};
-  }
-}
+const INCOMPLETE_CC_INFO = 'Credit card information is incomplete.';
+const EMPTY_CC_INFO = 'Credit Card information is empty.';
 
 afterEach(() => {
   const globalStyles = document.getElementById('stripe-elements-custom-css-properties');
@@ -219,6 +183,11 @@ describe('stripe-elements', function() {
         const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
         expect(element.error).to.eql({ message: NO_STRIPE_JS });
       });
+
+      it('throws an error when submitting', async function submit() {
+        const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+        expect(() => element.submit()).to.throw('Cannot submit before initializing Stripe');
+      });
     });
 
     describe('with mocked Stripe.js', function withMockedStripeJs() {
@@ -331,6 +300,32 @@ describe('stripe-elements', function() {
             element.card.__card.dispatchEvent(event);
             expect(element.isEmpty).to.be.true;
           });
+
+          describe('validating empty card', function() {
+            it('is false', async function validating() {
+              const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+              const event = new CustomEvent('change');
+              event.brand = 'visa';
+              event.complete = false;
+              event.empty = true;
+              element.card.__card.dispatchEvent(event);
+              await element.updateComplete;
+              expect(element.validate()).to.be.false;
+            });
+
+            it('sets error', async function validating() {
+              const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+              const event = new CustomEvent('change');
+              event.brand = 'visa';
+              event.complete = false;
+              event.empty = true;
+              element.card.__card.dispatchEvent(event);
+              element.validate();
+              await nextFrame();
+              await element.updateComplete;
+              expect(element.error).to.equal(EMPTY_CC_INFO);
+            });
+          });
         });
 
         describe('when complete changes', function emptyChange() {
@@ -353,6 +348,32 @@ describe('stripe-elements', function() {
             event.complete = true;
             element.card.__card.dispatchEvent(event);
             expect(element.isComplete).to.be.true;
+          });
+
+          describe('validating incomplete card', function() {
+            it('is false', async function validating() {
+              const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+              const event = new CustomEvent('change');
+              event.brand = 'visa';
+              event.complete = false;
+              event.empty = false;
+              element.card.__card.dispatchEvent(event);
+              await element.updateComplete;
+              expect(element.validate()).to.be.false;
+            });
+
+            it('sets error', async function validating() {
+              const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+              const event = new CustomEvent('change');
+              event.brand = 'visa';
+              event.complete = false;
+              event.empty = false;
+              element.card.__card.dispatchEvent(event);
+              await element.updateComplete;
+              element.validate();
+              await element.updateComplete;
+              expect(element.error).to.equal(INCOMPLETE_CC_INFO);
+            });
           });
         });
 
@@ -409,9 +430,59 @@ describe('stripe-elements', function() {
             expect(element.hasError).to.be.true;
           });
         });
+
+        describe('potentially valid', function() {
+          it('is true when neither incomplete, empty nor with error', async function validating() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            const event = new CustomEvent('change');
+            event.brand = 'visa';
+            event.complete = false;
+            event.empty = false;
+            element.card.__card.dispatchEvent(event);
+            await element.updateComplete;
+            expect(element.isPotentiallyValid()).to.be.true;
+          });
+        });
+
+        describe('reset', function() {
+          it('unsets error', async function() {
+            const element = await fixture(`<stripe-elements publishable-key="${SHOULD_ERROR_KEY}"></stripe-elements>`);
+            const event = new CustomEvent('change');
+            element.card.__card.dispatchEvent(event);
+            await nextFrame();
+            expect(element.error).to.not.be.null;
+            element.reset();
+            await element.updateComplete;
+            expect(element.error).to.be.null;
+          });
+
+          it('clears the card', async function() {
+            const element = await fixture(`<stripe-elements publishable-key="${SHOULD_ERROR_KEY}"></stripe-elements>`);
+            const event = new CustomEvent('change');
+            event.brand = 'visa';
+            event.complete = true;
+            event.empty = false;
+            element.card.__card.dispatchEvent(event);
+            stub(element.card, 'clear');
+            element.reset();
+            await nextFrame();
+            await element.updateComplete;
+            expect(element.card.clear).to.have.been.called;
+            element.card.clear.restore();
+          });
+        });
       });
 
       describe('when submit called', function submitting() {
+        describe('when card is incomplete', function() {
+          it('does nothing', async function submit() {
+            const element = await fixture(`<stripe-elements publishable-key="${INCOMPLETE_CARD_KEY}"></stripe-elements>`);
+            element.submit();
+            expect(element.token).to.be.null;
+            expect(element.error).to.be.null;
+          });
+        });
+
         describe('when createToken throws', function throws() {
           it('sets error', async function() {
             const element = await fixture(`<stripe-elements publishable-key="${SHOULD_ERROR_KEY}"></stripe-elements>`);
@@ -424,6 +495,33 @@ describe('stripe-elements', function() {
             await nextFrame();
             await element.updateComplete;
             expect(element.error).to.eql(SHOULD_ERROR_KEY);
+          });
+
+          describe('validating existing error', function() {
+            it('is false', async function validating() {
+              const element = await fixture(`<stripe-elements publishable-key="${SHOULD_ERROR_KEY}"></stripe-elements>`);
+              const event = new CustomEvent('change');
+              event.brand = 'visa';
+              event.complete = false;
+              event.empty = false;
+              element.card.__card.dispatchEvent(event);
+              await element.updateComplete;
+              expect(element.validate()).to.be.false;
+            });
+
+            it('retains error', async function validating() {
+              const element = await fixture(`<stripe-elements publishable-key="${TOKEN_ERROR_KEY}"></stripe-elements>`);
+              const event = new CustomEvent('change');
+              event.brand = 'visa';
+              event.complete = true;
+              event.empty = false;
+              element.card.__card.dispatchEvent(event);
+              element.submit();
+              await nextFrame();
+              await element.updateComplete;
+              element.validate();
+              expect(element.error).to.equal(TOKEN_ERROR_KEY);
+            });
           });
         });
 
@@ -439,6 +537,89 @@ describe('stripe-elements', function() {
             await nextFrame();
             await element.updateComplete;
             expect(element.error).to.eql(TOKEN_ERROR_KEY);
+          });
+        });
+
+        describe('when token is returned', function() {
+          it('sets token', async function submit() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            const event = new CustomEvent('change');
+            event.brand = 'visa';
+            event.complete = true;
+            event.empty = false;
+            element.card.__card.dispatchEvent(event);
+            element.submit();
+            await element.updateComplete;
+            expect(element.token).to.equal('howdy!');
+          });
+
+          it('fires token-changed', async function submit() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            const event = new CustomEvent('change');
+            event.brand = 'visa';
+            event.complete = true;
+            event.empty = false;
+            element.card.__card.dispatchEvent(event);
+            setTimeout(() => element.submit());
+            const ev = await oneEvent(element, 'token-changed');
+            expect(ev.detail.value).to.equal('howdy!');
+          });
+
+          it('fires stripe-token', async function submit() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            const event = new CustomEvent('change');
+            event.brand = 'visa';
+            event.complete = true;
+            event.empty = false;
+            element.card.__card.dispatchEvent(event);
+            setTimeout(() => element.submit());
+            const ev = await oneEvent(element, 'stripe-token');
+            await element.updateComplete;
+            expect(ev.detail).to.equal('howdy!');
+          });
+
+          describe('when there is an action', function() {
+            it('submits the form', async function submit() {
+              const element = await fixture(`<stripe-elements action="here" publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+              await element.updateComplete;
+              const form = element.querySelector('form');
+              const subStub = stub(form, 'submit');
+              const event = new CustomEvent('change');
+              event.brand = 'visa';
+              event.complete = true;
+              event.empty = false;
+              element.card.__card.dispatchEvent(event);
+              element.submit();
+              await element.updateComplete;
+              expect(subStub).to.have.been.called;
+              subStub.restore();
+            });
+          });
+
+          describe('validating good token', function() {
+            it('is true', async function validating() {
+              const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+              const event = new CustomEvent('change');
+              event.brand = 'visa';
+              event.complete = true;
+              event.empty = false;
+              element.card.__card.dispatchEvent(event);
+              await element.updateComplete;
+              expect(element.validate()).to.be.true;
+              expect(element.error).to.not.be.ok;
+            });
+
+            it('is is also "potentially" valid', async function validating() {
+              const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+              const event = new CustomEvent('change');
+              event.brand = 'visa';
+              event.complete = true;
+              event.empty = false;
+              element.card.__card.dispatchEvent(event);
+              await element.updateComplete;
+              expect(element.isPotentiallyValid()).to.be.true;
+              expect(element.error).to.not.be.ok;
+            });
           });
         });
       });
