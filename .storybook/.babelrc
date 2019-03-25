@@ -1,0 +1,18 @@
+{
+  "plugins": [
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-proposal-object-rest-spread",
+    ["@babel/plugin-proposal-class-properties", { "loose": true }],
+    ["@babel/plugin-proposal-private-methods", { "loose": true }],
+    ["@babel/plugin-proposal-decorators", { "decoratorsBeforeExport": false }]
+  ],
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": { "browsers": ["last 1 chrome versions"] },
+        "useBuiltIns": "entry"
+      }
+    ]
+  ]
+}

@@ -9,6 +9,8 @@
 
 Custom element wrapper for Stripe.js v3 Elements that works in shadow DOM. Creates a `card` element à la https://stripe.com/docs/elements
 
+👨‍🎨 [Storybook Demo](https://bennypowers.dev/stripe-elements) 👀
+
 ## Installation
 ```
 npm i -S @power-elements/stripe-elements
@@ -23,6 +25,7 @@ You should make sure to load stripe.js on your app's index.html, as per Stripe's
 ```
 
 Then you can add the element to your page.
+
 ```html
 <script type="module" src="/web_modules/@power-elements/stripe-elements/stripe-elements.js"></script>
 <stripe-elements id="stripe" action="/payment"></stripe-elements>
@@ -36,6 +39,7 @@ Then you can add the element to your page.
 ```
 
 In a lit-html template
+
 ```js
 import { html, render } from '/web_modules/lit-html/lit-html.js';
 import { PUBLISHABLE_KEY } from './config.js';
@@ -59,6 +63,7 @@ render(template, document.body)
 ```
 
 In a Polymer Template
+
 ```html
 <paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
 
