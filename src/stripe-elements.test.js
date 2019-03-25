@@ -23,11 +23,15 @@ customElements.define('x-host', class XHost extends HTMLElement {
   }
 });
 
+function camelCaseToDash( myStr ) {
+  return myStr.replace( /([a-z])([A-Z])/g, '$1-$2' ).toLowerCase();
+}
+
 const NO_STRIPE_JS = `<stripe-elements> requires Stripe.js to be loaded first.`;
 const INCOMPLETE_CC_INFO = 'Credit card information is incomplete.';
 const EMPTY_CC_INFO = 'Credit Card information is empty.';
 
-afterEach(() => {
+afterEach(function removeGlobalStyles() {
   const globalStyles = document.getElementById('stripe-elements-custom-css-properties');
   if (globalStyles) globalStyles.remove();
 });
@@ -66,6 +70,7 @@ describe('stripe-elements', function() {
     [
       'brand',
       'card',
+      'error',
       'elements',
       'hasError',
       'isComplete',
@@ -84,10 +89,6 @@ describe('stripe-elements', function() {
   });
 
   describe('notifying public properties', function notifying() {
-    function camelCaseToDash( myStr ) {
-      return myStr.replace( /([a-z])([A-Z])/g, '$1-$2' ).toLowerCase();
-    }
-
     [
       'publishableKey',
     ].forEach(prop => {
@@ -247,33 +248,53 @@ describe('stripe-elements', function() {
         });
       });
 
+      describe('when dom is screwed before pk is set', function pkReset() {
+        it('rebuilds its dom', async function() {
+          const element = await fixture(`<stripe-elements></stripe-elements>`);
+          element.stripeMount.remove();
+          element.publishableKey = PUBLISHABLE_KEY;
+          await element.updateComplete;
+          expect(element.stripeMount).to.be.ok;
+          expect(element.querySelector('form')).to.be.ok;
+        });
+
+        it('uses a new id', async function() {
+          const element = await fixture(`<stripe-elements></stripe-elements>`);
+          const initial = element.stripeMount.id;
+          element.stripeMount.remove();
+          element.publishableKey = PUBLISHABLE_KEY;
+          await element.updateComplete;
+          expect(element.stripeMount.id).to.not.equal(initial);
+        });
+
+        it('rebuilds the whole trail', async function() {
+          const element = await fixture(`<stripe-elements></stripe-elements>`);
+          element.stripeMount.remove();
+          element.publishableKey = PUBLISHABLE_KEY;
+          await element.updateComplete;
+          expect(element.stripeMount).to.be.ok;
+          expect(element.querySelector('form')).to.be.ok;
+        });
+      });
+
       describe('when card is ready', function cardReady() {
         it('fires stripe-ready event', async function() {
           const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-          setTimeout(() => {
-            // synthetic event
-            element.card.__card.dispatchEvent(new CustomEvent('ready', {
-              empty: true,
-              complete: false,
-            }));
-          });
+          setTimeout(() => element.card.synthEvent('ready'));
           const ev = await oneEvent(element, 'stripe-ready');
           expect(ev).to.be.ok;
         });
 
         it('fires stripe-ready-changed event', async function() {
           const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-          setTimeout(() => {
-            // synthetic event
-            element.card.__card.dispatchEvent(new CustomEvent('ready'));
-          });
+          setTimeout(() => element.card.synthEvent('ready'));
           const ev = await oneEvent(element, 'stripe-ready-changed');
           expect(ev.detail.value).to.be.true;
         });
 
         it('sets stripeReady', async function() {
           const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-          element.card.__card.dispatchEvent(new CustomEvent('ready'));
+          element.card.synthEvent('ready');
           expect(element.stripeReady).to.be.true;
         });
       });
@@ -283,43 +304,28 @@ describe('stripe-elements', function() {
           it('fires is-empty-changed event', async function isEmptyChanged() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
             const synth = Math.random() + 1;
-            setTimeout(() => {
-              // synthetic event
-              const event = new CustomEvent('change');
-              event.empty = synth;
-              element.card.__card.dispatchEvent(event);
-            });
+            setTimeout(() => element.card.synthEvent({ empty: synth }));
             const ev = await oneEvent(element, 'is-empty-changed');
             expect(ev.detail.value).to.equal(synth);
           });
 
           it('sets isEmpty', async function setsIsEmpty() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-            const event = new CustomEvent('change');
-            event.empty = true;
-            element.card.__card.dispatchEvent(event);
+            element.card.synthEvent({ empty: true });
             expect(element.isEmpty).to.be.true;
           });
 
           describe('validating empty card', function() {
             it('is false', async function validating() {
               const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-              const event = new CustomEvent('change');
-              event.brand = 'visa';
-              event.complete = false;
-              event.empty = true;
-              element.card.__card.dispatchEvent(event);
+              element.card.synthEvent({ brand: 'visa', complete: false, empty: true });
               await element.updateComplete;
               expect(element.validate()).to.be.false;
             });
 
             it('sets error', async function validating() {
               const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-              const event = new CustomEvent('change');
-              event.brand = 'visa';
-              event.complete = false;
-              event.empty = true;
-              element.card.__card.dispatchEvent(event);
+              element.card.synthEvent({ brand: 'visa', complete: false, empty: true });
               element.validate();
               await nextFrame();
               await element.updateComplete;
@@ -332,43 +338,28 @@ describe('stripe-elements', function() {
           it('fires is-complete-changed event', async function isEmptyChanged() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
             const synth = Math.random() + 1;
-            setTimeout(() => {
-              // synthetic event
-              const event = new CustomEvent('change');
-              event.complete = synth;
-              element.card.__card.dispatchEvent(event);
-            });
+            setTimeout(() => element.card.synthEvent({ complete: synth }));
             const ev = await oneEvent(element, 'is-complete-changed');
             expect(ev.detail.value).to.equal(synth);
           });
 
           it('sets isComplete', async function setsIsEmpty() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-            const event = new CustomEvent('change');
-            event.complete = true;
-            element.card.__card.dispatchEvent(event);
+            element.card.synthEvent({ complete: true });
             expect(element.isComplete).to.be.true;
           });
 
           describe('validating incomplete card', function() {
             it('is false', async function validating() {
               const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-              const event = new CustomEvent('change');
-              event.brand = 'visa';
-              event.complete = false;
-              event.empty = false;
-              element.card.__card.dispatchEvent(event);
+              element.card.synthEvent({ brand: 'visa', complete: false, empty: false });
               await element.updateComplete;
               expect(element.validate()).to.be.false;
             });
 
             it('sets error', async function validating() {
               const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-              const event = new CustomEvent('change');
-              event.brand = 'visa';
-              event.complete = false;
-              event.empty = false;
-              element.card.__card.dispatchEvent(event);
+              element.card.synthEvent({ brand: 'visa', complete: false, empty: false });
               await element.updateComplete;
               element.validate();
               await element.updateComplete;
@@ -381,22 +372,16 @@ describe('stripe-elements', function() {
           it('fires brand-changed event', async function brandChanged() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
             const synth = Math.random() + 1;
-            setTimeout(() => {
-              // synthetic event
-              const event = new CustomEvent('change');
-              event.brand = synth;
-              element.card.__card.dispatchEvent(event);
-            });
+            setTimeout(() => element.card.synthEvent({ brand: synth }));
             const ev = await oneEvent(element, 'brand-changed');
             expect(ev.detail.value).to.equal(synth);
           });
 
           it('sets brand', async function setsBrand() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-            const event = new CustomEvent('change');
-            event.brand = 'visa';
-            element.card.__card.dispatchEvent(event);
-            expect(element.brand).to.equal('visa');
+            const brand = 'visa';
+            element.card.synthEvent({ brand });
+            expect(element.brand).to.equal(brand);
           });
         });
 
@@ -404,29 +389,20 @@ describe('stripe-elements', function() {
           it('fires error-changed event', async function errorChanged() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
             const synth = Math.random() + 1;
-            setTimeout(() => {
-              // synthetic event
-              const event = new CustomEvent('change');
-              event.error = synth;
-              element.card.__card.dispatchEvent(event);
-            });
+            setTimeout(() => element.card.synthEvent({ error: synth }));
             const ev = await oneEvent(element, 'error-changed');
             expect(ev.detail.value).to.equal(synth);
           });
 
           it('sets error', async function setsError() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-            const event = new CustomEvent('change');
-            event.error = { message: 'foo' };
-            element.card.__card.dispatchEvent(event);
+            element.card.synthEvent({ error: { message: 'foo' } });
             expect(element.error).to.eql({ message: 'foo' });
           });
 
           it('sets hasError', async function setsError() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-            const event = new CustomEvent('change');
-            event.error = { message: 'foo' };
-            element.card.__card.dispatchEvent(event);
+            element.card.synthEvent({ error: { message: 'foo' } });
             expect(element.hasError).to.be.true;
           });
         });
@@ -434,11 +410,7 @@ describe('stripe-elements', function() {
         describe('potentially valid', function() {
           it('is true when neither incomplete, empty nor with error', async function validating() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-            const event = new CustomEvent('change');
-            event.brand = 'visa';
-            event.complete = false;
-            event.empty = false;
-            element.card.__card.dispatchEvent(event);
+            element.card.synthEvent({ brand: 'visa', complete: false, empty: false });
             await element.updateComplete;
             expect(element.isPotentiallyValid()).to.be.true;
           });
@@ -447,8 +419,8 @@ describe('stripe-elements', function() {
         describe('reset', function() {
           it('unsets error', async function() {
             const element = await fixture(`<stripe-elements publishable-key="${SHOULD_ERROR_KEY}"></stripe-elements>`);
-            const event = new CustomEvent('change');
-            element.card.__card.dispatchEvent(event);
+            // set some arbitrary initial state
+            element.card.synthEvent({ brand: 'visa', complete: false, empty: false });
             await nextFrame();
             expect(element.error).to.not.be.null;
             element.reset();
@@ -458,11 +430,7 @@ describe('stripe-elements', function() {
 
           it('clears the card', async function() {
             const element = await fixture(`<stripe-elements publishable-key="${SHOULD_ERROR_KEY}"></stripe-elements>`);
-            const event = new CustomEvent('change');
-            event.brand = 'visa';
-            event.complete = true;
-            event.empty = false;
-            element.card.__card.dispatchEvent(event);
+            element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
             stub(element.card, 'clear');
             element.reset();
             await nextFrame();
@@ -486,11 +454,7 @@ describe('stripe-elements', function() {
         describe('when createToken throws', function throws() {
           it('sets error', async function() {
             const element = await fixture(`<stripe-elements publishable-key="${SHOULD_ERROR_KEY}"></stripe-elements>`);
-            const event = new CustomEvent('change');
-            event.brand = 'visa';
-            event.complete = true;
-            event.empty = false;
-            element.card.__card.dispatchEvent(event);
+            element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
             element.submit();
             await nextFrame();
             await element.updateComplete;
@@ -500,22 +464,14 @@ describe('stripe-elements', function() {
           describe('validating existing error', function() {
             it('is false', async function validating() {
               const element = await fixture(`<stripe-elements publishable-key="${SHOULD_ERROR_KEY}"></stripe-elements>`);
-              const event = new CustomEvent('change');
-              event.brand = 'visa';
-              event.complete = false;
-              event.empty = false;
-              element.card.__card.dispatchEvent(event);
+              element.card.synthEvent({ brand: 'visa', complete: false, empty: false });
               await element.updateComplete;
               expect(element.validate()).to.be.false;
             });
 
             it('retains error', async function validating() {
               const element = await fixture(`<stripe-elements publishable-key="${TOKEN_ERROR_KEY}"></stripe-elements>`);
-              const event = new CustomEvent('change');
-              event.brand = 'visa';
-              event.complete = true;
-              event.empty = false;
-              element.card.__card.dispatchEvent(event);
+              element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
               element.submit();
               await nextFrame();
               await element.updateComplete;
@@ -528,11 +484,7 @@ describe('stripe-elements', function() {
         describe('when createToken returns error', function throws() {
           it('sets error', async function() {
             const element = await fixture(`<stripe-elements publishable-key="${TOKEN_ERROR_KEY}"></stripe-elements>`);
-            const event = new CustomEvent('change');
-            event.brand = 'visa';
-            event.complete = true;
-            event.empty = false;
-            element.card.__card.dispatchEvent(event);
+            element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
             element.submit();
             await nextFrame();
             await element.updateComplete;
@@ -543,11 +495,7 @@ describe('stripe-elements', function() {
         describe('when token is returned', function() {
           it('sets token', async function submit() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-            const event = new CustomEvent('change');
-            event.brand = 'visa';
-            event.complete = true;
-            event.empty = false;
-            element.card.__card.dispatchEvent(event);
+            element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
             element.submit();
             await element.updateComplete;
             expect(element.token).to.equal('howdy!');
@@ -555,11 +503,7 @@ describe('stripe-elements', function() {
 
           it('fires token-changed', async function submit() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-            const event = new CustomEvent('change');
-            event.brand = 'visa';
-            event.complete = true;
-            event.empty = false;
-            element.card.__card.dispatchEvent(event);
+            element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
             setTimeout(() => element.submit());
             const ev = await oneEvent(element, 'token-changed');
             expect(ev.detail.value).to.equal('howdy!');
@@ -567,11 +511,7 @@ describe('stripe-elements', function() {
 
           it('fires stripe-token', async function submit() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-            const event = new CustomEvent('change');
-            event.brand = 'visa';
-            event.complete = true;
-            event.empty = false;
-            element.card.__card.dispatchEvent(event);
+            element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
             setTimeout(() => element.submit());
             const ev = await oneEvent(element, 'stripe-token');
             await element.updateComplete;
@@ -584,11 +524,7 @@ describe('stripe-elements', function() {
               await element.updateComplete;
               const form = element.querySelector('form');
               const subStub = stub(form, 'submit');
-              const event = new CustomEvent('change');
-              event.brand = 'visa';
-              event.complete = true;
-              event.empty = false;
-              element.card.__card.dispatchEvent(event);
+              element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
               element.submit();
               await element.updateComplete;
               expect(subStub).to.have.been.called;
@@ -599,23 +535,15 @@ describe('stripe-elements', function() {
           describe('validating good token', function() {
             it('is true', async function validating() {
               const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-              const event = new CustomEvent('change');
-              event.brand = 'visa';
-              event.complete = true;
-              event.empty = false;
-              element.card.__card.dispatchEvent(event);
+              element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
               await element.updateComplete;
               expect(element.validate()).to.be.true;
               expect(element.error).to.not.be.ok;
             });
 
-            it('is is also "potentially" valid', async function validating() {
+            it('it is also "potentially" valid', async function validating() {
               const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-              const event = new CustomEvent('change');
-              event.brand = 'visa';
-              event.complete = true;
-              event.empty = false;
-              element.card.__card.dispatchEvent(event);
+              element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
               await element.updateComplete;
               expect(element.isPotentiallyValid()).to.be.true;
               expect(element.error).to.not.be.ok;

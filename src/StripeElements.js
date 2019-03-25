@@ -5,7 +5,12 @@ import { ifDefined } from 'lit-html/directives/if-defined';
 const bubbles = true;
 const composed = true;
 
-const removeEl = el => el.remove();
+const removeEl = el => {
+  /* istanbul ignore if */
+  if(el instanceof Element) el.remove();
+}
+
+/* istanbul ignore next */
 const removeAllMounts = host =>
   host.querySelectorAll('[slot="stripe-card" name="stripe-card"]')
     .forEach(removeEl)
@@ -342,24 +347,6 @@ export class StripeElements extends LitElement {
   get token() { return this.#token; }
   set token(_) { }
 
-  /**
-   * Mount Point Element id
-   * @type {String}
-   */
-  #mountElementId = generateRandomMountElementId();
-
-  /**
-   * Breadcrumbs back up to the document.
-   * @type {Array}
-   */
-  #shadowHosts = [];
-
-  /**
-   * Stripe Element mount point for Polyfilled browsers
-   * @type {Element}
-   */
-  #shadyDomMount = null;
-
   #stripe = null;
   get stripe() { return this.#stripe; }
   set stripe(_) { }
@@ -368,11 +355,28 @@ export class StripeElements extends LitElement {
   get elements() { return this.#elements; }
   set elements(_) { }
 
-  /** The form element */
-  #form = null;
+  /**
+   * Breadcrumbs back up to the document.
+   * @type {Array}
+   */
+  #shadowHosts = [];
 
-  get #root() {
-    return window.ShadyDOM ? this.shadowRoot : document;
+  /**
+   * Mount Point Element id
+   * @type {String}
+   */
+  #stripeMountId = null;
+
+  /**
+   * Stripe Element mount point
+   * @type {Element}
+   */
+  get stripeMount() {
+    return document.getElementById(this.#stripeMountId);
+  };
+
+  get form () {
+    return this.querySelector('form');
   }
 
   static styles = [
@@ -409,9 +413,18 @@ export class StripeElements extends LitElement {
   }
 
   /** @inheritdoc */
+  render() {
+    const { error } = this;
+    const { message: errorMessage = '' } = error || {};
+    return html`
+      <slot id="stripe-slot" name="stripe-card"></slot>
+      <div id="error">${errorMessage}</div>
+    `;
+  }
+
+  /** @inheritdoc */
   firstUpdated() {
     this.#initMountPoints();
-    this.#form = this.#root.querySelector('form');
   }
 
   /** @inheritdoc */
@@ -437,16 +450,6 @@ export class StripeElements extends LitElement {
     }
   }
 
-  /** @inheritdoc */
-  render() {
-    const { error } = this;
-    const { message: errorMessage = '' } = error || {};
-    return html`
-      <slot id="stripe-slot" name="stripe-card"></slot>
-      <div id="error">${errorMessage}</div>
-    `;
-  }
-
   /** PUBLIC API */
 
   /**
@@ -461,8 +464,8 @@ export class StripeElements extends LitElement {
 
   /** Resets the Stripe card. */
   reset() {
-    if (this.card && typeof this.card.clear === 'function') this.card.clear();
     this.#setError(null);
+    this.card && this.card.clear();
   }
 
   /**
@@ -543,11 +546,12 @@ export class StripeElements extends LitElement {
     if (response.error) return this.#setError(response.error);
     this.#setToken(response.token);
     // Submit the form
-    if (this.action) this.#form.submit();
+    if (this.action) this.querySelector('form').submit();
   }
 
   #initMountPoints() {
-    if (!!window.ShadyDOM) this.#initShadyDomMount();
+    if (this.stripeMount) return;
+    else if (window.ShadyDOM) this.#initShadyDomMount();
     else this.#initShadowDomMounts();
   }
 
@@ -563,7 +567,8 @@ export class StripeElements extends LitElement {
     // and slot breadcrumbs to each shadowroot in turn, until our shadow host.
 
     const { action, token } = this;
-    const id = this.#mountElementId;
+    this.#stripeMountId = generateRandomMountElementId();
+    const id = this.#stripeMountId;
     const mountTemplate = stripeCardTemplate({ action, id, token });
     const slotTemplate =
       html`<slot slot="stripe-card" name="stripe-card"></slot>`;
@@ -574,11 +579,11 @@ export class StripeElements extends LitElement {
 
   /** Creates a mounting div for the shady dom stripe elements container */
   #initShadyDomMount() {
-    if (this.#shadyDomMount) return;
     const { action, token } = this;
-    const id = this.#mountElementId;
+    this.#stripeMountId = generateRandomMountElementId();
+    const id = this.#stripeMountId;
     const mountTemplate = stripeCardTemplate({ action, id, token });
-    this.#shadyDomMount = appendTemplate(mountTemplate, this);
+    appendTemplate(mountTemplate, this);
   }
 
   /**
@@ -606,11 +611,6 @@ export class StripeElements extends LitElement {
 
   /** Creates and mounts Stripe Elements card. */
   #mountCard() {
-    const mount = this.#root.getElementById(this.#mountElementId);
-    if (!mount) {
-      this.#unmountCard();
-      this.#initMountPoints();
-    }
     const { hidePostalCode, hideIcon, iconStyle, value } = this;
     const style = this.#getStripeElementsStyles();
 
@@ -622,7 +622,7 @@ export class StripeElements extends LitElement {
       value,
     }));
 
-    this.#card.mount(mount);
+    this.#card.mount(this.stripeMount);
     this.#card.addEventListener('ready', this.#onReady.bind(this));
     this.#card.addEventListener('change', this.#onChange.bind(this));
   }
@@ -648,7 +648,7 @@ export class StripeElements extends LitElement {
    * @param  {Event} event
    */
   #onReady(event) {
-    this.#setStripReady(true);
+    this.#setStripeReady(true);
     this.#fire('stripe-ready');
   }
 
@@ -658,17 +658,26 @@ export class StripeElements extends LitElement {
    */
   #publishableKeyChanged(publishableKey) {
     this.#unmountCard();
+    this.#setStripeReady(false);
+    if (!this.stripeMount || !this.form) this.#resetMount();
     this.#initStripe();
     if (publishableKey && this.stripe) this.#mountCard();
   }
 
+  #removeMountPoints() {
+    this.#shadowHosts.forEach(removeAllMounts)
+    removeEl(this.stripeMount);
+  }
+
+  #resetMount() {
+    this.#removeMountPoints();
+    this.#initMountPoints();
+  }
+
   /** Unmounts and nullifies the card. */
   #unmountCard() {
-    if (window.ShadyDOM) this.#shadyDomMount.remove();
-    else this.#shadowHosts.forEach(removeAllMounts)
     if (this.card) this.card.unmount();
     this.#setCard(null);
-    this.#setStripReady(false);
   }
 
   /** READONLY SETTERS */
@@ -706,7 +715,7 @@ export class StripeElements extends LitElement {
     this.requestUpdate('isEmpty', oldIsEmpty);
   }
 
-  #setStripReady(newVal) {
+  #setStripeReady(newVal) {
     const oldStripeReady = this.#stripeReady;
     this.#stripeReady = newVal;
     this.requestUpdate('stripeReady', oldStripeReady);

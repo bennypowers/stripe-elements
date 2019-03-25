@@ -17,6 +17,7 @@ export class MockedStripeAPI {
     return {
       create(type, { value, hidePostalCode, iconStyle, hideIcon, disabled } = {}) {
         return {
+          // Stripe Card APIs
           addEventListener(type, handler) {
             return this.__card.addEventListener(type, handler);
           },
@@ -27,10 +28,22 @@ export class MockedStripeAPI {
           on() {},
           blur() {},
           clear() {},
-          destroy() {},
+          destroy() {
+            delete this.__card;
+          },
           focus() {},
           unmount() {},
           update() {},
+
+          // Test Helpers
+          synthEvent(params) {
+            const calledWithType = (typeof params === 'string');
+            const type = calledWithType ? params : 'change';
+            const event = new CustomEvent(type);
+            const assign = ([k, v]) => event[k] = v;
+            if (!calledWithType) Object.entries(params).forEach(assign);
+            this.__card.dispatchEvent(event);
+          },
         };
       },
     };
