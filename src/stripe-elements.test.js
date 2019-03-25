@@ -1,8 +1,10 @@
 import './stripe-elements';
 
 import { expect, fixture, oneEvent, chai, nextFrame } from '@open-wc/testing';
-import { stub } from 'sinon';
+import { html, render } from 'lit-html';
+import { spy, stub } from 'sinon';
 import sinonChai from 'sinon-chai';
+import things from 'chai-things';
 
 import {
   INCOMPLETE_CARD_KEY,
@@ -13,6 +15,16 @@ import {
 } from '../test/mock-stripe';
 
 chai.use(sinonChai);
+chai.use(things);
+
+function appendTemplate(template, target) {
+  const tmp = document.createElement('div');
+  render(template, tmp);
+  const { firstElementChild } = tmp;
+  target.appendChild(firstElementChild);
+  tmp.remove();
+  return firstElementChild;
+}
 
 customElements.define('x-host', class XHost extends HTMLElement {
   constructor() {
@@ -548,6 +560,114 @@ describe('stripe-elements', function() {
               expect(element.isPotentiallyValid()).to.be.true;
               expect(element.error).to.not.be.ok;
             });
+          });
+        });
+      });
+
+      describe('styling', function() {
+        const allBlue = html`
+            <style id="all-blue-styles">
+            html {
+              --stripe-elements-base-color:blue;
+              --stripe-elements-base-font-family:blue;
+              --stripe-elements-base-font-size:blue;
+              --stripe-elements-base-font-smoothing:blue;
+              --stripe-elements-base-font-style:blue;
+              --stripe-elements-base-font-variant:blue;
+              --stripe-elements-base-icon-color:blue;
+              --stripe-elements-base-line-height:blue;
+              --stripe-elements-base-letter-spacing:blue;
+              --stripe-elements-base-text-decoration:blue;
+              --stripe-elements-base-text-shadow:blue;
+              --stripe-elements-base-text-transform:blue;
+              --stripe-elements-complete-color:blue;
+              --stripe-elements-complete-font-family:blue;
+              --stripe-elements-complete-font-size:blue;
+              --stripe-elements-complete-font-smoothing:blue;
+              --stripe-elements-complete-font-style:blue;
+              --stripe-elements-complete-font-variant:blue;
+              --stripe-elements-complete-icon-color:blue;
+              --stripe-elements-complete-line-height:blue;
+              --stripe-elements-complete-letter-spacing:blue;
+              --stripe-elements-complete-text-decoration:blue;
+              --stripe-elements-complete-text-shadow:blue;
+              --stripe-elements-complete-text-transform:blue;
+              --stripe-elements-empty-color:blue;
+              --stripe-elements-empty-font-family:blue;
+              --stripe-elements-empty-font-size:blue;
+              --stripe-elements-empty-font-smoothing:blue;
+              --stripe-elements-empty-font-style:blue;
+              --stripe-elements-empty-font-variant:blue;
+              --stripe-elements-empty-icon-color:blue;
+              --stripe-elements-empty-line-height:blue;
+              --stripe-elements-empty-letter-spacing:blue;
+              --stripe-elements-empty-text-decoration:blue;
+              --stripe-elements-empty-text-shadow:blue;
+              --stripe-elements-empty-text-transform:blue;
+              --stripe-elements-invalid-color:blue;
+              --stripe-elements-invalid-font-family:blue;
+              --stripe-elements-invalid-font-size:blue;
+              --stripe-elements-invalid-font-smoothing:blue;
+              --stripe-elements-invalid-font-style:blue;
+              --stripe-elements-invalid-font-variant:blue;
+              --stripe-elements-invalid-icon-color:blue;
+              --stripe-elements-invalid-line-height:blue;
+              --stripe-elements-invalid-letter-spacing:blue;
+              --stripe-elements-invalid-text-decoration:blue;
+              --stripe-elements-invalid-text-shadow:blue;
+              --stripe-elements-invalid-text-transform:blue;
+            }
+            </style>`;
+
+        describe('with native shadowDOM', function() {
+          beforeEach(function applyShim() {
+            appendTemplate(allBlue, document.head);
+          });
+
+          afterEach(function removeShim() {
+            document.getElementById('all-blue-styles').remove();
+          });
+
+          it('passes css custom styles to stripe', async function() {
+            appendTemplate(allBlue, document.head);
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            await element.updateComplete;
+            const allValues = Object.values(element.card.style).flatMap(Object.values);
+            expect(allValues).to.all.equal('blue');
+            document.getElementById('all-blue-styles').remove();
+          });
+        });
+
+        describe('with mocked ShadyCSS', function() {
+          const adoptedCssTextMap = {};
+
+          beforeEach(function applyMock() {
+            appendTemplate(allBlue, document.head);
+            window.ShadyCSS = {
+              getComputedStyleValue(el, name) {
+                return getComputedStyle(el).getPropertyValue(name);
+              },
+              ScopingShim: {
+                prepareAdoptedCssText(cssTextArray, elementName) {
+                  adoptedCssTextMap[elementName] = cssTextArray.join(' ');
+                },
+              },
+            };
+            spy(window.ShadyCSS, 'getComputedStyleValue');
+          });
+
+          afterEach(function removeMock() {
+            document.getElementById('all-blue-styles').remove();
+            window.ShadyCSS.getComputedStyleValue.restore();
+            delete window.ShadyCSS;
+          });
+
+          it('passes css custom styles to stripe', async function() {
+            const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+            await element.updateComplete;
+            const allValues = Object.values(element.card.style).flatMap(Object.values);
+            expect(allValues).to.all.equal('blue');
+            expect(window.ShadyCSS.getComputedStyleValue).to.have.been.called;
           });
         });
       });

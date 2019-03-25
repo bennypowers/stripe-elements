@@ -15,8 +15,18 @@ export class MockedStripeAPI {
 
   elements({ fonts, locale } = {}) {
     return {
-      create(type, { value, hidePostalCode, iconStyle, hideIcon, disabled } = {}) {
+      create(type, {
+        hideIcon,
+        hidePostalCode,
+        iconStyle,
+        style,
+        value,
+      } = {}) {
         return {
+          get style() {
+            return style;
+          },
+
           // Stripe Card APIs
           addEventListener(type, handler) {
             return this.__card.addEventListener(type, handler);

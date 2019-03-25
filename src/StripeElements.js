@@ -15,6 +15,15 @@ const removeAllMounts = host =>
   host.querySelectorAll('[slot="stripe-card" name="stripe-card"]')
     .forEach(removeEl)
 
+function appendTemplate(template, target) {
+  const tmp = document.createElement('div');
+  render(template, tmp);
+  const { firstElementChild } = tmp;
+  target.appendChild(firstElementChild);
+  tmp.remove();
+  return firstElementChild;
+}
+
 const stripeElementsCustomCssProperties = html`
 <style id="stripe-elements-custom-css-properties">
 .StripeElement {
@@ -76,15 +85,6 @@ const allowedStyles = [
   'textShadow',
   'textTransform',
 ];
-
-function appendTemplate(template, target) {
-  const tmp = document.createElement('div');
-  render(template, tmp);
-  const appendedDom = tmp.firstElementChild
-  target.appendChild(appendedDom);
-  tmp.remove();
-  return appendedDom;
-}
 
 /**
  * Generates a random mount point (UUID v4) for Stripe Elements. This will allow multiple
@@ -513,18 +513,18 @@ export class StripeElements extends LitElement {
    * @return {Object} Stripe Style initialization object.
    */
   #getStripeElementsStyles() {
-    const retVal = { base: {}, complete: {}, empty: {}, invalid: {} };
-    allowedStyles.forEach(style => {
+    const computedStyle = window.ShadyCSS ? null : getComputedStyle(this);
+    return allowedStyles.reduce((acc, style) => {
       const dash = style.replace(/([A-Z])/g, g => `-${g[0].toLowerCase()}`);
-      ['base', 'complete', 'empty', 'invalid'].forEach(prefix => {
-        retVal[prefix][style] = (
+      Object.keys(acc).forEach(prefix => {
+        acc[prefix][style] = (
           window.ShadyCSS
             ? ShadyCSS.getComputedStyleValue(this, `--stripe-elements-${prefix}-${dash}`)
-            : getComputedStyle(this).getPropertyValue(`--stripe-elements-${prefix}-${dash}`)
+            : computedStyle.getPropertyValue(`--stripe-elements-${prefix}-${dash}`)
         ) || undefined;
       });
-    });
-    return retVal;
+      return acc
+    }, { base: {}, complete: {}, empty: {}, invalid: {} });
   }
 
   /**
