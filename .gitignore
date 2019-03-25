@@ -1,8 +1,12 @@
 .DS_store
+
+*.tgz
+/_site
+/_virtual
+/coverage
+
+/StripeElements.js
+/stripe-elements.js
+
 bower_components/
 node_modules/
-/stripe-elements.js
-/_virtual
-*.tgz
-coverage
-/StripeElements.js
