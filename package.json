@@ -1,5 +1,5 @@
 {
-  "name": "stripe-elements",
+  "name": "@power-elements/stripe-elements",
   "version": "1.0.0",
   "description": "Web Component wrapper for stripe elements",
   "main": "stripe-elements.js",
