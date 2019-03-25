@@ -799,7 +799,7 @@ var _getStripeElementsStyles2 = function _getStripeElementsStyles2() {
   allowedStyles.forEach(style => {
     const dash = style.replace(/([A-Z])/g, g => `-${g[0].toLowerCase()}`);
     ['base', 'complete', 'empty', 'invalid'].forEach(prefix => {
-      retVal[prefix][style] = window.ShadyCSS ? ShadyCSS.getComputedStyleValue(this, `--stripe-elements-${prefix}-${dash}`) : getComputedStyle(this).getPropertyValue(`--stripe-elements-${prefix}-${dash}`);
+      retVal[prefix][style] = (window.ShadyCSS ? ShadyCSS.getComputedStyleValue(this, `--stripe-elements-${prefix}-${dash}`) : getComputedStyle(this).getPropertyValue(`--stripe-elements-${prefix}-${dash}`)) || undefined;
     });
   });
   return retVal;
