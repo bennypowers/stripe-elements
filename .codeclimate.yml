@@ -1,0 +1,7 @@
+exclude_patterns:
+  - test/*
+  - demo/*
+  - **/*.test.js
+  - karma.conf.js
+  - rollup.config.js
+  - **/*.d.ts
