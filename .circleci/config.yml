@@ -96,26 +96,24 @@ master_only: &master_only
     branches:
       only: master
 
-ignore_gh: &ignore_gh
-  branches:
-    ignore: gh-pages
-
 workflows:
   version: 2
   test-coverage:
     jobs:
       - test:
-        <<: *ignore_gh
+          filters:
+            branches:
+              ignore: gh-pages
       - docs-build:
-        <<: *ignore_gh
+          filters:
+            branches:
+              ignore: gh-pages
       - docs-deploy:
-          <<: *ignore_gh
           <<: *master_only
           requires:
             - test
             - docs-build
       - upload-coverage:
-          <<: *ignore_gh
           <<: *master_only
           requires:
             - test
