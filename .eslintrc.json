@@ -1,29 +1,7 @@
 {
-  "extends": ["eslint:recommended", "google"],
-  "parserOptions": {
-    "ecmaVersion": 6
-  },
-  "env": {
-    "browser": true,
-    "es6": true
-  },
-  "plugins": [
-    "html"
-  ],
-  "rules": {
-    "brace-style": "off",
-    "new-cap": ["error", { "capIsNewExceptions": ["Polymer", "TemplateStamp", "Stripe"] }],
-    "no-var": "off",
-    "require-jsdoc": "off",
-    "max-len": ["warn", {
-      "ignoreTemplateLiterals": true,
-      "ignoreComments": true,
-      "ignoreStrings": true,
-      "ignoreUrls": true
-      }]
-  },
+  "extends": "@apollo-elements",
+  "parser": "babel-eslint",
   "globals": {
-    "Polymer": true,
     "ShadyCSS": true,
     "Stripe": true
   }

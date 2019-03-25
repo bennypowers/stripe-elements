@@ -1,32 +1,54 @@
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/bennypowers/stripe-elements)
+[![Published on npm](https://img.shields.io/npm/v/@power-elements/stripe-elements.svg)](https://www.npmjs.com/package/@power-elements/stripe-elements)
 [![Contact me on Codementor](https://cdn.codementor.io/badges/contact_me_github.svg)](https://www.codementor.io/bennyp?utm_source=github&utm_medium=button&utm_term=bennyp&utm_campaign=github)
+[![Maintainability](https://api.codeclimate.com/v1/badges/b2205a301b0a8bb82d51/maintainability)](https://codeclimate.com/github/bennypowers/stripe-elements/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/b2205a301b0a8bb82d51/test_coverage)](https://codeclimate.com/github/bennypowers/stripe-elements/test_coverage)
+[![CircleCI](https://circleci.com/gh/bennypowers/stripe-elements.svg?style=svg)](https://circleci.com/gh/bennypowers/stripe-elements)
 
-# \<stripe-elements\>
+# `<stripe-elements>`
 
-Polymer wrapper for Stripe.js v3 Elements. Creates a `card` element à la https://stripe.com/docs/elements
+Custom element wrapper for Stripe.js v3 Elements. Creates a `card` element à la https://stripe.com/docs/elements
 
 ## Note Before Using
 
 You should make sure to load stripe.js on your app's index.html, as per Stripe's recommendation, before loading `<stripe-elements>`. If `window.Stripe` is not available when you load up the component, it will fail with a reasonably-polite console warning.
 
 ## Usage
-<!--
+```html
+<script type="module" src="/web_modules/@power-elements/stripe-elements/stripe-elements.js"></script>
+<stripe-elements id="stripe" action="/payment"></stripe-elements>
+<button id="submit" disabled>Submit</button>
+<script>
+  submit.onclick = () => stripe.validate() && stripe.submit();
+  stripe.addEventListener('change', function onChange() {
+    button.disabled = !this.validate()
+  })
+</script>
 ```
-<custom-element-demo>
-  <template>
-    <link rel="import" href="../paper-input/paper-input.html">
-    <link rel="import" href="../paper-button/paper-button.html">
-    <link rel="import" href="../paper-toast/paper-toast.html">
-    <link rel="import" href="stripe-elements.html">
-    <body>
-      <template is="dom-bind">
-        <next-code-block></next-code-block>
-      </template>
-    </body>
-  </template>
-</custom-element-demo>
+
+In a lit-html template
+```js
+import { html, render } from 'lit-html';
+import { PUBLISHABLE_KEY } from './config';
+
+const onChange = ({ target: { isComplete, hasError } }) => {
+  document.body.querySelector('button').disabled = !(isComplete && !hasError)
+}
+
+const onClick = () => document.getElementById('stripe').submit();
+
+const template = html`
+  <button disabled @click="${document.}">Get Token</button>
+  <stripe-elements id="stripe"
+    @stripe-change="${onChange}"
+    publishable-key="${PUBLISHABLE_KEY}"
+    action="/payment"
+  ></stripe-elements>
+`
+render(template, document.body)
 ```
--->
+
+In a Polymer Template
 ```html
 <script src="https://js.stripe.com/v3/"></script>
 
@@ -53,67 +75,34 @@ hosted by stripe and injected into your page via an iFrame. When we refer to the
 'Stripe Element' in this document, we are referring to the hosted Stripe form,
 not the `<stripe-element>` custom element.
 
-The following custom properties and mixins are available for styling the `<stripe-elements>` component:
+The following custom properties are available for styling the `<stripe-elements>` component:
 
 | Custom property | Description | Default |
 | --- | --- | --- |
-| `--stripe-elements-width` | Min-width of the stripe-element | 300px |
-| `--stripe-elements-height` | Min-width of the stripe-element | 50px |
-| `--stripe-elements-element` | Mixin applied to the Stripe Element | {} |
-| `--stripe-elements-element-focus` | Mixin applied to the Stripe Element in its focused state. | {} |
-| `--stripe-elements-element-invalid` | Mixin applied to the Stripe Element in its invalid state | {} |
-| `--stripe-elements-element-webkit-autofill` | Mixin applied to the Stripe Element's webkit autofill. | {} |
+| `--stripe-elements-width` | Min-width of the stripe-element | `300px` |
+| `--stripe-elements-height` | Min-width of the stripe-element | `50px` |
+| `--stripe-elements-element-padding` | Padding for the stripe-element | `14px`;
+| `--stripe-elements-element-background | Background for the stripe-element | `initial` |
 
 When you apply CSS to the custom properties below, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame.  
 
-`base` styles are inherited by all other variants.  
-`complete` styles are applied when the Stripe Element has valid input.  
-`empty` styles are applied when the Stripe Element has no user input.  
-`invalid` styles are applied when the Stripe Element has invalid input.
+- `base` styles are inherited by all other variants.  
+- `complete` styles are applied when the Stripe Element has valid input.  
+- `empty` styles are applied when the Stripe Element has no user input.  
+- `invalid` styles are applied when the Stripe Element has invalid input.
 
-| Custom property |
-| --- |
-| `--stripe-elements-base-color` |
-| `--stripe-elements-base-font-family` |
-| `--stripe-elements-base-font-size` |
-| `--stripe-elements-base-font-smoothing` |
-| `--stripe-elements-base-font-variant` |
-| `--stripe-elements-base-icon-color` |
-| `--stripe-elements-base-line-height` |
-| `--stripe-elements-base-letter-spacing` |
-| `--stripe-elements-base-text-decoration` |
-| `--stripe-elements-base-text-shadow` |
-| `--stripe-elements-base-text-transform` |
-| `--stripe-elements-complete-color` |
-| `--stripe-elements-complete-font-family` |
-| `--stripe-elements-complete-font-size` |
-| `--stripe-elements-complete-font-smoothing` |
-| `--stripe-elements-complete-font-variant` |
-| `--stripe-elements-complete-icon-color` |
-| `--stripe-elements-complete-line-height` |
-| `--stripe-elements-complete-letter-spacing` |
-| `--stripe-elements-complete-text-decoration` |
-| `--stripe-elements-complete-text-shadow` |
-| `--stripe-elements-complete-text-transform` |
-| `--stripe-elements-empty-color` |
-| `--stripe-elements-empty-font-family` |
-| `--stripe-elements-empty-font-size` |
-| `--stripe-elements-empty-font-smoothing` |
-| `--stripe-elements-empty-font-variant` |
-| `--stripe-elements-empty-icon-color` |
-| `--stripe-elements-empty-line-height` |
-| `--stripe-elements-empty-letter-spacing` |
-| `--stripe-elements-empty-text-decoration` |
-| `--stripe-elements-empty-text-shadow` |
-| `--stripe-elements-empty-text-transform` |
-| `--stripe-elements-invalid-color` |
-| `--stripe-elements-invalid-font-family` |
-| `--stripe-elements-invalid-font-size` |
-| `--stripe-elements-invalid-font-smoothing` |
-| `--stripe-elements-invalid-font-variant` |
-| `--stripe-elements-invalid-icon-color` |
-| `--stripe-elements-invalid-line-height` |
-| `--stripe-elements-invalid-letter-spacing` |
-| `--stripe-elements-invalid-text-decoration` |
-| `--stripe-elements-invalid-text-shadow` |
-| `--stripe-elements-invalid-text-transform` |
+There are 11 properties for each state that you can set which will be read into the Stripe Element iFrame:
+
+- `--stripe-elements-base-color`
+- `--stripe-elements-base-font-family`
+- `--stripe-elements-base-font-size`
+- `--stripe-elements-base-font-smoothing`
+- `--stripe-elements-base-font-variant`
+- `--stripe-elements-base-icon-color`
+- `--stripe-elements-base-line-height`
+- `--stripe-elements-base-letter-spacing`
+- `--stripe-elements-base-text-decoration`
+- `--stripe-elements-base-text-shadow`
+- `--stripe-elements-base-text-transform`
+
+and likewise `--stripe-elements-complete-color`, etc.
