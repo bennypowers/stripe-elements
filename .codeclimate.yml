@@ -1,7 +1,8 @@
+version: 2
 exclude_patterns:
-  - test/*
-  - demo/*
-  - **/*.test.js
-  - karma.conf.js
-  - rollup.config.js
-  - **/*.d.ts
+  - "karma.conf.js"
+  - "rollup.config.js"
+  - "test/*"
+  - "demo/*"
+  - "**/*.test.js"
+  - "**/*.d.ts"
