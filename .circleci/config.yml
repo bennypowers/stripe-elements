@@ -98,8 +98,7 @@ master_only: &master_only
 
 ignore_gh: &ignore_gh
   branches:
-    ignore:
-      - gh-pages
+    ignore: gh-pages
 
 workflows:
   version: 2
