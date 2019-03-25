@@ -289,6 +289,16 @@ describe('stripe-elements', function() {
         });
       });
 
+      describe('when stripe fires change', function() {
+        it('fires a stripe-change event', async function() {
+          const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+          const details = { foo: 'bar' };
+          setTimeout(() => element.card.synthEvent(details));
+          const { detail } = await oneEvent(element, 'stripe-change');
+          expect(detail.foo).to.equal('bar');
+        });
+      });
+
       describe('when card is ready', function cardReady() {
         it('fires stripe-ready event', async function() {
           const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);

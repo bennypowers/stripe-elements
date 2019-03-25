@@ -122,73 +122,37 @@ function generateRandomMountElementId() {
  * When we refer to the 'Stripe Element' in this document, we are referring
  * to the hosted Stripe form, not the `<stripe-element>` custom element.
  *
- * The following custom properties and mixins are available for styling the
- * `<stripe-elements>` component:
+ * The following custom properties are available for styling the `<stripe-elements>` component:
  *
  * | Custom property | Description | Default |
  * | --- | --- | --- |
- * | `--stripe-elements-width` | Min-width of the stripe-element | 300px |
- * | `--stripe-elements-height` | Min-width of the stripe-element | 50px |
- * | `--stripe-elements-element` | Mixin applied to the Stripe Element | {} |
- * | `--stripe-elements-element-focus` | Mixin applied to the Stripe Element in its focused state. | {} |
- * | `--stripe-elements-element-invalid` | Mixin applied to the Stripe Element in its invalid state | {} |
- * | `--stripe-elements-element-webkit-autofill` | Mixin applied to the Stripe Element's webkit autofill. | {} |
+ * | `--stripe-elements-width` | Min-width of the stripe-element | `300px` |
+ * | `--stripe-elements-height` | Min-width of the stripe-element | `50px` |
+ * | `--stripe-elements-element-padding` | Padding for the stripe-element | `14px`;
+ * | `--stripe-elements-element-background | Background for the stripe-element | `initial` |
  *
- * When you apply CSS to the custom properties below, they're parsed and sent
- * to Stripe, who should apply them to the Stripe Element they return in the
- * iFrame.
- * `base` styles are inherited by all other variants.
- * `complete` styles are applied when the Stripe Element has valid input.
- * `empty` styles are applied when the Stripe Element has no user input.
- * `invalid` styles are applied when the Stripe Element has invalid input.
+ * When you apply CSS to the custom properties below, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame.
  *
- * | Custom property |
- * | --- |
- * | `--stripe-elements-base-color` |
- * | `--stripe-elements-base-font-family` |
- * | `--stripe-elements-base-font-size` |
- * | `--stripe-elements-base-font-smoothing` |
- * | `--stripe-elements-base-font-variant` |
- * | `--stripe-elements-base-icon-color` |
- * | `--stripe-elements-base-line-height` |
- * | `--stripe-elements-base-letter-spacing` |
- * | `--stripe-elements-base-text-decoration` |
- * | `--stripe-elements-base-text-shadow` |
- * | `--stripe-elements-base-text-transform` |
- * | `--stripe-elements-complete-color` |
- * | `--stripe-elements-complete-font-family` |
- * | `--stripe-elements-complete-font-size` |
- * | `--stripe-elements-complete-font-smoothing` |
- * | `--stripe-elements-complete-font-variant` |
- * | `--stripe-elements-complete-icon-color` |
- * | `--stripe-elements-complete-line-height` |
- * | `--stripe-elements-complete-letter-spacing` |
- * | `--stripe-elements-complete-text-decoration` |
- * | `--stripe-elements-complete-text-shadow` |
- * | `--stripe-elements-complete-text-transform` |
- * | `--stripe-elements-empty-color` |
- * | `--stripe-elements-empty-font-family` |
- * | `--stripe-elements-empty-font-size` |
- * | `--stripe-elements-empty-font-smoothing` |
- * | `--stripe-elements-empty-font-variant` |
- * | `--stripe-elements-empty-icon-color` |
- * | `--stripe-elements-empty-line-height` |
- * | `--stripe-elements-empty-letter-spacing` |
- * | `--stripe-elements-empty-text-decoration` |
- * | `--stripe-elements-empty-text-shadow` |
- * | `--stripe-elements-empty-text-transform` |
- * | `--stripe-elements-invalid-color` |
- * | `--stripe-elements-invalid-font-family` |
- * | `--stripe-elements-invalid-font-size` |
- * | `--stripe-elements-invalid-font-smoothing` |
- * | `--stripe-elements-invalid-font-variant` |
- * | `--stripe-elements-invalid-icon-color` |
- * | `--stripe-elements-invalid-line-height` |
- * | `--stripe-elements-invalid-letter-spacing` |
- * | `--stripe-elements-invalid-text-decoration` |
- * | `--stripe-elements-invalid-text-shadow` |
- * | `--stripe-elements-invalid-text-transform` |
+ * - `base` styles are inherited by all other variants.
+ * - `complete` styles are applied when the Stripe Element has valid input.
+ * - `empty` styles are applied when the Stripe Element has no user input.
+ * - `invalid` styles are applied when the Stripe Element has invalid input.
  *
+ * There are 11 properties for each state that you can set which will be read into the Stripe Element iFrame:
+ *
+ * - `--stripe-elements-base-color`
+ * - `--stripe-elements-base-font-family`
+ * - `--stripe-elements-base-font-size`
+ * - `--stripe-elements-base-font-smoothing`
+ * - `--stripe-elements-base-font-variant`
+ * - `--stripe-elements-base-icon-color`
+ * - `--stripe-elements-base-line-height`
+ * - `--stripe-elements-base-letter-spacing`
+ * - `--stripe-elements-base-text-decoration`
+ * - `--stripe-elements-base-text-shadow`
+ * - `--stripe-elements-base-text-transform`
+ *
+ * and likewise `--stripe-elements-complete-color`, etc.
  * @demo demo/index.html
  * @polymer
  * @customElement
@@ -641,6 +605,7 @@ export class StripeElements extends LitElement {
     this.#setBrand(brand)
     this.#setIsComplete(complete);
     this.#setIsEmpty(empty);
+    this.dispatchEvent(new CustomEvent('stripe-change', { detail: event }));
   }
 
   /**
