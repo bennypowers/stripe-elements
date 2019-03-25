@@ -7,13 +7,22 @@
 
 # `<stripe-elements>`
 
-Custom element wrapper for Stripe.js v3 Elements. Creates a `card` element à la https://stripe.com/docs/elements
+Custom element wrapper for Stripe.js v3 Elements that works in shadow DOM. Creates a `card` element à la https://stripe.com/docs/elements
 
-## Note Before Using
-
-You should make sure to load stripe.js on your app's index.html, as per Stripe's recommendation, before loading `<stripe-elements>`. If `window.Stripe` is not available when you load up the component, it will fail with a reasonably-polite console warning.
+## Installation
+```
+npm i -S @power-elements/stripe-elements
+npx @pika/web
+```
 
 ## Usage
+You should make sure to load stripe.js on your app's index.html, as per Stripe's recommendation, before loading `<stripe-elements>`. If `window.Stripe` is not available when you load up the component, it will fail with a reasonably-polite console warning.
+
+```html
+<script src="https://js.stripe.com/v3/"></script>
+```
+
+Then you can add the element to your page.
 ```html
 <script type="module" src="/web_modules/@power-elements/stripe-elements/stripe-elements.js"></script>
 <stripe-elements id="stripe" action="/payment"></stripe-elements>
@@ -28,8 +37,9 @@ You should make sure to load stripe.js on your app's index.html, as per Stripe's
 
 In a lit-html template
 ```js
-import { html, render } from 'lit-html';
-import { PUBLISHABLE_KEY } from './config';
+import { html, render } from '/web_modules/lit-html/lit-html.js';
+import { PUBLISHABLE_KEY } from './config.js';
+import '/web_modules/@power-elements/stripe-elements/stripe-elements.js';
 
 const onChange = ({ target: { isComplete, hasError } }) => {
   document.body.querySelector('button').disabled = !(isComplete && !hasError)
@@ -50,10 +60,6 @@ render(template, document.body)
 
 In a Polymer Template
 ```html
-<script src="https://js.stripe.com/v3/"></script>
-
-<p>Insert a test key to create the element, then use a <a href="https://stripe.com/docs/testing#cards">test card</a> to generate a token.</p>
-
 <paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
 
 <div style="display:flex;">
@@ -82,7 +88,7 @@ The following custom properties are available for styling the `<stripe-elements>
 | `--stripe-elements-width` | Min-width of the stripe-element | `300px` |
 | `--stripe-elements-height` | Min-width of the stripe-element | `50px` |
 | `--stripe-elements-element-padding` | Padding for the stripe-element | `14px`;
-| `--stripe-elements-element-background | Background for the stripe-element | `initial` |
+| `--stripe-elements-element-background` | Background for the stripe-element | `initial` |
 
 When you apply CSS to the custom properties below, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame.  
 
