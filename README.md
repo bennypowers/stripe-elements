@@ -48,7 +48,7 @@ const onChange = ({ target: { isComplete, hasError } }) => {
 const onClick = () => document.getElementById('stripe').submit();
 
 const template = html`
-  <button disabled @click="${document.}">Get Token</button>
+  <button disabled @click="${onClick}">Get Token</button>
   <stripe-elements id="stripe"
     @stripe-change="${onChange}"
     publishable-key="${PUBLISHABLE_KEY}"
