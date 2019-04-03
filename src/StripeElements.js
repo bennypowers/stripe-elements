@@ -438,7 +438,7 @@ export class StripeElements extends LitElement {
   submit() {
     if (!this.stripe) throw new Error('Cannot submit before initializing Stripe');
     if (!this.isComplete) return;
-    this.stripe.createToken(this.#card, this.cardData)
+    return this.stripe.createToken(this.#card, this.cardData)
       .then(this.#handleResponse.bind(this))
       .catch(this.#handleError.bind(this));
   }
@@ -507,10 +507,14 @@ export class StripeElements extends LitElement {
    * @protected
    */
   #handleResponse(response) {
-    if (response.error) return this.#setError(response.error);
-    this.#setToken(response.token);
-    // Submit the form
-    if (this.action) this.querySelector('form').submit();
+    if (response.error) {
+      this.#setError(response.error);
+    } else {
+      this.#setToken(response.token);
+      // Submit the form
+      if (this.action) this.querySelector('form').submit();
+    }
+    return response;
   }
 
   #initMountPoints() {
