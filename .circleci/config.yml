@@ -89,7 +89,7 @@ jobs:
       - run:
           name: Deploy docs to gh-pages branch
           command: |
-            npx gh-pages --dist _site
+            npx gh-pages --dist _site --message "[skip ci] Updates"
 
 master_only: &master_only
   filters:
