@@ -12,7 +12,7 @@ const removeEl = el => {
 
 /* istanbul ignore next */
 const removeAllMounts = host =>
-  host.querySelectorAll('[slot="stripe-card" name="stripe-card"]')
+  host.querySelectorAll('[slot="stripe-card"][name="stripe-card"]')
     .forEach(removeEl)
 
 function appendTemplate(template, target) {

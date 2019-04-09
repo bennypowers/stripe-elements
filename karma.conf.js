@@ -5,6 +5,13 @@ const { readFileSync } = require('fs');
 const babelrc = JSON.parse(readFileSync(path.resolve('./.babelrc'), 'utf-8'));
 module.exports = config => {
   const newConf = merge(defaultSettings(config), {
+    browsers: ['FirefoxHeadless'],
+    customLaunchers: {
+      FirefoxHeadless: {
+        base: 'Firefox',
+        flags: ['-headless'],
+      },
+    },
     files: config.grep ? [config.grep] : ['src/*.test.js'],
     webpack: {
       devtool: 'inline-source-map',
@@ -29,8 +36,6 @@ module.exports = config => {
     .exclude = /node_modules|bower_components|_virtual|test|\.(spec|test)\.js$/;
 
   config.set(newConf);
-
-  // console.log(JSON.stringify(newConf, null, 2));
 
   return config;
 };
