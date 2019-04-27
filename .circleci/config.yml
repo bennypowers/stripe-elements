@@ -80,7 +80,7 @@ jobs:
           at: ~/repo
       - add_ssh_keys:
           fingerprints:
-            - "2c:dc:41:61:f5:15:d1:5a:8d:4f:0a:18:ee:0d:8f:aa"
+            - "ed:e9:32:4a:9e:43:5c:f2:9c:40:05:e2:97:0f:f8:b3"
       - run:
           name: "Configure CI Git User"
           command: |
