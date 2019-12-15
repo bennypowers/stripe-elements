@@ -62,11 +62,12 @@ const style = css`
 }
 `;
 
-const stripeCardTemplate = ({ action, id, token }) => html`
+const stripeCardTemplate = ({ action, id, source, token }) => html`
 <div slot="stripe-card">
   <form action="${ifDefined(action || undefined)}" method="post">
     <div id="${id}" aria-label="Credit or Debit Card"></div>
     <input type="hidden" name="stripeToken" value="${ifDefined(token || undefined)}">
+    <input type="hidden" name="stripeSource" value="${ifDefined(source || undefined)}">
   </form>
 </div>
 `;
@@ -311,6 +312,10 @@ export class StripeElements extends LitElement {
   get token() { return this.#token; }
   set token(_) { }
 
+  #source = null;
+  get source() { return this.#source; }
+  set source(_) { }
+
   #stripe = null;
   get stripe() { return this.#stripe; }
   set stripe(_) { }
@@ -347,16 +352,23 @@ export class StripeElements extends LitElement {
     style,
   ];
 
-  /** LIFECYCLE */
+  action = '';
 
-  /** @inheritdoc */
+  hideIcon = false;
+
+  hidePostalCode = false;
+
+  iconStyle = 'default';
+
+  value = {};
+
+  /** LIFECYCLE */
   constructor() {
     super();
-    this.action = '';
-    this.hideIcon = false;
-    this.hidePostalCode = false;
-    this.iconStyle = 'default';
-    this.value = {};
+    this.#onReady = this.#onReady.bind(this)
+    this.#onChange = this.#onChange.bind(this)
+    this.#handleError = this.#handleError.bind(this)
+    this.#handleResponse = this.#handleResponse.bind(this)
   }
 
   /** @inheritdoc */
@@ -403,12 +415,26 @@ export class StripeElements extends LitElement {
       this.#fire('publishable-key-changed', this.publishableKey);
       this.#publishableKeyChanged(this.publishableKey);
     }
+
     if (changed.has('token')) {
       const { token } = this;
       this.#fire('token-changed', token);
-      this.dispatchEvent(new CustomEvent('stripe-token', { bubbles, composed, detail: token }));
+      this.#fire('stripe-token', token);
+      // Submit the form
+      if (this.action) this.querySelector('form').submit();
     }
+
+    if (changed.has('source')) {
+      const { source } = this;
+      this.#fire('source-changed', source);
+      this.#fire('stripe-source', source);
+      // Submit the form
+      if (this.action) this.querySelector('form').submit();
+    }
+
     if (changed.has('error')) {
+      this.#setToken(null)
+      this.#setSource(null)
       this.#fire('error-changed', this.error);
       this.#fireError(this.error);
     }
@@ -433,14 +459,33 @@ export class StripeElements extends LitElement {
   }
 
   /**
+   * Submit credit card information to generate a source
+   */
+  createSource() {
+    if (!this.stripe) throw new Error('Cannot create source before initializing Stripe');
+    if (!this.isComplete) return;
+    return this.stripe.createToken(this.#card)
+      .then(this.#handleResponse)
+      .catch(this.#handleError);
+  }
+
+  /**
    * Submit credit card information to generate a token
    */
-  submit() {
-    if (!this.stripe) throw new Error('Cannot submit before initializing Stripe');
+  createToken() {
+    if (!this.stripe) throw new Error('Cannot create token before initializing Stripe');
     if (!this.isComplete) return;
     return this.stripe.createToken(this.#card, this.cardData)
-      .then(this.#handleResponse.bind(this))
-      .catch(this.#handleError.bind(this));
+      .then(this.#handleResponse)
+      .catch(this.#handleError);
+  }
+
+  /**
+   * Submit credit card information to generate a token
+   * @deprecated will be removed in a subsequent version
+   */
+  submit() {
+    return this.createToken();
   }
 
   /**
@@ -507,13 +552,10 @@ export class StripeElements extends LitElement {
    * @protected
    */
   #handleResponse(response) {
-    if (response.error) {
-      this.#setError(response.error);
-    } else {
-      this.#setToken(response.token);
-      // Submit the form
-      if (this.action) this.querySelector('form').submit();
-    }
+    const { error, token, source } = response;
+    if (error) this.#setError(error)
+    else if (token) this.#setToken(token)
+    else if (source) this.#setSource(source)
     return response;
   }
 
@@ -591,8 +633,8 @@ export class StripeElements extends LitElement {
     }));
 
     this.#card.mount(this.stripeMount);
-    this.#card.addEventListener('ready', this.#onReady.bind(this));
-    this.#card.addEventListener('change', this.#onChange.bind(this));
+    this.#card.addEventListener('ready', this.#onReady);
+    this.#card.addEventListener('change', this.#onChange);
   }
 
   /**
@@ -609,7 +651,7 @@ export class StripeElements extends LitElement {
     this.#setBrand(brand)
     this.#setIsComplete(complete);
     this.#setIsEmpty(empty);
-    this.dispatchEvent(new CustomEvent('stripe-change', { detail: event }));
+    this.#fire('stripe-change', event);
   }
 
   /**
@@ -688,6 +730,12 @@ export class StripeElements extends LitElement {
     const oldStripeReady = this.#stripeReady;
     this.#stripeReady = newVal;
     this.requestUpdate('stripeReady', oldStripeReady);
+  }
+
+  #setSource(newVal) {
+    const oldSource = this.#source;
+    this.#source = newVal;
+    this.requestUpdate('source', oldSource);
   }
 
   #setToken(newVal) {
