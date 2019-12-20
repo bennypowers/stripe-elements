@@ -2,9 +2,6 @@ import { LitElement, html, css } from 'lit-element';
 import { render } from 'lit-html';
 import { ifDefined } from 'lit-html/directives/if-defined';
 
-const bubbles = true;
-const composed = true;
-
 const removeEl = el => {
   /* istanbul ignore if */
   if (el instanceof Element) el.remove();
@@ -493,15 +490,16 @@ export class StripeElements extends LitElement {
   /** @inheritdoc */
   connectedCallback() {
     super.connectedCallback();
-    this.#fire('is-complete-changed', this.isComplete);
-    this.#fire('is-empty-changed', this.isEmpty);
-    this.#fire('has-error-changed', this.hasError);
-    this.#fire('brand-changed', this.brand);
-    this.#fire('card-changed', this.card);
-    this.#fire('error-changed', this.error);
-    this.#fire('publishable-key-changed', this.publishableKey);
-    this.#fire('stripe-ready-changed', this.stripeReady);
-    this.#fire('token-changed', this.token);
+    this.#notify('is-complete');
+    this.#notify('is-empty');
+    this.#notify('has-error');
+    this.#notify('brand');
+    this.#notify('card');
+    this.#notify('error');
+    this.#notify('publishable-key');
+    this.#notify('stripe-ready');
+    this.#notify('token');
+    this.#notify('source');
     if (!document.getElementById('stripe-elements-custom-css-properties')) {
       appendTemplate(stripeElementsCustomCssProperties, document.head);
     }
@@ -524,20 +522,20 @@ export class StripeElements extends LitElement {
 
   /** @inheritdoc */
   updated(changed) {
-    if (changed.has('isComplete')) this.#fire('is-complete-changed', this.isComplete);
-    if (changed.has('isEmpty')) this.#fire('is-empty-changed', this.isEmpty);
-    if (changed.has('hasError')) this.#fire('has-error-changed', this.hasError);
-    if (changed.has('brand')) this.#fire('brand-changed', this.brand);
-    if (changed.has('card')) this.#fire('card-changed', this.card);
-    if (changed.has('stripeReady')) this.#fire('stripe-ready-changed', this.stripeReady);
+    if (changed.has('isComplete')) this.#notify('is-complete');
+    if (changed.has('isEmpty')) this.#notify('is-empty');
+    if (changed.has('hasError')) this.#notify('has-error');
+    if (changed.has('brand')) this.#notify('brand');
+    if (changed.has('card')) this.#notify('card');
+    if (changed.has('stripeReady')) this.#notify('stripe-ready');
     if (changed.has('publishableKey')) {
-      this.#fire('publishable-key-changed', this.publishableKey);
+      this.#notify('publishable-key');
       this.#publishableKeyChanged(this.publishableKey);
     }
 
     if (changed.has('token')) {
       const { token } = this;
-      this.#fire('token-changed', token);
+      this.#notify('token');
       this.#fire('stripe-token', token);
       // Submit the form
       if (this.action) this.querySelector('form').submit();
@@ -545,16 +543,16 @@ export class StripeElements extends LitElement {
 
     if (changed.has('source')) {
       const { source } = this;
-      this.#fire('source-changed', source);
+      this.#notify('source');
       this.#fire('stripe-source', source);
       // Submit the form
       if (this.action) this.querySelector('form').submit();
     }
 
     if (changed.has('error')) {
-      this.#fire('error-changed', this.error);
       this.#setToken(null);
       this.#setSource(null);
+      this.#notify('error');
       this.#fireError(this.error);
     }
   }
@@ -621,17 +619,32 @@ export class StripeElements extends LitElement {
     return isValid;
   }
 
-  /** PRIVATE METHODS */
-
-  /** Fires an event with a polymer-style changed event */
-  #fire(type, value) {
-    const detail = value ? { value } : undefined;
-    this.dispatchEvent(new CustomEvent(type, { bubbles, composed, detail }));
+  /**
+   * Fires an event.
+   * @param  {string} type      event type
+   * @param  {any}    detail    detail value
+   * @param  {Object} [opts={}] event options
+   */
+  #fire(type, detail, opts = {}) {
+    this.dispatchEvent(new CustomEvent(type, { detail, ...opts }));
   }
 
-  /** Fires an Error Event */
+  /**
+   * Fires an Error Event
+   * @param  {Error} error
+   */
   #fireError(error) {
-    this.dispatchEvent(new ErrorEvent('stripe-error', { bubbles, composed, error }));
+    this.dispatchEvent(new ErrorEvent('stripe-error', { error }));
+  }
+
+  /**
+   * Fires a Polymer-style prop-changed event.
+   * @param {string} prop camelCased prop name.
+   */
+  #notify(prop) {
+    const type = `${dash(prop)}-changed`;
+    const value = this[camel(prop)];
+    this.#fire(type, { value });
   }
 
   /**
@@ -777,7 +790,7 @@ export class StripeElements extends LitElement {
    */
   #onReady(event) {
     this.#setStripeReady(true);
-    this.#fire('stripe-ready');
+    this.#fire('stripe-ready', event);
   }
 
   /**
