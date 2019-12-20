@@ -7,13 +7,14 @@ const composed = true;
 
 const removeEl = el => {
   /* istanbul ignore if */
-  if(el instanceof Element) el.remove();
-}
+  if (el instanceof Element) el.remove();
+};
+
 
 /* istanbul ignore next */
 const removeAllMounts = host =>
   host.querySelectorAll('[slot="stripe-card"][name="stripe-card"]')
-    .forEach(removeEl)
+    .forEach(removeEl);
 
 function appendTemplate(template, target) {
   const tmp = document.createElement('div');
@@ -342,7 +343,7 @@ export class StripeElements extends LitElement {
    */
   get stripeMount() {
     return document.getElementById(this.#stripeMountId);
-  };
+  }
 
   get form () {
     return this.querySelector('form');
@@ -433,9 +434,9 @@ export class StripeElements extends LitElement {
     }
 
     if (changed.has('error')) {
-      this.#setToken(null)
-      this.#setSource(null)
       this.#fire('error-changed', this.error);
+      this.#setToken(null);
+      this.#setSource(null);
       this.#fireError(this.error);
     }
   }
@@ -452,7 +453,9 @@ export class StripeElements extends LitElement {
     return (!this.isComplete && !this.isEmpty && !this.hasError) || this.validate();
   }
 
-  /** Resets the Stripe card. */
+  /**
+   * Resets the Stripe card.
+   */
   reset() {
     this.#setError(null);
     this.card && this.card.clear();
@@ -493,14 +496,10 @@ export class StripeElements extends LitElement {
    * @return {Boolean} true if the Stripe form is valid
    */
   validate() {
-    const { isComplete, isEmpty, hasError, error } = this;
+    const { isComplete, isEmpty, hasError } = this;
     const isValid = !hasError && isComplete && !isEmpty;
-    if (!isValid && !hasError) {
-      this.#setError(
-          isEmpty ? 'Credit Card information is empty.'
-        : 'Credit card information is incomplete.'
-      )
-    }
+    const message = `Credit card information is ${isEmpty ? 'empty' : 'incomplete'}.`;
+    if (!isValid && !hasError) this.#setError(message);
     return isValid;
   }
 
@@ -532,7 +531,7 @@ export class StripeElements extends LitElement {
             : computedStyle.getPropertyValue(`--stripe-elements-${prefix}-${dash}`)
         ) || undefined;
       });
-      return acc
+      return acc;
     }, { base: {}, complete: {}, empty: {}, invalid: {} });
   }
 
@@ -542,7 +541,7 @@ export class StripeElements extends LitElement {
    * @protected
    */
   #handleError(error) {
-    this.#setError(error.message)
+    this.#setError(error.message);
   }
 
   /**
@@ -553,9 +552,9 @@ export class StripeElements extends LitElement {
    */
   #handleResponse(response) {
     const { error, token, source } = response;
-    if (error) this.#setError(error)
-    else if (token) this.#setToken(token)
-    else if (source) this.#setSource(source)
+    if (error) this.#setError(error);
+    else if (token) this.#setToken(token);
+    else if (source) this.#setSource(source);
     return response;
   }
 
@@ -570,8 +569,7 @@ export class StripeElements extends LitElement {
     // trace each shadow boundary between us and the document
     let host = this;
     this.#shadowHosts = [this];
-    // eslint-disable-next-line no-loops/no-loops
-    while (host = host.getRootNode().host) this.#shadowHosts.push(host);
+    while (host = host.getRootNode().host) this.#shadowHosts.push(host); // eslint-disable-line prefer-destructuring, no-loops/no-loops
 
     // append mount point to first shadow host under document (as light child)
     // and slot breadcrumbs to each shadowroot in turn, until our shadow host.
@@ -605,18 +603,17 @@ export class StripeElements extends LitElement {
     const oldElements = this.#elements;
     if (this.#stripe) this.#stripe = null;
     if (!window.Stripe) {
-      const message = `<stripe-elements> requires Stripe.js to be loaded first.`
-      this.#setError({message})
-      // eslint-disable-next-line no-console
-      console.warn(message);
+      const message = `<stripe-elements> requires Stripe.js to be loaded first.`;
+      this.#setError({ message });
+      console.warn(message); // eslint-disable-line no-console
     } else if (this.publishableKey) {
       this.#stripe = Stripe(this.publishableKey);
       this.#elements = this.#stripe.elements();
     } else {
       this.#elements = null;
     }
-    this.requestUpdate('stripe', oldStripe)
-    this.requestUpdate('elements', oldElements)
+    this.requestUpdate('stripe', oldStripe);
+    this.requestUpdate('elements', oldElements);
   }
 
   /** Creates and mounts Stripe Elements card. */
@@ -646,9 +643,9 @@ export class StripeElements extends LitElement {
    * @param  {String|Object} event.value     Value of the form. Only non-sensitive information e.g. postalCode is present.
    */
   #onChange(event) {
-    const { empty, complete, brand, error, value } = event;
-    this.#setError(error)
-    this.#setBrand(brand)
+    const { empty, complete, brand, error } = event;
+    this.#setError(error);
+    this.#setBrand(brand);
     this.#setIsComplete(complete);
     this.#setIsEmpty(empty);
     this.#fire('stripe-change', event);
@@ -676,7 +673,7 @@ export class StripeElements extends LitElement {
   }
 
   #removeMountPoints() {
-    this.#shadowHosts.forEach(removeAllMounts)
+    this.#shadowHosts.forEach(removeAllMounts);
     removeEl(this.stripeMount);
   }
 
@@ -694,7 +691,7 @@ export class StripeElements extends LitElement {
   /** READONLY SETTERS */
 
   #setBrand(newVal) {
-    const oldBrand = this.#brand
+    const oldBrand = this.#brand;
     this.#brand = newVal;
     this.requestUpdate('brand', oldBrand);
   }
