@@ -80,11 +80,17 @@ const stripeElementsCustomCssProperties = html`
 `;
 
 const style = css`
+[hidden] { display: none !important; }
 :host {
   display: block;
-  flex: 1;
   min-width: var(--stripe-elements-width, 300px);
   min-height: var(--stripe-elements-height, 50px);
+}
+#error {
+  font-family: sans-serif;
+  font-size: 14px;
+  padding-left: 42px;
+  padding-bottom: 10px;
 }
 `;
 
@@ -272,6 +278,12 @@ export class StripeElements extends LitElement {
     publishableKey: { type: String, attribute: 'publishable-key' },
 
     /**
+     * Whether to display the error message
+     * @type {Object}
+     */
+    showError: { type: Boolean, attribute: 'show-error', reflect: true },
+
+    /**
      * True when the stripe element is ready to receive focus.
      * @type {Boolean}
      * @readonly
@@ -416,11 +428,11 @@ export class StripeElements extends LitElement {
 
   /** @inheritdoc */
   render() {
-    const { error } = this;
+    const { error, showError } = this;
     const { message: errorMessage = '' } = error || {};
     return html`
       <slot id="stripe-slot" name="stripe-card"></slot>
-      <div id="error">${errorMessage}</div>
+      <div id="error" part="error" ?hidden="${!showError}">${errorMessage || error}</div>
     `;
   }
 
