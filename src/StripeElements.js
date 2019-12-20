@@ -489,13 +489,6 @@ export class StripeElements extends LitElement {
   value = {};
 
   /** LIFECYCLE */
-  constructor() {
-    super();
-    this.#onReady = this.#onReady.bind(this)
-    this.#onChange = this.#onChange.bind(this)
-    this.#handleError = this.#handleError.bind(this)
-    this.#handleResponse = this.#handleResponse.bind(this)
-  }
 
   /** @inheritdoc */
   connectedCallback() {
@@ -755,17 +748,16 @@ export class StripeElements extends LitElement {
     const { hidePostalCode, hideIcon, iconStyle, value } = this;
     const style = this.#getStripeElementsStyles();
 
-    this.#setCard(this.#elements.create('card', {
-      hideIcon,
-      hidePostalCode,
-      iconStyle,
-      style,
-      value,
-    }));
+    const card =
+      this.#elements.create('card', { hideIcon, hidePostalCode, iconStyle, style, value });
+
+    this.#setCard(card);
 
     this.#card.mount(this.stripeMount);
-    this.#card.addEventListener('ready', this.#onReady);
-    this.#card.addEventListener('change', this.#onChange);
+    this.#card.addEventListener('ready', this.#onReady.bind(this));
+    this.#card.addEventListener('change', this.#onChange.bind(this));
+    this.#setIsComplete(false);
+    this.#setIsEmpty(true);
   }
 
   /**
