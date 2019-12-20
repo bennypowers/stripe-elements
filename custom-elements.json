@@ -1,0 +1,337 @@
+{
+  "version": "experimental",
+  "tags": [
+    {
+      "name": "stripe-elements",
+      "description": "`stripe-elements`\nCustom element wrapper for Stripe.js v3 Elements\n\n____ Usage\n\n```html\n   <label>Stripe Publishable Key <input id=\"pubkey\"/></label>\n   <stripe-elements id=\"stripe\"></stripe-elements>\n   <script>\n     const onKey = ({ target: { value } })) => stripe.publishableKey = value;\n     const onToken = ({ detail: token })) => console.log(token);\n     pubkey.addEventListener('change', onKey);\n     stripe.addEventListener('stripe-token', onToken);\n   </script>\n```\n\n____ Styling\n\nA word about nomenclature before we list custom properties and mixins.\nStripe v3 Introduces 'Stripe Elements'. These are not custom elements,\nbut rather forms hosted by stripe and injected into your page via an iFrame.\nWhen we refer to the 'Stripe Element' in this document, we are referring\nto the hosted Stripe form, not the `<stripe-element>` custom element.\nConfusing? Possibly... but the alternative was to call *this* element `<stripe-elements-element>``\n\nThe following custom properties are available for styling the `<stripe-elements>` component:\n\n| Custom property | Description | Default |\n| --- | --- | --- |\n| `--stripe-elements-width` | Min-width of the stripe-element | `300px` |\n| `--stripe-elements-height` | Min-width of the stripe-element | `50px` |\n| `--stripe-elements-element-padding` | Padding for the stripe-element | `14px`;\n| `--stripe-elements-element-background | Background for the stripe-element | `initial` |\n\nWhen you apply CSS to the custom properties below, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame.\n\n- `base` styles are inherited by all other variants.\n- `complete` styles are applied when the Stripe Element has valid input.\n- `empty` styles are applied when the Stripe Element has no user input.\n- `invalid` styles are applied when the Stripe Element has invalid input.\n\nThere are 11 properties for each state that you can set which will be read into the Stripe Element iFrame:",
+      "properties": [
+        {
+          "name": "brand",
+          "description": "Brand of the card"
+        },
+        {
+          "name": "card",
+          "description": "Stripe card object",
+          "type": "StripeCard"
+        },
+        {
+          "name": "error",
+          "description": "Stripe or validation error",
+          "type": "Error"
+        },
+        {
+          "name": "hasError",
+          "description": "Whether the element has an error",
+          "type": "Boolean"
+        },
+        {
+          "name": "isComplete",
+          "description": "Whether the card form is complete",
+          "type": "Boolean"
+        },
+        {
+          "name": "isEmpty",
+          "description": "Whether the card form is empty",
+          "type": "Boolean"
+        },
+        {
+          "name": "stripeReady",
+          "description": "Whether Stripe.js has been initialized",
+          "type": "Boolean"
+        },
+        {
+          "name": "token",
+          "description": "The token returned from `createToken`",
+          "type": "StripeToken"
+        },
+        {
+          "name": "source",
+          "description": "The source returned from `createSource`",
+          "type": "StripeSource"
+        },
+        {
+          "name": "stripe",
+          "description": "The Stripe.js object",
+          "type": "Stripe"
+        },
+        {
+          "name": "elements",
+          "description": "The Stripe.js Elements instance object",
+          "type": "Elements"
+        },
+        {
+          "name": "stripeMount",
+          "description": "Stripe Element mount point",
+          "type": "Element"
+        },
+        {
+          "name": "action",
+          "description": "The action attr of the internal form.",
+          "type": "string"
+        },
+        {
+          "name": "cardData",
+          "description": "Stripe cardData object to submit with",
+          "type": "Object",
+          "default": "{}"
+        },
+        {
+          "name": "hideIcon",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "hidePostalCode",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "iconStyle",
+          "type": "string",
+          "default": "\"default\""
+        },
+        {
+          "name": "value",
+          "type": "object",
+          "default": "{}"
+        }
+      ],
+      "events": [
+        {
+          "name": "stripe-token",
+          "description": "The token received from stripe.com"
+        },
+        {
+          "name": "stripe-source",
+          "description": "The source received from stripe.com"
+        },
+        {
+          "name": "stripe-error",
+          "description": "The validation error, or the error returned from stripe.com"
+        },
+        {
+          "name": "stripe-change",
+          "description": "Stripe Element change event"
+        },
+        {
+          "name": "stripe-ready",
+          "description": "Stripe has been initialized and mounted"
+        },
+        {
+          "name": "is-complete-changed",
+          "description": "The new value of is-complete"
+        },
+        {
+          "name": "is-empty-changed",
+          "description": "The new value of is-empty"
+        },
+        {
+          "name": "has-error-changed",
+          "description": "The new value of has-error"
+        },
+        {
+          "name": "brand-changed",
+          "description": "The new value of brand"
+        },
+        {
+          "name": "card-changed",
+          "description": "The new value of card"
+        },
+        {
+          "name": "error-changed",
+          "description": "The new value of error"
+        },
+        {
+          "name": "publishable-key-changed",
+          "description": "The new value of publishable-key"
+        },
+        {
+          "name": "stripe-ready-changed",
+          "description": "The new value of stripe-ready"
+        },
+        {
+          "name": "token-changed",
+          "description": "The new value of token"
+        }
+      ],
+      "cssProperties": [
+        {
+          "name": "--stripe-elements-base-color",
+          "description": "`color` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-font-family",
+          "description": "`font-family` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-font-size",
+          "description": "`font-size` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-font-smoothing",
+          "description": "`font-smoothing` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-font-variant",
+          "description": "`font-variant` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-icon-color",
+          "description": "`icon-color` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-line-height",
+          "description": "`line-height` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-letter-spacing",
+          "description": "`letter-spacing` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-text-decoration",
+          "description": "`text-decoration` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-text-shadow",
+          "description": "`text-shadow` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-text-transform",
+          "description": "`text-transform` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-complete-color",
+          "description": "`color` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-font-family",
+          "description": "`font-family` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-font-size",
+          "description": "`font-size` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-font-smoothing",
+          "description": "`font-smoothing` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-font-variant",
+          "description": "`font-variant` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-icon-color",
+          "description": "`icon-color` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-line-height",
+          "description": "`line-height` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-letter-spacing",
+          "description": "`letter-spacing` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-text-decoration",
+          "description": "`text-decoration` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-text-shadow",
+          "description": "`text-shadow` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-text-transform",
+          "description": "`text-transform` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-empty-color",
+          "description": "`color` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-font-family",
+          "description": "`font-family` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-font-size",
+          "description": "`font-size` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-font-smoothing",
+          "description": "`font-smoothing` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-font-variant",
+          "description": "`font-variant` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-icon-color",
+          "description": "`icon-color` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-line-height",
+          "description": "`line-height` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-letter-spacing",
+          "description": "`letter-spacing` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-text-decoration",
+          "description": "`text-decoration` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-text-shadow",
+          "description": "`text-shadow` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-text-transform",
+          "description": "`text-transform` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-invalid-color",
+          "description": "`color` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-font-family",
+          "description": "`font-family` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-font-size",
+          "description": "`font-size` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-font-smoothing",
+          "description": "`font-smoothing` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-font-variant",
+          "description": "`font-variant` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-icon-color",
+          "description": "`icon-color` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-line-height",
+          "description": "`line-height` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-letter-spacing",
+          "description": "`letter-spacing` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-text-decoration",
+          "description": "`text-decoration` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-text-shadow",
+          "description": "`text-shadow` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-text-transform",
+          "description": "`text-transform` property for the element in its invalid state"
+        }
+      ]
+    }
+  ]
+}
