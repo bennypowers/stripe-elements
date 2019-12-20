@@ -1,10 +1,10 @@
 import './stripe-elements';
 
-import { expect, fixture, oneEvent, nextFrame } from '@open-wc/testing';
+import { expect, fixture, oneEvent, nextFrame, aTimeout } from '@open-wc/testing';
 import { html, render } from 'lit-html';
 import { spy, stub } from 'sinon';
-import sinonChai from 'sinon-chai';
-import things from 'chai-things';
+import 'sinon-chai';
+import 'chai-things';
 
 import {
   INCOMPLETE_CARD_KEY,
@@ -13,9 +13,6 @@ import {
   SHOULD_ERROR_KEY,
   TOKEN_ERROR_KEY,
 } from '../test/mock-stripe';
-
-window.chai.use(sinonChai);
-window.chai.use(things);
 
 function appendTemplate(template, target) {
   const tmp = document.createElement('div');
@@ -41,7 +38,7 @@ function camelCaseToDash( myStr ) {
 
 const NO_STRIPE_JS = `<stripe-elements> requires Stripe.js to be loaded first.`;
 const INCOMPLETE_CC_INFO = 'Credit card information is incomplete.';
-const EMPTY_CC_INFO = 'Credit Card information is empty.';
+const EMPTY_CC_INFO = 'Credit card information is empty.';
 
 afterEach(function removeGlobalStyles() {
   const globalStyles = document.getElementById('stripe-elements-custom-css-properties');
@@ -56,7 +53,7 @@ describe('stripe-elements', function() {
 
   describe('default properties', function defaults() {
     [
-      { name: 'action', default: '' },
+      { name: 'action', default: undefined },
       { name: 'brand', default: null },
       { name: 'card', default: null },
       { name: 'elements', default: null },
@@ -96,8 +93,8 @@ describe('stripe-elements', function() {
       it(prop, async function() {
         const element = await fixture(`<stripe-elements></stripe-elements>`);
         const init = element[prop];
-        element[prop] = Math.random();
-        expect(element[prop]).to.eql(init);
+        expect(() => element[prop] = Math.random()).to.throw;
+        expect(element[prop]).to.equal(init);
       });
     });
   });
@@ -684,7 +681,7 @@ describe('stripe-elements', function() {
               const subStub = stub(form, 'submit');
               element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
               element.createToken();
-              await element.updateComplete;
+              await aTimeout(100);
               expect(subStub).to.have.been.called;
               subStub.restore();
             });
