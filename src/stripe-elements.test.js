@@ -201,12 +201,16 @@ describe('stripe-elements', function() {
 
       it('throws an error when creating token', async function submit() {
         const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-        expect(() => element.createToken()).to.throw('Cannot create token before initializing Stripe');
+        return element.createToken()
+          .then(() => expect.fail('Resolved token promise without Stripe.js'))
+          .catch(err => expect(err.message).to.equal('Cannot create token before initializing Stripe'));
       });
 
       it('throws an error when creating source', async function submit() {
         const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
-        expect(() => element.createSource()).to.throw('Cannot create source before initializing Stripe');
+        return element.createSource()
+          .then(() => expect.fail('Resolved source promise without Stripe.js'))
+          .catch(err => expect(err.message).to.equal('Cannot create source before initializing Stripe'));
       });
     });
 
@@ -489,8 +493,8 @@ describe('stripe-elements', function() {
             await nextFrame();
             await element.updateComplete;
             expect(element.error).to.eql(SHOULD_ERROR_KEY);
-            expect(element.token).to.be.null
-            expect(element.source).to.be.null
+            expect(element.token).to.be.null;
+            expect(element.source).to.be.null;
           });
 
           describe('validating existing error', function() {
@@ -509,8 +513,8 @@ describe('stripe-elements', function() {
               await element.updateComplete;
               element.validate();
               expect(element.error).to.equal(TOKEN_ERROR_KEY);
-              expect(element.token).to.be.null
-              expect(element.source).to.be.null
+              expect(element.token).to.be.null;
+              expect(element.source).to.be.null;
             });
           });
         });
@@ -523,46 +527,46 @@ describe('stripe-elements', function() {
             await nextFrame();
             await element.updateComplete;
             expect(element.error).to.eql(TOKEN_ERROR_KEY);
-            expect(element.token).to.be.null
-            expect(element.source).to.be.null
+            expect(element.token).to.be.null;
+            expect(element.source).to.be.null;
           });
         });
 
-        describe('when token is returned', function() {
-          it('sets token', async function submit() {
+        describe('when source is returned', function() {
+          it('sets source', async function submit() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
             element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
             element.createSource();
             await element.updateComplete;
-            expect(element.token).to.equal('howdy!');
+            expect(element.source).to.equal('howdy!');
           });
 
-          it('fires token-changed', async function submit() {
+          it('fires source-changed', async function submit() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
             element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
             setTimeout(() => element.createSource());
-            const ev = await oneEvent(element, 'token-changed');
+            const ev = await oneEvent(element, 'source-changed');
             expect(ev.detail.value).to.equal('howdy!');
           });
 
-          it('fires stripe-token', async function submit() {
+          it('fires stripe-source', async function submit() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
             element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
             setTimeout(() => element.createSource());
-            const ev = await oneEvent(element, 'stripe-token');
+            const ev = await oneEvent(element, 'stripe-source');
             await element.updateComplete;
             expect(ev.detail).to.equal('howdy!');
           });
 
           describe('when there is an action', function() {
             it('submits the form', async function submit() {
-              const element = await fixture(`<stripe-elements action="here" publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
+              const element = await fixture(`<stripe-elements action="/here" publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
               await element.updateComplete;
-              const form = element.querySelector('form');
+              const { form } = element;
               const subStub = stub(form, 'submit');
               element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
               element.createSource();
-              await element.updateComplete;
+              await aTimeout(100);
               expect(subStub).to.have.been.called;
               subStub.restore();
             });
@@ -607,8 +611,8 @@ describe('stripe-elements', function() {
             await nextFrame();
             await element.updateComplete;
             expect(element.error).to.eql(SHOULD_ERROR_KEY);
-            expect(element.token).to.be.null
-            expect(element.source).to.be.null
+            expect(element.token).to.be.null;
+            expect(element.source).to.be.null;
           });
 
           describe('validating existing error', function() {
@@ -627,8 +631,8 @@ describe('stripe-elements', function() {
               await element.updateComplete;
               element.validate();
               expect(element.error).to.equal(TOKEN_ERROR_KEY);
-              expect(element.token).to.be.null
-              expect(element.source).to.be.null
+              expect(element.token).to.be.null;
+              expect(element.source).to.be.null;
             });
           });
         });
@@ -641,8 +645,8 @@ describe('stripe-elements', function() {
             await nextFrame();
             await element.updateComplete;
             expect(element.error).to.eql(TOKEN_ERROR_KEY);
-            expect(element.token).to.be.null
-            expect(element.source).to.be.null
+            expect(element.token).to.be.null;
+            expect(element.source).to.be.null;
           });
         });
 

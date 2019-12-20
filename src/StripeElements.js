@@ -468,7 +468,17 @@ export class StripeElements extends LitElement {
     style,
   ];
 
-  action = '';
+  /**
+   * The action attr of the internal form.
+   * @type {string}
+   */
+  action;
+
+  /**
+   * Stripe cardData object to submit with
+   * @type {Object}
+   */
+  cardData = {};
 
   hideIcon = false;
 
@@ -579,32 +589,24 @@ export class StripeElements extends LitElement {
 
   /**
    * Submit credit card information to generate a source
+   * @param {object} [sourceData={}]
    */
-  createSource() {
+  async createSource(sourceData = {}) {
     if (!this.stripe) throw new Error('Cannot create source before initializing Stripe');
-    if (!this.isComplete) return;
-    return this.stripe.createToken(this.#card)
-      .then(this.#handleResponse)
-      .catch(this.#handleError);
+    return this.stripe.createSource(this.#card, sourceData)
+      .then(this.#handleResponse.bind(this))
+      .catch(this.#handleError.bind(this));
   }
 
   /**
    * Submit credit card information to generate a token
+   * @param {object} [cardData=this.cardData]
    */
-  createToken() {
+  async createToken(cardData = this.cardData) {
     if (!this.stripe) throw new Error('Cannot create token before initializing Stripe');
-    if (!this.isComplete) return;
-    return this.stripe.createToken(this.#card, this.cardData)
-      .then(this.#handleResponse)
-      .catch(this.#handleError);
-  }
-
-  /**
-   * Submit credit card information to generate a token
-   * @deprecated will be removed in a subsequent version
-   */
-  submit() {
-    return this.createToken();
+    return this.stripe.createToken(this.#card, cardData)
+      .then(this.#handleResponse.bind(this))
+      .catch(this.#handleError.bind(this));
   }
 
   /**

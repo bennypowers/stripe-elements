@@ -65,7 +65,9 @@ export class MockedStripeAPI {
     else return { token: 'howdy!' };
   }
 
-  createSource() {
-    return {};
+  async createSource(card, cardData) {
+    if (this.key === SHOULD_ERROR_KEY) throw new Error(SHOULD_ERROR_KEY);
+    else if (this.key === TOKEN_ERROR_KEY) return { error: TOKEN_ERROR_KEY };
+    else return { source: 'howdy!' };
   }
 }
