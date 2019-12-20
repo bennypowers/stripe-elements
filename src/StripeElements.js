@@ -320,47 +320,36 @@ export class StripeElements extends LitElement {
 
   #brand = null;
   get brand() { return this.#brand; }
-  set brand(_) { }
 
   #card = null;
   get card() { return this.#card; }
-  set card(_) { }
 
   #error = null;
   get error() { return this.#error; }
-  set error(_) { }
 
   #hasError = false;
   get hasError() { return this.#hasError; }
-  set hasError(_) { }
 
   #isComplete = false;
   get isComplete() { return this.#isComplete; }
-  set isComplete(_) { }
 
   #isEmpty = true;
   get isEmpty() { return this.#isEmpty; }
-  set isEmpty(_) { }
 
   #stripeReady = false;
   get stripeReady() { return this.#stripeReady; }
-  set stripeReady(_) { }
 
   #token = null;
   get token() { return this.#token; }
-  set token(_) { }
 
   #source = null;
   get source() { return this.#source; }
-  set source(_) { }
 
   #stripe = null;
   get stripe() { return this.#stripe; }
-  set stripe(_) { }
 
   #elements = null;
   get elements() { return this.#elements; }
-  set elements(_) { }
 
   /**
    * Breadcrumbs back up to the document.
