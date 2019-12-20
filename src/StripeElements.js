@@ -154,6 +154,7 @@ function generateRandomMountElementId() {
  * but rather forms hosted by stripe and injected into your page via an iFrame.
  * When we refer to the 'Stripe Element' in this document, we are referring
  * to the hosted Stripe form, not the `<stripe-element>` custom element.
+ * Confusing? Possibly... but the alternative was to call *this* element `<stripe-elements-element>``
  *
  * The following custom properties are available for styling the `<stripe-elements>` component:
  *
@@ -173,25 +174,73 @@ function generateRandomMountElementId() {
  *
  * There are 11 properties for each state that you can set which will be read into the Stripe Element iFrame:
  *
- * - `--stripe-elements-base-color`
- * - `--stripe-elements-base-font-family`
- * - `--stripe-elements-base-font-size`
- * - `--stripe-elements-base-font-smoothing`
- * - `--stripe-elements-base-font-variant`
- * - `--stripe-elements-base-icon-color`
- * - `--stripe-elements-base-line-height`
- * - `--stripe-elements-base-letter-spacing`
- * - `--stripe-elements-base-text-decoration`
- * - `--stripe-elements-base-text-shadow`
- * - `--stripe-elements-base-text-transform`
+ * @cssprop [--stripe-elements-base-color] - `color` property for the element in its base state
+ * @cssprop [--stripe-elements-base-font-family] - `font-family` property for the element in its base state
+ * @cssprop [--stripe-elements-base-font-size] - `font-size` property for the element in its base state
+ * @cssprop [--stripe-elements-base-font-smoothing] - `font-smoothing` property for the element in its base state
+ * @cssprop [--stripe-elements-base-font-variant] - `font-variant` property for the element in its base state
+ * @cssprop [--stripe-elements-base-icon-color] - `icon-color` property for the element in its base state
+ * @cssprop [--stripe-elements-base-line-height] - `line-height` property for the element in its base state
+ * @cssprop [--stripe-elements-base-letter-spacing] - `letter-spacing` property for the element in its base state
+ * @cssprop [--stripe-elements-base-text-decoration] - `text-decoration` property for the element in its base state
+ * @cssprop [--stripe-elements-base-text-shadow] - `text-shadow` property for the element in its base state
+ * @cssprop [--stripe-elements-base-text-transform] - `text-transform` property for the element in its base state
  *
- * and likewise `--stripe-elements-complete-color`, etc.
+ * @cssprop [--stripe-elements-complete-color] - `color` property for the element in its complete state
+ * @cssprop [--stripe-elements-complete-font-family] - `font-family` property for the element in its complete state
+ * @cssprop [--stripe-elements-complete-font-size] - `font-size` property for the element in its complete state
+ * @cssprop [--stripe-elements-complete-font-smoothing] - `font-smoothing` property for the element in its complete state
+ * @cssprop [--stripe-elements-complete-font-variant] - `font-variant` property for the element in its complete state
+ * @cssprop [--stripe-elements-complete-icon-color] - `icon-color` property for the element in its complete state
+ * @cssprop [--stripe-elements-complete-line-height] - `line-height` property for the element in its complete state
+ * @cssprop [--stripe-elements-complete-letter-spacing] - `letter-spacing` property for the element in its complete state
+ * @cssprop [--stripe-elements-complete-text-decoration] - `text-decoration` property for the element in its complete state
+ * @cssprop [--stripe-elements-complete-text-shadow] - `text-shadow` property for the element in its complete state
+ * @cssprop [--stripe-elements-complete-text-transform] - `text-transform` property for the element in its complete state
+ *
+ * @cssprop [--stripe-elements-empty-color] - `color` property for the element in its empty state
+ * @cssprop [--stripe-elements-empty-font-family] - `font-family` property for the element in its empty state
+ * @cssprop [--stripe-elements-empty-font-size] - `font-size` property for the element in its empty state
+ * @cssprop [--stripe-elements-empty-font-smoothing] - `font-smoothing` property for the element in its empty state
+ * @cssprop [--stripe-elements-empty-font-variant] - `font-variant` property for the element in its empty state
+ * @cssprop [--stripe-elements-empty-icon-color] - `icon-color` property for the element in its empty state
+ * @cssprop [--stripe-elements-empty-line-height] - `line-height` property for the element in its empty state
+ * @cssprop [--stripe-elements-empty-letter-spacing] - `letter-spacing` property for the element in its empty state
+ * @cssprop [--stripe-elements-empty-text-decoration] - `text-decoration` property for the element in its empty state
+ * @cssprop [--stripe-elements-empty-text-shadow] - `text-shadow` property for the element in its empty state
+ * @cssprop [--stripe-elements-empty-text-transform] - `text-transform` property for the element in its empty state
+ *
+ * @cssprop [--stripe-elements-invalid-color] - `color` property for the element in its invalid state
+ * @cssprop [--stripe-elements-invalid-font-family] - `font-family` property for the element in its invalid state
+ * @cssprop [--stripe-elements-invalid-font-size] - `font-size` property for the element in its invalid state
+ * @cssprop [--stripe-elements-invalid-font-smoothing] - `font-smoothing` property for the element in its invalid state
+ * @cssprop [--stripe-elements-invalid-font-variant] - `font-variant` property for the element in its invalid state
+ * @cssprop [--stripe-elements-invalid-icon-color] - `icon-color` property for the element in its invalid state
+ * @cssprop [--stripe-elements-invalid-line-height] - `line-height` property for the element in its invalid state
+ * @cssprop [--stripe-elements-invalid-letter-spacing] - `letter-spacing` property for the element in its invalid state
+ * @cssprop [--stripe-elements-invalid-text-decoration] - `text-decoration` property for the element in its invalid state
+ * @cssprop [--stripe-elements-invalid-text-shadow] - `text-shadow` property for the element in its invalid state
+ * @cssprop [--stripe-elements-invalid-text-transform] - `text-transform` property for the element in its invalid state
+ *
  * @demo demo/index.html
- * @polymer
- * @customElement
+ * @element stripe-elements
  * @extends LitElement
- * @fires 'stripe-token'
- * @fires 'stripe-error'
+ *
+ * @fires stripe-token - The token received from stripe.com
+ * @fires stripe-source - The source received from stripe.com
+ * @fires stripe-error - The validation error, or the error returned from stripe.com
+ * @fires stripe-change - Stripe Element change event
+ * @fires stripe-ready - Stripe has been initialized and mounted
+ *
+ * @fires is-complete-changed - The new value of is-complete
+ * @fires is-empty-changed - The new value of is-empty
+ * @fires has-error-changed - The new value of has-error
+ * @fires brand-changed - The new value of brand
+ * @fires card-changed - The new value of card
+ * @fires error-changed - The new value of error
+ * @fires publishable-key-changed - The new value of publishable-key
+ * @fires stripe-ready-changed - The new value of stripe-ready
+ * @fires token-changed - The new value of token
  */
 export class StripeElements extends LitElement {
   static is = 'stripe-elements';
@@ -212,7 +261,7 @@ export class StripeElements extends LitElement {
 
     /**
      * Reference to the Stripe card.
-     * @type {Object}
+     * @type {Card}
      * @readonly
      */
     card: { type: Object },
@@ -232,7 +281,7 @@ export class StripeElements extends LitElement {
     error: { type: String },
 
     /**
-     * If the form has an error.
+     * Whether the form has an error.
      * @type {Boolean}
      * @readonly
      */
@@ -318,36 +367,79 @@ export class StripeElements extends LitElement {
     elements: { type: Object },
   }
 
+  /**
+   * Brand of the card
+   */
   #brand = null;
   get brand() { return this.#brand; }
 
+  /**
+   * Stripe card object
+   * @type {StripeCard}
+   */
   #card = null;
   get card() { return this.#card; }
 
+  /**
+   * Stripe or validation error
+   * @type {Error}
+   */
   #error = null;
   get error() { return this.#error; }
 
+  /**
+   * Whether the element has an error
+   * @type {Boolean}
+   */
   #hasError = false;
   get hasError() { return this.#hasError; }
 
+  /**
+   * Whether the card form is complete
+   * @type {Boolean}
+   */
   #isComplete = false;
   get isComplete() { return this.#isComplete; }
 
+  /**
+   * Whether the card form is empty
+   * @type {Boolean}
+   */
   #isEmpty = true;
   get isEmpty() { return this.#isEmpty; }
 
+  /**
+   * Whether Stripe.js has been initialized
+   * @type {Boolean}
+   */
   #stripeReady = false;
   get stripeReady() { return this.#stripeReady; }
 
+  /**
+   * The token returned from `createToken`
+   * @type {StripeToken}
+   */
   #token = null;
   get token() { return this.#token; }
 
+  /**
+   * The source returned from `createSource`
+   * @type {StripeSource}
+   */
   #source = null;
   get source() { return this.#source; }
 
+  /**
+   * The Stripe.js object
+   * @type {Stripe}
+   */
   #stripe = null;
   get stripe() { return this.#stripe; }
 
+  /**
+   * The Stripe.js Elements instance object
+   * @type {Elements}
+   */
   #elements = null;
   get elements() { return this.#elements; }
 
@@ -572,8 +664,10 @@ export class StripeElements extends LitElement {
 
   /**
    * Sets the token or error from the response.
+   * @param  {Object} response       Response from stripe
    * @param  {Object} response.error Stripe error
    * @param  {Object} response.token Stripe token
+   * @return {Object}
    * @protected
    */
   #handleResponse(response) {
@@ -622,7 +716,6 @@ export class StripeElements extends LitElement {
 
   /**
    * Initializes Stripe and elements.
-   * @param {String} publishableKey Stripe publishable key.
    */
   #initStripe() {
     const oldStripe = this.#stripe;
@@ -662,6 +755,7 @@ export class StripeElements extends LitElement {
 
   /**
    * Sets the error.
+   * @param  {StripeChangeEvent}         event
    * @param  {Boolean}       event.empty     true if value is empty
    * @param  {Boolean}       event.complete  true if value is well-formed and potentially complete.
    * @param  {String}        event.brand     brand of the card being entered e.g. 'visa' or 'amex'
