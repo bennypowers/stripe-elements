@@ -10,6 +10,31 @@ const removeEl = el => {
   if (el instanceof Element) el.remove();
 };
 
+const MEMOS = new WeakMap();
+
+const getCache = f => {
+  if (!MEMOS.has(f)) MEMOS.set(f, new Map());
+  return MEMOS.get(f);
+};
+
+const memoize1 = f => {
+  const m = getCache(f);
+  return x => {
+    if (m.has(x)) {
+      return m.get(x);
+    } else {
+      const val = f(x);
+      m.set(x, val);
+      return val;
+    }
+  };
+};
+
+const camel = memoize1(s =>
+  s.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (_, c) => c.toUpperCase()));
+
+const dash = memoize1(s =>
+  s.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase());
 
 /* istanbul ignore next */
 const removeAllMounts = host =>
@@ -523,12 +548,12 @@ export class StripeElements extends LitElement {
   #getStripeElementsStyles() {
     const computedStyle = window.ShadyCSS ? null : getComputedStyle(this);
     return allowedStyles.reduce((acc, style) => {
-      const dash = style.replace(/([A-Z])/g, g => `-${g[0].toLowerCase()}`);
+      const dashCase = dash(style);
       Object.keys(acc).forEach(prefix => {
         acc[prefix][style] = (
-          window.ShadyCSS
-            ? ShadyCSS.getComputedStyleValue(this, `--stripe-elements-${prefix}-${dash}`)
-            : computedStyle.getPropertyValue(`--stripe-elements-${prefix}-${dash}`)
+          window.ShadyCSS ?
+            ShadyCSS.getComputedStyleValue(this, `--stripe-elements-${prefix}-${dashCase}`) :
+            computedStyle.getPropertyValue(`--stripe-elements-${prefix}-${dashCase}`)
         ) || undefined;
       });
       return acc;
