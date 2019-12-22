@@ -19,11 +19,12 @@
     "test:prune-snapshots": "karma start --prune-snapshots",
     "site:build": "npm run storybook:build",
     "storybook": "start-storybook --node-resolve --watch --open --babel",
-    "storybook:build": "build-storybook --stories stories/*.stories.mdx --output-dir _site"
+    "storybook:build": "build-storybook --stories stories/*.stories.mdx --output-dir _site",
+    "semantic-release": "semantic-release"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bennypowers/stripe-elements.git"
+    "url": "https://github.com/bennypowers/stripe-elements.git"
   },
   "files": [
     "*.js",
@@ -81,10 +82,12 @@
     "rollup": "^1.27.13",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-node-resolve": "^5.2.0",
+    "semantic-release-cli": "^5.2.3",
     "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0",
     "standard-version": "^7.0.1",
-    "web-component-analyzer": "^1.0.0"
+    "web-component-analyzer": "^1.0.0",
+    "semantic-release": "^15.4.0"
   },
   "dependencies": {
     "lit-element": "^2.2.1"
