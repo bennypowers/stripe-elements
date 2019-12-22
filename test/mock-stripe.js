@@ -4,6 +4,8 @@ export const PUBLISHABLE_KEY = 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX';
 export const INCOMPLETE_CARD_KEY = 'INCOMPLETE_CARD_KEY';
 export const SHOULD_ERROR_KEY = 'SHOULD_ERROR_KEY';
 export const TOKEN_ERROR_KEY = 'TOKEN_ERROR_KEY';
+export const SUCCESSFUL_TOKEN = Object.freeze({ id: 'SUCCESSFUL_TOKEN' });
+export const SUCCESSFUL_SOURCE = Object.freeze({ id: 'SUCCESSFUL_SOURCE' });
 
 export class MockedStripeAPI {
   constructor(key, opts) {
@@ -62,12 +64,12 @@ export class MockedStripeAPI {
   async createToken(card, cardData) {
     if (this.key === SHOULD_ERROR_KEY) throw new Error(SHOULD_ERROR_KEY);
     else if (this.key === TOKEN_ERROR_KEY) return { error: TOKEN_ERROR_KEY };
-    else return { token: 'howdy!' };
+    else return { token: SUCCESSFUL_TOKEN };
   }
 
   async createSource(card, cardData) {
     if (this.key === SHOULD_ERROR_KEY) throw new Error(SHOULD_ERROR_KEY);
     else if (this.key === TOKEN_ERROR_KEY) return { error: TOKEN_ERROR_KEY };
-    else return { source: 'howdy!' };
+    else return { source: SUCCESSFUL_SOURCE };
   }
 }

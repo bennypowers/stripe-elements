@@ -3,14 +3,17 @@ import './stripe-elements';
 import { expect, fixture, oneEvent, nextFrame, aTimeout } from '@open-wc/testing';
 import { html, render } from 'lit-html';
 import { spy, stub } from 'sinon';
-import 'sinon-chai';
+
 import 'chai-things';
+import 'sinon-chai';
 
 import {
   INCOMPLETE_CARD_KEY,
   MockedStripeAPI,
   PUBLISHABLE_KEY,
   SHOULD_ERROR_KEY,
+  SUCCESSFUL_SOURCE,
+  SUCCESSFUL_TOKEN,
   TOKEN_ERROR_KEY,
 } from '../test/mock-stripe';
 
@@ -533,25 +536,28 @@ describe('stripe-elements', function() {
           it('sets source', async function submit() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
             element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
+            await element.updateComplete;
             element.createSource();
             await element.updateComplete;
-            expect(element.source).to.equal('howdy!');
+            expect(element.source).to.equal(SUCCESSFUL_SOURCE);
           });
 
           it('fires source-changed', async function submit() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
             element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
+            await element.updateComplete;
             setTimeout(() => element.createSource());
             const ev = await oneEvent(element, 'source-changed');
-            expect(ev.detail.value).to.equal('howdy!');
+            expect(ev.detail.value).to.equal(SUCCESSFUL_SOURCE);
           });
 
           it('fires stripe-source', async function submit() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
             element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
+            await element.updateComplete;
             setTimeout(() => element.createSource());
             const ev = await oneEvent(element, 'stripe-source');
-            expect(ev.detail).to.equal('howdy!');
+            expect(ev.detail).to.equal(SUCCESSFUL_SOURCE);
           });
 
           describe('when there is an action', function() {
@@ -650,9 +656,9 @@ describe('stripe-elements', function() {
           it('sets token', async function submit() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
             element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
-            element.createToken();
+            await element.createToken();
             await element.updateComplete;
-            expect(element.token).to.equal('howdy!');
+            expect(element.token).to.equal(SUCCESSFUL_TOKEN);
           });
 
           it('fires token-changed', async function submit() {
@@ -660,16 +666,16 @@ describe('stripe-elements', function() {
             element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
             setTimeout(() => element.createToken());
             const ev = await oneEvent(element, 'token-changed');
-            expect(ev.detail.value).to.equal('howdy!');
+            expect(ev.detail.value).to.equal(SUCCESSFUL_TOKEN);
           });
 
           it('fires stripe-token', async function submit() {
             const element = await fixture(`<stripe-elements publishable-key="${PUBLISHABLE_KEY}"></stripe-elements>`);
             element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
+            await element.updateComplete;
             setTimeout(() => element.createToken());
             const ev = await oneEvent(element, 'stripe-token');
-            await element.updateComplete;
-            expect(ev.detail).to.equal('howdy!');
+            expect(ev.detail).to.equal(SUCCESSFUL_TOKEN);
           });
 
           describe('when there is an action', function() {
