@@ -585,29 +585,11 @@ export class StripeElements extends LitElement {
     if (changed.has('brand')) this.__notify('brand');
     if (changed.has('card')) this.__notify('card');
     if (changed.has('stripeReady')) this.__notify('stripe-ready');
+    if (changed.has('source')) this.__notify('source');
+    if (changed.has('token')) this.__notify('token');
     if (changed.has('publishableKey')) {
       this.__notify('publishable-key');
       this.__publishableKeyChanged(this.publishableKey);
-    }
-
-    if (changed.has('token')) {
-      const { token } = this;
-      this.__notify('token');
-      this.__fire('stripe-token', token);
-      if (!token) return;
-      this.__tokenFormField.removeAttribute('disabled');
-      this.__tokenFormField.value = token;
-      if (this.action) this.form.submit();
-    }
-
-    if (changed.has('source')) {
-      const { source } = this;
-      this.__notify('source');
-      this.__fire('stripe-source', source);
-      if (!source) return;
-      this.__sourceFormField.removeAttribute('disabled');
-      this.__sourceFormField.value = source;
-      if (this.action) this.form.submit();
     }
 
     if (changed.has('error')) {
@@ -918,11 +900,21 @@ export class StripeElements extends LitElement {
     const oldSource = this.__source;
     this.__source = newVal;
     this.requestUpdate('source', oldSource);
+    if (!newVal) return;
+    this.__fire('stripe-source', newVal);
+    this.__sourceFormField.removeAttribute('disabled');
+    this.__sourceFormField.value = newVal;
+    if (this.action) this.form.submit();
   }
 
   __setToken(newVal) {
     const oldToken = this.__token;
     this.__token = newVal;
     this.requestUpdate('token', oldToken);
+    if (!newVal) return;
+    this.__fire('stripe-token', newVal);
+    this.__tokenFormField.removeAttribute('disabled');
+    this.__tokenFormField.value = newVal;
+    if (this.action) this.form.submit();
   }
 }
