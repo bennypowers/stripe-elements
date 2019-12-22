@@ -321,7 +321,7 @@ export class StripeElements extends LitElement {
      * Stripe Publishable Key. EG. pk_test_XXXXXXXXXXXXXXXXXXXXXXXX
      * @type {String}
      */
-    publishableKey: { type: String, attribute: 'publishable-key' },
+    publishableKey: { type: String, attribute: 'publishable-key', reflect: true },
 
     /**
      * Whether to display the error message
@@ -706,8 +706,10 @@ export class StripeElements extends LitElement {
    * @param  {Object} error
    * @protected
    */
-  __handleError(error) {
+  async __handleError(error) {
     this.__setError(error.message);
+    await this.updateComplete;
+    return error;
   }
 
   /**
@@ -718,11 +720,12 @@ export class StripeElements extends LitElement {
    * @return {Object}
    * @protected
    */
-  __handleResponse(response) {
+  async __handleResponse(response) {
     const { error, token, source } = response;
     if (error) this.__setError(error);
     else if (token) this.__setToken(token);
     else if (source) this.__setSource(source);
+    await this.updateComplete;
     return response;
   }
 
