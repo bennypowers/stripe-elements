@@ -48,20 +48,19 @@ you may generate a token from the filled-out form by calling the `createToken()`
 
 <Preview withToolbar>
   <Story name="Generate a Token" height="60px">
-    {html`${
-      (_ => {
-        const stripeElements = $('#token stripe-elements');
+    {
+      () => {
         const viewer = $('#token-viewer');
         const onStripeToken = ({ detail: token }) => viewer.object = token;
-        const onClick = () => stripeElements.createToken();
+        const onClick = () => $('#token stripe-elements').createToken();
         return html`
           <section id="token">
             <stripe-elements publishable-key="dummy-key" @stripe-token="${onStripeToken}"></stripe-elements>
             <mwc-button class="generate" outlined @click="${onClick}">Generate Token</mwc-button>
           </section>
         `;
-      })()
-    }`}
+      }
+    }
   </Story>
 </Preview>
 
@@ -71,23 +70,23 @@ you may generate a token from the filled-out form by calling the `createToken()`
 
 <Preview withToolbar>
   <Story name="Generate a Source" height="500px">
-    {html`${
-      (_ => {
-      const onStripeSource = ({ detail: source }) => $('#source-viewer').object = source;
-      const getInputs = () => [...($('#source').querySelectorAll('mwc-textfield'))];
-      const getCardData = () => getInputs().reduce((data, { value, dataset: { ownerProp } }) => ({ ...data, [ownerProp]: value }), { });
-      const onClick = () => $('#source stripe-elements').createSource({ type: 'card', owner: getCardData() });
-      return html`
-      <section id="source">
-        <stripe-elements id="source-element" publishable-key="dummy-key" @stripe-source="${onStripeSource}"></stripe-elements>
-        <mwc-textfield outlined label="Cardholder Name" data-owner-prop="name"></mwc-textfield>
-        <mwc-textfield outlined label="Cardholder Email" data-owner-prop="email"></mwc-textfield>
-        <mwc-textfield outlined label="Cardholder Phone" data-owner-prop="phone"></mwc-textfield>
-        <mwc-button outlined @click="${onClick}">Generate Source</mwc-button>
-      </section>
-      `;})()
+    {
+      () => {
+        const onStripeSource = ({ detail: source }) => $('#source-viewer').object = source;
+        const getInputs = () => [...($('#source').querySelectorAll('mwc-textfield'))];
+        const getCardData = () => getInputs().reduce((data, { value, dataset: { ownerProp } }) => ({ ...data, [ownerProp]: value }), { });
+        const onClick = () => $('#source stripe-elements').createSource({ type: 'card', owner: getCardData() });
+        return html`
+        <section id="source">
+          <stripe-elements id="source-element" publishable-key="dummy-key" @stripe-source="${onStripeSource}"></stripe-elements>
+          <mwc-textfield outlined label="Cardholder Name" data-owner-prop="name"></mwc-textfield>
+          <mwc-textfield outlined label="Cardholder Email" data-owner-prop="email"></mwc-textfield>
+          <mwc-textfield outlined label="Cardholder Phone" data-owner-prop="phone"></mwc-textfield>
+          <mwc-button outlined @click="${onClick}">Generate Source</mwc-button>
+        </section>
+        `;
+      }
     }
-    `}
   </Story>
 </Preview>
 
@@ -112,10 +111,8 @@ stripe-elements[has-error] { border: 1px solid red; }
 
 <Preview withToolbar>
   <Story name="Validation States" height="60px">
-    {html`${
-      (_ => {
-      const stripeElements = $('#states stripe-elements');
-      const onClick = () => stripeElements.validate();
+    {() => {
+      const onClick = () => $('#states stripe-elements').validate();
       return html`
       <style>
         stripe-elements { border-radius: 4px; }
@@ -127,9 +124,8 @@ stripe-elements[has-error] { border: 1px solid red; }
         <stripe-elements publishable-key="dummy-key"></stripe-elements>
         <mwc-button class="generate" outlined @click="${onClick}">Validate</mwc-button>
       </section>
-      `;})()
-    }
-    `}
+      `;
+    }}
   </Story>
 </Preview>
 
@@ -140,15 +136,17 @@ This is useful for simple validation in cases where you don't need to build your
 
 <Preview withToolbar>
   <Story name="Error Display" height="60px">
-    {html`${(_ => {
-      const onClick = () => $('#should-error').validate();
-      return html`
-      <section id="show-errror">
-        <stripe-elements id="should-error" publishable-key="should-error-use-bad-key" show-error></stripe-elements>
-        <mwc-button class="generate" outlined @click="${onClick}">Validate</mwc-button>
-      </section>
-      `;})()}
-    `}
+    {
+      () => {
+        const onClick = () => $('#should-error').validate();
+        return html`
+        <section id="show-errror">
+          <stripe-elements id="should-error" publishable-key="should-error-use-bad-key" show-error></stripe-elements>
+          <mwc-button class="generate" outlined @click="${onClick}">Validate</mwc-button>
+        </section>
+        `;
+      }
+    }
   </Story>
 </Preview>
 
