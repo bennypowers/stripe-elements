@@ -1,0 +1,70 @@
+name: Release
+on:
+  push:
+    branches:
+      - master
+
+defaults: &defaults |
+  - name: Checkout
+    uses: actions/checkout@v1
+  - name: Setup Node.js
+    uses: actions/setup-node@v1
+    with:
+      node-version: 12
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - *defaults
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Coverageg reporter
+        run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
+          ./cc-test-reporter before-build
+      - name: Run Tests
+        run: npm test
+
+  release:
+    name: Release
+    needs: Test
+    runs-on: ubuntu-18.04
+    steps:
+      - *defaults
+      - name: Install dependencies
+        run: npm ci
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
+
+  upload-coverage:
+    name: Upload Coverage
+    needs: Release
+    steps:
+      - *defaults
+      - run: ./cc-test-reporter format-coverage -t lcov -o coverage/coverage.json coverage/lcov.info;
+      - run: ./cc-test-reporter upload-coverage -i coverage/coverage.json;
+
+  docs-build:
+    needs: Release
+    steps:
+      - *defaults
+      - name: Install dependencies
+        run: npm ci
+      - name: Build docs
+        run: npm run storybook:build
+
+  docs-deploy:
+    steps:
+      - *defaults
+      - name: Build and Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          ACCESS_TOKEN: ${{ secrets.GH_TOKEN }}
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: _site # The folder the action should deploy.

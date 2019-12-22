@@ -1,13 +1,14 @@
+[![made with open-wc](https://img.shields.io/badge/made%20with-open--wc-%23217ff9)](https://open-wc.org)
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/bennypowers/stripe-elements)
 [![Published on npm](https://img.shields.io/npm/v/@power-elements/stripe-elements.svg)](https://www.npmjs.com/package/@power-elements/stripe-elements)
-[![Contact me on Codementor](https://cdn.codementor.io/badges/contact_me_github.svg)](https://www.codementor.io/bennyp?utm_source=github&utm_medium=button&utm_term=bennyp&utm_campaign=github)
 [![Maintainability](https://api.codeclimate.com/v1/badges/b2205a301b0a8bb82d51/maintainability)](https://codeclimate.com/github/bennypowers/stripe-elements/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/b2205a301b0a8bb82d51/test_coverage)](https://codeclimate.com/github/bennypowers/stripe-elements/test_coverage)
-[![CircleCI](https://circleci.com/gh/bennypowers/stripe-elements.svg?style=svg)](https://circleci.com/gh/bennypowers/stripe-elements)
+[![CI](https://github.com/bennypowers/stripe-elements/workflows/.github/workflows/release.yml/badge.svg)](https://github.com/bennypowers/stripe-elements/actions)
+[![Contact me on Codementor](https://cdn.codementor.io/badges/contact_me_github.svg)](https://www.codementor.io/bennyp?utm_source=github&utm_medium=button&utm_term=bennyp&utm_campaign=github)
 
 # `<stripe-elements>`
 
-Custom element wrapper for Stripe.js v3 Elements that works in shadow DOM. Creates a `card` element à la https://stripe.com/docs/elements
+Custom element wrapper for Stripe.js v3 Elements. Creates a `card` element à la https://stripe.com/docs/elements
 
 👨‍🎨 [Storybook Demo](https://bennypowers.dev/stripe-elements) 👀
 
@@ -124,3 +125,7 @@ There are 11 properties for each state that you can set which will be read into 
 - `--stripe-elements-base-text-transform`
 
 and likewise `--stripe-elements-complete-color`, etc.
+
+---
+
+`<stripe-elements>` is a community project, not endorsed or affiliated with Stripe.
