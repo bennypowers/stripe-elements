@@ -9,6 +9,7 @@
   },
   "scripts": {
     "prepare": "npm run build",
+    "release": "standard-version",
     "build": "run-p build:*",
     "build:rollup": "rollup -c",
     "build:analyze": "wca analyze src/StripeElements.js --outFile custom-elements.json",
@@ -82,6 +83,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0",
+    "standard-version": "^7.0.1",
     "web-component-analyzer": "^1.0.0"
   },
   "dependencies": {
