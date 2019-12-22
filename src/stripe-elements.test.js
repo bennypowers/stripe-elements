@@ -551,7 +551,6 @@ describe('stripe-elements', function() {
             element.card.synthEvent({ brand: 'visa', complete: true, empty: false });
             setTimeout(() => element.createSource());
             const ev = await oneEvent(element, 'stripe-source');
-            await element.updateComplete;
             expect(ev.detail).to.equal('howdy!');
           });
 
