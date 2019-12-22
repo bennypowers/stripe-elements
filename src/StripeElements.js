@@ -536,6 +536,14 @@ export class StripeElements extends LitElement {
 
   /** LIFECYCLE */
 
+  constructor() {
+    super();
+    this.__handleError = this.__handleError.bind(this);
+    this.__handleResponse = this.__handleResponse.bind(this);
+    this.__onReady = this.__onReady.bind(this);
+    this.__onChange = this.__onChange.bind(this);
+  }
+
   /** @inheritdoc */
   connectedCallback() {
     super.connectedCallback();
@@ -637,8 +645,8 @@ export class StripeElements extends LitElement {
   async createSource(sourceData = {}) {
     if (!this.stripe) throw new Error('Cannot create source before initializing Stripe');
     return this.stripe.createSource(this.__card, sourceData)
-      .then(this.__handleResponse.bind(this))
-      .catch(this.__handleError.bind(this));
+      .then(this.__handleResponse)
+      .catch(this.__handleError);
   }
 
   /**
@@ -648,8 +656,8 @@ export class StripeElements extends LitElement {
   async createToken(cardData = this.cardData) {
     if (!this.stripe) throw new Error('Cannot create token before initializing Stripe');
     return this.stripe.createToken(this.__card, cardData)
-      .then(this.__handleResponse.bind(this))
-      .catch(this.__handleError.bind(this));
+      .then(this.__handleResponse)
+      .catch(this.__handleError);
   }
 
   /**
@@ -804,8 +812,8 @@ export class StripeElements extends LitElement {
     this.__setCard(card);
 
     this.__card.mount(this.stripeMount);
-    this.__card.addEventListener('ready', this.__onReady.bind(this));
-    this.__card.addEventListener('change', this.__onChange.bind(this));
+    this.__card.addEventListener('ready', this.__onReady);
+    this.__card.addEventListener('change', this.__onChange);
     this.__setIsComplete(false);
     this.__setIsEmpty(true);
   }
