@@ -10,7 +10,7 @@
   "scripts": {
     "prepare": "npm run build",
     "release": "standard-version",
-    "build": "run-p build:*",
+    "build": "npx run-p build:*",
     "build:rollup": "rollup -c",
     "build:analyze": "wca analyze src/StripeElements.js --outFile custom-elements.json",
     "test": "karma start --coverage",
