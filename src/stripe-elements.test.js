@@ -30,10 +30,19 @@ customElements.define('x-host', class XHost extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.innerHTML = `<stripe-elements></stripe-elements>`;
+    this.shadowRoot.innerHTML = `<stripe-elements publishable-key="pk"></stripe-elements>`;
     this.stripeElements = this.shadowRoot.firstElementChild;
   }
 });
+
+customElements.define('y-host', class YHost extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    this.shadowRoot.innerHTML = `<x-host></x-host>`;
+  }
+});
+
 
 function camelCaseToDash( myStr ) {
   return myStr.replace( /([a-z])([A-Z])/g, '$1-$2' ).toLowerCase();
@@ -158,13 +167,42 @@ describe('stripe-elements', function() {
   });
 
   describe('Shadow DOM support', function shadowDOM() {
-    it('leaves breadcrumbs on its way up to the document', async function breadcrumbs() {
+    it('leaves one breadcrumb on its way up to the document', async function breadcrumbs() {
       const host = await fixture(`<x-host></x-host>`);
       const element = host.stripeElements;
       const target = document.querySelector('[aria-label="Credit or Debit Card"]');
       const [slottedChild] = element.querySelector('slot').assignedNodes();
 
       expect(slottedChild).to.contain(target);
+    });
+
+    it('leaves two breadcrumbs on its way up to the document', async function breadcrumbs() {
+      const y = await fixture(`<y-host></y-host>`);
+      const x = y.shadowRoot.querySelector('x-host');
+      const target = document.querySelector('[aria-label="Credit or Debit Card"]');
+      const [slottedChild] =
+        x.shadowRoot.querySelector('slot')
+          .assignedNodes()
+          .flatMap(el => el.assignedNodes());
+      expect(slottedChild).to.contain(target);
+    });
+
+    it('finds its form one shadowroot deep', async function breadcrumbs() {
+      const x = await fixture(`<x-host></x-host>`);
+      const element = x.shadowRoot.querySelector('stripe-elements');
+      expect(element.form).to.be.an.instanceOf(HTMLFormElement);
+    });
+
+    it('finds its form two shadowroots deep', async function breadcrumbs() {
+      const y = await fixture(`<y-host></y-host>`);
+      const x = y.shadowRoot.querySelector('x-host');
+      const element = x.shadowRoot.querySelector('stripe-elements');
+      expect(element.form).to.be.an.instanceOf(HTMLFormElement);
+    });
+
+    it('only creates one slot when instantiated two roots deep', async function() {
+      const host = await fixture(`<y-host></y-host>`);
+      expect(document.querySelectorAll('div[slot="stripe-card"]').length).to.equal(1);
     });
   });
 

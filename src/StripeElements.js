@@ -92,13 +92,11 @@ const style = css`
 `;
 
 const stripeCardTemplate = ({ action, id, source, token }) => html`
-<div slot="stripe-card">
-  <form action="${ifDefined(action || undefined)}" method="post">
-    <div id="${id}" aria-label="Credit or Debit Card"></div>
-    <input ?disabled="${!token}" type="hidden" name="stripeToken" value="${ifDefined(token || undefined)}">
-    <input ?disabled="${!source}" type="hidden" name="stripeSource" value="${ifDefined(source || undefined)}">
-  </form>
-</div>
+<form action="${ifDefined(action || undefined)}" method="post">
+  <div id="${id}" aria-label="Credit or Debit Card"></div>
+  <input ?disabled="${!token}" type="hidden" name="stripeToken" value="${ifDefined(token || undefined)}">
+  <input ?disabled="${!source}" type="hidden" name="stripeSource" value="${ifDefined(source || undefined)}">
+</form>
 `;
 
 const allowedStyles = [
@@ -495,11 +493,14 @@ export class StripeElements extends LitElement {
   }
 
   /**
-   * The internal form elementt
+   * The internal form element
    * @type {HTMLFormElement}
    */
   get form() {
-    return this.querySelector('form');
+    let slot = this.shadowRoot.querySelector('slot');
+    // eslint-disable-next-line no-loops/no-loops
+    while (slot instanceof HTMLSlotElement && ([slot] = slot.assignedElements())) continue;
+    return slot.querySelector('form');
   }
 
   get __tokenFormField() {
@@ -752,7 +753,14 @@ export class StripeElements extends LitElement {
     const slotTemplate =
       html`<slot slot="stripe-card" name="stripe-card"></slot>`;
 
-    appendTemplate(mountTemplate, this.__shadowHosts.pop());
+    const root = this.__shadowHosts.pop();
+    let container = root.querySelector('[slot="stripe-card"]');
+    if (!container) {
+      container = document.createElement('div');
+      container.slot = 'stripe-card';
+      root.appendChild(container);
+    }
+    appendTemplate(mountTemplate, container);
     this.__shadowHosts.forEach(host => appendTemplate(slotTemplate, host));
   }
 
