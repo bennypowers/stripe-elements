@@ -1,7 +1,8 @@
 .DS_store
 
 *.tgz
-/_site
+/dist
+/storybook-static
 /_virtual
 /coverage
 

@@ -1,11 +1,16 @@
 <script src="https://js.stripe.com/v3/"></script>
-<script>window.$ = document.querySelector;</script>
 <style>
   stripe-elements { grid-area: stripe; }
+
   #key { width: 100%; }
+
   #name { grid-area: name; }
+
   .generate { grid-area: generate; }
-  output { grid-area: output; }
+
+  [label="Publishable Key"] {
+    width: 100%;
+  }
 
   json-viewer {
     color: #212529;

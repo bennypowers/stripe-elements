@@ -5,12 +5,13 @@ import {
   withA11y
 } from '@open-wc/demoing-storybook';
 
-const handleAsJson = response => response.json()
+const handleAsJson = r => r.json();
 
 async function run() {
+
   await fetch(new URL('../custom-elements.json', import.meta.url))
     .then(handleAsJson)
-    .then(setCustomElements)
+    .then(setCustomElements);
 
   addDecorator(withA11y);
 

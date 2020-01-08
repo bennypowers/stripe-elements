@@ -1,15 +1,26 @@
-import { Story, Preview, Meta, Props } from '@open-wc/demoing-storybook';
-import { html } from 'lit-html';
+import {
+  html,
+  Meta,
+  Preview,
+  Props,
+  Story,
+} from '@open-wc/demoing-storybook';
 
-import '@material/mwc-textfield'
+import '../stripe-elements.js';
+
+import '@power-elements/json-viewer';
+import '@material/mwc-textfield';
 import '@material/mwc-button';
 
-import '../src/stripe-elements.js';
-import '@power-elements/json-viewer';
+import { $, $$ } from './helpers.js';
 
-import { $, $$, setPublishableKey } from './helpers.js';
-
-<Meta title="Stripe Elements" />
+<Meta
+  title="Stripe Elements"
+  parameters={{
+    component: 'stripe-elements',
+    options: { selectedPanel: 'storybookjs/docs/panel' }
+  }}
+/>
 
 # Stripe Elements Web Component
 
@@ -20,12 +31,6 @@ To get started, add the element to your page with the `publishable-key` attribut
 ```html
 <stripe-elements publishable-key="my-pk"></stripe-elements>
 ```
-```html
-<stripe-elements></stripe-elements>
-<script>
- $('stripe-elements').publishableKey = 'my-pk';
-</script>
-```
 
 **Careful!** never add your **secret key** to an HTML page, only publish your **publishable key**.
 
@@ -33,32 +38,39 @@ Once you've set the `publishable-key` attribute (or the `publishableKey` DOM pro
 
 Enter your publishable key here (use the test key, not the production key) to run the examples against your Stripe account.
 
-<Preview>
-  <Story name="Enter a Stripe Publishable Key">
-    {html`
-      <mwc-textfield style="width: 100%" outlined label="Publishable Key" value="dummy-key" @change="${setPublishableKey}"></mwc-textfield>
-    `}
-  </Story>
-</Preview>
+<Story name="Enter a Stripe Publishable Key" height="80px">
+  {
+    function enterAStripePublishableKey() {
+      const setPublishableKey = event => $$('stripe-elements:not(#should-error)').forEach(el => el.publishableKey = event.target.value);
+      return html`
+      <mwc-textfield
+          outlined
+          label="Publishable Key"
+          value="dummy-key"
+          @change="${setPublishableKey}"
+      ></mwc-textfield>`;
+    }
+  }
+</Story>
+
 
 ## Create a Token
 
 Once you're set your publishable key and Stripe has instantiated (listen for the `stripe-ready` event if you need to know exactly when this happens),
 you may generate a token from the filled-out form by calling the `createToken()` method.
 
-<Preview withToolbar>
+<Preview>
   <Story name="Generate a Token" height="60px">
     {
-      () => {
+      function generateAToken() {
         const viewer = $('#token-viewer');
-        const onStripeToken = ({ detail: token }) => viewer.object = token;
+        const onStripeToken = event => viewer.object = event.detail;
         const onClick = () => $('#token stripe-elements').createToken();
         return html`
-          <section id="token">
-            <stripe-elements publishable-key="dummy-key" @stripe-token="${onStripeToken}"></stripe-elements>
-            <mwc-button class="generate" outlined @click="${onClick}">Generate Token</mwc-button>
-          </section>
-        `;
+        <section id="token">
+          <stripe-elements publishable-key="dummy-key" @stripe-token="${onStripeToken}"></stripe-elements>
+          <mwc-button class="generate" outlined @click="${onClick}">Generate Token</mwc-button>
+        </section>`
       }
     }
   </Story>
@@ -68,13 +80,13 @@ you may generate a token from the filled-out form by calling the `createToken()`
 
 ## Create a Source
 
-<Preview withToolbar>
-  <Story name="Generate a Source" height="500px">
+<Preview>
+  <Story name="Generate a Source" height="200px">
     {
-      () => {
-        const onStripeSource = ({ detail: source }) => $('#source-viewer').object = source;
-        const getInputs = () => [...($('#source').querySelectorAll('mwc-textfield'))];
-        const getCardData = () => getInputs().reduce((data, { value, dataset: { ownerProp } }) => ({ ...data, [ownerProp]: value }), { });
+      function generateASource() {
+        const onStripeSource = event => $('#source-viewer').object = event.detail;
+        const fieldEntry = field => [field.dataset.ownerProp, field.value];
+        const getCardData = () => Object.fromEntries($$('#source mwc-textfield').map(fieldEntry));
         const onClick = () => $('#source stripe-elements').createSource({ type: 'card', owner: getCardData() });
         return html`
         <section id="source">
@@ -84,7 +96,7 @@ you may generate a token from the filled-out form by calling the `createToken()`
           <mwc-textfield outlined label="Cardholder Phone" data-owner-prop="phone"></mwc-textfield>
           <mwc-button outlined @click="${onClick}">Generate Source</mwc-button>
         </section>
-        `;
+        `
       }
     }
   </Story>
@@ -94,13 +106,30 @@ you may generate a token from the filled-out form by calling the `createToken()`
 
 ## Validation
 
+`<stripe-elements>` has a `show-error` boolean attribute which will display the error message for you.
+This is useful for simple validation in cases where you don't need to build your own validation UI.
+
+<Preview>
+  <Story name="Error Display" height="60px">
+    {
+      function errorDisplay() {
+        const onClick = () => $('#should-error').validate();
+        return html`
+        <section id="show-errror">
+          <stripe-elements id="should-error" publishable-key="should-error-use-bad-key" show-error></stripe-elements>
+          <mwc-button class="generate" outlined @click="${onClick}">Validate</mwc-button>
+        </section>`
+      }
+    }
+  </Story>
+</Preview>
+
+## Advanced Validation
+
 `<stripe-elements>` comes with several properties, events, and methods for validation.
-Listen for the
-`is-complete-changed`,
-`is-empty-changed`, and
-`has-error-changed` events
+Listen for the `is-complete-changed`, `is-empty-changed`, and `has-error-changed` events
 and check the `isComplete`, `isEmpty`, and `hasError` properties to react to validation changes.
-These properties [reflect](https://dev.to/bennypowers/lets-build-web-components-part-5-litelement-906#reflecting-properties-to-attributes) to their dash-cased attributes,
+These properties to their dash-cased attributes,
 so you can use CSS to style your element in its various states.
 
 ```css
@@ -109,42 +138,22 @@ stripe-elements[is-complete] { border: 1px solid blue; }
 stripe-elements[has-error] { border: 1px solid red; }
 ```
 
-<Preview withToolbar>
+<Preview>
   <Story name="Validation States" height="60px">
-    {() => {
-      const onClick = () => $('#states stripe-elements').validate();
-      return html`
-      <style>
-        stripe-elements { border-radius: 4px; }
-        stripe-elements[is-empty] { border: 1px solid rebeccapurple; }
-        stripe-elements[is-complete] { border: 1px solid blue; }
-        stripe-elements[has-error] { border: 1px solid red; }
-      </style>
-      <section id="states">
-        <stripe-elements publishable-key="dummy-key"></stripe-elements>
-        <mwc-button class="generate" outlined @click="${onClick}">Validate</mwc-button>
-      </section>
-      `;
-    }}
-  </Story>
-</Preview>
-
-## Simple Validation
-
-`<stripe-elements>` has a `show-error` boolean attribute which will display the error message for you.
-This is useful for simple validation in cases where you don't need to build your own validation UI.
-
-<Preview withToolbar>
-  <Story name="Error Display" height="60px">
     {
-      () => {
-        const onClick = () => $('#should-error').validate();
+      function validationStates() {
+        const onClick = () => $('#states stripe-elements').validate();
         return html`
-        <section id="show-errror">
-          <stripe-elements id="should-error" publishable-key="should-error-use-bad-key" show-error></stripe-elements>
+        <style>
+          stripe-elements { border-radius: 4px; }
+          stripe-elements[is-empty] { border: 1px solid rebeccapurple; }
+          stripe-elements[is-complete] { border: 1px solid blue; }
+          stripe-elements[has-error] { border: 1px solid red; }
+        </style>
+        <section id="states">
+          <stripe-elements publishable-key="dummy-key"></stripe-elements>
           <mwc-button class="generate" outlined @click="${onClick}">Validate</mwc-button>
-        </section>
-        `;
+        </section>`
       }
     }
   </Story>

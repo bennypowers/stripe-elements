@@ -485,23 +485,21 @@ export class StripeElements extends LitElement {
   /**
    * Brand of the card
    */
-  __brand = null;
-
   get brand() {
     return this.__brand;
   }
+
+  __brand = null;
 
   /**
    * Stripe card object
    * @type {StripeCard}
    */
-  __card = null;
-
   get card() {
     return this.__card;
   }
 
-  __error = null;
+  __card = null;
 
   /**
    * Stripe or validation error
@@ -511,7 +509,7 @@ export class StripeElements extends LitElement {
     return this.__error;
   }
 
-  __hasError = false;
+  __error = null;
 
   /**
    * Whether the element has an error
@@ -521,7 +519,7 @@ export class StripeElements extends LitElement {
     return this.__hasError;
   }
 
-  __isComplete = false;
+  __hasError = false;
 
   /**
    * Whether the card form is complete
@@ -531,7 +529,7 @@ export class StripeElements extends LitElement {
     return this.__isComplete;
   }
 
-  __isEmpty = true;
+  __isComplete = false;
 
   /**
    * Whether the card form is empty
@@ -541,7 +539,7 @@ export class StripeElements extends LitElement {
     return this.__isEmpty;
   }
 
-  __stripeReady = false;
+  __isEmpty = true;
 
   /**
    * Whether Stripe.js has been initialized
@@ -551,8 +549,7 @@ export class StripeElements extends LitElement {
     return this.__stripeReady;
   }
 
-  __token = null;
-
+  __stripeReady = false;
 
   /**
    * The token returned from `createToken`
@@ -562,7 +559,7 @@ export class StripeElements extends LitElement {
     return this.__token;
   }
 
-  __source = null;
+  __token = null;
 
   /**
    * The source returned from `createSource`
@@ -572,7 +569,7 @@ export class StripeElements extends LitElement {
     return this.__source;
   }
 
-  __stripe = null;
+  __source = null;
 
   /**
    * The Stripe.js object
@@ -582,15 +579,17 @@ export class StripeElements extends LitElement {
     return this.__stripe;
   }
 
+  __stripe = null;
+
   /**
    * The Stripe.js Elements instance object
    * @type {Elements}
    */
-  __elements = null;
-
   get elements() {
     return this.__elements;
   }
+
+  __elements = null;
 
   /**
    * Breadcrumbs back up to the document.
