@@ -24,6 +24,11 @@ jobs:
           ./cc-test-reporter before-build
       - name: Run Tests
         run: npm test
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v1
+        with:
+          name: coverage
+          path: coverage
       - name: Cache dependencies
         uses: actions/cache@v1
         with:
@@ -69,6 +74,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
+      - name: Download coverage
+        uses: actions/download-artifact@v1
+        with:
+          name: coverage
       - name: Install Coverage Reporter
         run: |
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
