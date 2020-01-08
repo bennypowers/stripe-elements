@@ -1,0 +1,51 @@
+{
+  "version": "experimental",
+  "tags": [
+    {
+      "name": "json-viewer",
+      "description": "Custom Element that shows a JavaScript object's properties as syntax-highlighted JSON.\n\nThe element will respect `prefers-color-scheme` by default, but if you use the\nCSS Custom Properties listed below, you should customize both light and dark themes.\n\n❤️ Proudly uses [open-wc](https://open-wc.org) tools and recommendations.",
+      "attributes": [
+        {
+          "name": "whitelist",
+          "description": "Whitelist of keys for the object.\nRequired if setting `object` to a non-serializable object (e.g. an HTMLElement)",
+          "type": "String[]"
+        }
+      ],
+      "properties": [
+        {
+          "name": "object",
+          "description": "Object to display",
+          "type": "object"
+        },
+        {
+          "name": "whitelist",
+          "attribute": "whitelist",
+          "description": "Whitelist of keys for the object.\nRequired if setting `object` to a non-serializable object (e.g. an HTMLElement)",
+          "type": "String[]"
+        }
+      ],
+      "cssProperties": [
+        {
+          "name": "--json-viewer-key-color",
+          "description": "Color for keys. Light #f76707, Dark #ff922b"
+        },
+        {
+          "name": "--json-viewer-boolean-color",
+          "description": "Color for booleans. Light #f76707, Dark #22b8cf"
+        },
+        {
+          "name": "--json-viewer-number-color",
+          "description": "Color for numbers. Light #0ca678, Dark #51cf66"
+        },
+        {
+          "name": "--json-viewer-null-color",
+          "description": "Color for nulls. Light #e03131, Dark #ff6b6b"
+        },
+        {
+          "name": "--json-viewer-string-color",
+          "description": "Color for strings. Light #0c8599, Dark #22b8cf"
+        }
+      ]
+    }
+  ]
+}
