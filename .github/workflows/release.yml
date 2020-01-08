@@ -24,6 +24,11 @@ jobs:
           ./cc-test-reporter before-build
       - name: Run Tests
         run: npm test
+      - name: Upload Test Reporter
+        uses: actions/upload-artifact@v1
+        with:
+          name: cc-test-reporter
+          path: cc-test-reporter
 
   release:
     name: Release
@@ -58,11 +63,18 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: ./cc-test-reporter format-coverage -t lcov -o coverage/coverage.json coverage/lcov.info;
-      - run: ./cc-test-reporter upload-coverage -i coverage/coverage.json;
+      - name: Download coverage reporter
+        uses: actions/download-artifact@v1
+        with:
+          name: cc-test-reporter
+      - name: Upload Coverage
+        run: |
+          ./cc-test-reporter format-coverage -t lcov -o coverage/coverage.json coverage/lcov.info;
+          ./cc-test-reporter upload-coverage -i coverage/coverage.json;
 
   docs-deploy:
     runs-on: ubuntu-latest
+    needs: Release
     steps:
       - name: Checkout
         uses: actions/checkout@v1
