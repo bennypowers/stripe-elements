@@ -24,11 +24,20 @@ jobs:
           ./cc-test-reporter before-build
       - name: Run Tests
         run: npm test
-      - name: Upload Test Reporter
-        uses: actions/upload-artifact@v1
+      - name: Cache dependencies
+        uses: actions/cache@v1
         with:
-          name: cc-test-reporter
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Cache Test Reporter
+        uses: actions/cache@v1
+        with:
           path: ./cc-test-reporter
+          key: cc-test-reporter
 
   release:
     name: Release
@@ -65,10 +74,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
-      - name: Download coverage reporter
-        uses: actions/download-artifact@v1
-        with:
-          name: cc-test-reporter
       - name: Upload Coverage
         run: |
           ./cc-test-reporter format-coverage -t lcov -o coverage/coverage.json coverage/lcov.info;
