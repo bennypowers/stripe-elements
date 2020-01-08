@@ -33,11 +33,6 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-      - name: Cache Test Reporter
-        uses: actions/cache@v1
-        with:
-          path: ./cc-test-reporter
-          key: cc-test-reporter
 
   release:
     name: Release
@@ -74,6 +69,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
+      - name: Install Coverage Reporter
+        run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
       - name: Upload Coverage
         run: |
           ./cc-test-reporter format-coverage -t lcov -o coverage/coverage.json coverage/lcov.info;
