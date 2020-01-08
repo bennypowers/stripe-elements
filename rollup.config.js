@@ -1,4 +1,3 @@
-import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 // import litcss from 'rollup-plugin-lit-css';
 import babel from 'rollup-plugin-babel';
@@ -15,19 +14,17 @@ export default {
   },
   plugins: [
     resolve(),
-    commonjs(),
-    babel({ babelrc: {
-      'presets': [
+    babel({
+      presets: [
         ['@babel/preset-env', { 'targets': { 'browsers': [
           'last 1 chrome versions',
           'last 1 firefox versions',
           'last 1 safari versions',
         ] } }],
       ],
-      'plugins': [
+      plugins: [
         '@babel/plugin-proposal-class-properties',
       ],
-    },
     }),
   ],
 };

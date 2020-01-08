@@ -40,7 +40,7 @@ Enter your publishable key here (use the test key, not the production key) to ru
 
 <Story name="Enter a Stripe Publishable Key" height="80px">
   {
-    function enterAStripePublishableKey() {
+    () => {
       const setPublishableKey = event => $$('stripe-elements:not(#should-error)').forEach(el => el.publishableKey = event.target.value);
       return html`
       <mwc-textfield
@@ -62,7 +62,7 @@ you may generate a token from the filled-out form by calling the `createToken()`
 <Preview>
   <Story name="Generate a Token" height="60px">
     {
-      function generateAToken() {
+      () => {
         const viewer = $('#token-viewer');
         const onStripeToken = event => viewer.object = event.detail;
         const onClick = () => $('#token stripe-elements').createToken();
@@ -83,7 +83,7 @@ you may generate a token from the filled-out form by calling the `createToken()`
 <Preview>
   <Story name="Generate a Source" height="200px">
     {
-      function generateASource() {
+      () => {
         const onStripeSource = event => $('#source-viewer').object = event.detail;
         const fieldEntry = field => [field.dataset.ownerProp, field.value];
         const getCardData = () => Object.fromEntries($$('#source mwc-textfield').map(fieldEntry));
@@ -112,7 +112,7 @@ This is useful for simple validation in cases where you don't need to build your
 <Preview>
   <Story name="Error Display" height="60px">
     {
-      function errorDisplay() {
+      () => {
         const onClick = () => $('#should-error').validate();
         return html`
         <section id="show-errror">
@@ -141,7 +141,7 @@ stripe-elements[has-error] { border: 1px solid red; }
 <Preview>
   <Story name="Validation States" height="60px">
     {
-      function validationStates() {
+      () => {
         const onClick = () => $('#states stripe-elements').validate();
         return html`
         <style>
