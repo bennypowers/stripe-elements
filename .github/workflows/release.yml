@@ -86,6 +86,8 @@ jobs:
         run: |
           ./cc-test-reporter format-coverage -t lcov -o coverage/coverage.json coverage/lcov.info;
           ./cc-test-reporter upload-coverage -i coverage/coverage.json;
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
 
   docs-deploy:
     runs-on: ubuntu-latest
