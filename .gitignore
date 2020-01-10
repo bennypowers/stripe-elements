@@ -6,6 +6,8 @@
 /_virtual
 /coverage
 
+cc-test-reporter
+
 /StripeElements.js
 /stripe-elements.js
 
