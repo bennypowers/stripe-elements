@@ -56,8 +56,8 @@ jobs:
           branch: master
           # You can specify specifying version range for the extra plugins if you prefer.
           extra_plugins: |
-            @semantic-release/git
-            @semantic-release/changelog
+            @semantic-release/git@7.0.18
+            @semantic-release/changelog@3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
