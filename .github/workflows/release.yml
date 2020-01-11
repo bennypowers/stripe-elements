@@ -52,6 +52,7 @@ jobs:
         uses: cycjimmy/semantic-release-action@v2
         id: semantic   # Need an `id` for output variables
         with:
+          semantic_version: 15.14.0
           branch: master
           # You can specify specifying version range for the extra plugins if you prefer.
           extra_plugins: |

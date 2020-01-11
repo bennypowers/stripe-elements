@@ -21,7 +21,7 @@
     "site:build": "npm run storybook:build",
     "storybook": "start-storybook --node-resolve --watch --open --babel",
     "storybook:build": "build-storybook",
-    "semantic-release": "semantic-release"
+    "watch": "rollup -cw"
   },
   "repository": {
     "type": "git",
@@ -75,8 +75,6 @@
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "semantic-release": "^16.0.0",
-    "semantic-release-cli": "^5.2.3",
     "sinon": "^8.0.4",
     "sinon-chai": "^3.4.0",
     "web-component-analyzer": "^1.0.1"
