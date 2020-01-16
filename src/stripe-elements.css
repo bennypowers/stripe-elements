@@ -1,0 +1,4 @@
+:host {
+  min-width: var(--stripe-elements-width, 300px);
+  min-height: var(--stripe-elements-height, 50px);
+}

@@ -1,0 +1,13 @@
+{
+  "plugins": [
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-optional-chaining",
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-syntax-import-meta",
+    "@babel/plugin-syntax-numeric-separator",
+    ["@babel/plugin-transform-runtime", { "useESModules": true }],
+    ["@babel/plugin-proposal-decorators", { "decoratorsBeforeExport": false }]
+  ],
+  "presets": ["@babel/preset-env"],
+  "sourceType": "module"
+}

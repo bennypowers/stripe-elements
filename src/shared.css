@@ -1,0 +1,12 @@
+[hidden] { display: none !important; }
+
+:host {
+  display: block;
+}
+
+#error {
+  font-family: sans-serif;
+  font-size: 14px;
+  padding-left: 42px;
+  padding-bottom: 10px;
+}

@@ -1,102 +1,68 @@
-import { LitElement, html, css } from 'lit-element';
-import { render } from 'lit-html';
+import { LitNotify } from '@morbidick/lit-element-notify';
+import { html, property } from 'lit-element';
+
 import { ifDefined } from 'lit-html/directives/if-defined';
+import { render } from 'lit-html';
+import bound from 'bound-decorator';
 
-const removeEl = el => {
-  /* istanbul ignore if */
-  if (el instanceof Element) el.remove();
-};
-
-const MEMOS = new WeakMap();
-
-const getCache = f => {
-  if (!MEMOS.has(f)) MEMOS.set(f, new Map());
-  return MEMOS.get(f);
-};
-
-const memoize1 = f => {
-  const m = getCache(f);
-  return x => {
-    if (m.has(x)) {
-      return m.get(x);
-    } else {
-      const val = f(x);
-      m.set(x, val);
-      return val;
-    }
-  };
-};
-
-const camel = memoize1(s =>
-  s.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (_, c) => c.toUpperCase()));
-
-const dash = memoize1(s =>
-  s.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase());
+import { StripeBase } from './StripeBase';
+import { appendTemplate, remove } from './lib/dom';
+import { dash, generateRandomMountElementId } from './lib/strings';
+import sharedStyles from './shared.css';
+import style from './stripe-elements.css';
 
 /* istanbul ignore next */
 const removeAllMounts = host =>
   host.querySelectorAll('[slot="stripe-card"][name="stripe-card"]')
-    .forEach(removeEl);
+    .forEach(remove);
 
-function appendTemplate(template, target) {
-  const tmp = document.createElement('div');
-  render(template, tmp);
-  const { firstElementChild } = tmp;
-  target.appendChild(firstElementChild);
-  tmp.remove();
-  return firstElementChild;
-}
+const slotTemplate =
+  html`<slot slot="stripe-card" name="stripe-card"></slot>`;
 
-const stripeElementsCustomCssProperties = html`
-<style id="stripe-elements-custom-css-properties">
-.StripeElement {
-  background-color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  border: 1px solid transparent;
-  box-shadow: 0 1px 3px 0 #e6ebf1;
-  -webkit-transition: box-shadow 150ms ease;
-  transition: box-shadow 150ms ease;
-  min-width: var(--stripe-elements-width, 300px);
-  padding: var(--stripe-elements-element-padding, 14px);
-  background: var(--stripe-elements-element-background, initial);
-}
+const stripeElementsCustomCssTemplate = document.createElement('template');
+stripeElementsCustomCssTemplate.id = 'stripe-elements-custom-css-properties';
+stripeElementsCustomCssTemplate.innerHTML = `
+  <style id="stripe-elements-custom-css-properties">
+    .StripeElement {
+      background-color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      box-shadow: 0 1px 3px 0 #e6ebf1;
+      -webkit-transition: box-shadow 150ms ease;
+      transition: box-shadow 150ms ease;
+      min-width: var(--stripe-elements-width, 300px);
+      padding: var(--stripe-elements-element-padding, 14px);
+      background: var(--stripe-elements-element-background, initial);
+    }
 
-.StripeElement--focus {
-  box-shadow: 0 1px 3px 0 #cfd7df;
-}
+    .StripeElement--focus {
+      box-shadow: 0 1px 3px 0 #cfd7df;
+    }
 
-.StripeElement--invalid {
-  border-color: #fa755a;
-}
+    .StripeElement--invalid {
+      border-color: #fa755a;
+    }
 
-.StripeElement--webkit-autofill {
-  background-color: #fefde5 !important;
-}
-</style>
+    .StripeElement--webkit-autofill {
+      background-color: #fefde5 !important;
+    }
+  </style>
 `;
 
-const style = css`
-[hidden] { display: none !important; }
-:host {
-  display: block;
-  min-width: var(--stripe-elements-width, 300px);
-  min-height: var(--stripe-elements-height, 50px);
+function applyCustomCss() {
+  if (!document.getElementById('stripe-elements-custom-css-properties')) {
+    document.head.appendChild(stripeElementsCustomCssTemplate.content.cloneNode(true));
+  }
 }
-#error {
-  font-family: sans-serif;
-  font-size: 14px;
-  padding-left: 42px;
-  padding-bottom: 10px;
-}
-`;
 
-const stripeCardTemplate = ({ action, id, source, token }) => html`
-<form action="${ifDefined(action || undefined)}" method="post">
-  <div id="${id}" aria-label="Credit or Debit Card"></div>
-  <input ?disabled="${!token}" type="hidden" name="stripeToken" value="${ifDefined(token || undefined)}">
-  <input ?disabled="${!source}" type="hidden" name="stripeSource" value="${ifDefined(source || undefined)}">
-</form>
+const stripeCardTemplate = ({ action, id, label, paymentMethod, source, token }) => html`
+  <form action="${ifDefined(action || undefined)}" method="post">
+    <div id="${ifDefined(id)}" aria-label="${ifDefined(label)}"></div>
+    <input ?disabled="${!paymentMethod}" type="hidden" name="stripePaymentMethod" value="${ifDefined(paymentMethod || undefined)}">
+    <input ?disabled="${!source}" type="hidden" name="stripeSource" value="${ifDefined(source || undefined)}">
+    <input ?disabled="${!token}" type="hidden" name="stripeToken" value="${ifDefined(token || undefined)}">
+  </form>
 `;
 
 const allowedStyles = [
@@ -113,17 +79,6 @@ const allowedStyles = [
   'textShadow',
   'textTransform',
 ];
-
-/**
- * Generates a random mount point (UUID v4) for Stripe Elements. This will allow multiple
- * Elements forms to be embedded on a single page.
- * @return {String} mount element id
- */
-function generateRandomMountElementId() {
-  return `stripe-elements-mount-point-${([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  )}`;
-}
 
 /**
  * Custom element wrapper for Stripe.js v3 Elements. Creates a `card` element à la https://stripe.com/docs/elements
@@ -221,7 +176,7 @@ function generateRandomMountElementId() {
  *   document.body.querySelector('button').disabled = !(isComplete && !hasError)
  * }
  *
- * const onClick = () => document.getElementById('stripe').submit();
+ * const onClick = () => document.getElementById('stripe').createSource();
  *
  * const template = html`
  *   <button disabled @click="${onClick}">Get Token</button>
@@ -246,7 +201,7 @@ function generateRandomMountElementId() {
  *
  * <paper-button id="submit"
  *     disabled="[[!ready]]"
- *     onclick="stripe.submit()">
+ *     onclick="stripe.createSource()">
  *   Get Token
  * </paper-button>
  *
@@ -339,347 +294,155 @@ function generateRandomMountElementId() {
  * @cssprop [--stripe-elements-invalid-text-transform] - `text-transform` property for the element in its invalid state
  *
  * @element stripe-elements
- * @extends LitElement
+ * @extends StripeBase
  *
- * @fires stripe-token - The token received from stripe.com
- * @fires stripe-source - The source received from stripe.com
- * @fires stripe-error - The validation error, or the error returned from stripe.com
- * @fires stripe-change - Stripe Element change event
- * @fires stripe-ready - Stripe has been initialized and mounted
+ * @fires 'stripe-change' - Stripe Element change event
+ * @fires 'stripe-ready' - Stripe has been initialized and mounted
  *
- * @fires is-complete-changed - The new value of is-complete
- * @fires is-empty-changed - The new value of is-empty
- * @fires has-error-changed - The new value of has-error
- * @fires brand-changed - The new value of brand
- * @fires card-changed - The new value of card
- * @fires error-changed - The new value of error
- * @fires publishable-key-changed - The new value of publishable-key
- * @fires stripe-ready-changed - The new value of stripe-ready
- * @fires token-changed - The new value of token
+ * @fires 'brand-changed' - The new value of brand
+ * @fires 'card-changed' - The new value of card
+ * @fires 'is-complete-changed' - The new value of is-complete
+ * @fires 'is-empty-changed' - The new value of is-empty
+ * @fires 'stripe-ready-changed' - The new value of stripe-ready
  */
-export class StripeElements extends LitElement {
+export class StripeElements extends LitNotify(StripeBase) {
   static is = 'stripe-elements';
 
-  static properties = {
-    /**
-     * The URL to the morm action. Example '/charges'.
-     * If blank or undefined will not submit charges immediately.
-     */
-    action: { type: String },
+  static styles = [
+    sharedStyles,
+    style,
+  ];
 
-    /**
-     * The card brand detected by Stripe
-     * @type {String}
-     * @readonly
-     */
-    brand: { type: String },
-
-    /**
-     * Reference to the Stripe card.
-     * @type {Card}
-     * @readonly
-     */
-    card: { type: Object },
-
-    /**
-     * Card billing info to be passed to createToken() (optional)
-     * https://stripe.com/docs/stripe-js/reference#stripe-create-token
-     * @type {Object}
-     */
-    cardData: { type: Object },
-
-    /**
-     * Error message from Stripe.
-     * @type {String}
-     * @readonly
-     */
-    error: { type: String },
-
-    /**
-     * Whether the form has an error.
-     * @type {Boolean}
-     * @readonly
-     */
-    hasError: { type: Boolean, attribute: 'has-error', reflect: true },
-
-    /**
-     * If the form is complete.
-     * @type {Boolean}
-     * @readonly
-     */
-    isComplete: { type: Boolean, attribute: 'is-complete', reflect: true },
-
-    /**
-     * If the form is empty.
-     * @type {Boolean}
-     * @readonly
-     */
-    isEmpty: { type: Boolean, attribute: 'is-empty', reflect: true },
-
-    /**
-     * Whether to hide icons in the Stripe form.
-     * @type {Boolean}
-     */
-    hideIcon: { type: Boolean, attribute: 'hide-icon' },
-
-    /**
-     * Whether or not to hide the postal code field.
-     * Useful when you gather shipping info elsewhere.
-     * @type {Boolean}
-     */
-    hidePostalCode: { type: Boolean, attribute: 'hide-postal-code' },
-
-    /**
-     * Stripe icon style. 'solid' or 'default'.
-     * @type {'solid'|'default'}
-     */
-    iconStyle: { type: String, attribute: 'icon-style' },
-
-    /**
-     * Stripe Publishable Key. EG. pk_test_XXXXXXXXXXXXXXXXXXXXXXXX
-     * @type {String}
-     */
-    publishableKey: { type: String, attribute: 'publishable-key', reflect: true },
-
-    /**
-     * Whether to display the error message
-     * @type {Object}
-     */
-    showError: { type: Boolean, attribute: 'show-error', reflect: true },
-
-    /**
-     * True when the stripe element is ready to receive focus.
-     * @type {Boolean}
-     * @readonly
-     */
-    stripeReady: { type: Boolean, attribute: 'stripe-ready', reflect: true },
-
-    /**
-     * Stripe token
-     * @type {Object}
-     * @readonly
-     */
-    token: { type: Object },
-
-    /**
-     * Prefilled values for form. Example {postalCode: '90210'}
-     * @type {Object}
-     */
-    value: { type: Object },
-
-    /**
-     * Stripe instance
-     * @type {Object}
-     * @readonly
-     */
-    stripe: { type: Object },
-
-    /**
-     * Stripe Elements instance
-     * @type {Object}
-     * @readonly
-     */
-    elements: { type: Object },
-  }
+  /* PUBLIC FIELDS */
 
   /**
-   * Brand of the card
-   */
-  get brand() {
-    return this.__brand;
-  }
-
-  __brand = null;
-
-  /**
-   * Stripe card object
-   * @type {StripeCard}
-   */
-  get card() {
-    return this.__card;
-  }
-
-  __card = null;
-
-  /**
-   * Stripe or validation error
-   * @type {Error}
-   */
-  get error() {
-    return this.__error;
-  }
-
-  __error = null;
-
-  /**
-   * Whether the element has an error
+   * Whether to hide icons in the Stripe form.
    * @type {Boolean}
    */
-  get hasError() {
-    return this.__hasError;
-  }
-
-  __hasError = false;
+  @property({ type: Boolean, attribute: 'hide-icon' }) hideIcon = false;
 
   /**
-   * Whether the card form is complete
+   * Whether or not to hide the postal code field.
+   * Useful when you gather shipping info elsewhere.
    * @type {Boolean}
    */
-  get isComplete() {
-    return this.__isComplete;
-  }
-
-  __isComplete = false;
+  @property({ type: Boolean, attribute: 'hide-postal-code' }) hidePostalCode = false;
 
   /**
-   * Whether the card form is empty
+   * Stripe icon style. 'solid' or 'default'.
+   * @type {'solid'|'default'}
+   */
+  @property({ type: String, attribute: 'icon-style' }) iconStyle = 'default';
+
+  /**
+   * aria-label attribute for the credit card form.
+   * @type {String}
+   */
+  @property({ type: String }) label = 'Credit or Debit Card';
+
+  /**
+   * Prefilled values for form. Example {postalCode: '90210'}
+   * @type {Object}
+   */
+  @property({ type: Object }) value = {};
+
+  /* READ ONLY PROPERTIES */
+
+  /**
+   * The card brand detected by Stripe
+   * @type {String}
+   * @readonly
+   */
+  @property({ type: String, notify: true })
+  get brand() { return this.__brand; }
+
+  /**
+   * The Stripe card object.
+   * @type {stripe.Element}
+   * @readonly
+   */
+  @property({ type: Object, notify: true })
+  get card() { return this.__card; }
+
+  /**
+   * If the form is complete.
    * @type {Boolean}
    */
-  get isEmpty() {
-    return this.__isEmpty;
-  }
-
-  __isEmpty = true;
+  @property({ type: Boolean, attribute: 'is-complete', reflect: true, notify: true })
+  get isComplete() { return this.__isComplete; }
 
   /**
-   * Whether Stripe.js has been initialized
+   * If the form is empty.
    * @type {Boolean}
    */
-  get stripeReady() {
-    return this.__stripeReady;
-  }
-
-  __stripeReady = false;
+  @property({ type: Boolean, attribute: 'is-empty', reflect: true, notify: true })
+  get isEmpty() { return this.__isEmpty; }
 
   /**
-   * The token returned from `createToken`
-   * @type {StripeToken}
+   * If the stripe element is ready to receive focus.
+   * @type {Boolean}
    */
-  get token() {
-    return this.__token;
-  }
+  @property({ type: Boolean, attribute: 'stripe-ready', reflect: true, notify: true })
+  get stripeReady() { return this.__stripeReady; }
 
-  __token = null;
-
-  /**
-   * The source returned from `createSource`
-   * @type {StripeSource}
-   */
-  get source() {
-    return this.__source;
-  }
-
-  __source = null;
-
-  /**
-   * The Stripe.js object
-   * @type {Stripe}
-   */
-  get stripe() {
-    return this.__stripe;
-  }
-
-  __stripe = null;
-
-  /**
-   * The Stripe.js Elements instance object
-   * @type {Elements}
-   */
-  get elements() {
-    return this.__elements;
-  }
-
-  __elements = null;
+  /* PRIVATE FIELDS */
 
   /**
    * Breadcrumbs back up to the document.
-   * @type {Array}
+   * @type {Node[]}
+   * @private
    */
-  __shadowHosts = [];
-
-  /**
-   * Mount Point Element id
-   * @type {String}
-   */
-  __stripeMountId = null;
-
-  /**
-   * Stripe Element mount point
-   * @type {Element}
-   */
-  get stripeMount() {
-    return document.getElementById(this.__stripeMountId);
-  }
+  shadowHosts = [];
 
   /**
    * The internal form element
    * @type {HTMLFormElement}
+   * @protected
    */
   get form() {
+    if (window.ShadyDOM) return this.querySelector('form');
     let slot = this.shadowRoot.querySelector('slot');
     // eslint-disable-next-line no-loops/no-loops
     while (slot instanceof HTMLSlotElement && ([slot] = slot.assignedElements())) continue;
     return slot.querySelector('form');
   }
 
-  get __tokenFormField() {
-    return this.form.querySelector('[name="stripeToken"]');
-  }
-
-  get __sourceFormField() {
-    return this.form.querySelector('[name="stripeSource"]');
-  }
-
-  static styles = [
-    style,
-  ];
+  /**
+   * Stripe Element mount point
+   * @type {Element}
+   */
+  get stripeMount() { return document.getElementById(this.stripeMountId); }
 
   /**
-   * The action attr of the internal form.
-   * @type {string}
+   * Mount Point Element id
+   * @type {String}
+   * @protected
    */
-  action;
+  stripeMountId;
 
-  /**
-   * Stripe cardData object to submit with
-   * @type {Object}
-   */
-  cardData = {};
+  /** @type {stripe.brandType} */
+  __brand = null;
 
-  hideIcon = false;
+  /** @type {stripe.elements.Element} */
+  __card = null;
 
-  hidePostalCode = false;
+  __isComplete = false;
 
-  iconStyle = 'default';
+  __isEmpty = true;
 
-  value = {};
+  __stripeReady = false;
 
-  /** LIFECYCLE */
-
-  constructor() {
-    super();
-    this.__handleError = this.__handleError.bind(this);
-    this.__handleResponse = this.__handleResponse.bind(this);
-    this.__onReady = this.__onReady.bind(this);
-    this.__onChange = this.__onChange.bind(this);
-  }
+  /* LIFECYCLE */
 
   /** @inheritdoc */
   connectedCallback() {
     super.connectedCallback();
-    this.__notify('is-complete');
-    this.__notify('is-empty');
-    this.__notify('has-error');
-    this.__notify('brand');
-    this.__notify('card');
-    this.__notify('error');
-    this.__notify('publishable-key');
-    this.__notify('stripe-ready');
-    this.__notify('token');
-    this.__notify('source');
-    if (!document.getElementById('stripe-elements-custom-css-properties')) {
-      appendTemplate(stripeElementsCustomCssProperties, document.head);
-    }
+    applyCustomCss();
+  }
+
+  /** @inheritdoc */
+  firstUpdated() {
+    this.resetMount();
   }
 
   /** @inheritdoc */
@@ -692,35 +455,7 @@ export class StripeElements extends LitElement {
     `;
   }
 
-  /** @inheritdoc */
-  firstUpdated() {
-    this.__initMountPoints();
-  }
-
-  /** @inheritdoc */
-  updated(changed) {
-    if (changed.has('isComplete')) this.__notify('is-complete');
-    if (changed.has('isEmpty')) this.__notify('is-empty');
-    if (changed.has('hasError')) this.__notify('has-error');
-    if (changed.has('brand')) this.__notify('brand');
-    if (changed.has('card')) this.__notify('card');
-    if (changed.has('stripeReady')) this.__notify('stripe-ready');
-    if (changed.has('source')) this.__notify('source');
-    if (changed.has('token')) this.__notify('token');
-    if (changed.has('publishableKey')) {
-      this.__notify('publishable-key');
-      this.__publishableKeyChanged(this.publishableKey);
-    }
-
-    if (changed.has('error')) {
-      this.__setToken(null);
-      this.__setSource(null);
-      this.__notify('error');
-      this.__fireError(this.error);
-    }
-  }
-
-  /** PUBLIC API */
+  /* PUBLIC API */
 
   /**
    * Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid.
@@ -734,30 +469,8 @@ export class StripeElements extends LitElement {
    * Resets the Stripe card.
    */
   reset() {
-    this.__setError(null);
+    super.reset();
     this.card && this.card.clear();
-  }
-
-  /**
-   * Submit credit card information to generate a source
-   * @param {object} [sourceData={}]
-   */
-  async createSource(sourceData = {}) {
-    if (!this.stripe) throw new Error('Cannot create source before initializing Stripe');
-    return this.stripe.createSource(this.__card, sourceData)
-      .then(this.__handleResponse)
-      .catch(this.__handleError);
-  }
-
-  /**
-   * Submit credit card information to generate a token
-   * @param {object} [cardData=this.cardData]
-   */
-  async createToken(cardData = this.cardData) {
-    if (!this.stripe) throw new Error('Cannot create token before initializing Stripe');
-    return this.stripe.createToken(this.__card, cardData)
-      .then(this.__handleResponse)
-      .catch(this.__handleError);
   }
 
   /**
@@ -767,165 +480,113 @@ export class StripeElements extends LitElement {
   validate() {
     const { isComplete, isEmpty, hasError } = this;
     const isValid = !hasError && isComplete && !isEmpty;
-    const message = `Credit card information is ${isEmpty ? 'empty' : 'incomplete'}.`;
-    if (!isValid && !hasError) this.__setError(message);
+    const error = new Error(`Credit card information is ${isEmpty ? 'empty' : 'incomplete'}.`);
+    if (!isValid && !hasError) this.set({ error });
     return isValid;
   }
 
-  /**
-   * Fires an event.
-   * @param  {string} type      event type
-   * @param  {any}    detail    detail value
-   * @param  {Object} [opts={}] event options
-   */
-  __fire(type, detail, opts = {}) {
-    this.dispatchEvent(new CustomEvent(type, { detail, ...opts }));
-  }
-
-  /**
-   * Fires an Error Event
-   * @param  {Error} error
-   */
-  __fireError(error) {
-    this.dispatchEvent(new ErrorEvent('stripe-error', { error }));
-  }
-
-  /**
-   * Fires a Polymer-style prop-changed event.
-   * @param {string} prop camelCased prop name.
-   */
-  __notify(prop) {
-    const type = `${dash(prop)}-changed`;
-    const value = this[camel(prop)];
-    this.__fire(type, { value });
-  }
+  /* PRIVATE METHODS */
 
   /**
    * Returns a Stripe-friendly style object computed from CSS custom properties
    * @return {Object} Stripe Style initialization object.
+   * @private
    */
-  __getStripeElementsStyles() {
+  getStripeElementsStyles() {
     const computedStyle = window.ShadyCSS ? null : getComputedStyle(this);
-    return allowedStyles.reduce((acc, style) => {
-      const dashCase = dash(style);
+    return allowedStyles.reduce((acc, camelCase) => {
+      const dashCase = dash(camelCase);
       Object.keys(acc).forEach(prefix => {
-        acc[prefix][style] = (
-          window.ShadyCSS ?
-            ShadyCSS.getComputedStyleValue(this, `--stripe-elements-${prefix}-${dashCase}`) :
-            computedStyle.getPropertyValue(`--stripe-elements-${prefix}-${dashCase}`)
-        ) || undefined;
+        const customProperty = `--stripe-elements-${prefix}-${dashCase}`;
+        const propertyValue =
+          computedStyle ? computedStyle.getPropertyValue(customProperty)
+          : ShadyCSS.getComputedStyleValue(this, customProperty);
+        acc[prefix][camelCase] = propertyValue || undefined;
       });
       return acc;
     }, { base: {}, complete: {}, empty: {}, invalid: {} });
   }
 
   /**
-   * Sets the error.
-   * @param  {Object} error
-   * @protected
+   * Reinitializes Stripe and mounts the card.
+   * @inheritdoc
    */
-  async __handleError(error) {
-    this.__setError(error.message);
-    await this.updateComplete;
-    return error;
+  async init() {
+    this.resetMount();
+    if (this.card) await this.unmountCard();
+    await this.initStripe();
+    await this.mountCard();
+  }
+
+  /** @private */
+  initMountPoint() {
+    this.stripeMountId = generateRandomMountElementId();
+    if (window.ShadyDOM) this.initShadyDOMMount();
+    else this.initShadowDOMMounts();
   }
 
   /**
-   * Sets the token or error from the response.
-   * @param  {Object} response       Response from stripe
-   * @param  {Object} response.error Stripe error
-   * @param  {Object} response.token Stripe token
-   * @return {Object}
-   * @protected
+   * Prepares to mount Stripe Elements in light DOM.
+   * @private
    */
-  async __handleResponse(response) {
-    const { error, token, source } = response;
-    if (error) this.__setError(error);
-    else if (token) this.__setToken(token);
-    else if (source) this.__setSource(source);
-    await this.updateComplete;
-    return response;
-  }
-
-  __initMountPoints() {
-    if (this.stripeMount) return;
-    else if (window.ShadyDOM) this.__initShadyDomMount();
-    else this.__initShadowDomMounts();
-  }
-
-  /** Prepares to mount Stripe Elements in light DOM. */
-  __initShadowDomMounts() {
+  initShadowDOMMounts() {
     // trace each shadow boundary between us and the document
     let host = this;
-    this.__shadowHosts = [this];
-    while (host = host.getRootNode().host) this.__shadowHosts.push(host); // eslint-disable-line prefer-destructuring, no-loops/no-loops
+    this.shadowHosts = [this];
+    while (host = host.getRootNode().host) this.shadowHosts.push(host); // eslint-disable-line prefer-destructuring, no-loops/no-loops
 
-    // append mount point to first shadow host under document (as light child)
-    // and slot breadcrumbs to each shadowroot in turn, until our shadow host.
+    const { shadowHosts, stripeMountId: id, action, label, token } = this;
 
-    const { action, token } = this;
-    this.__stripeMountId = generateRandomMountElementId();
-    const id = this.__stripeMountId;
-    const mountTemplate = stripeCardTemplate({ action, id, token });
-    const slotTemplate =
-      html`<slot slot="stripe-card" name="stripe-card"></slot>`;
-
-    const root = this.__shadowHosts.pop();
-    let container = root.querySelector('[slot="stripe-card"]');
-    if (!container) {
-      container = document.createElement('div');
-      container.slot = 'stripe-card';
-      root.appendChild(container);
+    // Prepare the shallowest breadcrumb slot at document level
+    const hosts = [...shadowHosts];
+    const root = hosts.pop();
+    if (!root.querySelector('[slot="stripe-card"]')) {
+      const element = document.createElement('div');
+      element.slot = 'stripe-card';
+      root.appendChild(element);
     }
-    appendTemplate(mountTemplate, container);
-    this.__shadowHosts.forEach(host => appendTemplate(slotTemplate, host));
+    const container = root.querySelector('[slot="stripe-card"]');
+
+    // hedge against shenanigans
+    const isDomCorrupt = container.querySelector('form') && !container.querySelector(`#${this.stripeMountId}`);
+    const renderTemplate = isDomCorrupt ? render : appendTemplate;
+
+    // Render the form to the document, so that Stripe.js can mount
+    renderTemplate(stripeCardTemplate({ action, id, token, label }), container);
+
+    // Append breadcrumb slots to each shadowroot in turn,
+    // from the document down to the <stripe-elements> instance.
+    hosts.forEach(appendTemplate(slotTemplate));
   }
 
-  /** Creates a mounting div for the shady dom stripe elements container */
-  __initShadyDomMount() {
-    const { action, token } = this;
-    this.__stripeMountId = generateRandomMountElementId();
-    const id = this.__stripeMountId;
-    const mountTemplate = stripeCardTemplate({ action, id, token });
+  /**
+   * Creates a mounting div for the shady dom stripe elements container
+   * @private
+   */
+  initShadyDOMMount() {
+    const { action, token, label } = this;
+    const id = this.stripeMountId;
+    const mountTemplate = stripeCardTemplate({ action, id, label, token });
     appendTemplate(mountTemplate, this);
   }
 
   /**
-   * Initializes Stripe and elements.
+   * Creates and mounts Stripe Elements card.
+   * @private
    */
-  __initStripe() {
-    const oldStripe = this.__stripe;
-    const oldElements = this.__elements;
-    if (this.__stripe) this.__stripe = null;
-    if (!window.Stripe) {
-      const message = `<stripe-elements> requires Stripe.js to be loaded first.`;
-      this.__setError({ message });
-      console.warn(message); // eslint-disable-line no-console
-    } else if (this.publishableKey) {
-      this.__stripe = Stripe(this.publishableKey);
-      this.__elements = this.__stripe.elements();
-    } else {
-      this.__elements = null;
-    }
-    this.requestUpdate('stripe', oldStripe);
-    this.requestUpdate('elements', oldElements);
-  }
-
-  /** Creates and mounts Stripe Elements card. */
-  __mountCard() {
+  async mountCard() {
+    if (!this.stripe) return;
     const { hidePostalCode, hideIcon, iconStyle, value } = this;
-    const style = this.__getStripeElementsStyles();
+    const style = this.getStripeElementsStyles();
 
-    const card =
-      this.__elements.create('card', { hideIcon, hidePostalCode, iconStyle, style, value });
+    const card = this.elements
+      .create('card', { hideIcon, hidePostalCode, iconStyle, style, value });
 
-    this.__setCard(card);
-
-    this.__card.mount(this.stripeMount);
-    this.__card.addEventListener('ready', this.__onReady);
-    this.__card.addEventListener('change', this.__onChange);
-    this.__setIsComplete(false);
-    this.__setIsEmpty(true);
+    await this.set({ card });
+    this.card.mount(this.stripeMount);
+    this.card.addEventListener('ready', this.onReady);
+    this.card.addEventListener('change', this.onChange);
+    await this.set({ isComplete: false, isEmpty: true });
   }
 
   /**
@@ -936,113 +597,42 @@ export class StripeElements extends LitElement {
    * @param  {String}        event.brand     brand of the card being entered e.g. 'visa' or 'amex'
    * @param  {Object}        event.error     The current validation error, if any.
    * @param  {String|Object} event.value     Value of the form. Only non-sensitive information e.g. postalCode is present.
+   * @private
    */
-  __onChange(event) {
-    const { empty, complete, brand, error } = event;
-    this.__setError(error);
-    this.__setBrand(brand);
-    this.__setIsComplete(complete);
-    this.__setIsEmpty(empty);
-    this.__fire('stripe-change', event);
+  @bound async onChange(event) {
+    const { brand, complete: isComplete, empty: isEmpty, error = null } = event;
+    await this.set({ error, brand, isComplete, isEmpty });
+    this.fire('stripe-change', event);
   }
 
   /**
    * Sets the stripeReady property when the stripe element is ready to receive focus.
    * @param  {Event} event
+   * @private
    */
-  __onReady(event) {
-    this.__setStripeReady(true);
-    this.__fire('stripe-ready', event);
+  @bound async onReady(event) {
+    await this.set({ stripeReady: true });
+    this.fire('stripe-ready', event);
+  }
+
+  /** @private */
+  removeStripeMounts() {
+    this.shadowHosts.forEach(removeAllMounts);
+    if (this.stripeMount) this.stripeMount.remove();
+  }
+
+  /** @private */
+  resetMount() {
+    this.removeStripeMounts();
+    this.initMountPoint();
   }
 
   /**
-   * Reinitializes Stripe and mounts the card.
-   * @param  {String} publishableKey Stripe publishable key
+   * Unmounts and nullifies the card.
+   * @private
    */
-  __publishableKeyChanged(publishableKey) {
-    this.__unmountCard();
-    this.__setStripeReady(false);
-    if (!this.stripeMount || !this.form) this.__resetMount();
-    this.__initStripe();
-    if (publishableKey && this.stripe) this.__mountCard();
-  }
-
-  __removeMountPoints() {
-    this.__shadowHosts.forEach(removeAllMounts);
-    removeEl(this.stripeMount);
-  }
-
-  __resetMount() {
-    this.__removeMountPoints();
-    this.__initMountPoints();
-  }
-
-  /** Unmounts and nullifies the card. */
-  __unmountCard() {
-    if (this.card) this.card.unmount();
-    this.__setCard(null);
-  }
-
-  /** READONLY SETTERS */
-
-  __setBrand(newVal) {
-    const oldBrand = this.__brand;
-    this.__brand = newVal;
-    this.requestUpdate('brand', oldBrand);
-  }
-
-  __setCard(newVal) {
-    const oldCard = this.__card;
-    this.__card = newVal;
-    this.requestUpdate('card', oldCard);
-  }
-
-  __setError(newVal) {
-    const oldError = this.__error;
-    this.__error = newVal;
-    this.requestUpdate('error', oldError);
-    const oldHasError = this.__hasError;
-    this.__hasError = !!newVal;
-    this.requestUpdate('hasError', oldHasError);
-  }
-
-  __setIsComplete(newVal) {
-    const oldIsComplete = this.__isComplete;
-    this.__isComplete = newVal;
-    this.requestUpdate('isComplete', oldIsComplete);
-  }
-
-  __setIsEmpty(newVal) {
-    const oldIsEmpty = this.__isEmpty;
-    this.__isEmpty = newVal;
-    this.requestUpdate('isEmpty', oldIsEmpty);
-  }
-
-  __setStripeReady(newVal) {
-    const oldStripeReady = this.__stripeReady;
-    this.__stripeReady = newVal;
-    this.requestUpdate('stripeReady', oldStripeReady);
-  }
-
-  __setSource(newVal) {
-    const oldSource = this.__source;
-    this.__source = newVal;
-    this.requestUpdate('source', oldSource);
-    if (!newVal) return;
-    this.__fire('stripe-source', newVal);
-    this.__sourceFormField.removeAttribute('disabled');
-    this.__sourceFormField.value = newVal;
-    if (this.action) this.form.submit();
-  }
-
-  __setToken(newVal) {
-    const oldToken = this.__token;
-    this.__token = newVal;
-    this.requestUpdate('token', oldToken);
-    if (!newVal) return;
-    this.__fire('stripe-token', newVal);
-    this.__tokenFormField.removeAttribute('disabled');
-    this.__tokenFormField.value = newVal;
-    if (this.action) this.form.submit();
+  async unmountCard() {
+    this.card?.unmount();
+    await this.set({ card: null, stripeReady: false });
   }
 }

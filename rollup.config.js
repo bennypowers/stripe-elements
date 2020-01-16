@@ -1,30 +1,31 @@
-import resolve from 'rollup-plugin-node-resolve';
-// import litcss from 'rollup-plugin-lit-css';
+import commonjs from '@rollup/plugin-commonjs';
+import litcss from 'rollup-plugin-lit-css';
+import resolve from '@rollup/plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
+import pkg from './package.json';
+
+const deps = Object.keys(pkg.dependencies);
+const external = id =>
+  id !== '@morbidick/lit-element-notify' &&
+  id.startsWith('lit-html') ||
+  id.startsWith('@babel/runtime') ||
+  deps.includes(id);
 
 export default {
-  input: 'src/stripe-elements.js',
-  external: id =>
-    id.includes('lit-element') ||
-    id.includes('lit-html') ||
-    null,
+  input: [
+    'src/stripe-elements.js',
+  ],
+  external,
   output: {
     dir: '.',
     format: 'es',
+    chunkFileNames: '[name].js',
+    sourcemap: true,
   },
   plugins: [
+    babel({ externalHelpers: true, runtimeHelpers: true, babelrc: true }),
+    litcss(),
+    commonjs(),
     resolve(),
-    babel({
-      presets: [
-        ['@babel/preset-env', { 'targets': { 'browsers': [
-          'last 1 chrome versions',
-          'last 1 firefox versions',
-          'last 1 safari versions',
-        ] } }],
-      ],
-      plugins: [
-        '@babel/plugin-proposal-class-properties',
-      ],
-    }),
   ],
 };

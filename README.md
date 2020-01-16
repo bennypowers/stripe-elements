@@ -9,7 +9,7 @@ Custom element wrapper for Stripe.js v3 Elements. Creates a `card` element à la
 [![Published on npm](https://img.shields.io/npm/v/@power-elements/stripe-elements.svg)](https://www.npmjs.com/package/@power-elements/stripe-elements)
 [![Maintainability](https://api.codeclimate.com/v1/badges/b2205a301b0a8bb82d51/maintainability)](https://codeclimate.com/github/bennypowers/stripe-elements/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/b2205a301b0a8bb82d51/test_coverage)](https://codeclimate.com/github/bennypowers/stripe-elements/test_coverage)
-[![CI](https://github.com/bennypowers/stripe-elements/workflows/.github/workflows/release.yml/badge.svg)](https://github.com/bennypowers/stripe-elements/actions)
+[![Release](https://github.com/bennypowers/stripe-elements/workflows/Release/badge.svg)](https://github.com/bennypowers/stripe-elements/actions?query=workflow%3ARelease)
 [![Contact me on Codementor](https://cdn.codementor.io/badges/contact_me_github.svg)](https://www.codementor.io/bennyp?utm_source=github&utm_medium=button&utm_term=bennyp&utm_campaign=github)
 
   ## Installation and Usage
@@ -95,7 +95,7 @@ const onChange = ({ target: { isComplete, hasError } }) => {
    document.body.querySelector('button').disabled = !(isComplete && !hasError)
 }
 
-const onClick = () => document.getElementById('stripe').submit();
+const onClick = () => document.getElementById('stripe').createSource();
 
 const template = html`
    <button disabled @click="${onClick}">Get Token</button>
@@ -120,7 +120,7 @@ In a Polymer Template
 
 <paper-button id="submit"
      disabled="[[!ready]]"
-     onclick="stripe.submit()">
+     onclick="stripe.createSource()">
    Get Token
 </paper-button>
 
@@ -163,39 +163,45 @@ There are 11 properties for each state that you can set which will be read into 
 
 `<stripe-elements>` is a community project, not endorsed or affiliated with Stripe.
 
+**Mixins:** LitNotify
+
 ## Properties
 
-| Property         | Modifiers | Type              | Default   | Description                             |
-|------------------|-----------|-------------------|-----------|-----------------------------------------|
-| `action`         |           | `string`          |           | The action attr of the internal form.   |
-| `brand`          | readonly  |                   |           |                                         |
-| `card`           | readonly  |                   |           |                                         |
-| `cardData`       |           | `Object`          | {}        | Stripe cardData object to submit with   |
-| `elements`       | readonly  |                   |           |                                         |
-| `error`          | readonly  | `Error`           |           | Stripe or validation error              |
-| `form`           | readonly  | `HTMLFormElement` |           | The internal form element               |
-| `hasError`       | readonly  | `Boolean`         |           | Whether the element has an error        |
-| `hideIcon`       |           | `boolean`         | false     |                                         |
-| `hidePostalCode` |           | `boolean`         | false     |                                         |
-| `iconStyle`      |           | `string`          | "default" |                                         |
-| `isComplete`     | readonly  | `Boolean`         |           | Whether the card form is complete       |
-| `isEmpty`        | readonly  | `Boolean`         |           | Whether the card form is empty          |
-| `source`         | readonly  | `StripeSource`    |           | The source returned from `createSource` |
-| `stripe`         | readonly  | `Stripe`          |           | The Stripe.js object                    |
-| `stripeMount`    | readonly  | `Element`         |           | Stripe Element mount point              |
-| `stripeReady`    | readonly  | `Boolean`         |           | Whether Stripe.js has been initialized  |
-| `token`          | readonly  | `StripeToken`     |           | The token returned from `createToken`   |
-| `value`          |           | `object`          | {}        |                                         |
+| Property         | Attribute          | Modifiers | Type                          | Default                | Description                                      |
+|------------------|--------------------|-----------|-------------------------------|------------------------|--------------------------------------------------|
+| `action`         | `action`           |           | `String`                      |                        | The URL to the form action. Example '/charges'.<br />If blank or undefined will not submit charges immediately. |
+| `billingDetails` |                    |           | `stripe.BillingDetails`       |                        |                                                  |
+| `brand`          | `brand`            | readonly  | `String`                      |                        | The card brand detected by Stripe                |
+| `card`           | `card`             | readonly  | `stripe.Element`              |                        | The Stripe card object.                          |
+| `elements`       | `elements`         | readonly  | `stripe.elements.Elements`    |                        | Stripe Elements instance                         |
+| `error`          | `error`            | readonly  | `Error`                       |                        | Stripe or validation error                       |
+| `hasError`       | `has-error`        | readonly  | `Boolean`                     |                        | Whether the element has an error                 |
+| `hideIcon`       | `hide-icon`        |           | `Boolean`                     | false                  | Whether to hide icons in the Stripe form.        |
+| `hidePostalCode` | `hide-postal-code` |           | `Boolean`                     | false                  | Whether or not to hide the postal code field.<br />Useful when you gather shipping info elsewhere. |
+| `iconStyle`      | `icon-style`       |           | `'solid'\|'default'`          | "default"              | Stripe icon style. 'solid' or 'default'.         |
+| `isComplete`     | `is-complete`      | readonly  | `Boolean`                     |                        | If the form is complete.                         |
+| `isEmpty`        | `is-empty`         | readonly  | `Boolean`                     |                        | If the form is empty.                            |
+| `label`          | `label`            |           | `String`                      | "Credit or Debit Card" | aria-label attribute for the credit card form.   |
+| `publishableKey` | `publishable-key`  |           | `String`                      |                        | Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX` |
+| `showError`      | `show-error`       |           | `boolean`                     | false                  | Whether to display the error message             |
+| `source`         | `source`           | readonly  | `stripe.Source`               |                        | Stripe Source                                    |
+| `sourceData`     |                    |           | `{ owner: stripe.OwnerData }` |                        | Data passed to stripe.createSource. (optional)   |
+| `stripe`         | `stripe`           | readonly  | `stripe.Stripe`               |                        | Stripe instance                                  |
+| `stripeMount`    |                    | readonly  | `Element`                     |                        | Stripe Element mount point                       |
+| `stripeReady`    | `stripe-ready`     | readonly  | `Boolean`                     |                        | If the stripe element is ready to receive focus. |
+| `token`          | `token`            | readonly  | `stripe.Token`                |                        | Stripe Token                                     |
+| `tokenData`      |                    |           | `stripe.TokenOptions`         |                        | Data passed to stripe.createToken. (optional)    |
+| `value`          | `value`            |           | `Object`                      | {}                     | Prefilled values for form. Example {postalCode: '90210'} |
 
 ## Methods
 
-| Method               | Type                                  | Description                                      |
-|----------------------|---------------------------------------|--------------------------------------------------|
-| `createSource`       | `(sourceData?: object): Promise<any>` | Submit credit card information to generate a source |
-| `createToken`        | `(cardData?: object): Promise<any>`   | Submit credit card information to generate a token |
-| `isPotentiallyValid` | `(): Boolean`                         | Checks for potential validity. A potentially valid form is one that<br />is not empty, not complete and has no error. A validated form also counts<br />as potentially valid. |
-| `reset`              | `(): void`                            | Resets the Stripe card.                          |
-| `validate`           | `(): Boolean`                         | Checks if the Stripe form is valid.              |
+| Method               | Type                                             | Description                                      |
+|----------------------|--------------------------------------------------|--------------------------------------------------|
+| `createSource`       | `(sourceData?: { owner: OwnerInfo; } \| undefined): Promise<SourceResponse>` | Submit credit card information to generate a source |
+| `createToken`        | `(tokenData?: TokenData): Promise<TokenResponse>` | Submit credit card information to generate a token |
+| `isPotentiallyValid` | `(): Boolean`                                    | Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid. |
+| `reset`              | `(): void`                                       | Resets the Stripe card.                          |
+| `validate`           | `(): Boolean`                                    | Checks if the Stripe form is valid.              |
 
 ## Events
 
@@ -207,13 +213,18 @@ There are 11 properties for each state that you can set which will be read into 
 | `has-error-changed`       | The new value of has-error                       |
 | `is-complete-changed`     | The new value of is-complete                     |
 | `is-empty-changed`        | The new value of is-empty                        |
+| `payment-intent-changed`  | The new value of payment-intent                  |
+| `payment-method-changed`  | The new value of payment-method                  |
 | `publishable-key-changed` | The new value of publishable-key                 |
+| `source-changed`          | The new value of source                          |
 | `stripe-change`           | Stripe Element change event                      |
 | `stripe-error`            | The validation error, or the error returned from stripe.com |
+| `stripe-payment-intent`   | The PaymentIntent received from stripe.com       |
+| `stripe-payment-method`   | The PaymentMethod received from stripe.com       |
 | `stripe-ready`            | Stripe has been initialized and mounted          |
 | `stripe-ready-changed`    | The new value of stripe-ready                    |
-| `stripe-source`           | The source received from stripe.com              |
-| `stripe-token`            | The token received from stripe.com               |
+| `stripe-source`           | The Source received from stripe.com              |
+| `stripe-token`            | The Token received from stripe.com               |
 | `token-changed`           | The new value of token                           |
 
 ## CSS Custom Properties
