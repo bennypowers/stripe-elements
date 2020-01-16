@@ -509,7 +509,7 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * Reinitializes Stripe and mounts the card.
-   * @inheritdoc
+   * @private
    */
   async init() {
     this.resetMount();

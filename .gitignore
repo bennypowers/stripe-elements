@@ -14,7 +14,9 @@ cc-test-reporter
 /stripe-elements.js
 /stripe-payment-request.js
 /shared.js
+/*.d.ts
 /*.js.map
+/lib
 
 bower_components/
 node_modules/
