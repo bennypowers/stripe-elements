@@ -8,8 +8,13 @@
 
 cc-test-reporter
 
+/StripeBase.js
 /StripeElements.js
+/StripePaymentRequest.js
 /stripe-elements.js
+/stripe-payment-request.js
+/shared.js
+/*.js.map
 
 bower_components/
 node_modules/

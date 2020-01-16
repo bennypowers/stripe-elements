@@ -12,7 +12,7 @@ import '@power-elements/json-viewer';
 import '@material/mwc-textfield';
 import '@material/mwc-button';
 
-import { $, $$ } from './helpers.js';
+import { $, $$, setKeys } from './helpers.js';
 
 <Meta
   title="Stripe Elements"
@@ -39,17 +39,13 @@ Once you've set the `publishable-key` attribute (or the `publishableKey` DOM pro
 Enter your publishable key here (use the test key, not the production key) to run the examples against your Stripe account.
 
 <Story name="Enter a Stripe Publishable Key" height="80px">
-  {
-    () => {
-      const setPublishableKey = event => $$('stripe-elements:not(#should-error)').forEach(el => el.publishableKey = event.target.value);
-      return html`
-      <mwc-textfield
-          outlined
-          label="Publishable Key"
-          value="dummy-key"
-          @change="${setPublishableKey}"
-      ></mwc-textfield>`;
-    }
+  {html`
+    <mwc-textfield
+        outlined
+        label="Publishable Key"
+        @change="${setKeys('stripe-elements:not(#should-error)')}"
+        value="dummy-key">
+    </mwc-textfield>`
   }
 </Story>
 
