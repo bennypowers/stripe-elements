@@ -27,31 +27,31 @@ self.addEventListener('message', (event) => {
 self.__precacheManifest = [
   {
     "url": "iframe.html",
-    "revision": "1d1d203c29f0c467940af134708abd1a"
+    "revision": "27fedc50635b1899b5fb2336d77f5d47"
   },
   {
     "url": "index.html",
-    "revision": "a26cd4fb2ec9e032248d2bc0ef7c314f"
+    "revision": "fc29a281b95c188081dee5499c11a46a"
   },
   {
-    "url": "inline-entry.0-5a323027.js",
-    "revision": "3a82c8595cb9626f63455ab705eb4045"
+    "url": "inline-entry.0-37fcea71.js",
+    "revision": "e5e23ddcd0b66fd671846fadeae8b9a3"
   },
   {
-    "url": "legacy/inline-entry.0-e7e73452.js",
-    "revision": "1acc2189e85d725ae0976fdc99bda260"
+    "url": "legacy/inline-entry.0-02f1f670.js",
+    "revision": "37d26dfc42ef3c96abc6b5a011b1e3b1"
   },
   {
-    "url": "legacy/preview-f881de51.js",
-    "revision": "b7427bea0e4ff33b19d02645177aef3b"
+    "url": "legacy/preview-396c3c10.js",
+    "revision": "6510a0d0098b045adf4ee3aaa742d277"
   },
   {
-    "url": "legacy/stripe-elements.stories-4c6aadc2.js",
-    "revision": "3c99c5140c0acd829e0655b829eebbdf"
+    "url": "legacy/stripe-elements.stories-d2c8fb30.js",
+    "revision": "2301c6e53c8d44b32e1362d442482aa2"
   },
   {
-    "url": "polyfills/core-js.32405a1a59519d0ca918cb9c6e134164.js",
-    "revision": "169d8688dcb50bc3c902336886976c46"
+    "url": "polyfills/core-js.5e6caafde24250a9349bba4d345eb7be.js",
+    "revision": "bb2d2cd8e5d81f17f35ab35b6a645462"
   },
   {
     "url": "polyfills/custom-elements-es5-adapter.84b300ee818dce8b351c7cc7c100bcf7.js",
@@ -74,16 +74,16 @@ self.__precacheManifest = [
     "revision": "683aabfb9b006607885b83e45e9a1768"
   },
   {
-    "url": "polyfills/webcomponents.dae9f79d9d6992b6582e204c3dd953d3.js",
-    "revision": "fe4a22f36087db029cd3f476a1935410"
+    "url": "polyfills/webcomponents.d406f4685fdfb412c61f23b3ae18f2dc.js",
+    "revision": "b1db7cb76380495a55ff4f65a9648f0e"
   },
   {
-    "url": "preview-638358d2.js",
-    "revision": "899cf43bf3ad030f1a35af2afb276a42"
+    "url": "preview-e8603077.js",
+    "revision": "faa2431056fabf1ac37d5ea2369ca39d"
   },
   {
-    "url": "stripe-elements.stories-9890c3d3.js",
-    "revision": "70f59e7cc6e093884a0eb6631b082bbe"
+    "url": "stripe-elements.stories-533f5436.js",
+    "revision": "65fe0368d0c21b7904a2c4b79329076b"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});

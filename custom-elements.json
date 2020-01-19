@@ -3,56 +3,174 @@
   "tags": [
     {
       "name": "stripe-elements",
-      "description": "`stripe-elements`\nCustom element wrapper for Stripe.js v3 Elements\n\n## Usage\n\n```html\n   <label>Stripe Publishable Key <input id=\"pubkey\"/></label>\n   <stripe-elements id=\"stripe\"></stripe-elements>\n   <script>\n     const onKey = ({ target: { value } })) => stripe.publishableKey = value;\n     const onToken = ({ detail: token })) => console.log(token);\n     pubkey.addEventListener('change', onKey);\n     stripe.addEventListener('stripe-token', onToken);\n   </script>\n```\n\n## Styling\n\nA word about nomenclature before we list custom properties and mixins.\nStripe v3 Introduces 'Stripe Elements'. These are not custom elements,\nbut rather forms hosted by stripe and injected into your page via an iFrame.\nWhen we refer to the 'Stripe Element' in this document, we are referring\nto the hosted Stripe form, not the `<stripe-element>` custom element.\nConfusing? Possibly... but the alternative was to call *this* element `<stripe-elements-element>``\n\nThe following custom properties are available for styling the `<stripe-elements>` component:\n\n| Custom property | Description | Default |\n| --- | --- | --- |\n| `--stripe-elements-width` | Min-width of the stripe-element | `300px` |\n| `--stripe-elements-height` | Min-width of the stripe-element | `50px` |\n| `--stripe-elements-element-padding` | Padding for the stripe-element | `14px`;\n| `--stripe-elements-element-background | Background for the stripe-element | `initial` |\n\nWhen you apply CSS to the custom properties below, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame.\n\n- `base` styles are inherited by all other variants.\n- `complete` styles are applied when the Stripe Element has valid input.\n- `empty` styles are applied when the Stripe Element has no user input.\n- `invalid` styles are applied when the Stripe Element has invalid input.\n\nThere are 11 properties for each state that you can set which will be read into the Stripe Element iFrame:",
-      "properties": [
+      "description": "[Stripe.js v3 Card Elements](https://stripe.com/docs/elements), but it's a Web Component!\nSupports Shadow DOM.\n\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--enter-a-stripe-publishable-key) 👀\n\n### 🧙‍♂️ Usage\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\n\n```html\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-elements.js\"></script>\n```\n\nAlternatively, load the module from the unpkg CDN\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-elements.js?module\"></script>\n```\n\nThen you can add the element to your page.\n\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-elements.js?module\"></script>\n<stripe-elements id=\"stripe\"\n     action=\"/payment\"\n     publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\n></stripe-elements>\n```\n\nSee the demos for more comprehensive examples.\n   - Using `<stripe-elements>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-plain-html-and-javascript).\n   - Using `<stripe-elements>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-lit-element).\n   - Using `<stripe-elements>` in a [Polymer Element](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-polymer-element).\n   - Using `<stripe-elements>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-vue-component).\n   - Using `<stripe-elements>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-an-angular-component).\n   - Using `<stripe-elements>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-react-component).\n   - Using `<stripe-elements>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-preact-component).\n\n## Styling\n\nStripe v3's 'Stripe Elements' are not custom elements, but rather forms\nhosted by stripe and injected into your page via an iFrame. When we refer to the\n'Stripe Element' in this document, we are referring to the hosted Stripe form,\nnot the `<stripe-element>` custom element. But when I mention the 'element', I mean the custom element.\n\nWhen you apply CSS to the custom properties available, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame.\n\n- `base` styles are inherited by all other variants.\n- `complete` styles are applied when the Stripe Element has valid input.\n- `empty` styles are applied when the Stripe Element has no user input.\n- `invalid` styles are applied when the Stripe Element has invalid input.\n\nThere are 11 properties for each state that you can set which will be read into the Stripe Element iFrame:\n\n- `color`\n- `font-family`\n- `font-size`\n- `font-smoothing`\n- `font-variant`\n- `icon-color`\n- `line-height`\n- `letter-spacing`\n- `text-decoration`\n- `text-shadow`\n- `text-transform`",
+      "attributes": [
         {
-          "name": "brand"
+          "name": "hide-icon",
+          "description": "Whether to hide icons in the Stripe form.",
+          "type": "Boolean",
+          "default": "false"
         },
         {
-          "name": "card"
+          "name": "hide-postal-code",
+          "description": "Whether or not to hide the postal code field.\nUseful when you gather shipping info elsewhere.",
+          "type": "Boolean",
+          "default": "false"
+        },
+        {
+          "name": "icon-style",
+          "description": "Stripe icon style. 'solid' or 'default'.",
+          "type": "'solid'|'default'",
+          "default": "\"default\""
+        },
+        {
+          "name": "value",
+          "description": "Prefilled values for form. Example {postalCode: '90210'}",
+          "type": "Object",
+          "default": "{}"
+        },
+        {
+          "name": "brand",
+          "description": "The card brand detected by Stripe",
+          "type": "String"
+        },
+        {
+          "name": "card",
+          "description": "The Stripe card object.",
+          "type": "stripe.Element"
+        },
+        {
+          "name": "is-complete",
+          "description": "If the form is complete.",
+          "type": "Boolean",
+          "default": "false"
+        },
+        {
+          "name": "is-empty",
+          "description": "If the form is empty.",
+          "type": "Boolean",
+          "default": "true"
+        },
+        {
+          "name": "stripe-ready",
+          "description": "If the stripe element is ready to receive focus.",
+          "type": "Boolean",
+          "default": "false"
+        },
+        {
+          "name": "action",
+          "description": "The URL to the form action. Example '/charges'.\nIf blank or undefined will not submit charges immediately.",
+          "type": "String"
+        },
+        {
+          "name": "publishable-key",
+          "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
+          "type": "String"
+        },
+        {
+          "name": "show-error",
+          "description": "Whether to display the error message",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "element",
+          "description": "Stripe element instance",
+          "type": "stripe.elements.Element"
+        },
+        {
+          "name": "elements",
+          "description": "Stripe Elements instance",
+          "type": "stripe.elements.Elements"
         },
         {
           "name": "error",
           "description": "Stripe or validation error",
-          "type": "Error"
+          "type": "Error|stripe.Error"
         },
         {
-          "name": "hasError",
+          "name": "has-error",
           "description": "Whether the element has an error",
-          "type": "Boolean"
-        },
-        {
-          "name": "isComplete",
-          "description": "Whether the card form is complete",
-          "type": "Boolean"
-        },
-        {
-          "name": "isEmpty",
-          "description": "Whether the card form is empty",
-          "type": "Boolean"
-        },
-        {
-          "name": "stripeReady",
-          "description": "Whether Stripe.js has been initialized",
-          "type": "Boolean"
-        },
-        {
-          "name": "token",
-          "description": "The token returned from `createToken`",
-          "type": "StripeToken"
+          "type": "Boolean",
+          "default": "false"
         },
         {
           "name": "source",
-          "description": "The source returned from `createSource`",
-          "type": "StripeSource"
+          "description": "Stripe Source",
+          "type": "stripe.Source"
         },
         {
           "name": "stripe",
-          "description": "The Stripe.js object",
-          "type": "Stripe"
+          "description": "Stripe instance",
+          "type": "stripe.Stripe"
         },
         {
-          "name": "elements"
+          "name": "token",
+          "description": "Stripe Token",
+          "type": "stripe.Token"
+        }
+      ],
+      "properties": [
+        {
+          "name": "hideIcon",
+          "attribute": "hide-icon",
+          "description": "Whether to hide icons in the Stripe form.",
+          "type": "Boolean",
+          "default": "false"
+        },
+        {
+          "name": "hidePostalCode",
+          "attribute": "hide-postal-code",
+          "description": "Whether or not to hide the postal code field.\nUseful when you gather shipping info elsewhere.",
+          "type": "Boolean",
+          "default": "false"
+        },
+        {
+          "name": "iconStyle",
+          "attribute": "icon-style",
+          "description": "Stripe icon style. 'solid' or 'default'.",
+          "type": "'solid'|'default'",
+          "default": "\"default\""
+        },
+        {
+          "name": "value",
+          "attribute": "value",
+          "description": "Prefilled values for form. Example {postalCode: '90210'}",
+          "type": "Object",
+          "default": "{}"
+        },
+        {
+          "name": "brand",
+          "attribute": "brand",
+          "description": "The card brand detected by Stripe",
+          "type": "String"
+        },
+        {
+          "name": "card",
+          "attribute": "card",
+          "description": "The Stripe card object.",
+          "type": "stripe.Element"
+        },
+        {
+          "name": "isComplete",
+          "attribute": "is-complete",
+          "description": "If the form is complete.",
+          "type": "Boolean",
+          "default": "false"
+        },
+        {
+          "name": "isEmpty",
+          "attribute": "is-empty",
+          "description": "If the form is empty.",
+          "type": "Boolean",
+          "default": "true"
+        },
+        {
+          "name": "stripeReady",
+          "attribute": "stripe-ready",
+          "description": "If the stripe element is ready to receive focus.",
+          "type": "Boolean",
+          "default": "false"
         },
         {
           "name": "stripeMount",
@@ -60,55 +178,83 @@
           "type": "Element"
         },
         {
-          "name": "form",
-          "description": "The internal form elementt",
-          "type": "HTMLFormElement"
-        },
-        {
           "name": "action",
-          "description": "The action attr of the internal form.",
-          "type": "string"
+          "attribute": "action",
+          "description": "The URL to the form action. Example '/charges'.\nIf blank or undefined will not submit charges immediately.",
+          "type": "String"
         },
         {
-          "name": "cardData",
-          "description": "Stripe cardData object to submit with",
-          "type": "Object",
-          "default": "{}"
+          "name": "billingDetails",
+          "type": "stripe.BillingDetails"
         },
         {
-          "name": "hideIcon",
+          "name": "publishableKey",
+          "attribute": "publishable-key",
+          "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
+          "type": "String"
+        },
+        {
+          "name": "showError",
+          "attribute": "show-error",
+          "description": "Whether to display the error message",
           "type": "boolean",
           "default": "false"
         },
         {
-          "name": "hidePostalCode",
-          "type": "boolean",
+          "name": "sourceData",
+          "description": "Data passed to stripe.createSource. (optional)",
+          "type": "{ owner: stripe.OwnerData }"
+        },
+        {
+          "name": "tokenData",
+          "description": "Data passed to stripe.createToken. (optional)",
+          "type": "stripe.TokenOptions"
+        },
+        {
+          "name": "element",
+          "attribute": "element",
+          "description": "Stripe element instance",
+          "type": "stripe.elements.Element"
+        },
+        {
+          "name": "elements",
+          "attribute": "elements",
+          "description": "Stripe Elements instance",
+          "type": "stripe.elements.Elements"
+        },
+        {
+          "name": "error",
+          "attribute": "error",
+          "description": "Stripe or validation error",
+          "type": "Error|stripe.Error"
+        },
+        {
+          "name": "hasError",
+          "attribute": "has-error",
+          "description": "Whether the element has an error",
+          "type": "Boolean",
           "default": "false"
         },
         {
-          "name": "iconStyle",
-          "type": "string",
-          "default": "\"default\""
+          "name": "source",
+          "attribute": "source",
+          "description": "Stripe Source",
+          "type": "stripe.Source"
         },
         {
-          "name": "value",
-          "type": "object",
-          "default": "{}"
+          "name": "stripe",
+          "attribute": "stripe",
+          "description": "Stripe instance",
+          "type": "stripe.Stripe"
+        },
+        {
+          "name": "token",
+          "attribute": "token",
+          "description": "Stripe Token",
+          "type": "stripe.Token"
         }
       ],
       "events": [
-        {
-          "name": "stripe-token",
-          "description": "The token received from stripe.com"
-        },
-        {
-          "name": "stripe-source",
-          "description": "The source received from stripe.com"
-        },
-        {
-          "name": "stripe-error",
-          "description": "The validation error, or the error returned from stripe.com"
-        },
         {
           "name": "stripe-change",
           "description": "Stripe Element change event"
@@ -116,18 +262,6 @@
         {
           "name": "stripe-ready",
           "description": "Stripe has been initialized and mounted"
-        },
-        {
-          "name": "is-complete-changed",
-          "description": "The new value of is-complete"
-        },
-        {
-          "name": "is-empty-changed",
-          "description": "The new value of is-empty"
-        },
-        {
-          "name": "has-error-changed",
-          "description": "The new value of has-error"
         },
         {
           "name": "brand-changed",
@@ -138,16 +272,60 @@
           "description": "The new value of card"
         },
         {
+          "name": "is-complete-changed",
+          "description": "The new value of is-complete"
+        },
+        {
+          "name": "is-empty-changed",
+          "description": "The new value of is-empty"
+        },
+        {
+          "name": "stripe-ready-changed",
+          "description": "The new value of stripe-ready"
+        },
+        {
           "name": "error-changed",
           "description": "The new value of error"
+        },
+        {
+          "name": "has-error-changed",
+          "description": "The new value of has-error"
+        },
+        {
+          "name": "payment-intent-changed",
+          "description": "The new value of payment-intent"
+        },
+        {
+          "name": "payment-method-changed",
+          "description": "The new value of payment-method"
         },
         {
           "name": "publishable-key-changed",
           "description": "The new value of publishable-key"
         },
         {
-          "name": "stripe-ready-changed",
-          "description": "The new value of stripe-ready"
+          "name": "source-changed",
+          "description": "The new value of source"
+        },
+        {
+          "name": "stripe-error",
+          "description": "The validation error, or the error returned from stripe.com"
+        },
+        {
+          "name": "stripe-payment-intent",
+          "description": "The PaymentIntent received from stripe.com"
+        },
+        {
+          "name": "stripe-payment-method",
+          "description": "The PaymentMethod received from stripe.com"
+        },
+        {
+          "name": "stripe-source",
+          "description": "The Source received from stripe.com"
+        },
+        {
+          "name": "stripe-token",
+          "description": "The Token received from stripe.com"
         },
         {
           "name": "token-changed",
