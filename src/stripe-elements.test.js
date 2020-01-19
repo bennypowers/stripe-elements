@@ -60,7 +60,7 @@ import { elem, not } from './lib/predicates.js';
 
 const assignedNodes = el => el.assignedNodes();
 
-const formLightDOM = ({ label, stripeMountId }) => `
+const formLightDOM = ({ label = 'Credit or Debit Card', stripeMountId }) => `
   <form method="post">
     <div id="${stripeMountId}" aria-label="${label}" class="stripe-mount"></div>
     <input disabled type="hidden" name="stripePaymentMethod"/>
@@ -69,7 +69,7 @@ const formLightDOM = ({ label, stripeMountId }) => `
   </form>
 `;
 
-const expectedLightDOM = ({ label, stripeMountId }) => `<div slot="stripe-card">${formLightDOM({ label, stripeMountId })}</div> `;
+const expectedLightDOM = ({ label = 'Credit or Debit Card', stripeMountId }) => `<div slot="stripe-card">${formLightDOM({ label, stripeMountId })}</div> `;
 
 describe('stripe-elements', function() {
   beforeEach(spyConsoleWarn);
@@ -135,12 +135,11 @@ describe('stripe-elements', function() {
     let secondaryHost;
     let tertiaryHost;
     let stripeMountId;
-    let label;
     describe('when nested one shadow-root deep', function() {
       beforeEach(async function setupOneRoot() {
         primaryHost = await fixture(`<primary-host></primary-host>`);
         ({ nestedElement } = primaryHost);
-        ({ stripeMountId, label } = nestedElement);
+        ({ stripeMountId } = nestedElement);
       });
 
       it('leaves one breadcrumb on its way up to the document', async function breadcrumbs() {
@@ -149,7 +148,7 @@ describe('stripe-elements', function() {
       });
 
       it('slots mount point in to its light DOM', function() {
-        expect(primaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, label }));
+        expect(primaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId }));
       });
 
       it('finds its form', async function() {
@@ -174,7 +173,7 @@ describe('stripe-elements', function() {
       });
 
       it('slots mount point in to the light DOM of the secondary shadow host', function() {
-        expect(secondaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, label }));
+        expect(secondaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId }));
       });
 
       it('appends a slot to the shadow DOM of the secondary shadow host', function() {
@@ -213,7 +212,7 @@ describe('stripe-elements', function() {
       });
 
       it('slots mount point in to the light DOM of the tertiary shadow host', function() {
-        expect(tertiaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, label }));
+        expect(tertiaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId }));
       });
 
       it('appends a slot to the shadow DOM of the tertiary shadow host', function() {
@@ -327,8 +326,8 @@ describe('stripe-elements', function() {
         describe('then publishable key is set', function() {
           beforeEach(setProps({ publishableKey: PUBLISHABLE_KEY }));
           it('rebuilds its DOM', function() {
-            const { label, stripeMountId } = element;
-            expect(element).lightDom.to.equal(expectedLightDOM({ stripeMountId, label }));
+            const { stripeMountId } = element;
+            expect(element).lightDom.to.equal(expectedLightDOM({ stripeMountId }));
             expect(element.stripeMount, 'mount').to.be.ok;
           });
 

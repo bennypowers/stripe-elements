@@ -56,9 +56,9 @@ function applyCustomCss() {
   }
 }
 
-const stripeCardTemplate = ({ action, id, label, paymentMethod, source, token }) => html`
+const stripeCardTemplate = ({ action, id, paymentMethod, source, token }) => html`
   <form action="${ifDefined(action || undefined)}" method="post">
-    <div id="${ifDefined(id)}" class="stripe-mount" aria-label="${ifDefined(label)}"></div>
+    <div id="${ifDefined(id)}" class="stripe-mount" aria-label="Credit or Debit Card"></div>
     <input ?disabled="${!paymentMethod}" type="hidden" name="stripePaymentMethod" value="${ifDefined(paymentMethod || undefined)}">
     <input ?disabled="${!source}" type="hidden" name="stripeSource" value="${ifDefined(source || undefined)}">
     <input ?disabled="${!token}" type="hidden" name="stripeToken" value="${ifDefined(token || undefined)}">
@@ -236,12 +236,6 @@ export class StripeElements extends LitNotify(StripeBase) {
    * @type {'solid'|'default'}
    */
   @property({ type: String, attribute: 'icon-style' }) iconStyle = 'default';
-
-  /**
-   * aria-label attribute for the credit card form.
-   * @type {String}
-   */
-  @property({ type: String }) label = 'Credit or Debit Card';
 
   /**
    * Prefilled values for form. Example {postalCode: '90210'}
@@ -439,7 +433,7 @@ export class StripeElements extends LitNotify(StripeBase) {
     this.shadowHosts = [this];
     while (host = host.getRootNode().host) this.shadowHosts.push(host); // eslint-disable-line prefer-destructuring, no-loops/no-loops
 
-    const { shadowHosts, stripeMountId: id, action, label, token } = this;
+    const { shadowHosts, stripeMountId: id, action, token } = this;
 
     // Prepare the shallowest breadcrumb slot at document level
     const hosts = [...shadowHosts];
@@ -452,11 +446,11 @@ export class StripeElements extends LitNotify(StripeBase) {
     const container = root.querySelector('[slot="stripe-card"]');
 
     // hedge against shenanigans
-    const isDomCorrupt = container.querySelector('form') && !document.querySelector(`.stripe-mount[aria-label="${this.label}"]`);
+    const isDomCorrupt = container.querySelector('form') && !document.querySelector(`.stripe-mount[aria-label="Credit or Debit Card"]`);
     const renderTemplate = isDomCorrupt ? render : appendTemplate;
 
     // Render the form to the document, so that Stripe.js can mount
-    renderTemplate(stripeCardTemplate({ action, id, token, label }), container);
+    renderTemplate(stripeCardTemplate({ action, id, token }), container);
 
     // Append breadcrumb slots to each shadowroot in turn,
     // from the document down to the <stripe-elements> instance.
@@ -468,9 +462,9 @@ export class StripeElements extends LitNotify(StripeBase) {
    * @private
    */
   initShadyDOMMount() {
-    const { action, token, label } = this;
+    const { action, token } = this;
     const id = this.stripeMountId;
-    const mountTemplate = stripeCardTemplate({ action, id, label, token });
+    const mountTemplate = stripeCardTemplate({ action, id, token });
     appendTemplate(mountTemplate, this);
   }
 
