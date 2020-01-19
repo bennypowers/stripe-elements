@@ -125,7 +125,6 @@ There are 11 properties for each state that you can set which will be read into 
 | `isEmpty`        | `is-empty`         |           | `Boolean`                     | true                   | If the form is empty.                            |
 | `label`          | `label`            |           | `String`                      | "Credit or Debit Card" | aria-label attribute for the credit card form.   |
 | `publishableKey` | `publishable-key`  |           | `String`                      |                        | Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX` |
-| `setPropEntry`   |                    |           |                               |                        |                                                  |
 | `showError`      | `show-error`       |           | `boolean`                     | false                  | Whether to display the error message             |
 | `source`         | `source`           | readonly  | `stripe.Source`               | null                   | Stripe Source                                    |
 | `sourceData`     |                    |           | `{ owner: stripe.OwnerData }` |                        | Data passed to stripe.createSource. (optional)   |
