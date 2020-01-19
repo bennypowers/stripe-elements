@@ -1,5 +1,5 @@
 import { expect } from '@open-wc/testing';
-import { generateRandomMountElementId } from './strings.js';
+import { generateRandomMountElementId } from '../src/lib/strings.js';
 
 describe('generateRandomMountElementId', function() {
   let initial;
