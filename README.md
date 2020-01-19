@@ -104,7 +104,7 @@ There are 11 properties for each state that you can set which will be read into 
 - `text-shadow`
 - `text-transform`
 
-**Mixins:** LitNotify
+**Mixins:** LitNotify, ReadOnlyPropertiesMixin
 
 #### Properties
 
@@ -112,26 +112,27 @@ There are 11 properties for each state that you can set which will be read into 
 |------------------|--------------------|-----------|-------------------------------|------------------------|--------------------------------------------------|
 | `action`         | `action`           |           | `String`                      |                        | The URL to the form action. Example '/charges'.<br />If blank or undefined will not submit charges immediately. |
 | `billingDetails` |                    |           | `stripe.BillingDetails`       |                        |                                                  |
-| `brand`          | `brand`            | readonly  | `String`                      |                        | The card brand detected by Stripe                |
-| `card`           | `card`             | readonly  | `stripe.Element`              |                        | The Stripe card object.                          |
-| `element`        |                    | readonly  | `stripe.elements.Element`     |                        |                                                  |
-| `elements`       | `elements`         | readonly  | `stripe.elements.Elements`    |                        | Stripe Elements instance                         |
-| `error`          | `error`            | readonly  | `Error`                       |                        | Stripe or validation error                       |
-| `hasError`       | `has-error`        | readonly  | `Boolean`                     |                        | Whether the element has an error                 |
+| `brand`          | `brand`            | readonly  | `String`                      | null                   | The card brand detected by Stripe                |
+| `card`           | `card`             | readonly  | `stripe.Element`              | null                   | The Stripe card object.                          |
+| `element`        | `element`          | readonly  | `stripe.elements.Element`     | null                   | Stripe element instance                          |
+| `elements`       | `elements`         | readonly  | `stripe.elements.Elements`    | null                   | Stripe Elements instance                         |
+| `error`          | `error`            | readonly  | `Error\|stripe.Error`         | null                   | Stripe or validation error                       |
+| `hasError`       | `has-error`        | readonly  | `Boolean`                     | false                  | Whether the element has an error                 |
 | `hideIcon`       | `hide-icon`        |           | `Boolean`                     | false                  | Whether to hide icons in the Stripe form.        |
 | `hidePostalCode` | `hide-postal-code` |           | `Boolean`                     | false                  | Whether or not to hide the postal code field.<br />Useful when you gather shipping info elsewhere. |
 | `iconStyle`      | `icon-style`       |           | `'solid'\|'default'`          | "default"              | Stripe icon style. 'solid' or 'default'.         |
-| `isComplete`     | `is-complete`      | readonly  | `Boolean`                     |                        | If the form is complete.                         |
-| `isEmpty`        | `is-empty`         | readonly  | `Boolean`                     |                        | If the form is empty.                            |
+| `isComplete`     | `is-complete`      |           | `Boolean`                     | false                  | If the form is complete.                         |
+| `isEmpty`        | `is-empty`         |           | `Boolean`                     | true                   | If the form is empty.                            |
 | `label`          | `label`            |           | `String`                      | "Credit or Debit Card" | aria-label attribute for the credit card form.   |
 | `publishableKey` | `publishable-key`  |           | `String`                      |                        | Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX` |
+| `setPropEntry`   |                    |           |                               |                        |                                                  |
 | `showError`      | `show-error`       |           | `boolean`                     | false                  | Whether to display the error message             |
-| `source`         | `source`           | readonly  | `stripe.Source`               |                        | Stripe Source                                    |
+| `source`         | `source`           | readonly  | `stripe.Source`               | null                   | Stripe Source                                    |
 | `sourceData`     |                    |           | `{ owner: stripe.OwnerData }` |                        | Data passed to stripe.createSource. (optional)   |
-| `stripe`         | `stripe`           | readonly  | `stripe.Stripe`               |                        | Stripe instance                                  |
+| `stripe`         | `stripe`           | readonly  | `stripe.Stripe`               | null                   | Stripe instance                                  |
 | `stripeMount`    |                    | readonly  | `Element`                     |                        | Stripe Element mount point                       |
-| `stripeReady`    | `stripe-ready`     | readonly  | `Boolean`                     |                        | If the stripe element is ready to receive focus. |
-| `token`          | `token`            | readonly  | `stripe.Token`                |                        | Stripe Token                                     |
+| `stripeReady`    | `stripe-ready`     |           | `Boolean`                     | false                  | If the stripe element is ready to receive focus. |
+| `token`          | `token`            | readonly  | `stripe.Token`                | null                   | Stripe Token                                     |
 | `tokenData`      |                    |           | `stripe.TokenOptions`         |                        | Data passed to stripe.createToken. (optional)    |
 | `value`          | `value`            |           | `Object`                      | {}                     | Prefilled values for form. Example {postalCode: '90210'} |
 
@@ -139,8 +140,8 @@ There are 11 properties for each state that you can set which will be read into 
 
 | Method               | Type                                             | Description                                      |
 |----------------------|--------------------------------------------------|--------------------------------------------------|
-| `createSource`       | `(sourceData?: { owner: OwnerInfo; } \| undefined): Promise<SourceResponse>` | Submit credit card information to generate a source |
-| `createToken`        | `(tokenData?: TokenData): Promise<TokenResponse>` | Submit credit card information to generate a token |
+| `createSource`       | `(sourceData?: { owner: OwnerInfo; } \| undefined): Promise<SourceResponse>` | Submit payment information to generate a source  |
+| `createToken`        | `(tokenData?: TokenData): Promise<TokenResponse>` | Submit payment information to generate a token   |
 | `isPotentiallyValid` | `(): Boolean`                                    | Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid. |
 | `reset`              | `(): void`                                       | Resets the Stripe card.                          |
 | `validate`           | `(): Boolean`                                    | Checks if the Stripe form is valid.              |

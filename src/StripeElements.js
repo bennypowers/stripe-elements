@@ -256,37 +256,50 @@ export class StripeElements extends LitNotify(StripeBase) {
    * @type {String}
    * @readonly
    */
-  @property({ type: String, notify: true })
-  get brand() { return this.__brand; }
+  @property({ type: String, notify: true, readOnly: true }) brand = null;
 
   /**
    * The Stripe card object.
    * @type {stripe.Element}
    * @readonly
    */
-  @property({ type: Object, notify: true })
-  get card() { return this.__card; }
+  @property({ type: Object, notify: true, readOnly: true }) card = null;
 
   /**
    * If the form is complete.
    * @type {Boolean}
    */
-  @property({ type: Boolean, attribute: 'is-complete', reflect: true, notify: true })
-  get isComplete() { return this.__isComplete; }
+  @property({
+    type: Boolean,
+    attribute: 'is-complete',
+    reflect: true,
+    notify: true,
+    readOnly: true,
+  }) isComplete = false;
 
   /**
    * If the form is empty.
    * @type {Boolean}
    */
-  @property({ type: Boolean, attribute: 'is-empty', reflect: true, notify: true })
-  get isEmpty() { return this.__isEmpty; }
+  @property({
+    type: Boolean,
+    attribute: 'is-empty',
+    reflect: true,
+    notify: true,
+    readOnly: true,
+  }) isEmpty = true;
 
   /**
    * If the stripe element is ready to receive focus.
    * @type {Boolean}
    */
-  @property({ type: Boolean, attribute: 'stripe-ready', reflect: true, notify: true })
-  get stripeReady() { return this.__stripeReady; }
+  @property({
+    type: Boolean,
+    attribute: 'stripe-ready',
+    reflect: true,
+    notify: true,
+    readOnly: true,
+  }) stripeReady = false;
 
   /* PRIVATE FIELDS */
 
@@ -322,18 +335,6 @@ export class StripeElements extends LitNotify(StripeBase) {
    * @protected
    */
   stripeMountId;
-
-  /** @type {stripe.brandType} */
-  __brand = null;
-
-  /** @type {stripe.elements.Element} */
-  __card = null;
-
-  __isComplete = false;
-
-  __isEmpty = true;
-
-  __stripeReady = false;
 
   /* LIFECYCLE */
 
@@ -373,7 +374,7 @@ export class StripeElements extends LitNotify(StripeBase) {
    */
   reset() {
     super.reset();
-    this.card && this.card.clear();
+    this.element && this.element.clear();
   }
 
   /**
@@ -416,9 +417,9 @@ export class StripeElements extends LitNotify(StripeBase) {
    */
   async init() {
     this.resetMount();
-    if (this.card) await this.unmountCard();
+    await this.unmount();
     await this.initStripe();
-    await this.mountCard();
+    await this.mount();
   }
 
   /** @private */
@@ -444,9 +445,9 @@ export class StripeElements extends LitNotify(StripeBase) {
     const hosts = [...shadowHosts];
     const root = hosts.pop();
     if (!root.querySelector('[slot="stripe-card"]')) {
-      const element = document.createElement('div');
-      element.slot = 'stripe-card';
-      root.appendChild(element);
+      const div = document.createElement('div');
+      div.slot = 'stripe-card';
+      root.appendChild(div);
     }
     const container = root.querySelector('[slot="stripe-card"]');
 
@@ -477,18 +478,20 @@ export class StripeElements extends LitNotify(StripeBase) {
    * Creates and mounts Stripe Elements card.
    * @private
    */
-  async mountCard() {
+  async mount() {
     if (!this.stripe) return;
     const { hidePostalCode, hideIcon, iconStyle, value } = this;
     const style = this.getStripeElementsStyles();
 
-    const card = this.elements
+    const element = this.elements
       .create('card', { hideIcon, hidePostalCode, iconStyle, style, value });
 
-    await this.set({ card });
-    this.card.mount(this.stripeMount);
-    this.card.addEventListener('ready', this.onReady);
-    this.card.addEventListener('change', this.onChange);
+    await this.set({ element, card: element });
+
+    element.mount(this.stripeMount);
+    element.addEventListener('ready', this.onReady);
+    element.addEventListener('change', this.onChange);
+
     await this.set({ isComplete: false, isEmpty: true });
   }
 
@@ -534,8 +537,8 @@ export class StripeElements extends LitNotify(StripeBase) {
    * Unmounts and nullifies the card.
    * @private
    */
-  async unmountCard() {
-    this.card?.unmount();
-    await this.set({ card: null, stripeReady: false });
+  async unmount() {
+    this.element?.unmount();
+    await this.set({ card: null, element: null, stripeReady: false });
   }
 }

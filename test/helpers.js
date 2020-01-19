@@ -228,6 +228,10 @@ export async function setupNoProps() {
   element = await fixture(getTemplate());
 }
 
+export async function updateComplete() {
+  return await element.updateComplete;
+}
+
 export function setupWithPublishableKey(publishableKey) {
   return async function setup() {
     element = await fixture(getTemplate({ publishableKey }));
@@ -340,8 +344,9 @@ export async function validate() {
 
 export function setProps(props) {
   return async function doSetProps() {
-    await element.set(props);
-    await nextFrame();
+    Object.entries(props).forEach(([name, value]) => {
+      element[name] = value;
+    });
     await element.updateComplete;
   };
 }

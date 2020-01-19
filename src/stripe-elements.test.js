@@ -1,6 +1,6 @@
 import '../stripe-elements.js';
 
-import { expect, fixture, oneEvent } from '@open-wc/testing';
+import { expect, fixture, oneEvent, nextFrame } from '@open-wc/testing';
 
 import {
   CARD_DECLINED_ERROR,
@@ -18,8 +18,8 @@ import {
   NO_STRIPE_CREATE_TOKEN_ERROR,
   NO_STRIPE_JS,
   READ_ONLY_PROPS,
-  appendGlobalStyles,
   appendAllBlueStyleTag,
+  appendGlobalStyles,
   assertFiresStripeChange,
   assertHasOneGlobalStyleTag,
   createSource,
@@ -378,6 +378,7 @@ describe('stripe-elements', function() {
 
     describe('and a valid publishable key', function() {
       beforeEach(setupWithPublishableKey(PUBLISHABLE_KEY));
+      beforeEach(nextFrame);
 
       it('initializes stripe instance', async function stripeInit() {
         expect(element.stripe).to.be.ok;
@@ -389,12 +390,14 @@ describe('stripe-elements', function() {
 
       it('mounts a card into the target', async function cardInit() {
         expect(element.card).to.be.ok;
+        expect(element.element).to.be.ok;
       });
 
       describe('when publishable key is changed', function publishableKeyReset() {
         let initialStripeMountId;
         beforeEach(function() { initialStripeMountId = element.stripeMountId; });
         beforeEach(setProps({ publishableKey: 'foo' }));
+        beforeEach(nextFrame);
         afterEach(function() { initialStripeMountId = undefined; });
         it('reinitializes stripe', function() { expect(element.stripe).to.not.equal(initialStripe); });
         it('uses a new mount point id', function() { expect(element.stripeMountId).to.not.equal(initialStripeMountId); });
@@ -402,6 +405,7 @@ describe('stripe-elements', function() {
 
       describe('when publishable key is unset', function pkReset() {
         beforeEach(setProps({ publishableKey: undefined }));
+        beforeEach(nextFrame);
 
         it('unsets stripe instance', function() {
           expect(element.stripe).to.be.null;
