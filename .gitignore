@@ -4,6 +4,7 @@
 /dist
 /storybook-static
 /_virtual
+/_tmp
 /coverage
 
 cc-test-reporter

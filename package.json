@@ -14,14 +14,14 @@
     "build:rollup": "rollup -c",
     "build:types": "tsc",
     "build:analyze:json": "wca analyze src/*.js --outFile custom-elements.json",
-    "build:analyze:markdown": "wca analyze src/*.js --outFile README.md",
+    "build:analyze:markdown": "cp src/README.template.md README.md && wca analyze src/*.js --silent --markdown.headerLevel 3 >> README.md",
     "test": "karma start --coverage",
     "test:watch": "karma start --auto-watch=true --single-run=false --reporters mocha,osx",
     "test:update-snapshots": "karma start --update-snapshots",
     "test:prune-snapshots": "karma start --prune-snapshots",
     "site:build": "npm run storybook:build",
-    "storybook": "start-storybook --node-resolve --watch --open --babel",
-    "storybook:build": "mv .babelrc bak && build-storybook && mv bak .babelrc",
+    "storybook": "start-storybook --docs --node-resolve --watch --open --babel",
+    "storybook:build": "mv .babelrc bak && build-storybook --docs && mv bak .babelrc",
     "watch": "rollup -cw"
   },
   "repository": {
@@ -30,13 +30,11 @@
   },
   "files": [
     "*.js",
-    "_virtual/*",
-    "src/*",
-    "demo/*",
+    "*.js.map",
+    "custom-elements.json",
+    "CHANGELOG.md",
     "README.md",
-    ".babelrc",
-    "index.html",
-    "test/*"
+    "src/*"
   ],
   "keywords": [
     "web-components",
@@ -51,6 +49,11 @@
     "url": "https://github.com/bennypowers/stripe-elements/issues"
   },
   "homepage": "https://github.com/bennypowers/stripe-elements#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run build:analyze:markdown"
+    }
+  },
   "devDependencies": {
     "@apollo-elements/eslint-config": "^1.1.1",
     "@babel/core": "^7.8.0",
