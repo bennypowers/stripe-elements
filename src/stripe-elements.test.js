@@ -60,16 +60,16 @@ import { elem, not } from './lib/predicates.js';
 
 const assignedNodes = el => el.assignedNodes();
 
-const expectedLightDOM = ({ stripeMountId }) => `
-  <div slot="stripe-card">
-    <form method="post">
-      <div id="${stripeMountId}" aria-label="Credit or Debit Card"></div>
-      <input disabled type="hidden" name="stripePaymentMethod"/>
-      <input disabled type="hidden" name="stripeSource"/>
-      <input disabled type="hidden" name="stripeToken"/>
-    </form>
-  </div>
+const formLightDOM = ({ label, stripeMountId }) => `
+  <form method="post">
+    <div id="${stripeMountId}" aria-label="${label}" class="stripe-mount"></div>
+    <input disabled type="hidden" name="stripePaymentMethod"/>
+    <input disabled type="hidden" name="stripeSource"/>
+    <input disabled type="hidden" name="stripeToken"/>
+  </form>
 `;
+
+const expectedLightDOM = ({ label, stripeMountId }) => `<div slot="stripe-card">${formLightDOM({ label, stripeMountId })}</div> `;
 
 describe('stripe-elements', function() {
   beforeEach(spyConsoleWarn);
@@ -120,14 +120,7 @@ describe('stripe-elements', function() {
 
     describe('when connected to document', function() {
       it('appends a shady-dom mount point', function shadyMount() {
-        expect(element).lightDom.to.equal(`
-          <form method="post">
-            <div aria-label="${element.label}" id="${element.stripeMountId}"></div>
-            <input disabled type="hidden" name="stripePaymentMethod" />
-            <input disabled type="hidden" name="stripeSource" />
-            <input disabled type="hidden" name="stripeToken" />
-          </form>
-        `);
+        expect(element).lightDom.to.equal(formLightDOM(element));
       });
 
       it('finds its form', function findsForm() {
@@ -142,11 +135,12 @@ describe('stripe-elements', function() {
     let secondaryHost;
     let tertiaryHost;
     let stripeMountId;
+    let label;
     describe('when nested one shadow-root deep', function() {
       beforeEach(async function setupOneRoot() {
         primaryHost = await fixture(`<primary-host></primary-host>`);
         ({ nestedElement } = primaryHost);
-        ({ stripeMountId } = nestedElement);
+        ({ stripeMountId, label } = nestedElement);
       });
 
       it('leaves one breadcrumb on its way up to the document', async function breadcrumbs() {
@@ -155,7 +149,7 @@ describe('stripe-elements', function() {
       });
 
       it('slots mount point in to its light DOM', function() {
-        expect(primaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId }));
+        expect(primaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, label }));
       });
 
       it('finds its form', async function() {
@@ -180,8 +174,7 @@ describe('stripe-elements', function() {
       });
 
       it('slots mount point in to the light DOM of the secondary shadow host', function() {
-        const { stripeMountId } = nestedElement;
-        expect(secondaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId }));
+        expect(secondaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, label }));
       });
 
       it('appends a slot to the shadow DOM of the secondary shadow host', function() {
@@ -220,7 +213,7 @@ describe('stripe-elements', function() {
       });
 
       it('slots mount point in to the light DOM of the tertiary shadow host', function() {
-        expect(tertiaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId }));
+        expect(tertiaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, label }));
       });
 
       it('appends a slot to the shadow DOM of the tertiary shadow host', function() {
@@ -334,8 +327,8 @@ describe('stripe-elements', function() {
         describe('then publishable key is set', function() {
           beforeEach(setProps({ publishableKey: PUBLISHABLE_KEY }));
           it('rebuilds its DOM', function() {
-            const { stripeMountId } = element;
-            expect(element).lightDom.to.equal(expectedLightDOM({ stripeMountId }));
+            const { label, stripeMountId } = element;
+            expect(element).lightDom.to.equal(expectedLightDOM({ stripeMountId, label }));
             expect(element.stripeMount, 'mount').to.be.ok;
           });
 
@@ -391,6 +384,7 @@ describe('stripe-elements', function() {
       it('mounts a card into the target', async function cardInit() {
         expect(element.card).to.be.ok;
         expect(element.element).to.be.ok;
+        expect(element.card).to.equal(element.element);
       });
 
       describe('when publishable key is changed', function publishableKeyReset() {
@@ -399,8 +393,8 @@ describe('stripe-elements', function() {
         beforeEach(setProps({ publishableKey: 'foo' }));
         beforeEach(nextFrame);
         afterEach(function() { initialStripeMountId = undefined; });
-        it('reinitializes stripe', function() { expect(element.stripe).to.not.equal(initialStripe); });
-        it('uses a new mount point id', function() { expect(element.stripeMountId).to.not.equal(initialStripeMountId); });
+        it('reinitializes stripe', function() { expect(element.stripe).to.be.ok.and.not.equal(initialStripe); });
+        it('uses a new mount point id', function() { expect(element.stripeMountId).to.be.ok.and.not.equal(initialStripeMountId); });
       });
 
       describe('when publishable key is unset', function pkReset() {
