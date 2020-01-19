@@ -48,17 +48,20 @@
         {
           "name": "is-complete",
           "description": "If the form is complete.",
-          "type": "Boolean"
+          "type": "Boolean",
+          "default": "false"
         },
         {
           "name": "is-empty",
           "description": "If the form is empty.",
-          "type": "Boolean"
+          "type": "Boolean",
+          "default": "true"
         },
         {
           "name": "stripe-ready",
           "description": "If the stripe element is ready to receive focus.",
-          "type": "Boolean"
+          "type": "Boolean",
+          "default": "false"
         },
         {
           "name": "action",
@@ -77,6 +80,11 @@
           "default": "false"
         },
         {
+          "name": "element",
+          "description": "Stripe element instance",
+          "type": "stripe.elements.Element"
+        },
+        {
           "name": "elements",
           "description": "Stripe Elements instance",
           "type": "stripe.elements.Elements"
@@ -84,12 +92,13 @@
         {
           "name": "error",
           "description": "Stripe or validation error",
-          "type": "Error"
+          "type": "Error|stripe.Error"
         },
         {
           "name": "has-error",
           "description": "Whether the element has an error",
-          "type": "Boolean"
+          "type": "Boolean",
+          "default": "false"
         },
         {
           "name": "source",
@@ -159,19 +168,22 @@
           "name": "isComplete",
           "attribute": "is-complete",
           "description": "If the form is complete.",
-          "type": "Boolean"
+          "type": "Boolean",
+          "default": "false"
         },
         {
           "name": "isEmpty",
           "attribute": "is-empty",
           "description": "If the form is empty.",
-          "type": "Boolean"
+          "type": "Boolean",
+          "default": "true"
         },
         {
           "name": "stripeReady",
           "attribute": "stripe-ready",
           "description": "If the stripe element is ready to receive focus.",
-          "type": "Boolean"
+          "type": "Boolean",
+          "default": "false"
         },
         {
           "name": "stripeMount",
@@ -212,6 +224,12 @@
           "type": "stripe.TokenOptions"
         },
         {
+          "name": "element",
+          "attribute": "element",
+          "description": "Stripe element instance",
+          "type": "stripe.elements.Element"
+        },
+        {
           "name": "elements",
           "attribute": "elements",
           "description": "Stripe Elements instance",
@@ -221,13 +239,14 @@
           "name": "error",
           "attribute": "error",
           "description": "Stripe or validation error",
-          "type": "Error"
+          "type": "Error|stripe.Error"
         },
         {
           "name": "hasError",
           "attribute": "has-error",
           "description": "Whether the element has an error",
-          "type": "Boolean"
+          "type": "Boolean",
+          "default": "false"
         },
         {
           "name": "source",
@@ -248,8 +267,7 @@
           "type": "stripe.Token"
         },
         {
-          "name": "element",
-          "type": "stripe.elements.Element"
+          "name": "setPropEntry"
         }
       ],
       "events": [

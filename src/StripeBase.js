@@ -3,6 +3,7 @@ import { LitNotify } from '@morbidick/lit-element-notify';
 
 import bound from 'bound-decorator';
 
+import { ReadOnlyPropertiesMixin } from './lib/read-only-properties';
 import { camel, dash } from './lib/strings';
 import { isRepresentation } from './lib/predicates';
 import { stripeMethod } from './stripe-method-decorator';
@@ -21,7 +22,7 @@ import { stripeMethod } from './stripe-method-decorator';
  * @fires 'stripe-token' - The Token received from stripe.com
  * @fires 'token-changed' - The new value of token
  */
-export class StripeBase extends LitNotify(LitElement) {
+export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /* PUBLIC FIELDS */
 
   /**
@@ -65,53 +66,59 @@ export class StripeBase extends LitNotify(LitElement) {
   /* READ-ONLY FIELDS */
 
   /**
+   * Stripe element instance
+   * @type {stripe.elements.Element}
+   * @readonly
+   */
+  @property({ type: Object, readOnly: true }) element = null;
+
+  /**
    * Stripe Elements instance
    * @type {stripe.elements.Elements}
+   * @readonly
    */
-  @property({ type: Object }) get elements() {
-    return this.__elements;
-  }
+  @property({ type: Object, readOnly: true }) elements = null;
 
   /**
    * Stripe or validation error
-   * @type {Error}
+   * @type {Error|stripe.Error}
+   * @readonly
    */
-  @property({ type: String, notify: true }) get error() {
-    return this.__error;
-  }
+  @property({ type: String, notify: true, readOnly: true }) error = null;
 
   /**
    * Whether the element has an error
    * @type {Boolean}
+   * @readonly
    */
-  @property({ type: Boolean, attribute: 'has-error', reflect: true, notify: true }) get hasError() {
-    return this.__hasError;
-  }
+  @property({
+    type: Boolean,
+    attribute: 'has-error',
+    reflect: true,
+    notify: true,
+    readOnly: true,
+  }) hasError = false;
 
   /**
    * Stripe Source
    * @type {stripe.Source}
+   * @readonly
    */
-  @property({ type: Object, notify: true }) get source() {
-    return this.__source;
-  }
+  @property({ type: Object, notify: true, readOnly: true }) source = null;
 
   /**
    * Stripe instance
    * @type {stripe.Stripe}
+   * @readonly
    */
-  @property({ type: Object }) get stripe() {
-    return this.__stripe;
-  }
+  @property({ type: Object, readOnly: true }) stripe = null;
 
   /**
    * Stripe Token
    * @type {stripe.Token}
+   * @readonly
    */
-  @property({ type: Object, notify: true }) get token() {
-    return this.__token;
-  }
-
+  @property({ type: Object, notify: true, readOnly: true }) token = null;
 
   /* PRIVATE FIELDS */
 
@@ -121,26 +128,6 @@ export class StripeBase extends LitNotify(LitElement) {
    * @private
    */
   stripeMountId;
-
-  /** @type {stripe.elements.Elements} */
-  __elements = null;
-
-  /** @type {Error|stripe.Error} */
-  __error = null;
-
-  __hasError = false;
-
-  /** @type {stripe.Source} */
-  __source = null;
-
-  /** @type {stripe.Stripe} */
-  __stripe = null;
-
-  /** @type {stripe.Token} */
-  __token = null;
-
-  /** @type {stripe.elements.Element} */
-  get element() { return this[this.constructor.elementType]; }
 
   /* LIFECYCLE */
 
@@ -154,7 +141,7 @@ export class StripeBase extends LitNotify(LitElement) {
   /* PUBLIC API */
 
   /**
-   * Submit credit card information to generate a source
+   * Submit payment information to generate a source
    * @param {{ owner: stripe.OwnerInfo }} [sourceData={}]
    * @resolves {stripe.SourceResponse}
    */
@@ -163,7 +150,7 @@ export class StripeBase extends LitNotify(LitElement) {
   }
 
   /**
-   * Submit credit card information to generate a token
+   * Submit payment information to generate a token
    * @param {TokenData} [tokenData=this.tokenData]
    * @resolves {stripe.TokenResponse}
    */
@@ -179,7 +166,9 @@ export class StripeBase extends LitNotify(LitElement) {
   /* PRIVATE API */
 
   /** @private */
-  errorChanged() {
+  async errorChanged() {
+    const hasError = !!this.error;
+    await this.set({ hasError });
     this.resetRepresentations();
     this.fireError(this.error);
   }
@@ -211,16 +200,8 @@ export class StripeBase extends LitNotify(LitElement) {
    * @private
    */
   @bound async handleResponse(response) {
-    const {
-      error = null,
-      source = null,
-      token = null,
-    } = response;
-    await this.set({
-      error,
-      source,
-      token,
-    });
+    const { error = null, source = null, token = null } = response;
+    await this.set({ error, source, token });
     if (error) throw error;
     else return response;
   }
@@ -276,33 +257,6 @@ export class StripeBase extends LitNotify(LitElement) {
       source: null,
       setupIntent: null,
     });
-  }
-
-  /**
-   * Set read-only properties
-   * @param  {Object<string, any>}  props
-   * @return {Promise<this>}
-   * @private
-   */
-  async set(props) {
-    await Promise.all(Object.entries(props).map(this.setPropEntry));
-    return this;
-  }
-
-  /**
-   * @return {Promise<unknown>}
-   * @private
-   */
-  @bound setPropEntry([name, newVal]) {
-    const privateName = `__${name}`;
-    const oldVal = this[privateName];
-    this[privateName] = newVal;
-    if (name === 'error') {
-      const oldHasError = this.__hasError;
-      this.__hasError = !!newVal;
-      this.requestUpdate('hasError', oldHasError);
-    }
-    return this.requestUpdate(name, oldVal);
   }
 }
 
