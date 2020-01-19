@@ -139,6 +139,9 @@ export class StripeBase extends LitNotify(LitElement) {
   /** @type {stripe.Token} */
   __token = null;
 
+  /** @type {stripe.elements.Element} */
+  get element() { return this[this.constructor.elementType]; }
+
   /* LIFECYCLE */
 
   /** @inheritdoc */
@@ -156,8 +159,7 @@ export class StripeBase extends LitNotify(LitElement) {
    * @resolves {stripe.SourceResponse}
    */
   @stripeMethod async createSource(sourceData = this.sourceData) {
-    const element = this.card;
-    return this.stripe.createSource(element, sourceData);
+    return this.stripe.createSource(this.element, sourceData);
   }
 
   /**
@@ -166,7 +168,7 @@ export class StripeBase extends LitNotify(LitElement) {
    * @resolves {stripe.TokenResponse}
    */
   @stripeMethod async createToken(tokenData = this.tokenData) {
-    return this.stripe.createToken(this.card, tokenData);
+    return this.stripe.createToken(this.element, tokenData);
   }
 
   reset() {
