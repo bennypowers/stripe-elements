@@ -58,7 +58,7 @@ function applyCustomCss() {
 
 const stripeCardTemplate = ({ action, id, label, paymentMethod, source, token }) => html`
   <form action="${ifDefined(action || undefined)}" method="post">
-    <div id="${ifDefined(id)}" aria-label="${ifDefined(label)}"></div>
+    <div id="${ifDefined(id)}" class="stripe-mount" aria-label="${ifDefined(label)}"></div>
     <input ?disabled="${!paymentMethod}" type="hidden" name="stripePaymentMethod" value="${ifDefined(paymentMethod || undefined)}">
     <input ?disabled="${!source}" type="hidden" name="stripeSource" value="${ifDefined(source || undefined)}">
     <input ?disabled="${!token}" type="hidden" name="stripeToken" value="${ifDefined(token || undefined)}">
@@ -452,7 +452,7 @@ export class StripeElements extends LitNotify(StripeBase) {
     const container = root.querySelector('[slot="stripe-card"]');
 
     // hedge against shenanigans
-    const isDomCorrupt = container.querySelector('form') && !container.querySelector(`#${this.stripeMountId}`);
+    const isDomCorrupt = container.querySelector('form') && !document.querySelector(`.stripe-mount[aria-label="${this.label}"]`);
     const renderTemplate = isDomCorrupt ? render : appendTemplate;
 
     // Render the form to the document, so that Stripe.js can mount
@@ -488,7 +488,10 @@ export class StripeElements extends LitNotify(StripeBase) {
 
     await this.set({ element, card: element });
 
+    if (!this.stripeMount) throw new Error('Stripe Mount missing');
+
     element.mount(this.stripeMount);
+
     element.addEventListener('ready', this.onReady);
     element.addEventListener('change', this.onChange);
 
