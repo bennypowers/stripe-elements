@@ -28,6 +28,7 @@ export const ReadOnlyPropertiesMixin = baseElement => {
 
           set(value) {
             // allow for class field initialization
+            /* istanbul ignore if */
             if (this._readOnlyPropertyInitializedMap.get(name)) return;
             this[privateName] = value;
             this._readOnlyPropertyInitializedMap.set(name, true);
