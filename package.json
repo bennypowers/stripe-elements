@@ -21,7 +21,7 @@
     "test:prune-snapshots": "karma start --prune-snapshots",
     "site:build": "npm run storybook:build",
     "storybook": "start-storybook --docs --node-resolve --watch --open --babel",
-    "storybook:build": "mv .babelrc bak && build-storybook --docs && mv bak .babelrc",
+    "storybook:build": "mv .babelrc bak && build-storybook && mv bak .babelrc",
     "watch": "rollup -cw"
   },
   "repository": {
