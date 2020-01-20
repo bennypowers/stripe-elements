@@ -4,10 +4,6 @@
 
   #key { width: 100%; }
 
-  #name { grid-area: name; }
-
-  .generate { grid-area: generate; }
-
   [label="Publishable Key"] {
     width: 100%;
   }
@@ -16,6 +12,7 @@
     color: #212529;
     padding: 0;
     background: white;
+
     --json-viewer-key-color: #d9480f;
     --json-viewer-boolean-color: #0b7285;
     --json-viewer-number-color: #087f5b;
@@ -27,12 +24,8 @@
     align-items: center;
     display: grid;
     grid-gap: 12px;
-    grid-template-areas: 'stripe generate';
-  }
-
-  #source {
     grid-template-areas:
       'stripe stripe'
-      'name generate'
+      'fields fields';
   }
 </style>

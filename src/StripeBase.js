@@ -8,6 +8,8 @@ import { camel, dash } from './lib/strings';
 import { isRepresentation } from './lib/predicates';
 import { stripeMethod } from './stripe-method-decorator';
 
+/** @typedef {stripe.PaymentIntentResponse|stripe.PaymentMethodResponse|stripe.SetupIntentResponse|stripe.TokenResponse|stripe.SourceResponse} PaymentResponse */
+
 /**
  * @fires 'error-changed' - The new value of error
  * @fires 'has-error-changed' - The new value of has-error
@@ -33,6 +35,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   @property({ type: String }) action;
 
   /**
+   * billing_details object sent to create the payment representation.
    * @type {stripe.BillingDetails}
    */
   billingDetails;
@@ -52,16 +55,23 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   @property({ type: Boolean, attribute: 'show-error', reflect: true }) showError = false;
 
   /**
+   * Data passed to stripe.createPaymentMethod. (optional)
+   * @type {stripe.PaymentMethodData}
+   * @prop
+   */
+  paymentMethodData = {};
+
+  /**
    * Data passed to stripe.createSource. (optional)
    * @type {{ owner: stripe.OwnerData }}
    */
-  sourceData;
+  sourceData = {};
 
   /**
    * Data passed to stripe.createToken. (optional)
    * @type {stripe.TokenOptions}
    */
-  tokenData;
+  tokenData = {};
 
   /* READ-ONLY FIELDS */
 
@@ -141,6 +151,15 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /* PUBLIC API */
 
   /**
+   * Submit payment information to generate a paymentMethod
+   * @param {stripe.PaymentMethodData} [paymentMethodData={}]
+   * @resolves {stripe.PaymentMethodResponse}
+   */
+  @stripeMethod async createPaymentMethod(paymentMethodData = this.paymentMethodData) {
+    return this.stripe.createPaymentMethod(this.getPaymentMethodData(paymentMethodData));
+  }
+
+  /**
    * Submit payment information to generate a source
    * @param {{ owner: stripe.OwnerInfo }} [sourceData={}]
    * @resolves {stripe.SourceResponse}
@@ -158,6 +177,9 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     return this.stripe.createToken(this.element, tokenData);
   }
 
+  /**
+   * Reset the stripe element
+   */
   reset() {
     this.resetRepresentations();
     this.set({ error: null });
@@ -259,7 +281,3 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     });
   }
 }
-
-/**
- * @typedef {stripe.PaymentIntentResponse|stripe.PaymentMethodResponse|stripe.SetupIntentResponse|stripe.TokenResponse|stripe.SourceResponse} PaymentResponse
- */

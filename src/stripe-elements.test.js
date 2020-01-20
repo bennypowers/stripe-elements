@@ -55,7 +55,7 @@ import {
   testReadonlyNotifyingProp,
   testWritableNotifyingProp,
   validate,
-} from '../test/helpers';
+} from '../test/test-helpers';
 import { elem, not } from './lib/predicates.js';
 
 const assignedNodes = el => el.assignedNodes();
