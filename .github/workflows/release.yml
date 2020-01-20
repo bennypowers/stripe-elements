@@ -24,6 +24,8 @@ jobs:
           ./cc-test-reporter before-build
       - name: Run Tests
         run: npm test
+      - name: Format Coverage
+        run: ./cc-test-reporter format-coverage -t lcov -o coverage/coverage.json coverage/lcov.info
       - name: Upload Coverage
         uses: actions/upload-artifact@v1
         with:
@@ -54,10 +56,9 @@ jobs:
         with:
           semantic_version: 15.14.0
           branch: master
-          # You can specify specifying version range for the extra plugins if you prefer.
           extra_plugins: |
-            @semantic-release/git@7.0.18
-            @semantic-release/changelog@3
+            @semantic-release/git
+            @semantic-release/changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -84,9 +85,7 @@ jobs:
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
       - name: Upload Coverage
-        run: |
-          ./cc-test-reporter format-coverage -t lcov -o coverage/coverage.json coverage/lcov.info;
-          ./cc-test-reporter upload-coverage -i coverage/coverage.json;
+        run: ./cc-test-reporter upload-coverage -i coverage/coverage.json
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
 
