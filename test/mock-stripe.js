@@ -2,6 +2,8 @@ import { render, html } from 'lit-html';
 import luhn from 'luhn-js';
 import creditCardType from 'credit-card-type';
 
+const assign = target => ([k, v]) => target[k] = v;
+
 export const PUBLISHABLE_KEY = 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX';
 
 export const INCOMPLETE_CARD_KEY = 'INCOMPLETE_CARD_KEY';
@@ -28,7 +30,11 @@ export const SUCCESSFUL_SOURCE = Object.freeze({ id: 'SUCCESSFUL_SOURCE' });
 
 export const SUCCESSFUL_PAYMENT_METHOD = Object.freeze({ id: 'SUCCESSFUL_PAYMENT_METHOD' });
 
-const assign = target => ([k, v]) => target[k] = v;
+export const SUCCESS_RESPONSES = Object.freeze({
+  paymentMethod: SUCCESSFUL_PAYMENT_METHOD,
+  source: SUCCESSFUL_SOURCE,
+  token: SUCCESSFUL_TOKEN,
+});
 
 const CARD_ERRORS = {
   '4000000000000002': CARD_DECLINED_ERROR,
@@ -141,7 +147,8 @@ export class MockedStripeAPI {
     return new MockElements({ fonts, locale });
   }
 
-  async createPaymentMethod({ error = this.keyError }, cardData) {
+  async createPaymentMethod(paymentMethodData) {
+    const { error = this.keyError } = paymentMethodData.card;
     const paymentMethod = error ? undefined : SUCCESSFUL_PAYMENT_METHOD;
     const response = { error, paymentMethod };
     return response;
