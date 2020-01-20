@@ -24,12 +24,6 @@
           "default": "\"default\""
         },
         {
-          "name": "label",
-          "description": "aria-label attribute for the credit card form.",
-          "type": "String",
-          "default": "\"Credit or Debit Card\""
-        },
-        {
           "name": "value",
           "description": "Prefilled values for form. Example {postalCode: '90210'}",
           "type": "Object",
@@ -139,13 +133,6 @@
           "default": "\"default\""
         },
         {
-          "name": "label",
-          "attribute": "label",
-          "description": "aria-label attribute for the credit card form.",
-          "type": "String",
-          "default": "\"Credit or Debit Card\""
-        },
-        {
           "name": "value",
           "attribute": "value",
           "description": "Prefilled values for form. Example {postalCode: '90210'}",
@@ -212,6 +199,11 @@
           "description": "Whether to display the error message",
           "type": "boolean",
           "default": "false"
+        },
+        {
+          "name": "paymentMethodData",
+          "description": "Data passed to stripe.createPaymentMethod. (optional)",
+          "type": "stripe.PaymentMethodData"
         },
         {
           "name": "sourceData",

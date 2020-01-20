@@ -51,7 +51,7 @@
   "homepage": "https://github.com/bennypowers/stripe-elements#readme",
   "husky": {
     "hooks": {
-      "pre-commit": "npm run build:analyze:markdown"
+      "pre-commit": "npm run build:analyze:markdown && git add README.md custom-elements.json"
     }
   },
   "devDependencies": {

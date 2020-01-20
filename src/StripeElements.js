@@ -386,6 +386,18 @@ export class StripeElements extends LitNotify(StripeBase) {
   /* PRIVATE METHODS */
 
   /**
+   * Generates PaymentMethodData from the element.
+   * @param  {stripe.PaymentMethodData} data data, minus card property
+   * @return {stripe.PaymentMethodData} data with card property
+   * @private
+   */
+  getPaymentMethodData(data) {
+    const type = 'card';
+    const { billingDetails, card } = this;
+    return ({ billing_details: billingDetails, ...data, type, card });
+  }
+
+  /**
    * Returns a Stripe-friendly style object computed from CSS custom properties
    * @return {Object} Stripe Style initialization object.
    * @private
