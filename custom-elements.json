@@ -58,9 +58,30 @@
           "default": "false"
         },
         {
+          "name": "payment-method",
+          "description": "Stripe PaymentMethod",
+          "type": "stripe.PaymentMethod"
+        },
+        {
+          "name": "source",
+          "description": "Stripe Source",
+          "type": "stripe.Source"
+        },
+        {
+          "name": "token",
+          "description": "Stripe Token",
+          "type": "stripe.Token"
+        },
+        {
           "name": "action",
           "description": "The URL to the form action. Example '/charges'.\nIf blank or undefined will not submit charges immediately.",
           "type": "String"
+        },
+        {
+          "name": "generate",
+          "description": "Type of payment representation to generate.",
+          "type": "'payment-method'|'source'|'token'",
+          "default": "\"source\""
         },
         {
           "name": "publishable-key",
@@ -95,19 +116,9 @@
           "default": "false"
         },
         {
-          "name": "source",
-          "description": "Stripe Source",
-          "type": "stripe.Source"
-        },
-        {
           "name": "stripe",
           "description": "Stripe instance",
           "type": "stripe.Stripe"
-        },
-        {
-          "name": "token",
-          "description": "Stripe Token",
-          "type": "stripe.Token"
         }
       ],
       "properties": [
@@ -178,14 +189,59 @@
           "type": "Element"
         },
         {
+          "name": "billingDetails",
+          "description": "billing_details object sent to create the payment representation. (optional)",
+          "type": "stripe.BillingDetails",
+          "default": "{}"
+        },
+        {
+          "name": "paymentMethodData",
+          "description": "Data passed to stripe.createPaymentMethod. (optional)",
+          "type": "stripe.PaymentMethodData",
+          "default": "{}"
+        },
+        {
+          "name": "sourceData",
+          "description": "Data passed to stripe.createSource. (optional)",
+          "type": "SourceData",
+          "default": "{}"
+        },
+        {
+          "name": "tokenData",
+          "description": "Data passed to stripe.createToken. (optional)",
+          "type": "stripe.TokenOptions",
+          "default": "{}"
+        },
+        {
+          "name": "paymentMethod",
+          "attribute": "payment-method",
+          "description": "Stripe PaymentMethod",
+          "type": "stripe.PaymentMethod"
+        },
+        {
+          "name": "source",
+          "attribute": "source",
+          "description": "Stripe Source",
+          "type": "stripe.Source"
+        },
+        {
+          "name": "token",
+          "attribute": "token",
+          "description": "Stripe Token",
+          "type": "stripe.Token"
+        },
+        {
           "name": "action",
           "attribute": "action",
           "description": "The URL to the form action. Example '/charges'.\nIf blank or undefined will not submit charges immediately.",
           "type": "String"
         },
         {
-          "name": "billingDetails",
-          "type": "stripe.BillingDetails"
+          "name": "generate",
+          "attribute": "generate",
+          "description": "Type of payment representation to generate.",
+          "type": "'payment-method'|'source'|'token'",
+          "default": "\"source\""
         },
         {
           "name": "publishableKey",
@@ -199,21 +255,6 @@
           "description": "Whether to display the error message",
           "type": "boolean",
           "default": "false"
-        },
-        {
-          "name": "paymentMethodData",
-          "description": "Data passed to stripe.createPaymentMethod. (optional)",
-          "type": "stripe.PaymentMethodData"
-        },
-        {
-          "name": "sourceData",
-          "description": "Data passed to stripe.createSource. (optional)",
-          "type": "{ owner: stripe.OwnerData }"
-        },
-        {
-          "name": "tokenData",
-          "description": "Data passed to stripe.createToken. (optional)",
-          "type": "stripe.TokenOptions"
         },
         {
           "name": "element",
@@ -241,22 +282,10 @@
           "default": "false"
         },
         {
-          "name": "source",
-          "attribute": "source",
-          "description": "Stripe Source",
-          "type": "stripe.Source"
-        },
-        {
           "name": "stripe",
           "attribute": "stripe",
           "description": "Stripe instance",
           "type": "stripe.Stripe"
-        },
-        {
-          "name": "token",
-          "attribute": "token",
-          "description": "Stripe Token",
-          "type": "stripe.Token"
         }
       ],
       "events": [

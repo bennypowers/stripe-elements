@@ -19,22 +19,19 @@ const getTemplate = (props = {}) =>
   html`<stripe-elements ...="${spreadProps(props)}"></stripe-elements>`;
 
 /* eslint-disable no-unused-vars */
-@customElement('primary-host')
-class PrimaryHost extends LitElement {
+@customElement('primary-host') class PrimaryHost extends LitElement {
   @query('stripe-elements') nestedElement;
 
   render() { return getTemplate({ publishableKey: PUBLISHABLE_KEY }); }
 }
 
-@customElement('secondary-host')
-class SecondaryHost extends LitElement {
+@customElement('secondary-host') class SecondaryHost extends LitElement {
   @query('primary-host') primaryHost;
 
   render() { return html`<primary-host></primary-host>`; }
 }
 
-@customElement('tertiary-host')
-class TertiaryHost extends LitElement {
+@customElement('tertiary-host') class TertiaryHost extends LitElement {
   @query('secondary-host') secondaryHost;
 
   render() { return html`<secondary-host></secondary-host>`; }
@@ -65,6 +62,7 @@ export const DEFAULT_PROPS = Object.freeze({
   isComplete: false,
   isEmpty: true,
   publishableKey: undefined,
+  paymentMethod: null,
   source: null,
   stripe: null,
   token: null,
@@ -79,6 +77,7 @@ export const READ_ONLY_PROPS = Object.freeze([
   'hasError',
   'isComplete',
   'isEmpty',
+  'paymentMethod',
   'source',
   'stripe',
   'stripeReady',
@@ -92,6 +91,7 @@ export const NOTIFYING_PROPS = Object.freeze([
   'hasError',
   'isComplete',
   'isEmpty',
+  'paymentMethod',
   'publishableKey',
   'source',
   'stripeReady',
@@ -280,7 +280,7 @@ export function testDefaultPropEntry([name, value]) {
 export function testReadOnlyProp(name) {
   it(name, function() {
     const init = element[name];
-    expect(() => element[name] = Math.random()).to.throw;
+    element[name] = Math.random();
     expect(element[name], name).to.equal(init);
   });
 }
@@ -311,12 +311,28 @@ export async function assertFiresStripeChange() {
   expect(type).to.equal(name);
 }
 
+export function assertSubmitCalled() {
+  expect(element.form.submit).to.have.been.called;
+}
+
 /* ELEMENT METHODS */
+
+export async function submit() {
+  const submitPromise = element.submit();
+  // don't await result if we need to set up a listener
+  if (!this?.currentTest?.title.startsWith('fires')) await submitPromise;
+}
 
 export async function reset() {
   spyCardClear();
   element.reset();
   await element.updateComplete;
+}
+
+export async function createPaymentMethod() {
+  element.createPaymentMethod();
+  // don't await result if we need to set up a listener
+  if (!this?.currentTest?.title.startsWith('fires')) await nextFrame();
 }
 
 export async function createSource() {
@@ -327,12 +343,6 @@ export async function createSource() {
 
 export async function createToken() {
   element.createToken();
-  // don't await result if we need to set up a listener
-  if (!this?.currentTest?.title.startsWith('fires')) await nextFrame();
-}
-
-export async function createPaymentMethod() {
-  element.createPaymentMethod();
   // don't await result if we need to set up a listener
   if (!this?.currentTest?.title.startsWith('fires')) await nextFrame();
 }

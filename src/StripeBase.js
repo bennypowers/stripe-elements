@@ -9,6 +9,7 @@ import { isRepresentation } from './lib/predicates';
 import { stripeMethod } from './stripe-method-decorator';
 
 /** @typedef {stripe.PaymentIntentResponse|stripe.PaymentMethodResponse|stripe.SetupIntentResponse|stripe.TokenResponse|stripe.SourceResponse} PaymentResponse */
+/** @typedef {{ owner: stripe.OwnerData }} SourceData */
 
 /**
  * @fires 'error-changed' - The new value of error
@@ -25,7 +26,61 @@ import { stripeMethod } from './stripe-method-decorator';
  * @fires 'token-changed' - The new value of token
  */
 export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
-  /* PUBLIC FIELDS */
+  /* PAYMENT CONFIGURATION */
+
+  /**
+   * billing_details object sent to create the payment representation. (optional)
+   * @type {stripe.BillingDetails}
+   */
+  billingDetails = {};
+
+  /**
+   * Data passed to stripe.createPaymentMethod. (optional)
+   * @type {stripe.PaymentMethodData}
+   */
+  paymentMethodData = {};
+
+  /**
+   * Data passed to stripe.createSource. (optional)
+   * @type {SourceData}
+   */
+  sourceData = {};
+
+  /**
+   * Data passed to stripe.createToken. (optional)
+   * @type {stripe.TokenOptions}
+   */
+  tokenData = {};
+
+  /* PAYMENT REPRESENTATIONS */
+
+  /**
+   * Stripe PaymentMethod
+   * @type {stripe.PaymentMethod}
+   * @readonly
+   */
+  @property({
+    type: Object,
+    notify: true,
+    readOnly: true,
+    attribute: 'payment-method',
+  }) paymentMethod = null;
+
+  /**
+   * Stripe Source
+   * @type {stripe.Source}
+   * @readonly
+   */
+  @property({ type: Object, notify: true, readOnly: true }) source = null;
+
+  /**
+   * Stripe Token
+   * @type {stripe.Token}
+   * @readonly
+   */
+  @property({ type: Object, notify: true, readOnly: true }) token = null;
+
+  /* SETTINGS */
 
   /**
    * The URL to the form action. Example '/charges'.
@@ -35,10 +90,11 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   @property({ type: String }) action;
 
   /**
-   * billing_details object sent to create the payment representation.
-   * @type {stripe.BillingDetails}
+   * Type of payment representation to generate.
+   * @type {'payment-method'|'source'|'token'}
+   * @required
    */
-  billingDetails;
+  @property({ type: String }) generate = 'source';
 
   /**
    * Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`
@@ -53,25 +109,6 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
 
   /** Whether to display the error message */
   @property({ type: Boolean, attribute: 'show-error', reflect: true }) showError = false;
-
-  /**
-   * Data passed to stripe.createPaymentMethod. (optional)
-   * @type {stripe.PaymentMethodData}
-   * @prop
-   */
-  paymentMethodData = {};
-
-  /**
-   * Data passed to stripe.createSource. (optional)
-   * @type {{ owner: stripe.OwnerData }}
-   */
-  sourceData = {};
-
-  /**
-   * Data passed to stripe.createToken. (optional)
-   * @type {stripe.TokenOptions}
-   */
-  tokenData = {};
 
   /* READ-ONLY FIELDS */
 
@@ -110,25 +147,11 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   }) hasError = false;
 
   /**
-   * Stripe Source
-   * @type {stripe.Source}
-   * @readonly
-   */
-  @property({ type: Object, notify: true, readOnly: true }) source = null;
-
-  /**
    * Stripe instance
    * @type {stripe.Stripe}
    * @readonly
    */
   @property({ type: Object, readOnly: true }) stripe = null;
-
-  /**
-   * Stripe Token
-   * @type {stripe.Token}
-   * @readonly
-   */
-  @property({ type: Object, notify: true, readOnly: true }) token = null;
 
   /* PRIVATE FIELDS */
 
@@ -155,8 +178,8 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @param {stripe.PaymentMethodData} [paymentMethodData={}]
    * @resolves {stripe.PaymentMethodResponse}
    */
-  @stripeMethod async createPaymentMethod(paymentMethodData = this.paymentMethodData) {
-    return this.stripe.createPaymentMethod(this.getPaymentMethodData(paymentMethodData));
+  @stripeMethod async createPaymentMethod(paymentMethodData = this.getPaymentMethodData()) {
+    return this.stripe.createPaymentMethod(paymentMethodData);
   }
 
   /**
@@ -183,6 +206,23 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   reset() {
     this.resetRepresentations();
     this.set({ error: null });
+  }
+
+  /**
+   * Generates a payment representation of the type specified by `generate`.
+   * @resolves {PaymentResponse}
+   */
+  async submit() {
+    switch (this.generate) {
+      case 'payment-method': return this.createPaymentMethod();
+      case 'source': return this.createSource();
+      case 'token': return this.createToken();
+      default: {
+        const error = new Error(`<${this.constructor.is}>: cannot generate ${this.generate}`);
+        await this.set({ error });
+        throw error;
+      }
+    }
   }
 
   /* PRIVATE API */
@@ -222,8 +262,8 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @private
    */
   @bound async handleResponse(response) {
-    const { error = null, source = null, token = null } = response;
-    await this.set({ error, source, token });
+    const { error = null, paymentMethod = null, source = null, token = null } = response;
+    await this.set({ error, paymentMethod, source, token });
     if (error) throw error;
     else return response;
   }
@@ -242,29 +282,16 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   }
 
   /**
-   * Fires a Polymer-style prop-changed event.
-   * @param {String} prop camelCased prop name.
-   * @private
-   */
-  notify(prop) {
-    const type = `${dash(prop)}-changed`;
-    const value = this[camel(prop)];
-    this.fire(type, { value });
-  }
-
-  /**
    * @param {String} name
    * @private
    */
   @bound representationChanged(name) {
     if (!isRepresentation(name)) return;
     const value = this[name];
-    this.notify(name);
+    /* istanbul ignore if */
     if (!value) return;
-    const eventType = `stripe-${dash(name)}`;
-    this.fire(eventType, value);
-    const selector = `[name=${camel(`stripe-${dash(name)}`)}]`;
-    const formField = this.form.querySelector(selector);
+    this.fire(`stripe-${dash(name)}`, value);
+    const formField = this.form.querySelector(`[name=${camel(`stripe-${dash(name)}`)}]`);
     formField.removeAttribute('disabled');
     formField.value = value;
     if (this.action) this.form.submit();

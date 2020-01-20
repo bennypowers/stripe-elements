@@ -4,20 +4,23 @@ import {
   Preview,
   Props,
   Story,
+  withKnobs, withWebComponentsKnobs
 } from '@open-wc/demoing-storybook';
 
 import '../stripe-elements.js';
 
-import '@power-elements/json-viewer';
-import '@material/mwc-textfield';
 import '@material/mwc-button';
+import '@material/mwc-textfield';
+import '@power-elements/codesandbox-button';
+import '@power-elements/json-viewer';
 
-import { publishableKey, $, $$, setKeys } from './helpers.js';
+import { $, $$, enableButton, ownerPropsIn, publishableKey, setKeys, submitThenDisplayResult } from './storybook-helpers.js';
 
 <Meta
   title="Stripe Elements"
   parameters={{
     component: 'stripe-elements',
+    decorators: [withKnobs],
     options: { selectedPanel: 'storybookjs/docs/panel' }
   }}
 />
@@ -29,7 +32,7 @@ To get started, add the element to your page with the `publishable-key` attribut
 [Stripe publishable key](https://dashboard.stripe.com/account/apikeys). You can also set the `publishableKey` DOM property using JavaScript
 
 ```html
-<stripe-elements publishable-key="my-pk"></stripe-elements>
+<stripe-elements publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"></stripe-elements>
 ```
 
 **Careful!** never add your **secret key** to an HTML page, only publish your **publishable key**.
@@ -49,6 +52,39 @@ Enter your publishable key here (use the test key, not the production key) to ru
   }
 </Story>
 
+## Create a PaymentMethod
+
+<Preview>
+  <Story name="Generate a PaymentMethod" height="220px">{
+    html`
+      <section id="payment-method">
+        <stripe-elements generate="payment-method" publishable-key="${publishableKey}" @stripe-change="${enableButton}"> </stripe-elements>
+        <mwc-textfield outlined label="Cardholder Name" data-owner-prop="name" value="Mr. Man"> </mwc-textfield>
+        <mwc-textfield outlined label="Cardholder Email" data-owner-prop="email" value="mr@man.email"> </mwc-textfield>
+        <mwc-textfield outlined label="Cardholder Phone" data-owner-prop="phone" value="555 555 5555"> </mwc-textfield>
+        <mwc-button disabled outlined @click="${submitThenDisplayResult}">Generate PaymentMethod</mwc-button>
+        <json-viewer> </json-viewer>
+      </section>
+    `
+  }</Story>
+</Preview>
+
+## Create a Source
+
+<Preview>
+  <Story name="Generate a Source" height="220px">{
+    html`
+      <section id="source">
+        <stripe-elements generate="source" publishable-key="${publishableKey}" @stripe-change="${enableButton}"> </stripe-elements>
+        <mwc-textfield outlined label="Cardholder Name" data-owner-prop="name" value="Mr. Man"> </mwc-textfield>
+        <mwc-textfield outlined label="Cardholder Email" data-owner-prop="email" value="mr@man.email"> </mwc-textfield>
+        <mwc-textfield outlined label="Cardholder Phone" data-owner-prop="phone" value="555 555 5555"> </mwc-textfield>
+        <mwc-button disabled outlined @click="${submitThenDisplayResult}">Generate Source</mwc-button>
+        <json-viewer> </json-viewer>
+      </section>
+      `
+  }</Story>
+</Preview>
 
 ## Create a Token
 
@@ -56,49 +92,19 @@ Once you're set your publishable key and Stripe has instantiated (listen for the
 you may generate a token from the filled-out form by calling the `createToken()` method.
 
 <Preview>
-  <Story name="Generate a Token" height="60px">
-    {
-      () => {
-        const viewer = $('#token-viewer');
-        const onStripeToken = event => viewer.object = event.detail;
-        const onClick = () => $('#token stripe-elements').createToken();
-        return html`
-        <section id="token">
-          <stripe-elements publishable-key="${publishableKey}" @stripe-token="${onStripeToken}"></stripe-elements>
-          <mwc-button class="generate" outlined @click="${onClick}">Generate Token</mwc-button>
-        </section>`
-      }
-    }
-  </Story>
+  <Story name="Generate a Token" height="220px">{
+    html`
+      <section id="token">
+        <stripe-elements generate="token" publishable-key="${publishableKey}" @stripe-change="${enableButton}"> </stripe-elements>
+        <mwc-textfield outlined label="Cardholder Name" data-owner-prop="name" value="Mr. Man"> </mwc-textfield>
+        <mwc-textfield outlined label="Cardholder Email" data-owner-prop="email" value="mr@man.email"> </mwc-textfield>
+        <mwc-textfield outlined label="Cardholder Phone" data-owner-prop="phone" value="555 555 5555"> </mwc-textfield>
+        <mwc-button disabled outlined @click="${submitThenDisplayResult}">Generate Token</mwc-button>
+        <json-viewer> </json-viewer>
+      </section>
+    `
+  }</Story>
 </Preview>
-
-<json-viewer id="token-viewer"></json-viewer>
-
-## Create a Source
-
-<Preview>
-  <Story name="Generate a Source" height="200px">
-    {
-      () => {
-        const onStripeSource = event => $('#source-viewer').object = event.detail;
-        const fieldEntry = field => [field.dataset.ownerProp, field.value];
-        const getCardData = () => Object.fromEntries($$('#source mwc-textfield').map(fieldEntry));
-        const onClick = () => $('#source stripe-elements').createSource({ type: 'card', owner: getCardData() });
-        return html`
-        <section id="source">
-          <stripe-elements id="source-element" publishable-key="${publishableKey}" @stripe-source="${onStripeSource}"></stripe-elements>
-          <mwc-textfield outlined label="Cardholder Name" data-owner-prop="name"></mwc-textfield>
-          <mwc-textfield outlined label="Cardholder Email" data-owner-prop="email"></mwc-textfield>
-          <mwc-textfield outlined label="Cardholder Phone" data-owner-prop="phone"></mwc-textfield>
-          <mwc-button outlined @click="${onClick}">Generate Source</mwc-button>
-        </section>
-        `
-      }
-    }
-  </Story>
-</Preview>
-
-<json-viewer id="source-viewer"></json-viewer>
 
 ## Validation
 
@@ -106,18 +112,14 @@ you may generate a token from the filled-out form by calling the `createToken()`
 This is useful for simple validation in cases where you don't need to build your own validation UI.
 
 <Preview>
-  <Story name="Error Display" height="60px">
-    {
-      () => {
-        const onClick = () => $('#should-error').validate();
-        return html`
-        <section id="show-errror">
-          <stripe-elements id="should-error" publishable-key="should-error-use-bad-key" show-error></stripe-elements>
-          <mwc-button class="generate" outlined @click="${onClick}">Validate</mwc-button>
-        </section>`
-      }
-    }
-  </Story>
+  <Story name="Error Display" height="120px">{
+    html`
+      <section id="show-errror">
+        <stripe-elements publishable-key="should-error-use-bad-key" show-error> </stripe-elements>
+        <mwc-button outlined @click="${event => event.target.parentElement.querySelector('stripe-elements').validate()}">Validate</mwc-button>
+      </section>
+    `
+  }</Story>
 </Preview>
 
 ## Advanced Validation
@@ -135,24 +137,20 @@ stripe-elements[has-error] { border: 1px solid red; }
 ```
 
 <Preview>
-  <Story name="Validation States" height="60px">
-    {
-      () => {
-        const onClick = () => $('#states stripe-elements').validate();
-        return html`
-        <style>
-          stripe-elements { border-radius: 4px; }
-          stripe-elements[is-empty] { border: 1px solid rebeccapurple; }
-          stripe-elements[is-complete] { border: 1px solid blue; }
-          stripe-elements[has-error] { border: 1px solid red; }
-        </style>
-        <section id="states">
-          <stripe-elements publishable-key="${publishableKey}"></stripe-elements>
-          <mwc-button class="generate" outlined @click="${onClick}">Validate</mwc-button>
-        </section>`
-      }
-    }
-  </Story>
+  <Story name="Validation States" height="120px">{
+    html`
+      <style>
+        #states stripe-elements { border-radius: 4px; }
+        #states stripe-elements[is-empty] { border: 1px solid rebeccapurple; }
+        #states stripe-elements[is-complete] { border: 1px solid blue; }
+        #states stripe-elements[has-error] { border: 1px solid red; }
+      </style>
+      <section id="states">
+        <stripe-elements publishable-key="${publishableKey}"> </stripe-elements>
+        <mwc-button outlined @click="${event => event.target.parentElement.querySelector('stripe-elements').validate()}"> Validate</mwc-button>
+      </section>
+    `
+  }</Story>
 </Preview>
 
 For more complex needs, you can listen for the `stripe-error` event.
@@ -165,42 +163,45 @@ Since `<stripe-elements>` is a custom-element, you can easily use it across fram
 
 ## Using with Plain HTML and JavaScript
 
+<codesandbox-button sandbox-id="y4h9n"> </codesandbox-button>
+
 ```html
-<script type="module" src="https://unpkg.com/@power-elements/stripe-elements/stripe-elements.js?module"></script>
-<script type="module" src="https://unpkg.com/@power-elements/json-viewer/json-viewer.js?module"></script>
+<script type="module" src="https://unpkg.com/@power-elements/stripe-elements?module"></script>
+<script type="module" src="https://unpkg.com/@power-elements/json-viewer?module"></script>
+<script type="module" src="https://unpkg.com/@material/mwc-button?module"></script>
 
-<stripe-elements id="stripe"
-    action="/payment"
-    publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"
-></stripe-elements>
+<stripe-elements publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"></stripe-elements>
 
-<button id="submit" disabled>Submit</button>
-<json-viewer id="json"></json-viewer>
+<mwc-button disabled>Submit</mwc-button>
+
+<json-viewer></json-viewer>
 
 <script>
-  const handleAsJson = response => response.json();
-  const viewJson = object => json.object = object;
-  const viewer = document.getElementById('json');
-  const stripe = document.getElementById('stripe');
-  const submit = document.getElementById('button');
+  const viewer = document.querySelector("json-viewer");
+  const stripe = document.querySelector("stripe-elements");
+  const submit = document.querySelector("mwc-button");
 
-  submit.addEventListener('click', onClickSubmit);
-  stripe.addEventListener('stripe-source', onStripeSource);
-  stripe.addEventListener('change', onChange);
+  submit.addEventListener("click", onClickSubmit);
+  stripe.addEventListener("stripe-source", onStripeSource);
+  stripe.addEventListener("stripe-change", onChange);
 
   function onClickSubmit() {
     stripe.createSource();
   }
 
   function onChange({ target }) {
-    button.disabled = !target.validate();
+    submit.disabled = !target.validate();
   }
 
   function onStripeSource({ target: { source } }) {
-    const method = 'POST';
+    const handleAsJson = response => response.json();
+    const viewJson = object => (viewer.object = object);
+
+    const method = "POST";
     const body = JSON.stringify(source);
-    const headers = { 'Content-Type': 'application/json' };
-    fetch('/payments', { method, body, headers })
+    const headers = { "Content-Type": "application/json" };
+
+    fetch("/payments", { method, body, headers })
       .then(handleAsJson)
       .then(viewJson)
       .catch(viewJson);
@@ -208,73 +209,57 @@ Since `<stripe-elements>` is a custom-element, you can easily use it across fram
 </script>
 ```
 
-<Story name="In a LitElement"> </Story>
-
 ## In a `LitElement`
 
+<Story name="In a LitElement">
+ {html`<codesandbox-button sandbox-id="8m7uk"></codesandbox-button>`}
+</Story>
+
 ```js
-import '@power-elements/stripe-elements/stripe-elements.js';
+import '@power-elements/stripe-elements';
+import '@power-elements/json-viewer';
 import { LitElement, html } from 'lit-element';
 import { PUBLISHABLE_KEY } from './config.js';
 
 class PaymentForm extends LitElement {
   render() {
     return html`
-      <stripe-elements id="stripe"
-          @stripe-change="${this.onChange}"
+      <mwc-button ?disabled="${this.submitDisabled}" @click="${this.onClick}">
+        Submit
+      </mwc-button>
+
+      <stripe-elements
           publishable-key="${PUBLISHABLE_KEY}"
-          action="/payment"
+          @stripe-change="${this.onChange}"
+          @stripe-source="${this.onSource}"
       ></stripe-elements>
-      <button disabled @click="${this.onClick}">Get Token</button>
+
+      <json-viewer .object="${ifDefined(this.source)}"></json-viewer>
     `;
   }
 
-  onChange({ target: { isComplete, hasError } }) => {
-    this.shadowRoot.querySelector('button').disabled = !(isComplete && !hasError)
+  onChange({ target: { isComplete, hasError } }) {
+    this.submitDisabled = !(isComplete && !hasError);
   }
 
   onClick() {
-    this.shadowRoot.getElementById('stripe').createSource();
+    this.shadowRoot.querySelector("stripe-elements").createSource();
+  }
+
+  onSource({ detail: source }) {
+    this.source = source;
   }
 }
 ```
 
 <Story name="In a Polymer Element"> </Story>
 
-### In a Polymer Element
-
-```html
-<paper-input label="Stripe Publishable Key" value="{{key}}"></paper-input>
-
-<stripe-elements id="stripe"
-    stripe-ready="{{ready}}"
-    publishable-key="[[key]]"
-    token="{{token}}"
-></stripe-elements>
-
-<paper-button id="submit"
-    disabled="[[!ready]]"
-    onclick="stripe.createSource()">
-  Get Token
-</paper-button>
-
-<paper-toast
-    opened="[[token]]"
-    text="Token received for 💳 [[token.card.last4]]! 🤑"
-></paper-toast>
-```
-
-<Story name="In a Vue Component"> </Story>
-
 ### In a Vue Component
 
-<iframe
-   src="https://codesandbox.io/embed/stripe-elements-web-component-vue-06ulb?fontsize=14&hidenavigation=1&module=%2Fsrc%2FPayment.vue&theme=dark"
-   style={{ width:"100%", height:'500px', border:0, borderRadius: "4px", overflow:"hidden" }}
-   title="stripe-elements-web-component-vue"
-   allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb"
-   sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin">
-</iframe>
+<Story name="In a Vue Component">
+  {html`<codesandbox-button sandbox-id="06ulb" module="/src/Payment.vue"> </codesandbox-button>`}
+</Story>
+
 
 ```html
 <template>
@@ -287,19 +272,20 @@ class PaymentForm extends LitElement {
       :publishable-key="publishableKey"
     ></stripe-elements>
 
-    <button :disabled="!isComplete || isEmpty" @click="onClick">Get Token</button>
+    <mwc-button :disabled="!isComplete || isEmpty" @click="onClick">Get Token</mwc-button>
 
-    <output v-if="token">Token: {{token.id}}</output>
-    <output v-if="error">Error: {{error.message}}</output>
+    <json-viewer v-if="error || token" :object.prop="error || token"></json-viewer>
   </article>
 </template>
 
 <script>
+import { PUBLISHABLE_KEY } from './config';
+
 export default {
   name: "payment-form",
   data() {
     return {
-      publishableKey: null,
+      publishableKey: PUBLISHABLE_KEY,
       token: null,
       error: null,
       isComplete: false,
@@ -328,30 +314,18 @@ export default {
 </script>
 ```
 
-<Story name="In an Angular Component"> </Story>
-
 ### In an Angular Component
 
-<iframe
-     src="https://codesandbox.io/embed/stripe-elements-web-component-angular-0mgh4?fontsize=14&hidenavigation=1&module=%2Fsrc%2Fapp%2Fapp.component.ts&theme=dark"
-     style={{ width:"100%", height:'500px', border:0, borderRadius: "4px", overflow:"hidden" }}
-     title="stripe-elements-web-component-angular"
-     allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb"
-     sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin">
-</iframe>
+<Story name="In an Angular Component">
+  {html`<codesandbox-button sandbox-id="0mgh4" module="/src/app/app.component.ts"> </codesandbox-button>`}
+</Story>
+
 
 ```ts
 import { Component } from "@angular/core";
+import { PUBLISHABLE_KEY } from './config';
 
-// trick to get syntax highlighting
-const html = x => x;
-const template = html`
-  <mwc-textfield
-    #key
-    (change)="setKey(key)"
-    label="Publishable Key"
-  ></mwc-textfield>
-
+const template = `
   <stripe-elements
     #stripe
     (stripe-change)="disabled = !$event.target.isComplete"
@@ -360,46 +334,38 @@ const template = html`
     [publishableKey]="publishableKey"
   ></stripe-elements>
 
-  <mwc-button [disabled]="disabled" (click)="createToken(stripe)">
-    Get Token
-  </mwc-button>
+  <mwc-button [disabled]="disabled" (click)="createToken(stripe)">Get Token</mwc-button>
 
-  <output *ngIf="token">{{ token.id }}</output>
-  <output *ngIf="error">{{ error.message }}</output>
+  <json-viewer *ngIf="token" [object]="token"></json-viewer>
+  <json-viewer *ngIf="error" [object]="error"></json-viewer>
 `;
 
-@Component({ selector: "app-root", template })
+const styleUrls = ["./app.component.css"];
+
+@Component({ selector: "app-root", template, styleUrls })
 export class AppComponent {
-  publishableKey: string;
+  publishableKey: string = PUBLISHABLE_KEY;
   disabled = true;
   token?: stripe.Token = null;
   error?: Error | stripe.Error = null;
-
   createToken(stripeElements: any) {
     stripeElements.createToken();
-  }
-
-  setKey({ value }) {
-    this.publishableKey = value;
   }
 }
 ```
 
-<Story name="In a React Component"> </Story>
-
 ### In a React Component
 
-<iframe
-     src="https://codesandbox.io/embed/stripe-elements-web-component-react-23zw8?fontsize=14&hidenavigation=1&theme=dark"
-     style={{ width:"100%", height:'500px', border:0, borderRadius: "4px", overflow:"hidden" }}
-     title="stripe-elements-web-component-react"
-     allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb"
-     sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin">
-</iframe>
+<Story name="In a React Component">
+  {html`<codesandbox-button sandbox-id="23zw8"> </codesandbox-button>`}
+</Story>
+
 
 ```jsx
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { getPropOr, compose } from "crocks";
+import { PUBLISHABLE_KEY } from './config';
 import "./styles.css";
 
 const isDisabled = ({ isComplete, isEmpty }) => !isComplete || isEmpty;
@@ -407,13 +373,14 @@ const getTarget = getPropOr({}, "target");
 const getDetail = getPropOr(null, "detail");
 const getToken = getPropOr(null, "token");
 
-export default () => {
+function App() {
   const stripeRef = useRef(null);
-  const [publishableKey, setPublishableKey] = useState(null);
+  const viewerRef = useRef(null);
+  const inputRef = useRef(null);
+  const buttonRef = useRef(null);
   const [disabled, setDisabled] = useState(true);
   const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
-  const setKey = ({ target: { value } }) => setPublishableKey(value);
 
   const onChange = compose(setDisabled, isDisabled, getTarget);
   const onError = compose(setError, getDetail);
@@ -421,48 +388,42 @@ export default () => {
 
   const onClick = async () =>
     stripeRef.current.createToken()
-      .then(getToken)
+      .then(getToken);
       .then(setToken);
 
   useEffect(() => {
     stripeRef.current.addEventListener("stripe-change", onChange);
     stripeRef.current.addEventListener("stripe-error", onError);
     stripeRef.current.addEventListener("stripe-token", onToken);
+    buttonRef.current.addEventListener("click", onClick);
+    buttonRef.current.disabled = disabled;
+    if (token || error) viewerRef.current.object = token;
   });
 
   return (
     <article className="App">
-      <label>
-        Publishable Key
-        <input onChange={setKey} />
-      </label>
-      <stripe-elements ref={stripeRef} publishable-key={publishableKey} />
-      <button onClick={onClick} disabled={disabled}>
-        Submit
-      </button>
-      {token && <output>{token.id}</output>}
-      {error && <output>{error.message}</output>}
+      <stripe-elements ref={stripeRef} publishable-key={PUBLISHABLE_KEY} />
+      <mwc-button ref={buttonRef}>Submit</mwc-button>
+      <json-viewer ref={viewerRef} />
     </article>
   );
-};
-```
+}
 
-<Story name="In a Preact Component"> </Story>
+ReactDOM.render(<App />, document.getElementById("root"));
+```
 
 ### In a Preact Component
 
-<iframe
-     src="https://codesandbox.io/embed/stripe-elements-web-component-preact-mqskb?fontsize=14&hidenavigation=1&theme=dark"
-     style={{ width:"100%", height:'500px', border:0, borderRadius: "4px", overflow:"hidden" }}
-     title="stripe-elements-web-component-preact"
-     allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media; usb"
-     sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin">
-</iframe>
+<Story name="In a Preact Component">
+  {html`<codesandbox-button sandbox-id="mqskb"> </codesandbox-button>`}
+</Story>
 
 ```jsx
+import { loadScripts } from "./loadScripts";
 import { render } from "preact";
 import { useState, useRef } from "preact/hooks";
 import { getPropOr, compose } from "crocks";
+import { PUBLISHABLE_KEY } from './config';
 import "./style";
 
 const isDisabled = ({ isComplete, isEmpty }) => !isComplete || isEmpty;
@@ -472,11 +433,9 @@ const getToken = getPropOr(null, "token");
 
 export default function App() {
   const stripeRef = useRef(null);
-  const [publishableKey, setPublishableKey] = useState(null);
   const [disabled, setDisabled] = useState(true);
   const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
-  const setKey = ({ target: { value } }) => setPublishableKey(value);
 
   const onChange = compose(setDisabled, isDisabled, getTarget);
   const onError = compose(setError, getDetail);
@@ -489,11 +448,6 @@ export default function App() {
 
   return (
     <article className="App">
-      <mwc-textfield
-        label="Publishable Key"
-        onChange={setKey}
-        value={publishableKey}
-      />
       <stripe-elements
         ref={stripeRef}
         onstripe-change={onChange}
@@ -501,13 +455,14 @@ export default function App() {
         onstripe-token={onToken}
         publishable-key={publishableKey}
       />
-      <mwc-button onClick={onClick} disabled={disabled}>
-        Submit
-      </mwc-button>
-      {token && <output>{token.id}</output>}
-      {error && <output>{error.message}</output>}
+      <mwc-button onClick={onClick} disabled={disabled}>Submit</mwc-button>
+      {(error || token) && <json-viewer object={error || token} />}
     </article>
   );
+}
+
+if (typeof window !== "undefined") {
+  render(<App />, document.getElementById("root"));
 }
 ```
 

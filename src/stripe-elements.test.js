@@ -7,13 +7,13 @@ import {
   INCOMPLETE_CARD_ERROR,
   PUBLISHABLE_KEY,
   SHOULD_ERROR_KEY,
-  SUCCESSFUL_SOURCE,
-  SUCCESSFUL_TOKEN,
+  SUCCESS_RESPONSES,
 } from '../test/mock-stripe';
 import {
   DEFAULT_PROPS,
   EMPTY_CC_ERROR,
   NOTIFYING_PROPS,
+  NO_STRIPE_CREATE_PAYMENT_METHOD_ERROR,
   NO_STRIPE_CREATE_SOURCE_ERROR,
   NO_STRIPE_CREATE_TOKEN_ERROR,
   NO_STRIPE_JS,
@@ -22,6 +22,8 @@ import {
   appendGlobalStyles,
   assertFiresStripeChange,
   assertHasOneGlobalStyleTag,
+  assertSubmitCalled,
+  createPaymentMethod,
   createSource,
   createToken,
   element,
@@ -48,6 +50,7 @@ import {
   spyConsoleWarn,
   spyGetComputedStyleValue,
   stubFormSubmit,
+  submit,
   synthStripeEvent,
   synthStripeFormValues,
   testDefaultPropEntry,
@@ -71,7 +74,7 @@ const formLightDOM = ({ label = 'Credit or Debit Card', stripeMountId }) => `
 
 const expectedLightDOM = ({ label = 'Credit or Debit Card', stripeMountId }) => `<div slot="stripe-card">${formLightDOM({ label, stripeMountId })}</div> `;
 
-describe('stripe-elements', function() {
+describe('<stripe-elements>', function() {
   beforeEach(spyConsoleWarn);
   afterEach(restoreConsoleWarn);
   afterEach(resetTestState);
@@ -81,22 +84,22 @@ describe('stripe-elements', function() {
     expect(element.constructor.is).to.equal('stripe-elements');
   });
 
-  describe('default properties', function defaults() {
+  describe('uses default for property', function defaults() {
     beforeEach(setupNoProps);
     Object.entries(DEFAULT_PROPS).forEach(testDefaultPropEntry);
   });
 
-  describe('read-only properties', function readOnly() {
+  describe('has read-only property', function readOnly() {
     beforeEach(setupNoProps);
     READ_ONLY_PROPS.forEach(testReadOnlyProp);
   });
 
-  describe('notifying writable properties', function notifying() {
+  describe('notifies when setting property', function notifying() {
     beforeEach(setupNoProps);
     NOTIFYING_PROPS.filter(not(elem(READ_ONLY_PROPS))).forEach(testWritableNotifyingProp);
   });
 
-  describe('notifying read-only properties', function notifying() {
+  describe('notifies when privately setting read-only property', function notifying() {
     beforeEach(setupNoProps);
     READ_ONLY_PROPS.filter(elem(NOTIFYING_PROPS)).forEach(testReadonlyNotifyingProp);
   });
@@ -110,10 +113,10 @@ describe('stripe-elements', function() {
 
   describe('without global CSS in the document', function() {
     beforeEach(setupNoProps);
-    it('appends a stylesheet to the document when absent', assertHasOneGlobalStyleTag);
+    it('appends a stylesheet to the document', assertHasOneGlobalStyleTag);
   });
 
-  describe('When Mocked ShadyDOM polyfill is in use', function shadyDOM() {
+  describe('when Mocked ShadyDOM polyfill is in use', function shadyDOM() {
     beforeEach(mockShadyDOM);
     beforeEach(setupNoProps);
     afterEach(restoreShadyDOM);
@@ -129,7 +132,7 @@ describe('stripe-elements', function() {
     });
   });
 
-  describe('With Native Shadow DOM support', function shadowDOM() {
+  describe('with Native Shadow DOM support', function shadowDOM() {
     let nestedElement;
     let primaryHost;
     let secondaryHost;
@@ -262,6 +265,15 @@ describe('stripe-elements', function() {
         expect(element.error.message).to.equal(NO_STRIPE_JS);
       });
 
+      it('throws an error when creating payment method', async function() {
+        try {
+          await element.createPaymentMethod();
+          expect.fail('Resolved source promise without Stripe.js');
+        } catch (err) {
+          expect(err.message).to.equal(NO_STRIPE_CREATE_PAYMENT_METHOD_ERROR);
+        }
+      });
+
       it('throws an error when creating token', async function() {
         try {
           await element.createToken();
@@ -275,6 +287,15 @@ describe('stripe-elements', function() {
         try {
           await element.createSource();
           expect.fail('Resolved source promise without Stripe.js');
+        } catch (err) {
+          expect(err.message).to.equal(NO_STRIPE_CREATE_SOURCE_ERROR);
+        }
+      });
+
+      it('throws an error when calling submit', async function() {
+        try {
+          await element.submit();
+          expect.fail('Resolved submit promise without Stripe.js');
         } catch (err) {
           expect(err.message).to.equal(NO_STRIPE_CREATE_SOURCE_ERROR);
         }
@@ -346,12 +367,37 @@ describe('stripe-elements', function() {
       beforeEach(setupWithPublishableKey(SHOULD_ERROR_KEY));
       describe('and a complete, valid form', function() {
         beforeEach(synthStripeFormValues({ cardNumber: '4242424242424242', mm: '01', yy: '40', cvc: '000' }));
+
+        describe('calling createPaymentMethod()', function() {
+          beforeEach(createPaymentMethod);
+          it('sets the `error` property', function() {
+            expect(element.error.message, 'error').to.equal(SHOULD_ERROR_KEY);
+            expect(element.paymentMethod, 'paymentMethod').to.be.null;
+          });
+        });
+
         describe('calling createSource()', function() {
           beforeEach(createSource);
           it('sets the `error` property', function() {
             expect(element.error.message, 'error').to.equal(SHOULD_ERROR_KEY);
-            expect(element.token, 'token').to.be.null;
             expect(element.source, 'source').to.be.null;
+          });
+        });
+
+        describe('calling createToken()', function() {
+          beforeEach(createToken);
+          it('sets the `error` property', function() {
+            expect(element.error.message, 'error').to.equal(SHOULD_ERROR_KEY);
+            expect(element.token, 'token').to.be.null;
+          });
+        });
+
+        describe('calling submit()', function() {
+          it('sets the `error` property', function() {
+            return element.submit().then(expect.fail, function() {
+              expect(element.error.message, 'error').to.equal(SHOULD_ERROR_KEY);
+              expect(element.source, 'source').to.be.null;
+            });
           });
         });
 
@@ -435,23 +481,36 @@ describe('stripe-elements', function() {
         });
       });
 
+      describe('calling createPaymentMethod()', function() {
+        beforeEach(createPaymentMethod);
+        it('sets the `error` property', function() {
+          expect(element.paymentMethod, 'paymentMethod').to.be.null;
+          expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR);
+        });
+      });
+
       describe('calling createSource()', function callingCreateSource() {
         beforeEach(createSource);
-
         it('sets the `error` property', function setsError() {
           expect(element.source, 'source').to.be.null;
-          expect(element.token, 'token').to.be.null;
           expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR);
         });
       });
 
       describe('calling createToken()', function() {
         beforeEach(createToken);
-
         it('sets the `error` property', function() {
           expect(element.token, 'token').to.be.null;
-          expect(element.source, 'source').to.be.null;
           expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR);
+        });
+      });
+
+      describe('calling submit()', function() {
+        it('sets the `error` property', function() {
+          element.submit().then(expect.fail, function() {
+            expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR);
+            expect(element.source, 'source').to.be.null;
+          });
         });
       });
 
@@ -533,10 +592,33 @@ describe('stripe-elements', function() {
       describe('with a non-empty, incomplete form', function() {
         beforeEach(synthStripeFormValues({ cardNumber: '4242424242424242' }));
 
+        describe('calling createPaymentMethod()', function() {
+          beforeEach(createPaymentMethod);
+          it('sets the `error` property', function() {
+            expect(element.paymentMethod, 'paymentMethod').to.be.null;
+            expect(element.error, 'error').to.eql(INCOMPLETE_CARD_ERROR);
+          });
+
+          it('sets the `hasError` property', function() {
+            expect(element.hasError).to.be.true;
+          });
+
+          describe('calling validate()', function() {
+            it('returns false', function() {
+              expect(element.validate()).to.be.false;
+            });
+          });
+
+          describe('calling isPotentiallyValid()', function() {
+            it('returns false', function() {
+              expect(element.isPotentiallyValid()).to.be.false;
+            });
+          });
+        });
+
         describe('calling createSource()', function() {
           beforeEach(createSource);
           it('sets the `error` property', function() {
-            expect(element.token, 'token').to.be.null;
             expect(element.source, 'source').to.be.null;
             expect(element.error, 'error').to.eql(INCOMPLETE_CARD_ERROR);
           });
@@ -562,8 +644,32 @@ describe('stripe-elements', function() {
           beforeEach(createToken);
           it('sets the `error` property', function() {
             expect(element.token, 'token').to.be.null;
-            expect(element.source, 'source').to.be.null;
             expect(element.error, 'error').to.eql(INCOMPLETE_CARD_ERROR);
+          });
+
+          it('sets the `hasError` property', function() {
+            expect(element.hasError).to.be.true;
+          });
+
+          describe('calling validate()', function() {
+            it('returns false', function() {
+              expect(element.validate()).to.be.false;
+            });
+          });
+
+          describe('calling isPotentiallyValid()', function() {
+            it('returns false', function() {
+              expect(element.isPotentiallyValid()).to.be.false;
+            });
+          });
+        });
+
+        describe('calling submit()', function() {
+          it('sets the `error` property', function() {
+            element.submit().then(expect.fail, function() {
+              expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR);
+              expect(element.source, 'source').to.be.null;
+            });
           });
         });
       });
@@ -579,48 +685,23 @@ describe('stripe-elements', function() {
           expect(element.isComplete).to.be.true;
         });
 
-        describe('calling createToken()', function() {
-          beforeEach(createToken);
-
-          it('fires a `token-changed` event', async function() {
-            const ev = await oneEvent(element, 'token-changed');
-            expect(ev.detail.value).to.equal(SUCCESSFUL_TOKEN);
+        describe('calling createPaymentMethod()', function() {
+          it('resolves with the payment method', function() {
+            return element.createPaymentMethod()
+              .then(result => expect(result.paymentMethod).to.equal(SUCCESS_RESPONSES.paymentMethod));
           });
 
-          it('fires a `stripe-token` event', async function() {
-            const ev = await oneEvent(element, 'stripe-token');
-            expect(ev.detail).to.equal(SUCCESSFUL_TOKEN);
-          });
-        });
+          describe('subsequently', function() {
+            beforeEach(createPaymentMethod);
 
-        describe('with `action` property set', function() {
-          beforeEach(stubFormSubmit);
-          beforeEach(setProps({ action: '/here' }));
-          afterEach(restoreFormSubmit);
-
-          describe('calling createSource()', function() {
-            it('submits the form', async function() {
-              await createSource();
-              expect(element.form.submit).to.have.been.called;
+            it('fires a `payment-method-changed` event', async function() {
+              const ev = await oneEvent(element, 'payment-method-changed');
+              expect(ev.detail.value).to.equal(SUCCESS_RESPONSES.paymentMethod);
             });
 
-            it('fires a `source-changed` event', async function() {
-              createSource();
-              const ev = await oneEvent(element, 'source-changed');
-              expect(ev.detail.value).to.equal(SUCCESSFUL_SOURCE);
-            });
-
-            it('fires a `stripe-source` event', async function() {
-              createSource();
-              const ev = await oneEvent(element, 'stripe-source');
-              expect(ev.detail).to.equal(SUCCESSFUL_SOURCE);
-            });
-          });
-
-          describe('calling createToken()', function() {
-            beforeEach(createToken);
-            it('submits the form', function() {
-              expect(element.form.submit).to.have.been.called;
+            it('fires a `stripe-payment-method` event', async function() {
+              const ev = await oneEvent(element, 'stripe-payment-method');
+              expect(ev.detail).to.equal(SUCCESS_RESPONSES.paymentMethod);
             });
 
             describe('calling validate()', function() {
@@ -641,22 +722,282 @@ describe('stripe-elements', function() {
             });
           });
         });
+
+        describe('calling createSource()', function() {
+          it('resolves with the source', function() {
+            return element.createSource()
+              .then(result => expect(result.source).to.equal(SUCCESS_RESPONSES.source));
+          });
+
+          describe('subsequently', function() {
+            beforeEach(createSource);
+            it('fires a `source-changed` event', async function() {
+              const ev = await oneEvent(element, 'source-changed');
+              expect(ev.detail.value).to.equal(SUCCESS_RESPONSES.source);
+            });
+
+            it('fires a `stripe-source` event', async function() {
+              const ev = await oneEvent(element, 'stripe-source');
+              expect(ev.detail).to.equal(SUCCESS_RESPONSES.source);
+            });
+
+            describe('calling validate()', function() {
+              beforeEach(validate);
+              it('returns true', function() {
+                expect(element.validate()).to.be.true;
+              });
+
+              it('does not set `error`', function() {
+                expect(element.error).to.be.null;
+              });
+            });
+
+            describe('calling isPotentiallyValid()', function() {
+              it('returns true', function() {
+                expect(element.isPotentiallyValid()).to.be.true;
+              });
+            });
+          });
+        });
+
+        describe('calling createToken()', function() {
+          it('resolves with the token', function() {
+            return element.createToken()
+              .then(result => expect(result.token).to.equal(SUCCESS_RESPONSES.token));
+          });
+
+          describe('subsequently', function() {
+            beforeEach(createToken);
+
+            it('fires a `token-changed` event', async function() {
+              const ev = await oneEvent(element, 'token-changed');
+              expect(ev.detail.value).to.equal(SUCCESS_RESPONSES.token);
+            });
+
+            it('fires a `stripe-token` event', async function() {
+              const ev = await oneEvent(element, 'stripe-token');
+              expect(ev.detail).to.equal(SUCCESS_RESPONSES.token);
+            });
+
+            describe('calling validate()', function() {
+              beforeEach(validate);
+              it('returns true', function() {
+                expect(element.validate()).to.be.true;
+              });
+
+              it('does not set `error`', function() {
+                expect(element.error).to.be.null;
+              });
+            });
+
+            describe('calling isPotentiallyValid()', function() {
+              it('returns true', function() {
+                expect(element.isPotentiallyValid()).to.be.true;
+              });
+            });
+          });
+        });
+
+        describe('and generate unset', function() {
+          describe('calling submit()', function() {
+            it('resolves with the source', function() {
+              return element.submit()
+                .then(result => expect(result.source).to.equal(SUCCESS_RESPONSES.source));
+            });
+
+            describe('subsequently', function() {
+              beforeEach(submit);
+              it('fires a `source-changed` event', async function() {
+                const ev = await oneEvent(element, 'source-changed');
+                expect(ev.detail.value).to.equal(SUCCESS_RESPONSES.source);
+              });
+
+              it('fires a `stripe-source` event', async function() {
+                const ev = await oneEvent(element, 'stripe-source');
+                expect(ev.detail).to.equal(SUCCESS_RESPONSES.source);
+              });
+
+              describe('calling validate()', function() {
+                beforeEach(validate);
+                it('returns true', function() {
+                  expect(element.validate()).to.be.true;
+                });
+
+                it('does not set `error`', function() {
+                  expect(element.error).to.be.null;
+                });
+              });
+
+              describe('calling isPotentiallyValid()', function() {
+                it('returns true', function() {
+                  expect(element.isPotentiallyValid()).to.be.true;
+                });
+              });
+            });
+          });
+        });
+
+        describe('and generate set to `token`', function() {
+          beforeEach(setProps({ generate: 'token' }));
+          describe('calling submit()', function() {
+            it('resolves with the token', function() {
+              return element.submit()
+                .then(result => expect(result.token).to.equal(SUCCESS_RESPONSES.token));
+            });
+
+            describe('subsequently', function() {
+              beforeEach(submit);
+              it('fires a `token-changed` event', async function() {
+                const ev = await oneEvent(element, 'token-changed');
+                expect(ev.detail.value).to.equal(SUCCESS_RESPONSES.token);
+              });
+
+              it('fires a `stripe-token` event', async function() {
+                const ev = await oneEvent(element, 'stripe-token');
+                expect(ev.detail).to.equal(SUCCESS_RESPONSES.token);
+              });
+
+              describe('calling validate()', function() {
+                beforeEach(validate);
+                it('returns true', function() {
+                  expect(element.validate()).to.be.true;
+                });
+
+                it('does not set `error`', function() {
+                  expect(element.error).to.be.null;
+                });
+              });
+
+              describe('calling isPotentiallyValid()', function() {
+                it('returns true', function() {
+                  expect(element.isPotentiallyValid()).to.be.true;
+                });
+              });
+            });
+          });
+        });
+
+        describe('and generate set to `payment-method`', function() {
+          beforeEach(setProps({ generate: 'payment-method' }));
+          describe('calling submit()', function() {
+            it('resolves with the payment method', function() {
+              return element.submit()
+                .then(result => expect(result.paymentMethod).to.equal(SUCCESS_RESPONSES.paymentMethod));
+            });
+
+            describe('subsequently', function() {
+              beforeEach(submit);
+              it('fires a `payment-method-changed` event', async function() {
+                const ev = await oneEvent(element, 'payment-method-changed');
+                expect(ev.detail.value).to.equal(SUCCESS_RESPONSES.paymentMethod);
+              });
+
+              it('fires a `stripe-payment-method` event', async function() {
+                const ev = await oneEvent(element, 'stripe-payment-method');
+                expect(ev.detail).to.equal(SUCCESS_RESPONSES.paymentMethod);
+              });
+
+              describe('calling validate()', function() {
+                beforeEach(validate);
+                it('returns true', function() {
+                  expect(element.validate()).to.be.true;
+                });
+
+                it('does not set `error`', function() {
+                  expect(element.error).to.be.null;
+                });
+              });
+
+              describe('calling isPotentiallyValid()', function() {
+                it('returns true', function() {
+                  expect(element.isPotentiallyValid()).to.be.true;
+                });
+              });
+            });
+          });
+        });
+
+        describe('and generate set to `something-silly`', function() {
+          beforeEach(setProps({ generate: 'something-silly' }));
+          describe('calling submit()', function() {
+            it('rejects', function() {
+              return element.submit().then(expect.fail, function(err) {
+                expect(err.message).to.equal('<stripe-elements>: cannot generate something-silly');
+              });
+            });
+
+            describe('subsequently', function() {
+              beforeEach(() => submit().catch(() => {}));
+
+              it('sets the `error` property', function() {
+                expect(element.error.message).to.equal('<stripe-elements>: cannot generate something-silly');
+              });
+
+              describe('calling validate()', function() {
+                beforeEach(validate);
+                it('returns false', function() {
+                  expect(element.validate()).to.be.false;
+                });
+              });
+            });
+          });
+        });
+
+        describe('with `action` property set', function() {
+          beforeEach(stubFormSubmit);
+          beforeEach(setProps({ action: '/here' }));
+          afterEach(restoreFormSubmit);
+
+          describe('calling createPaymentMethod()', function() {
+            beforeEach(createPaymentMethod);
+            it('submits the form', assertSubmitCalled);
+          });
+
+          describe('calling createSource()', function() {
+            beforeEach(createSource);
+            it('submits the form', assertSubmitCalled);
+          });
+
+          describe('calling createToken()', function() {
+            beforeEach(createToken);
+            it('submits the form', assertSubmitCalled);
+          });
+        });
       });
 
       describe('with a card that will be declined', function() {
         beforeEach(synthStripeFormValues({ cardNumber: '4000000000000002', mm: '01', yy: '40', cvc: '000' }));
 
-        describe('calling createSource()', function() {
-          it('sets the `error` property', async function() {
-            try {
-              await element.createSource();
-            } catch {
-              expect(element.error).to.equal(CARD_DECLINED_ERROR);
-              expect(element.token).to.be.null;
-              expect(element.source).to.be.null;
-            }
+        describe('calling createPaymentMethod()', function() {
+          it('rejects with the Stripe error', async function() {
+            return element.createPaymentMethod()
+              .then(
+                _ => expect.fail('createPaymentMethod Resolved'),
+                e => expect(e).to.equal(CARD_DECLINED_ERROR)
+              );
           });
 
+          describe('subsequently', function() {
+            beforeEach(createPaymentMethod);
+            it('sets the `error` property', function() {
+              expect(element.error).to.equal(CARD_DECLINED_ERROR);
+              expect(element.paymentMethod).to.be.null;
+            });
+
+            describe('calling validate()', function() {
+              beforeEach(validate);
+              it('returns false', function() {
+                expect(element.validate()).to.be.false;
+              });
+
+              it('retains the `error` property', async function validating() {
+                expect(element.error).to.equal(CARD_DECLINED_ERROR);
+              });
+            });
+          });
+        });
+
+        describe('calling createSource()', function() {
           it('rejects with the Stripe error', async function() {
             return element.createSource()
               .then(
@@ -664,24 +1005,52 @@ describe('stripe-elements', function() {
                 e => expect(e).to.equal(CARD_DECLINED_ERROR)
               );
           });
+
+          describe('subsequently', function() {
+            beforeEach(createSource);
+            it('sets the `error` property', function() {
+              expect(element.error).to.equal(CARD_DECLINED_ERROR);
+              expect(element.source).to.be.null;
+            });
+
+            describe('calling validate()', function() {
+              beforeEach(validate);
+              it('returns false', function() {
+                expect(element.validate()).to.be.false;
+              });
+
+              it('retains the `error` property', async function validating() {
+                expect(element.error).to.equal(CARD_DECLINED_ERROR);
+              });
+            });
+          });
         });
 
         describe('calling createToken()', function() {
-          beforeEach(createToken);
-          it('sets the `error` property', function() {
-            expect(element.error.code).to.equal(CARD_DECLINED_ERROR.code);
-            expect(element.token).to.be.null;
-            expect(element.source).to.be.null;
+          it('rejects with the Stripe error', async function() {
+            return element.createToken()
+              .then(
+                _ => expect.fail('createToken Resolved'),
+                e => expect(e).to.equal(CARD_DECLINED_ERROR)
+              );
           });
 
-          describe('calling validate()', function() {
-            beforeEach(validate);
-            it('returns false', function() {
-              expect(element.validate()).to.be.false;
+          describe('subsequently', function() {
+            beforeEach(createToken);
+            it('sets the `error` property', function() {
+              expect(element.error).to.equal(CARD_DECLINED_ERROR);
+              expect(element.token).to.be.null;
             });
 
-            it('retains the `error` property', async function validating() {
-              expect(element.error.code).to.equal(CARD_DECLINED_ERROR.code);
+            describe('calling validate()', function() {
+              beforeEach(validate);
+              it('returns false', function() {
+                expect(element.validate()).to.be.false;
+              });
+
+              it('retains the `error` property', async function validating() {
+                expect(element.error).to.equal(CARD_DECLINED_ERROR);
+              });
             });
           });
         });

@@ -391,10 +391,15 @@ export class StripeElements extends LitNotify(StripeBase) {
    * @return {stripe.PaymentMethodData} data with card property
    * @private
    */
-  getPaymentMethodData(data) {
+  getPaymentMethodData() {
     const type = 'card';
-    const { billingDetails, card } = this;
-    return ({ billing_details: billingDetails, ...data, type, card });
+    const { billingDetails, card, paymentMethodData } = this;
+    return ({
+      billing_details: billingDetails,
+      ...paymentMethodData,
+      type,
+      card,
+    });
   }
 
   /**
