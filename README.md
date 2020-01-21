@@ -112,30 +112,30 @@ There are 11 properties for each state that you can set which will be read into 
 |---------------------|--------------------|-----------|---------------------------------------|-----------|--------------------------------------------------|
 | `action`            | `action`           |           | `string`                              |           | If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),<br />the element will POST JSON data to this URL with an object containing<br />a key equal to the value of the `generate` property. |
 | `billingDetails`    |                    |           | `stripe.BillingDetails`               | {}        | billing_details object sent to create the payment representation. (optional) |
-| `brand`             | `brand`            | readonly  | `String`                              | null      | The card brand detected by Stripe                |
-| `card`              | `card`             | readonly  | `stripe.Element`                      | null      | The Stripe card object.                          |
+| `brand`             | `brand`            | readonly  | `string`                              | null      | The card brand detected by Stripe                |
+| `card`              | `card`             | readonly  | `stripe.elements.Element`             | null      | The Stripe card object.                          |
 | `element`           | `element`          | readonly  | `stripe.elements.Element`             | null      | Stripe element instance                          |
 | `elements`          | `elements`         | readonly  | `stripe.elements.Elements`            | null      | Stripe Elements instance                         |
 | `error`             | `error`            | readonly  | `Error\|stripe.Error`                 | null      | Stripe or validation error                       |
 | `generate`          | `generate`         |           | `'payment-method'\|'source'\|'token'` | "source"  | Type of payment representation to generate.      |
-| `hasError`          | `has-error`        | readonly  | `Boolean`                             | false     | Whether the element has an error                 |
-| `hideIcon`          | `hide-icon`        |           | `Boolean`                             | false     | Whether to hide icons in the Stripe form.        |
-| `hidePostalCode`    | `hide-postal-code` |           | `Boolean`                             | false     | Whether or not to hide the postal code field.<br />Useful when you gather shipping info elsewhere. |
+| `hasError`          | `has-error`        | readonly  | `boolean`                             | false     | Whether the element has an error                 |
+| `hideIcon`          | `hide-icon`        |           | `boolean`                             | false     | Whether to hide icons in the Stripe form.        |
+| `hidePostalCode`    | `hide-postal-code` |           | `boolean`                             | false     | Whether or not to hide the postal code field.<br />Useful when you gather shipping info elsewhere. |
 | `iconStyle`         | `icon-style`       |           | `'solid'\|'default'`                  | "default" | Stripe icon style. 'solid' or 'default'.         |
-| `isComplete`        | `is-complete`      |           | `Boolean`                             | false     | If the form is complete.                         |
-| `isEmpty`           | `is-empty`         |           | `Boolean`                             | true      | If the form is empty.                            |
+| `isComplete`        | `is-complete`      |           | `boolean`                             | false     | If the form is complete.                         |
+| `isEmpty`           | `is-empty`         |           | `boolean`                             | true      | If the form is empty.                            |
 | `paymentMethod`     | `payment-method`   | readonly  | `stripe.PaymentMethod`                | null      | Stripe PaymentMethod                             |
 | `paymentMethodData` |                    |           | `stripe.PaymentMethodData`            | {}        | Data passed to stripe.createPaymentMethod. (optional) |
-| `publishableKey`    | `publishable-key`  |           | `String`                              |           | Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX` |
+| `publishableKey`    | `publishable-key`  |           | `string`                              |           | Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX` |
 | `showError`         | `show-error`       |           | `boolean`                             | false     | Whether to display the error message             |
 | `source`            | `source`           | readonly  | `stripe.Source`                       | null      | Stripe Source                                    |
 | `sourceData`        |                    |           | `SourceData`                          | {}        | Data passed to stripe.createSource. (optional)   |
 | `stripe`            | `stripe`           | readonly  | `stripe.Stripe`                       | null      | Stripe instance                                  |
 | `stripeMount`       |                    | readonly  | `Element`                             |           | Stripe Element mount point                       |
-| `stripeReady`       | `stripe-ready`     |           | `Boolean`                             | false     | If the stripe element is ready to receive focus. |
+| `stripeReady`       | `stripe-ready`     |           | `boolean`                             | false     | If the stripe element is ready to receive focus. |
 | `token`             | `token`            | readonly  | `stripe.Token`                        | null      | Stripe Token                                     |
 | `tokenData`         |                    |           | `stripe.TokenOptions`                 | {}        | Data passed to stripe.createToken. (optional)    |
-| `value`             | `value`            |           | `Object`                              | {}        | Prefilled values for form. Example {postalCode: '90210'} |
+| `value`             | `value`            |           | `object`                              | {}        | Prefilled values for form. Example {postalCode: '90210'} |
 
 #### Methods
 
@@ -144,10 +144,10 @@ There are 11 properties for each state that you can set which will be read into 
 | `createPaymentMethod` | `(paymentMethodData?: PaymentMethodData \| undefined): Promise<PaymentMethodResponse>` | Submit payment information to generate a paymentMethod |
 | `createSource`        | `(sourceData?: { owner: OwnerInfo; } \| undefined): Promise<SourceResponse>` | Submit payment information to generate a source  |
 | `createToken`         | `(tokenData?: TokenData): Promise<TokenResponse>` | Submit payment information to generate a token   |
-| `isPotentiallyValid`  | `(): Boolean`                                    | Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid. |
+| `isPotentiallyValid`  | `(): boolean`                                    | Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid. |
 | `reset`               | `(): void`                                       | Resets the Stripe card.                          |
 | `submit`              | `(): Promise<PaymentMethodResponse \| SourceResponse \| TokenResponse>` | Generates a payment representation of the type specified by `generate`. |
-| `validate`            | `(): Boolean`                                    | Checks if the Stripe form is valid.              |
+| `validate`            | `(): boolean`                                    | Checks if the Stripe form is valid.              |
 
 #### Events
 
