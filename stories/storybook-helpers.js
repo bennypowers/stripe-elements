@@ -20,46 +20,48 @@ export const setKeys = selector => ({ target: { value } }) => {
 const fieldEntry = field => [field.dataset.ownerProp, field.value];
 
 customElements.define('stripe-elements-demo', class StripeElementsDemo extends LitElement {
-  static properties = {
-    label: { type: String },
-    submitDisabled: { type: Boolean },
-    output: { type: Object },
-  };
+  static get properties() {
+    return {
+      label: { type: String },
+      submitDisabled: { type: Boolean },
+      output: { type: Object },
+    };
+  }
 
-  static styles = css`
-    [hidden] { display: none !important; }
+  static get styles() {
+    return css`
+      [hidden] { display: none !important; }
 
-    :host {
-      align-items: center;
-      display: grid;
-      grid-gap: 12px;
-      grid-template-areas:
-        'stripe stripe'
-        'fields fields';
-    }
+      :host {
+        align-items: center;
+        display: grid;
+        grid-gap: 12px;
+        grid-template-areas:
+          'stripe stripe'
+          'fields fields';
+      }
 
-    #stripe,
-    #actions {
-      display: contents;
-    }
+      #stripe,
+      #actions {
+        display: contents;
+      }
 
-    ::slotted(stripe-elements) {
-      grid-area: stripe;
-    }
+      ::slotted(stripe-elements) {
+        grid-area: stripe;
+      }
 
-    json-viewer {
-      color: #212529;
-      padding: 0;
-      background: white;
+      json-viewer {
+        color: #212529;
+        padding: 0;
+        background: white;
 
-      --json-viewer-key-color: #d9480f;
-      --json-viewer-boolean-color: #0b7285;
-      --json-viewer-number-color: #087f5b;
-      --json-viewer-null-color: #c92a2a;
-      --json-viewer-string-color: #0b7285;
-    }
-
-  `;
+        --json-viewer-key-color: #d9480f;
+        --json-viewer-boolean-color: #0b7285;
+        --json-viewer-number-color: #087f5b;
+        --json-viewer-null-color: #c92a2a;
+        --json-viewer-string-color: #0b7285;
+      }`;
+  }
 
   constructor() {
     super();

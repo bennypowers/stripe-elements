@@ -2,7 +2,6 @@ import { LitNotify } from '@morbidick/lit-element-notify';
 import { html, property } from 'lit-element';
 
 import { ifDefined } from 'lit-html/directives/if-defined';
-import { render } from 'lit-html';
 import bound from 'bound-decorator';
 
 import { StripeBase } from './StripeBase';
@@ -18,6 +17,9 @@ const removeAllMounts = host =>
 
 const slotTemplate =
   html`<slot slot="stripe-card" name="stripe-card"></slot>`;
+
+const mountPointTemplate = ({ stripeMountId }) =>
+  html`<div id="${ifDefined(stripeMountId)}" class="stripe-elements-mount"></div>`;
 
 const stripeElementsCustomCssTemplate = document.createElement('template');
 stripeElementsCustomCssTemplate.id = 'stripe-elements-custom-css-properties';
@@ -55,15 +57,6 @@ function applyCustomCss() {
     document.head.appendChild(stripeElementsCustomCssTemplate.content.cloneNode(true));
   }
 }
-
-const stripeCardTemplate = ({ action, id, paymentMethod, source, token }) => html`
-  <form action="${ifDefined(action || undefined)}" method="post">
-    <div id="${ifDefined(id)}" class="stripe-mount" aria-label="Credit or Debit Card"></div>
-    <input ?disabled="${!paymentMethod}" type="hidden" name="stripePaymentMethod" value="${ifDefined(paymentMethod || undefined)}">
-    <input ?disabled="${!source}" type="hidden" name="stripeSource" value="${ifDefined(source || undefined)}">
-    <input ?disabled="${!token}" type="hidden" name="stripeToken" value="${ifDefined(token || undefined)}">
-  </form>
-`;
 
 const allowedStyles = [
   'color',
@@ -305,19 +298,6 @@ export class StripeElements extends LitNotify(StripeBase) {
   shadowHosts = [];
 
   /**
-   * The internal form element
-   * @type {HTMLFormElement}
-   * @protected
-   */
-  get form() {
-    if (window.ShadyDOM) return this.querySelector('form');
-    let slot = this.shadowRoot.querySelector('slot');
-    // eslint-disable-next-line no-loops/no-loops
-    while (slot instanceof HTMLSlotElement && ([slot] = slot.assignedElements())) continue;
-    return slot.querySelector('form');
-  }
-
-  /**
    * Stripe Element mount point
    * @type {Element}
    */
@@ -450,7 +430,7 @@ export class StripeElements extends LitNotify(StripeBase) {
     this.shadowHosts = [this];
     while (host = host.getRootNode().host) this.shadowHosts.push(host); // eslint-disable-line prefer-destructuring, no-loops/no-loops
 
-    const { shadowHosts, stripeMountId: id, action, token } = this;
+    const { shadowHosts, stripeMountId } = this;
 
     // Prepare the shallowest breadcrumb slot at document level
     const hosts = [...shadowHosts];
@@ -460,14 +440,11 @@ export class StripeElements extends LitNotify(StripeBase) {
       div.slot = 'stripe-card';
       root.appendChild(div);
     }
+
     const container = root.querySelector('[slot="stripe-card"]');
 
-    // hedge against shenanigans
-    const isDomCorrupt = container.querySelector('form') && !document.querySelector(`.stripe-mount[aria-label="Credit or Debit Card"]`);
-    const renderTemplate = isDomCorrupt ? render : appendTemplate;
-
     // Render the form to the document, so that Stripe.js can mount
-    renderTemplate(stripeCardTemplate({ action, id, token }), container);
+    appendTemplate(mountPointTemplate({ stripeMountId }), container);
 
     // Append breadcrumb slots to each shadowroot in turn,
     // from the document down to the <stripe-elements> instance.
@@ -479,9 +456,8 @@ export class StripeElements extends LitNotify(StripeBase) {
    * @private
    */
   initShadyDOMMount() {
-    const { action, token } = this;
-    const id = this.stripeMountId;
-    const mountTemplate = stripeCardTemplate({ action, id, token });
+    const { stripeMountId } = this;
+    const mountTemplate = mountPointTemplate({ stripeMountId });
     appendTemplate(mountTemplate, this);
   }
 
@@ -499,6 +475,7 @@ export class StripeElements extends LitNotify(StripeBase) {
 
     await this.set({ element, card: element });
 
+    /* istanbul ignore if */
     if (!this.stripeMount) throw new Error('Stripe Mount missing');
 
     element.mount(this.stripeMount);

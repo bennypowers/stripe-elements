@@ -4,25 +4,27 @@ import { LitNotify } from '@morbidick/lit-element-notify';
 import bound from 'bound-decorator';
 
 import { ReadOnlyPropertiesMixin } from './lib/read-only-properties';
-import { camel, dash } from './lib/strings';
+import { dash } from './lib/strings';
 import { isRepresentation } from './lib/predicates';
 import { stripeMethod } from './stripe-method-decorator';
+import { throwBadResponse } from './lib/fetch';
 
 /** @typedef {stripe.PaymentIntentResponse|stripe.PaymentMethodResponse|stripe.SetupIntentResponse|stripe.TokenResponse|stripe.SourceResponse} PaymentResponse */
 /** @typedef {{ owner: stripe.OwnerData }} SourceData */
 
 /**
+ * @fires 'stripe-error' - The validation error, or the error returned from stripe.com
+ * @fires 'stripe-payment-intent' - The PaymentIntent received from stripe.com
+ * @fires 'stripe-payment-method' - The PaymentMethod received from stripe.com
+ * @fires 'stripe-source' - The Source received from stripe.com
+ * @fires 'stripe-token' - The Token received from stripe.com
+ *
  * @fires 'error-changed' - The new value of error
  * @fires 'has-error-changed' - The new value of has-error
  * @fires 'payment-intent-changed' - The new value of payment-intent
  * @fires 'payment-method-changed' - The new value of payment-method
  * @fires 'publishable-key-changed' - The new value of publishable-key
  * @fires 'source-changed' - The new value of source
- * @fires 'stripe-error' - The validation error, or the error returned from stripe.com
- * @fires 'stripe-payment-intent' - The PaymentIntent received from stripe.com
- * @fires 'stripe-payment-method' - The PaymentMethod received from stripe.com
- * @fires 'stripe-source' - The Source received from stripe.com
- * @fires 'stripe-token' - The Token received from stripe.com
  * @fires 'token-changed' - The new value of token
  */
 export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
@@ -83,9 +85,22 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /* SETTINGS */
 
   /**
-   * The URL to the form action. Example '/charges'.
-   * If blank or undefined will not submit charges immediately.
-   * @type {String}
+   * If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),
+   * the element will POST JSON data to this URL with an object containing
+   * a key equal to the value of the `generate` property.
+   * @example
+   * ```html
+   * <stripe-elements
+   *   publishable-key="pk_test_XXXXXXXXXXXXX"
+   *   generate="token"
+   *   action="/payment"
+   * ></stripe-elements>
+   * ```
+   * will POST to `/payment` with JSON body `{ "token": { ... } }`
+   * ```js
+   * stripeElements.submit();
+   * ```
+   * @type {string}
    */
   @property({ type: String }) action;
 
@@ -282,6 +297,23 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   }
 
   /**
+   * POSTs the payment info represenation to the endpoint at `/action`
+   * @private
+   */
+  async postRepresentation() {
+    const token = this.token || undefined;
+    const source = this.source || undefined;
+    const paymentMethod = this.paymentMethod || undefined;
+    const body = JSON.stringify({ token, source, paymentMethod });
+    const headers = { 'Content-Type': 'application/json' };
+    const method = 'POST';
+    return fetch(this.action, { body, headers, method })
+      .then(throwBadResponse)
+      .then(success => this.fire('stripe-payment-success', success))
+      .catch(error => this.set({ error }));
+  }
+
+  /**
    * @param {String} name
    * @private
    */
@@ -291,10 +323,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     /* istanbul ignore if */
     if (!value) return;
     this.fire(`stripe-${dash(name)}`, value);
-    const formField = this.form.querySelector(`[name=${camel(`stripe-${dash(name)}`)}]`);
-    formField.removeAttribute('disabled');
-    formField.value = value;
-    if (this.action) this.form.submit();
+    if (this.action) this.postRepresentation();
   }
 
   /** @private */

@@ -140,6 +140,35 @@ stripe-elements[has-error] { border: 1px solid red; }
 
 For more complex needs, you can listen for the `stripe-error` event.
 
+## Automatically Posting the Payment Info
+
+For simple integrations, you can automatically post the source or token to your backend by setting the `action` property
+
+**NOTE**: For this demo, we've overridden `window.fetch` to return a mocked response with the text body "A-OK!".
+
+<Preview>
+  <Story name="Automatically Posting the Payment Info">
+  {() => {
+    const originalFetch = window.fetch;
+    window.fetch = (url, ...args) => url === '/my-endpoint' ? Promise.resolve(new Response('A-OK!')) : originalFetch(url, ...args);
+    const onClick = (event) => event.target.parentElement.querySelector('stripe-elements').submit();
+    const display = x => $('#auto-post output').textContent = x;
+    const onSuccess = ({ detail }) => detail.text().then(display);
+    return html`
+      <article id="auto-post">
+        <stripe-elements
+            publishable-key="${publishableKey}"
+            generate="token"
+            action="/my-endpoint"
+            @stripe-payment-success="${onSuccess}"
+        > </stripe-elements>
+        <mwc-button class="generate" outlined @click="${onClick}">Submit and POST</mwc-button>
+        <output> </output>
+      </article>
+    `
+  }}</Story>
+</Preview>
+
 # Using `<stripe-elements>` Across Frameworks
 
 Since `<stripe-elements>` is a custom-element, you can easily use it across frameworks.

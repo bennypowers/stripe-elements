@@ -1,6 +1,7 @@
 import '../stripe-elements.js';
 
 import { expect, fixture, oneEvent, nextFrame } from '@open-wc/testing';
+import { match } from 'sinon';
 
 import {
   CARD_DECLINED_ERROR,
@@ -22,16 +23,21 @@ import {
   appendGlobalStyles,
   assertFiresStripeChange,
   assertHasOneGlobalStyleTag,
-  assertSubmitCalled,
+  assertProps,
+  assignedNodes,
   createPaymentMethod,
   createSource,
   createToken,
   element,
+  expectedLightDOM,
+  fetchStub,
   initialStripe,
   initialStripeMountId,
   mockShadyCSS,
   mockShadyDOM,
   mockStripe,
+  mountLightDOM,
+  noop,
   removeAllBlueStyleTag,
   removeStripeMount,
   reset,
@@ -39,7 +45,7 @@ import {
   restoreAppended,
   restoreCardClear,
   restoreConsoleWarn,
-  restoreFormSubmit,
+  restoreFetch,
   restoreGetComputedStyleValue,
   restoreShadyCSS,
   restoreShadyDOM,
@@ -49,7 +55,7 @@ import {
   setupWithPublishableKey,
   spyConsoleWarn,
   spyGetComputedStyleValue,
-  stubFormSubmit,
+  stubFetch,
   submit,
   synthStripeEvent,
   synthStripeFormValues,
@@ -60,19 +66,6 @@ import {
   validate,
 } from '../test/test-helpers';
 import { elem, not } from './lib/predicates.js';
-
-const assignedNodes = el => el.assignedNodes();
-
-const formLightDOM = ({ label = 'Credit or Debit Card', stripeMountId }) => `
-  <form method="post">
-    <div id="${stripeMountId}" aria-label="${label}" class="stripe-mount"></div>
-    <input disabled type="hidden" name="stripePaymentMethod"/>
-    <input disabled type="hidden" name="stripeSource"/>
-    <input disabled type="hidden" name="stripeToken"/>
-  </form>
-`;
-
-const expectedLightDOM = ({ label = 'Credit or Debit Card', stripeMountId }) => `<div slot="stripe-card">${formLightDOM({ label, stripeMountId })}</div> `;
 
 describe('<stripe-elements>', function() {
   beforeEach(spyConsoleWarn);
@@ -123,11 +116,7 @@ describe('<stripe-elements>', function() {
 
     describe('when connected to document', function() {
       it('appends a shady-dom mount point', function shadyMount() {
-        expect(element).lightDom.to.equal(formLightDOM(element));
-      });
-
-      it('finds its form', function findsForm() {
-        expect(element.form).to.be.an.instanceof(HTMLFormElement);
+        expect(element).lightDom.to.equal(mountLightDOM(element));
       });
     });
   });
@@ -154,8 +143,13 @@ describe('<stripe-elements>', function() {
         expect(primaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId }));
       });
 
-      it('finds its form', async function() {
-        expect(nestedElement.form).to.be.an.instanceOf(HTMLFormElement);
+      it('does not break primary host\'s internal DOM', function() {
+        expect(primaryHost).shadowDom.to.equal(`
+          <h1>Other Primary Host Content</h1>
+          <stripe-elements publishable-key="${PUBLISHABLE_KEY}">
+            <slot name="stripe-card" slot="stripe-card"></slot>
+          </stripe-elements>
+        `);
       });
     });
 
@@ -187,12 +181,10 @@ describe('<stripe-elements>', function() {
         `);
       });
 
-      it('finds its form', function() {
-        expect(nestedElement.form).to.be.an.instanceOf(HTMLFormElement);
-      });
-
       it('only creates one slot', function() {
-        expect(document.querySelectorAll('div[slot="stripe-card"]').length).to.equal(1);
+        expect(document.getElementById(stripeMountId)).to.be.ok;
+        expect(document.querySelectorAll(`#${stripeMountId}`).length).to.equal(1);
+        expect(document.querySelectorAll('[slot="stripe-card"]').length).to.equal(1);
       });
     });
 
@@ -234,12 +226,10 @@ describe('<stripe-elements>', function() {
         `);
       });
 
-      it('finds its form', function() {
-        expect(nestedElement.form).to.be.an.instanceOf(HTMLFormElement);
-      });
-
       it('only creates one slot', function() {
-        expect(document.querySelectorAll('div[slot="stripe-card"]').length).to.equal(1);
+        expect(document.getElementById(stripeMountId)).to.be.ok;
+        expect(document.querySelectorAll(`#${stripeMountId}`).length).to.equal(1);
+        expect(document.querySelectorAll('[slot="stripe-card"]').length).to.equal(1);
       });
     });
   });
@@ -355,10 +345,6 @@ describe('<stripe-elements>', function() {
           it('uses a new id', function() {
             expect(element.stripeMount.id).to.not.equal(initialStripeMountId);
           });
-
-          it('finds its form', function() {
-            expect(element.querySelector('form')).to.be.ok;
-          });
         });
       });
     });
@@ -407,9 +393,7 @@ describe('<stripe-elements>', function() {
             expect(element.validate()).to.be.true;
           });
 
-          it('unsets the `error` property', function() {
-            expect(element.error).to.be.null;
-          });
+          it('unsets the `error` property', assertProps({ error: null }));
         });
       });
     });
@@ -483,26 +467,20 @@ describe('<stripe-elements>', function() {
 
       describe('calling createPaymentMethod()', function() {
         beforeEach(createPaymentMethod);
-        it('sets the `error` property', function() {
-          expect(element.paymentMethod, 'paymentMethod').to.be.null;
-          expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR);
-        });
+        it('sets the `error` property', assertProps({ error: INCOMPLETE_CARD_ERROR }));
+        it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
       });
 
       describe('calling createSource()', function callingCreateSource() {
         beforeEach(createSource);
-        it('sets the `error` property', function setsError() {
-          expect(element.source, 'source').to.be.null;
-          expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR);
-        });
+        it('sets the `error` property', assertProps({ error: INCOMPLETE_CARD_ERROR }));
+        it('unsets the `source` property', assertProps({ source: null }));
       });
 
       describe('calling createToken()', function() {
         beforeEach(createToken);
-        it('sets the `error` property', function() {
-          expect(element.token, 'token').to.be.null;
-          expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR);
-        });
+        it('sets the `error` property', assertProps({ error: INCOMPLETE_CARD_ERROR }));
+        it('unsets the `token` property', assertProps({ token: null }));
       });
 
       describe('calling submit()', function() {
@@ -675,15 +653,13 @@ describe('<stripe-elements>', function() {
       });
 
       describe('with a valid card', function() {
+        beforeEach(stubFetch);
         beforeEach(synthStripeFormValues({ cardNumber: '4242424242424242', mm: '01', yy: '40', cvc: '000' }));
+        afterEach(restoreFetch);
 
-        it('sets the `isEmpty` property', function() {
-          expect(element.isEmpty).to.be.false;
-        });
+        it('sets the `isEmpty` property', assertProps({ isEmpty: false }));
 
-        it('sets the `isComplete` property', function() {
-          expect(element.isComplete).to.be.true;
-        });
+        it('sets the `isComplete` property', assertProps({ isComplete: true }));
 
         describe('calling createPaymentMethod()', function() {
           it('resolves with the payment method', function() {
@@ -799,6 +775,45 @@ describe('<stripe-elements>', function() {
         });
 
         describe('and generate unset', function() {
+          describe('calling submit()', function() {
+            it('resolves with the source', function() {
+              return element.submit()
+                .then(result => expect(result.source).to.equal(SUCCESS_RESPONSES.source));
+            });
+            describe('subsequently', function() {
+              beforeEach(submit);
+              it('fires a `source-changed` event', async function() {
+                const ev = await oneEvent(element, 'source-changed');
+                expect(ev.detail.value).to.equal(SUCCESS_RESPONSES.source);
+              });
+
+              it('fires a `stripe-source` event', async function() {
+                const ev = await oneEvent(element, 'stripe-source');
+                expect(ev.detail).to.equal(SUCCESS_RESPONSES.source);
+              });
+
+              describe('calling validate()', function() {
+                beforeEach(validate);
+                it('returns true', function() {
+                  expect(element.validate()).to.be.true;
+                });
+
+                it('does not set `error`', function() {
+                  expect(element.error).to.be.null;
+                });
+              });
+
+              describe('calling isPotentiallyValid()', function() {
+                it('returns true', function() {
+                  expect(element.isPotentiallyValid()).to.be.true;
+                });
+              });
+            });
+          });
+        });
+
+        describe('and generate set to `source`', function() {
+          beforeEach(setProps({ generate: 'source' }));
           describe('calling submit()', function() {
             it('resolves with the source', function() {
               return element.submit()
@@ -926,8 +941,13 @@ describe('<stripe-elements>', function() {
               });
             });
 
+            it('does not POST anything', async function() {
+              await element.submit().catch(noop);
+              expect(fetchStub).to.not.have.been.called;
+            });
+
             describe('subsequently', function() {
-              beforeEach(() => submit().catch(() => {}));
+              beforeEach(() => submit().catch(noop));
 
               it('sets the `error` property', function() {
                 expect(element.error.message).to.equal('<stripe-elements>: cannot generate something-silly');
@@ -944,23 +964,39 @@ describe('<stripe-elements>', function() {
         });
 
         describe('with `action` property set', function() {
-          beforeEach(stubFormSubmit);
           beforeEach(setProps({ action: '/here' }));
-          afterEach(restoreFormSubmit);
 
           describe('calling createPaymentMethod()', function() {
             beforeEach(createPaymentMethod);
-            it('submits the form', assertSubmitCalled);
+            it('POSTs the paymentMethod to the endpoint at `action`', function() {
+              const { action, paymentMethod } = element;
+              expect(fetchStub).to.have.been.calledWith(action, match({ body: JSON.stringify({ paymentMethod }) }) );
+            });
           });
 
           describe('calling createSource()', function() {
             beforeEach(createSource);
-            it('submits the form', assertSubmitCalled);
+            it('POSTs the source to the endpoint at `action`', function() {
+              const { action, source } = element;
+              expect(fetchStub).to.have.been.calledWith(action, match({ body: JSON.stringify({ source }) }) );
+            });
           });
 
           describe('calling createToken()', function() {
             beforeEach(createToken);
-            it('submits the form', assertSubmitCalled);
+            it('POSTs the token to the endpoint at `action`', function() {
+              const { action, token } = element;
+              expect(fetchStub).to.have.been.calledWith(action, match({ body: JSON.stringify({ token }) }) );
+            });
+          });
+
+          describe('in case the endpoint at `action` throws', function() {
+            const error = new Error('endpoint error');
+            describe('calling submit()', function() {
+              beforeEach(function() { fetchStub.rejects(error); });
+              beforeEach(submit);
+              it('sets the `error` property', assertProps({ error }));
+            });
           });
         });
       });
@@ -979,10 +1015,8 @@ describe('<stripe-elements>', function() {
 
           describe('subsequently', function() {
             beforeEach(createPaymentMethod);
-            it('sets the `error` property', function() {
-              expect(element.error).to.equal(CARD_DECLINED_ERROR);
-              expect(element.paymentMethod).to.be.null;
-            });
+            it('sets the `error` property', assertProps({ error: CARD_DECLINED_ERROR }));
+            it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
 
             describe('calling validate()', function() {
               beforeEach(validate);
@@ -1008,10 +1042,8 @@ describe('<stripe-elements>', function() {
 
           describe('subsequently', function() {
             beforeEach(createSource);
-            it('sets the `error` property', function() {
-              expect(element.error).to.equal(CARD_DECLINED_ERROR);
-              expect(element.source).to.be.null;
-            });
+            it('sets the `error` property', assertProps({ error: CARD_DECLINED_ERROR }));
+            it('unsets the `source` property', assertProps({ source: null }));
 
             describe('calling validate()', function() {
               beforeEach(validate);
@@ -1019,9 +1051,7 @@ describe('<stripe-elements>', function() {
                 expect(element.validate()).to.be.false;
               });
 
-              it('retains the `error` property', async function validating() {
-                expect(element.error).to.equal(CARD_DECLINED_ERROR);
-              });
+              it('retains the `error` property', assertProps({ error: CARD_DECLINED_ERROR }));
             });
           });
         });
@@ -1037,10 +1067,8 @@ describe('<stripe-elements>', function() {
 
           describe('subsequently', function() {
             beforeEach(createToken);
-            it('sets the `error` property', function() {
-              expect(element.error).to.equal(CARD_DECLINED_ERROR);
-              expect(element.token).to.be.null;
-            });
+            it('sets the `error` property', assertProps({ error: CARD_DECLINED_ERROR }));
+            it('unsets the `token` property', assertProps({ token: null }));
 
             describe('calling validate()', function() {
               beforeEach(validate);
