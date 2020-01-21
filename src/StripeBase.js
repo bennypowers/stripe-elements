@@ -243,7 +243,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @private
    */
   fire(type, detail, opts = {}) {
-    this.dispatchEvent(new CustomEvent(type, { detail, ...opts }));
+    this.dispatchEvent(new CustomEvent(type, { bubbles: true, detail, ...opts }));
   }
 
   /**
@@ -252,7 +252,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @private
    */
   fireError(error) {
-    this.dispatchEvent(new ErrorEvent('stripe-error', { error }));
+    this.dispatchEvent(new ErrorEvent('stripe-error', { bubbles: true, error }));
   }
 
   /**
