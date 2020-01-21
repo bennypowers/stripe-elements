@@ -27,27 +27,27 @@ self.addEventListener('message', (event) => {
 self.__precacheManifest = [
   {
     "url": "iframe.html",
-    "revision": "d07d7c88bb0abe27651d2f2f89a9e984"
+    "revision": "62542262122d23b5011ffd71a5e7b77f"
   },
   {
     "url": "index.html",
     "revision": "fc29a281b95c188081dee5499c11a46a"
   },
   {
-    "url": "inline-entry.0-29a1e976.js",
-    "revision": "24874847852672bab7faeaf7df6735f6"
+    "url": "inline-entry.0-38bae62a.js",
+    "revision": "ab415e2cdd22440cfd607405fc30a2a5"
   },
   {
-    "url": "legacy/inline-entry.0-cc76c19e.js",
-    "revision": "075ccd1d84f493ebca959af290e6feef"
+    "url": "legacy/inline-entry.0-db81652d.js",
+    "revision": "ce8c4476f4d4e8265fddef4e97994215"
   },
   {
     "url": "legacy/preview-69c36aae.js",
     "revision": "d95cec8e2068c3ecf730544f48453a6d"
   },
   {
-    "url": "legacy/stripe-elements.stories-982b4f7d.js",
-    "revision": "5cbe1bac36bb0616bbd595a4e292e8da"
+    "url": "legacy/stripe-elements.stories-f65fd676.js",
+    "revision": "58c3c60c8d80e6c746e43659a8ca12a1"
   },
   {
     "url": "polyfills/core-js.5e6caafde24250a9349bba4d345eb7be.js",
@@ -82,8 +82,8 @@ self.__precacheManifest = [
     "revision": "0ff32fe29fd5a60a91e64bb776e69038"
   },
   {
-    "url": "stripe-elements.stories-761a87f7.js",
-    "revision": "b4d249cb5b1506d7259c2e534501823f"
+    "url": "stripe-elements.stories-e9cd3210.js",
+    "revision": "498128c4b362bcf880e0d43429af19a4"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
