@@ -1,31 +1,8 @@
 <script src="https://js.stripe.com/v3/"></script>
 <style>
-  stripe-elements { grid-area: stripe; }
-
   #key { width: 100%; }
 
   [label="Publishable Key"] {
     width: 100%;
-  }
-
-  json-viewer {
-    color: #212529;
-    padding: 0;
-    background: white;
-
-    --json-viewer-key-color: #d9480f;
-    --json-viewer-boolean-color: #0b7285;
-    --json-viewer-number-color: #087f5b;
-    --json-viewer-null-color: #c92a2a;
-    --json-viewer-string-color: #0b7285;
-  }
-
-  section {
-    align-items: center;
-    display: grid;
-    grid-gap: 12px;
-    grid-template-areas:
-      'stripe stripe'
-      'fields fields';
   }
 </style>

@@ -1,3 +1,5 @@
+import { LitElement, css, html } from 'lit-element';
+
 export const $ = x => document.querySelector(x);
 export const $$ = x => [...document.querySelectorAll(x)];
 
@@ -17,24 +19,87 @@ export const setKeys = selector => ({ target: { value } }) => {
 
 const fieldEntry = field => [field.dataset.ownerProp, field.value];
 
-export const ownerPropsIn = element =>
-  Object.fromEntries([...element.querySelectorAll('[data-owner-prop]')].map(fieldEntry));
+customElements.define('stripe-elements-demo', class StripeElementsDemo extends LitElement {
+  static properties = {
+    label: { type: String },
+    submitDisabled: { type: Boolean },
+    output: { type: Object },
+  };
 
-export const siblingSelector = (selector, element) =>
-  element.parentElement.querySelector(selector);
+  static styles = css`
+    [hidden] { display: none !important; }
 
-const hide = el => el.style.display = 'none';
+    :host {
+      align-items: center;
+      display: grid;
+      grid-gap: 12px;
+      grid-template-areas:
+        'stripe stripe'
+        'fields fields';
+    }
 
-export function enableButton({ target: { isComplete, parentElement } }) {
-  parentElement.querySelector('mwc-button').disabled = !isComplete;
-}
+    #stripe,
+    #actions {
+      display: contents;
+    }
 
-export async function submitThenDisplayResult(event) {
-  const parent = event.target.parentElement;
-  const viewer = parent.querySelector('json-viewer');
-  const element = parent.querySelector('stripe-elements');
-  element.billingDetails = ownerPropsIn(parent);
-  viewer.object = await element.submit();
-  parent.querySelectorAll('mwc-textfield').forEach(hide);
-  parent.querySelectorAll('mwc-button').forEach(hide);
-}
+    ::slotted(stripe-elements) {
+      grid-area: stripe;
+    }
+
+    json-viewer {
+      color: #212529;
+      padding: 0;
+      background: white;
+
+      --json-viewer-key-color: #d9480f;
+      --json-viewer-boolean-color: #0b7285;
+      --json-viewer-number-color: #087f5b;
+      --json-viewer-null-color: #c92a2a;
+      --json-viewer-string-color: #0b7285;
+    }
+
+  `;
+
+  constructor() {
+    super();
+    this.submitDisabled = true;
+    this.addEventListener('stripe-change', this.onStripeChange.bind(this));
+  }
+
+  get billingDetails() {
+    const slot = this.shadowRoot.querySelector('slot[name="actions"]');
+    const assigned = slot.assignedElements();
+    const elements = (assigned.length ? assigned : [...slot.children]);
+    return Object.fromEntries(elements.map(fieldEntry));
+  }
+
+  render() {
+    return html`
+      <div id="stripe" ?hidden="${this.output}">
+        <slot name="stripe"></slot>
+      </div>
+
+      <div id="actions" ?hidden="${this.output}">
+        <slot name="actions">
+          <mwc-textfield outlined label="Cardholder Name" data-owner-prop="name" value="Mr. Man"> </mwc-textfield>
+          <mwc-textfield outlined label="Cardholder Email" data-owner-prop="email" value="mr@man.email"> </mwc-textfield>
+          <mwc-textfield outlined label="Cardholder Phone" data-owner-prop="phone" value="555 555 5555"> </mwc-textfield>
+          <mwc-button ?disabled="${this.submitDisabled}" outlined @click="${this.onClickSubmit}">${this.label}</mwc-button>
+        </slot>
+      </div>
+
+      <json-viewer .object="${this.output}"> </json-viewer>
+    `;
+  }
+
+  async onClickSubmit() {
+    const element = this.querySelector('stripe-elements');
+    element.billingDetails = this.billingDetails;
+    this.output = await element.submit();
+  }
+
+  onStripeChange({ target: { isComplete } }) {
+    this.submitDisabled = !isComplete;
+  }
+});
