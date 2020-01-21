@@ -10,6 +10,8 @@ import { dash, generateRandomMountElementId } from './lib/strings';
 import sharedStyles from './shared.css';
 import style from './stripe-elements.css';
 
+/** @typedef {{ base?: stripe.elements.Style, complete?: stripe.elements.Style, empty?: stripe.elements.Style, invalid?: stripe.elements.Style}} StripeStyleInit */
+
 /* istanbul ignore next */
 const removeAllMounts = host =>
   host.querySelectorAll('[slot="stripe-card"][name="stripe-card"]')
@@ -213,14 +215,14 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * Whether to hide icons in the Stripe form.
-   * @type {Boolean}
+   * @type {boolean}
    */
   @property({ type: Boolean, attribute: 'hide-icon' }) hideIcon = false;
 
   /**
    * Whether or not to hide the postal code field.
    * Useful when you gather shipping info elsewhere.
-   * @type {Boolean}
+   * @type {boolean}
    */
   @property({ type: Boolean, attribute: 'hide-postal-code' }) hidePostalCode = false;
 
@@ -232,7 +234,7 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * Prefilled values for form. Example {postalCode: '90210'}
-   * @type {Object}
+   * @type {object}
    */
   @property({ type: Object }) value = {};
 
@@ -240,21 +242,21 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * The card brand detected by Stripe
-   * @type {String}
+   * @type {string}
    * @readonly
    */
   @property({ type: String, notify: true, readOnly: true }) brand = null;
 
   /**
    * The Stripe card object.
-   * @type {stripe.Element}
+   * @type {stripe.elements.Element}
    * @readonly
    */
   @property({ type: Object, notify: true, readOnly: true }) card = null;
 
   /**
    * If the form is complete.
-   * @type {Boolean}
+   * @type {boolean}
    */
   @property({
     type: Boolean,
@@ -266,7 +268,7 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * If the form is empty.
-   * @type {Boolean}
+   * @type {boolean}
    */
   @property({
     type: Boolean,
@@ -278,7 +280,7 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * If the stripe element is ready to receive focus.
-   * @type {Boolean}
+   * @type {boolean}
    */
   @property({
     type: Boolean,
@@ -305,7 +307,7 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * Mount Point Element id
-   * @type {String}
+   * @type {string}
    * @protected
    */
   stripeMountId;
@@ -337,7 +339,7 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid.
-   * @return {Boolean} true if the Stripe form is potentially valid
+   * @return {boolean} true if the Stripe form is potentially valid
    */
   isPotentiallyValid() {
     return (!this.isComplete && !this.isEmpty && !this.hasError) || this.validate();
@@ -353,7 +355,7 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * Checks if the Stripe form is valid.
-   * @return {Boolean} true if the Stripe form is valid
+   * @return {boolean} true if the Stripe form is valid
    */
   validate() {
     const { isComplete, isEmpty, hasError } = this;
@@ -384,7 +386,7 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * Returns a Stripe-friendly style object computed from CSS custom properties
-   * @return {Object} Stripe Style initialization object.
+   * @return {StripeStyleInit } Stripe Style initialization object.
    * @private
    */
   getStripeElementsStyles() {
@@ -489,10 +491,10 @@ export class StripeElements extends LitNotify(StripeBase) {
   /**
    * Sets the error.
    * @param  {StripeChangeEvent}         event
-   * @param  {Boolean}       event.empty     true if value is empty
-   * @param  {Boolean}       event.complete  true if value is well-formed and potentially complete.
-   * @param  {String}        event.brand     brand of the card being entered e.g. 'visa' or 'amex'
-   * @param  {Object}        event.error     The current validation error, if any.
+   * @param  {boolean}       event.empty     true if value is empty
+   * @param  {boolean}       event.complete  true if value is well-formed and potentially complete.
+   * @param  {string}        event.brand     brand of the card being entered e.g. 'visa' or 'amex'
+   * @param  {stripe.Error}        event.error     The current validation error, if any.
    * @param  {String|Object} event.value     Value of the form. Only non-sensitive information e.g. postalCode is present.
    * @private
    */

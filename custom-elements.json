@@ -8,13 +8,13 @@
         {
           "name": "hide-icon",
           "description": "Whether to hide icons in the Stripe form.",
-          "type": "Boolean",
+          "type": "boolean",
           "default": "false"
         },
         {
           "name": "hide-postal-code",
           "description": "Whether or not to hide the postal code field.\nUseful when you gather shipping info elsewhere.",
-          "type": "Boolean",
+          "type": "boolean",
           "default": "false"
         },
         {
@@ -26,35 +26,35 @@
         {
           "name": "value",
           "description": "Prefilled values for form. Example {postalCode: '90210'}",
-          "type": "Object",
+          "type": "object",
           "default": "{}"
         },
         {
           "name": "brand",
           "description": "The card brand detected by Stripe",
-          "type": "String"
+          "type": "string"
         },
         {
           "name": "card",
           "description": "The Stripe card object.",
-          "type": "stripe.Element"
+          "type": "stripe.elements.Element"
         },
         {
           "name": "is-complete",
           "description": "If the form is complete.",
-          "type": "Boolean",
+          "type": "boolean",
           "default": "false"
         },
         {
           "name": "is-empty",
           "description": "If the form is empty.",
-          "type": "Boolean",
+          "type": "boolean",
           "default": "true"
         },
         {
           "name": "stripe-ready",
           "description": "If the stripe element is ready to receive focus.",
-          "type": "Boolean",
+          "type": "boolean",
           "default": "false"
         },
         {
@@ -86,7 +86,7 @@
         {
           "name": "publishable-key",
           "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
-          "type": "String"
+          "type": "string"
         },
         {
           "name": "show-error",
@@ -112,7 +112,7 @@
         {
           "name": "has-error",
           "description": "Whether the element has an error",
-          "type": "Boolean",
+          "type": "boolean",
           "default": "false"
         },
         {
@@ -126,14 +126,14 @@
           "name": "hideIcon",
           "attribute": "hide-icon",
           "description": "Whether to hide icons in the Stripe form.",
-          "type": "Boolean",
+          "type": "boolean",
           "default": "false"
         },
         {
           "name": "hidePostalCode",
           "attribute": "hide-postal-code",
           "description": "Whether or not to hide the postal code field.\nUseful when you gather shipping info elsewhere.",
-          "type": "Boolean",
+          "type": "boolean",
           "default": "false"
         },
         {
@@ -147,40 +147,40 @@
           "name": "value",
           "attribute": "value",
           "description": "Prefilled values for form. Example {postalCode: '90210'}",
-          "type": "Object",
+          "type": "object",
           "default": "{}"
         },
         {
           "name": "brand",
           "attribute": "brand",
           "description": "The card brand detected by Stripe",
-          "type": "String"
+          "type": "string"
         },
         {
           "name": "card",
           "attribute": "card",
           "description": "The Stripe card object.",
-          "type": "stripe.Element"
+          "type": "stripe.elements.Element"
         },
         {
           "name": "isComplete",
           "attribute": "is-complete",
           "description": "If the form is complete.",
-          "type": "Boolean",
+          "type": "boolean",
           "default": "false"
         },
         {
           "name": "isEmpty",
           "attribute": "is-empty",
           "description": "If the form is empty.",
-          "type": "Boolean",
+          "type": "boolean",
           "default": "true"
         },
         {
           "name": "stripeReady",
           "attribute": "stripe-ready",
           "description": "If the stripe element is ready to receive focus.",
-          "type": "Boolean",
+          "type": "boolean",
           "default": "false"
         },
         {
@@ -247,7 +247,7 @@
           "name": "publishableKey",
           "attribute": "publishable-key",
           "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
-          "type": "String"
+          "type": "string"
         },
         {
           "name": "showError",
@@ -278,7 +278,7 @@
           "name": "hasError",
           "attribute": "has-error",
           "description": "Whether the element has an error",
-          "type": "Boolean",
+          "type": "boolean",
           "default": "false"
         },
         {

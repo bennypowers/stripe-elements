@@ -113,7 +113,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
 
   /**
    * Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`
-   * @type {String}
+   * @type {string}
    */
   @property({
     type: String,
@@ -150,7 +150,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
 
   /**
    * Whether the element has an error
-   * @type {Boolean}
+   * @type {boolean}
    * @readonly
    */
   @property({
@@ -252,9 +252,9 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
 
   /**
    * Fires an event.
-   * @param  {String} type      event type
+   * @param  {string} type      event type
    * @param  {any}    detail    detail value
-   * @param  {Object} [opts={}] event options
+   * @param  {EventInit} [opts={}]
    * @private
    */
   fire(type, detail, opts = {}) {
@@ -314,7 +314,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   }
 
   /**
-   * @param {String} name
+   * @param {string} name
    * @private
    */
   @bound representationChanged(name) {

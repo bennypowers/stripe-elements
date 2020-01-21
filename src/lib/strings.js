@@ -13,7 +13,7 @@ export const dash = memoize(identity, eagerDash);
 /**
  * Generates a random mount point for Stripe Elements. This will allow multiple
  * Elements forms to be embedded on a single page.
- * @return {String} mount element id
+ * @return {string} mount element id
  */
 export function generateRandomMountElementId() {
   return `stripe-elements-mount-point-${(Date.now() + (Math.random() * 1000)).toString(36).substr(0, 8)}`;
