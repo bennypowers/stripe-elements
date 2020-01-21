@@ -22,7 +22,12 @@ const getTemplate = (props = {}) =>
 @customElement('primary-host') class PrimaryHost extends LitElement {
   @query('stripe-elements') nestedElement;
 
-  render() { return getTemplate({ publishableKey: PUBLISHABLE_KEY }); }
+  render() {
+    return html`
+      <h1>Other Primary Host Content</h1>
+      ${getTemplate({ publishableKey: PUBLISHABLE_KEY })}
+    `;
+  }
 }
 
 @customElement('secondary-host') class SecondaryHost extends LitElement {
@@ -124,7 +129,7 @@ export const ALL_BLUE_STYLES = ALLOWED_STYLES.flatMap(camelCase => STYLE_PREFIXE
 
 /* TEST STATE */
 
-let submitStub;
+export let fetchStub;
 
 export let element;
 export let initialStripeMountId;
@@ -142,6 +147,16 @@ ALL_BLUE_STYLE_TAG.id = 'all-blue-styles';
 ALL_BLUE_STYLE_TAG.textContent = `html {
   ${ALL_BLUE_STYLES.join('\n')}
 }`;
+
+export const noop = () => {};
+
+export const assignedNodes = el => el.assignedNodes();
+
+export const mountLightDOM = ({ stripeMountId }) =>
+  `<div id="${stripeMountId}" class="stripe-elements-mount"></div>`;
+
+export const expectedLightDOM = ({ stripeMountId }) =>
+  `<div slot="stripe-card">${mountLightDOM({ stripeMountId })}</div> `;
 
 /* MOCKS, STUBS, AND SPIES */
 
@@ -214,12 +229,13 @@ export function restoreConsoleWarn() {
   console.warn?.restore();
 }
 
-export function stubFormSubmit() {
-  submitStub = stub(element.form, 'submit');
+export function stubFetch() {
+  fetchStub = stub(window, 'fetch');
+  fetchStub.resolves(new Response('ok response'));
 }
 
-export function restoreFormSubmit() {
-  submitStub?.restore();
+export function restoreFetch() {
+  fetchStub?.restore();
 }
 
 /* FIXTURE */
@@ -266,6 +282,16 @@ export function restoreAppended() {
 
 /* ASSERTIONS */
 
+export function assertProps(props) {
+  const assertEntry = ([name, value]) => expect(element[name]).to.equal(value);
+  return function() {
+    return async function() {
+      await element.updateComplete;
+      Object.entries(props).forEach(assertEntry);
+    };
+  };
+}
+
 export function assertHasOneGlobalStyleTag() {
   const queried = document.querySelectorAll('#stripe-elements-custom-css-properties');
   expect(queried.length).to.equal(1);
@@ -309,10 +335,6 @@ export async function assertFiresStripeChange() {
   const name = 'stripe-change';
   const { type } = await oneEvent(element, name);
   expect(type).to.equal(name);
-}
-
-export function assertSubmitCalled() {
-  expect(element.form.submit).to.have.been.called;
 }
 
 /* ELEMENT METHODS */

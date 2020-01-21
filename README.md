@@ -110,7 +110,7 @@ There are 11 properties for each state that you can set which will be read into 
 
 | Property            | Attribute          | Modifiers | Type                                  | Default   | Description                                      |
 |---------------------|--------------------|-----------|---------------------------------------|-----------|--------------------------------------------------|
-| `action`            | `action`           |           | `String`                              |           | The URL to the form action. Example '/charges'.<br />If blank or undefined will not submit charges immediately. |
+| `action`            | `action`           |           | `string`                              |           | If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),<br />the element will POST JSON data to this URL with an object containing<br />a key equal to the value of the `generate` property. |
 | `billingDetails`    |                    |           | `stripe.BillingDetails`               | {}        | billing_details object sent to create the payment representation. (optional) |
 | `brand`             | `brand`            | readonly  | `String`                              | null      | The card brand detected by Stripe                |
 | `card`              | `card`             | readonly  | `stripe.Element`                      | null      | The Stripe card object.                          |

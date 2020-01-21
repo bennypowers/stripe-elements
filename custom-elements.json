@@ -74,8 +74,8 @@
         },
         {
           "name": "action",
-          "description": "The URL to the form action. Example '/charges'.\nIf blank or undefined will not submit charges immediately.",
-          "type": "String"
+          "description": "If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),\nthe element will POST JSON data to this URL with an object containing\na key equal to the value of the `generate` property.",
+          "type": "string"
         },
         {
           "name": "generate",
@@ -233,8 +233,8 @@
         {
           "name": "action",
           "attribute": "action",
-          "description": "The URL to the form action. Example '/charges'.\nIf blank or undefined will not submit charges immediately.",
-          "type": "String"
+          "description": "If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),\nthe element will POST JSON data to this URL with an object containing\na key equal to the value of the `generate` property.",
+          "type": "string"
         },
         {
           "name": "generate",
@@ -318,6 +318,26 @@
           "description": "The new value of stripe-ready"
         },
         {
+          "name": "stripe-error",
+          "description": "The validation error, or the error returned from stripe.com"
+        },
+        {
+          "name": "stripe-payment-intent",
+          "description": "The PaymentIntent received from stripe.com"
+        },
+        {
+          "name": "stripe-payment-method",
+          "description": "The PaymentMethod received from stripe.com"
+        },
+        {
+          "name": "stripe-source",
+          "description": "The Source received from stripe.com"
+        },
+        {
+          "name": "stripe-token",
+          "description": "The Token received from stripe.com"
+        },
+        {
           "name": "error-changed",
           "description": "The new value of error"
         },
@@ -340,26 +360,6 @@
         {
           "name": "source-changed",
           "description": "The new value of source"
-        },
-        {
-          "name": "stripe-error",
-          "description": "The validation error, or the error returned from stripe.com"
-        },
-        {
-          "name": "stripe-payment-intent",
-          "description": "The PaymentIntent received from stripe.com"
-        },
-        {
-          "name": "stripe-payment-method",
-          "description": "The PaymentMethod received from stripe.com"
-        },
-        {
-          "name": "stripe-source",
-          "description": "The Source received from stripe.com"
-        },
-        {
-          "name": "stripe-token",
-          "description": "The Token received from stripe.com"
         },
         {
           "name": "token-changed",
