@@ -14,7 +14,7 @@ import '@material/mwc-textfield';
 import '@power-elements/codesandbox-button';
 import '@power-elements/json-viewer';
 
-import { $, $$, enableButton, ownerPropsIn, publishableKey, setKeys, submitThenDisplayResult } from './storybook-helpers.js';
+import { $, $$, publishableKey, setKeys } from './storybook-helpers.js';
 
 <Meta
   title="Stripe Elements"
@@ -57,14 +57,9 @@ Enter your publishable key here (use the test key, not the production key) to ru
 <Preview>
   <Story name="Generate a PaymentMethod" height="220px">{
     html`
-      <section id="payment-method">
-        <stripe-elements generate="payment-method" publishable-key="${publishableKey}" @stripe-change="${enableButton}"> </stripe-elements>
-        <mwc-textfield outlined label="Cardholder Name" data-owner-prop="name" value="Mr. Man"> </mwc-textfield>
-        <mwc-textfield outlined label="Cardholder Email" data-owner-prop="email" value="mr@man.email"> </mwc-textfield>
-        <mwc-textfield outlined label="Cardholder Phone" data-owner-prop="phone" value="555 555 5555"> </mwc-textfield>
-        <mwc-button disabled outlined @click="${submitThenDisplayResult}">Generate PaymentMethod</mwc-button>
-        <json-viewer> </json-viewer>
-      </section>
+      <stripe-elements-demo label="Generate PaymentMethod">
+        <stripe-elements slot="stripe" generate="payment-method" publishable-key="${publishableKey}"> </stripe-elements>
+      </stripe-elements-demo>
     `
   }</Story>
 </Preview>
@@ -74,15 +69,10 @@ Enter your publishable key here (use the test key, not the production key) to ru
 <Preview>
   <Story name="Generate a Source" height="220px">{
     html`
-      <section id="source">
-        <stripe-elements generate="source" publishable-key="${publishableKey}" @stripe-change="${enableButton}"> </stripe-elements>
-        <mwc-textfield outlined label="Cardholder Name" data-owner-prop="name" value="Mr. Man"> </mwc-textfield>
-        <mwc-textfield outlined label="Cardholder Email" data-owner-prop="email" value="mr@man.email"> </mwc-textfield>
-        <mwc-textfield outlined label="Cardholder Phone" data-owner-prop="phone" value="555 555 5555"> </mwc-textfield>
-        <mwc-button disabled outlined @click="${submitThenDisplayResult}">Generate Source</mwc-button>
-        <json-viewer> </json-viewer>
-      </section>
-      `
+      <stripe-elements-demo label="Generate Source">
+        <stripe-elements slot="stripe" generate="source" publishable-key="${publishableKey}"> </stripe-elements>
+      </stripe-elements-demo>
+    `
   }</Story>
 </Preview>
 
@@ -94,14 +84,9 @@ you may generate a token from the filled-out form by calling the `createToken()`
 <Preview>
   <Story name="Generate a Token" height="220px">{
     html`
-      <section id="token">
-        <stripe-elements generate="token" publishable-key="${publishableKey}" @stripe-change="${enableButton}"> </stripe-elements>
-        <mwc-textfield outlined label="Cardholder Name" data-owner-prop="name" value="Mr. Man"> </mwc-textfield>
-        <mwc-textfield outlined label="Cardholder Email" data-owner-prop="email" value="mr@man.email"> </mwc-textfield>
-        <mwc-textfield outlined label="Cardholder Phone" data-owner-prop="phone" value="555 555 5555"> </mwc-textfield>
-        <mwc-button disabled outlined @click="${submitThenDisplayResult}">Generate Token</mwc-button>
-        <json-viewer> </json-viewer>
-      </section>
+      <stripe-elements-demo label="Generate Token">
+        <stripe-elements slot="stripe" generate="token" publishable-key="${publishableKey}"> </stripe-elements>
+      </stripe-elements-demo>
     `
   }</Story>
 </Preview>
@@ -114,10 +99,10 @@ This is useful for simple validation in cases where you don't need to build your
 <Preview>
   <Story name="Error Display" height="120px">{
     html`
-      <section id="show-errror">
+      <article id="show-error">
         <stripe-elements publishable-key="should-error-use-bad-key" show-error> </stripe-elements>
         <mwc-button outlined @click="${event => event.target.parentElement.querySelector('stripe-elements').validate()}">Validate</mwc-button>
-      </section>
+      </article>
     `
   }</Story>
 </Preview>
@@ -145,10 +130,10 @@ stripe-elements[has-error] { border: 1px solid red; }
         #states stripe-elements[is-complete] { border: 1px solid blue; }
         #states stripe-elements[has-error] { border: 1px solid red; }
       </style>
-      <section id="states">
+      <article id="states">
         <stripe-elements publishable-key="${publishableKey}"> </stripe-elements>
         <mwc-button outlined @click="${event => event.target.parentElement.querySelector('stripe-elements').validate()}"> Validate</mwc-button>
-      </section>
+      </article>
     `
   }</Story>
 </Preview>
