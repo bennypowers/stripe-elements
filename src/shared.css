@@ -1,7 +1,10 @@
-[hidden] { display: none !important; }
+[hidden] {
+  display: none !important;
+}
 
 :host {
   display: block;
+  box-sizing: border-box;
 }
 
 #error {

@@ -14,6 +14,7 @@ const external = id =>
 export default {
   input: [
     'src/stripe-elements.js',
+    'src/stripe-payment-request.js',
   ],
   external,
   output: {

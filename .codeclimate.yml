@@ -1,8 +1,13 @@
 version: 2
+checks:
+   method-count:
+    config:
+      threshold: 30
 exclude_patterns:
   - "karma.conf.js"
   - "rollup.config.js"
   - "test/*"
+  - "stories/*"
   - "demo/*"
   - "**/*.test.js"
   - "**/*.d.ts"

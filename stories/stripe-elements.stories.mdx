@@ -57,9 +57,9 @@ Enter your publishable key here (use the test key, not the production key) to ru
 <Preview>
   <Story name="Generate a PaymentMethod" height="220px">{
     html`
-      <stripe-elements-demo label="Generate PaymentMethod">
+      <elements-demo label="Generate PaymentMethod">
         <stripe-elements slot="stripe" generate="payment-method" publishable-key="${publishableKey}"> </stripe-elements>
-      </stripe-elements-demo>
+      </elements-demo>
     `
   }</Story>
 </Preview>
@@ -69,9 +69,9 @@ Enter your publishable key here (use the test key, not the production key) to ru
 <Preview>
   <Story name="Generate a Source" height="220px">{
     html`
-      <stripe-elements-demo label="Generate Source">
+      <elements-demo label="Generate Source">
         <stripe-elements slot="stripe" generate="source" publishable-key="${publishableKey}"> </stripe-elements>
-      </stripe-elements-demo>
+      </elements-demo>
     `
   }</Story>
 </Preview>
@@ -84,9 +84,9 @@ you may generate a token from the filled-out form by calling the `createToken()`
 <Preview>
   <Story name="Generate a Token" height="220px">{
     html`
-      <stripe-elements-demo label="Generate Token">
+      <elements-demo label="Generate Token">
         <stripe-elements slot="stripe" generate="token" publishable-key="${publishableKey}"> </stripe-elements>
-      </stripe-elements-demo>
+      </elements-demo>
     `
   }</Story>
 </Preview>
@@ -116,19 +116,28 @@ These properties to their dash-cased attributes,
 so you can use CSS to style your element in its various states.
 
 ```css
-stripe-elements[is-empty] { border: 1px solid rebeccapurple; }
-stripe-elements[is-complete] { border: 1px solid blue; }
-stripe-elements[has-error] { border: 1px solid red; }
+.StripeElement {
+  border: none;
+  box-shadow: none;
+}
+
+stripe-elements {
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
+stripe-elements[is-complete] { border-color: rebeccapurple; }
+stripe-elements[has-error] { border-color: salmon; }
 ```
 
 <Preview>
   <Story name="Validation States" height="120px">{
     html`
       <style>
-        #states stripe-elements { border-radius: 4px; }
-        #states stripe-elements[is-empty] { border: 1px solid rebeccapurple; }
-        #states stripe-elements[is-complete] { border: 1px solid blue; }
-        #states stripe-elements[has-error] { border: 1px solid red; }
+      #states .StripeElement { border: none; box-shadow: none; }
+      #states stripe-elements { border-radius: 4px; border: 2px solid transparent; }
+      #states stripe-elements[is-complete] { border-color: rebeccapurple; }
+      #states stripe-elements[has-error] { border-color: salmon; }
       </style>
       <article id="states">
         <stripe-elements publishable-key="${publishableKey}"> </stripe-elements>
@@ -160,7 +169,7 @@ For simple integrations, you can automatically post the source or token to your 
             publishable-key="${publishableKey}"
             generate="token"
             action="/my-endpoint"
-            @stripe-payment-success="${onSuccess}"
+            @success="${onSuccess}"
         > </stripe-elements>
         <mwc-button class="generate" outlined @click="${onClick}">Submit and POST</mwc-button>
         <output> </output>
@@ -244,8 +253,8 @@ class PaymentForm extends LitElement {
 
       <stripe-elements
           publishable-key="${PUBLISHABLE_KEY}"
-          @stripe-change="${this.onChange}"
-          @stripe-source="${this.onSource}"
+          @change="${this.onChange}"
+          @source="${this.onSource}"
       ></stripe-elements>
 
       <json-viewer .object="${ifDefined(this.source)}"></json-viewer>
@@ -280,9 +289,9 @@ class PaymentForm extends LitElement {
   <article>
     <stripe-elements
       ref="stripe"
-      @stripe-change="onChange"
-      @stripe-token="onToken"
-      @stripe-error="onError"
+      @change="onChange"
+      @token="onToken"
+      @error="onError"
       :publishable-key="publishableKey"
     ></stripe-elements>
 
@@ -342,9 +351,9 @@ import { PUBLISHABLE_KEY } from './config';
 const template = `
   <stripe-elements
     #stripe
-    (stripe-change)="disabled = !$event.target.isComplete"
-    (stripe-token)="token = $event.detail"
-    (stripe-error)="error = $event.detail"
+    (change)="disabled = !$event.target.isComplete"
+    (token)="token = $event.detail"
+    (error)="error = $event.detail"
     [publishableKey]="publishableKey"
   ></stripe-elements>
 
@@ -406,9 +415,9 @@ function App() {
       .then(setToken);
 
   useEffect(() => {
-    stripeRef.current.addEventListener("stripe-change", onChange);
-    stripeRef.current.addEventListener("stripe-error", onError);
-    stripeRef.current.addEventListener("stripe-token", onToken);
+    stripeRef.current.addEventListener("change", onChange);
+    stripeRef.current.addEventListener("error", onError);
+    stripeRef.current.addEventListener("token", onToken);
     buttonRef.current.addEventListener("click", onClick);
     buttonRef.current.disabled = disabled;
     if (token || error) viewerRef.current.object = token;
@@ -464,9 +473,9 @@ export default function App() {
     <article className="App">
       <stripe-elements
         ref={stripeRef}
-        onstripe-change={onChange}
-        onstripe-error={onError}
-        onstripe-token={onToken}
+        onchange={onChange}
+        onerror={onError}
+        ontoken={onToken}
         publishable-key={publishableKey}
       />
       <mwc-button onClick={onClick} disabled={disabled}>Submit</mwc-button>

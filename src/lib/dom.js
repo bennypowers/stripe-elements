@@ -18,3 +18,14 @@ export const appendTemplate = curry(function appendTemplate(template, target) {
   tmp.remove();
   return firstElementChild;
 });
+
+const mapPropEntry = mapping => ([key, value]) =>
+  key in mapping &&
+    typeof mapping[key] === 'function' ?
+    [key, mapping[key](value)]
+    : [key, value];
+
+export const mapProps = mapping => obj =>
+  Object.fromEntries(Object.entries(obj).map(mapPropEntry(mapping)));
+
+export const mapDataset = f => ({ dataset }) => f(dataset);

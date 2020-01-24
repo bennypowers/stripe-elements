@@ -1,31 +1,41 @@
 import 'chai-things';
 import 'sinon-chai';
 
-import { LitElement, html, customElement, query } from 'lit-element';
+import { LitElement, customElement, property, query } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
 
 import {
+  aTimeout,
   expect,
   fixture,
+  html,
   nextFrame,
   oneEvent,
+  unsafeStatic,
 } from '@open-wc/testing';
 import { spy, stub } from 'sinon';
 
-import { MockedStripeAPI, PUBLISHABLE_KEY } from './mock-stripe';
+import {
+  Stripe,
+  PUBLISHABLE_KEY,
+  addUserAgentCreditCard,
+  resetUserAgentCreditCards,
+} from './mock-stripe';
 import { dash } from '../src/lib/strings';
 
-const getTemplate = (props = {}) =>
-  html`<stripe-elements ...="${spreadProps(props)}"></stripe-elements>`;
+const getTemplate = (tagName, props = {}) =>
+  html`<${tagName} ...="${spreadProps(props)}"></${tagName}>`;
 
 /* eslint-disable no-unused-vars */
 @customElement('primary-host') class PrimaryHost extends LitElement {
-  @query('stripe-elements') nestedElement;
+  @property({ type: String }) tag;
+
+  get nestedElement() { return this.shadowRoot.querySelector(this.tag); }
 
   render() {
     return html`
       <h1>Other Primary Host Content</h1>
-      ${getTemplate({ publishableKey: PUBLISHABLE_KEY })}
+      ${getTemplate(unsafeStatic(this.tag), { publishableKey: PUBLISHABLE_KEY })}
     `;
   }
 }
@@ -33,73 +43,78 @@ const getTemplate = (props = {}) =>
 @customElement('secondary-host') class SecondaryHost extends LitElement {
   @query('primary-host') primaryHost;
 
-  render() { return html`<primary-host></primary-host>`; }
+  @property({ type: String }) tag;
+
+  render() { return html`<primary-host tag="${this.tag}"></primary-host>`; }
 }
 
 @customElement('tertiary-host') class TertiaryHost extends LitElement {
   @query('secondary-host') secondaryHost;
 
-  render() { return html`<secondary-host></secondary-host>`; }
+  @property({ type: String }) tag;
+
+  render() { return html`<secondary-host tag="${this.tag}"></secondary-host>`; }
 }
 /* eslint-enable no-unused-vars */
 
-const stripeMethodError = name => `<stripe-elements>: Stripe must be initialized before calling ${name}.`;
-
 /* CONSTANTS */
-export const NO_STRIPE_JS = `<stripe-elements> requires Stripe.js to be loaded first.`;
-export const NO_STRIPE_CONFIRM_CARD_ERROR = stripeMethodError('confirmCardPayment');
-export const NO_STRIPE_CREATE_PAYMENT_METHOD_ERROR = stripeMethodError('createPaymentMethod');
-export const NO_STRIPE_CREATE_SOURCE_ERROR = stripeMethodError('createSource');
-export const NO_STRIPE_CREATE_TOKEN_ERROR = stripeMethodError('createToken');
-export const INCOMPLETE_CC_ERROR = 'Credit card information is incomplete.';
-export const EMPTY_CC_ERROR = 'Credit card information is empty.';
+export const NO_STRIPE_JS_ERROR =
+  `requires Stripe.js to be loaded first.`;
 
-export const DEFAULT_PROPS = Object.freeze({
+export const NO_STRIPE_CONFIRM_CARD_ERROR =
+  'Stripe must be initialized before calling confirmCardPayment.';
+
+export const NO_STRIPE_CREATE_PAYMENT_METHOD_ERROR =
+  'Stripe must be initialized before calling createPaymentMethod.';
+
+export const NO_STRIPE_CREATE_SOURCE_ERROR =
+  'Stripe must be initialized before calling createSource.';
+
+export const NO_STRIPE_CREATE_TOKEN_ERROR =
+  'Stripe must be initialized before calling createToken.';
+
+export const INCOMPLETE_CC_ERROR =
+  'Credit card information is incomplete.';
+
+export const EMPTY_CC_ERROR =
+  'Credit card information is empty.';
+
+export const BASE_DEFAULT_PROPS = Object.freeze({
+  billingDetails: {},
+  paymentMethodData: {},
+  sourceData: {},
+  tokenData: {},
+  clientSecret: undefined,
+  generate: 'source',
   action: undefined,
-  brand: null,
-  card: null,
+  element: null,
   elements: null,
   error: null,
   hasError: false,
-  hideIcon: false,
-  hidePostalCode: false,
-  iconStyle: 'default',
-  isComplete: false,
-  isEmpty: true,
   publishableKey: undefined,
   paymentMethod: null,
+  showError: false,
   source: null,
   stripe: null,
   token: null,
-  value: {},
 });
 
-export const READ_ONLY_PROPS = Object.freeze([
-  'brand',
-  'card',
-  'elements',
+export const BASE_READ_ONLY_PROPS = Object.freeze([
+  'element',
+  'stripe',
   'error',
   'hasError',
-  'isComplete',
-  'isEmpty',
   'paymentMethod',
   'source',
-  'stripe',
-  'stripeReady',
   'token',
 ]);
 
-export const NOTIFYING_PROPS = Object.freeze([
-  'brand',
-  'card',
+export const BASE_NOTIFYING_PROPS = Object.freeze([
   'error',
   'hasError',
-  'isComplete',
-  'isEmpty',
   'paymentMethod',
   'publishableKey',
   'source',
-  'stripeReady',
   'token',
 ]);
 
@@ -134,12 +149,16 @@ export let fetchStub;
 export let element;
 export let initialStripeMountId;
 export let initialStripe;
+export const events = new Map();
 
 export function resetTestState() {
   element = undefined;
   initialStripeMountId = undefined;
   initialStripe = undefined;
+  events.clear();
   document.getElementById('stripe-elements-custom-css-properties')?.remove();
+  document.getElementById('stripe-payment-request-custom-css-properties')?.remove();
+  document.querySelectorAll('.artificially-appended-styles').forEach(el => el.remove());
 }
 
 const ALL_BLUE_STYLE_TAG = document.createElement('style');
@@ -148,15 +167,21 @@ ALL_BLUE_STYLE_TAG.textContent = `html {
   ${ALL_BLUE_STYLES.join('\n')}
 }`;
 
+const HEIGHT_STYLE_TAG = document.createElement('style');
+HEIGHT_STYLE_TAG.id = 'height-styles';
+HEIGHT_STYLE_TAG.textContent = `html {
+  --stripe-payment-request-button-height:1000px;
+}`;
+
 export const noop = () => {};
 
 export const assignedNodes = el => el.assignedNodes();
 
-export const mountLightDOM = ({ stripeMountId }) =>
-  `<div id="${stripeMountId}" class="stripe-elements-mount"></div>`;
+export const mountLightDOM = ({ stripeMountId, tagName = element.constructor.is }) =>
+  `<div id="${stripeMountId}" class="${`${tagName.toLowerCase()}-mount`}"></div>`;
 
-export const expectedLightDOM = ({ stripeMountId }) =>
-  `<div slot="stripe-card">${mountLightDOM({ stripeMountId })}</div> `;
+export const expectedLightDOM = ({ stripeMountId, tagName }) =>
+  `<div slot="stripe-card">${mountLightDOM({ stripeMountId, tagName })}</div> `;
 
 /* MOCKS, STUBS, AND SPIES */
 
@@ -178,6 +203,29 @@ class MockShadyCSS {
   restore() {
     this.ScopingShim.adoptedCssTextMap = {};
   }
+}
+
+export function mockCanMakePayment() {
+  addUserAgentCreditCard({
+    cardNumber: '4242424242424242',
+    cvc: '424',
+    billingDetails: {
+      owner: {
+        name: 'Mr. Man',
+        email: 'mr@man.email',
+        phone: '5555555555',
+      },
+      address: {
+        line1: '123 test st',
+        city: 'testington',
+        country: 'ca',
+      },
+    },
+  });
+}
+
+export function restoreCanMakePayment() {
+  resetUserAgentCreditCards();
 }
 
 export function mockShadyCSS() {
@@ -206,7 +254,7 @@ export function restoreShadyDOM() {
 }
 
 export function mockStripe() {
-  window.Stripe = (key, opts) => new MockedStripeAPI(key, opts);
+  window.Stripe = (key, opts) => new Stripe(key, opts);
 }
 
 export function restoreStripe() {
@@ -214,7 +262,7 @@ export function restoreStripe() {
 }
 
 export function spyCardClear() {
-  spy(element.card, 'clear');
+  if (element?.card?.clear) spy(element.card, 'clear');
 }
 
 export function restoreCardClear() {
@@ -240,8 +288,16 @@ export function restoreFetch() {
 
 /* FIXTURE */
 
+export function setupWithTemplate(template) {
+  return async function() {
+    element = await fixture(template);
+  };
+}
+
 export async function setupNoProps() {
-  element = await fixture(getTemplate());
+  const [describeTitle] = this.test.titlePath();
+  const tagName = unsafeStatic(describeTitle.replace(/<(.*)>/, '$1'));
+  element = await fixture(getTemplate(tagName));
 }
 
 export async function updateComplete() {
@@ -250,7 +306,9 @@ export async function updateComplete() {
 
 export function setupWithPublishableKey(publishableKey) {
   return async function setup() {
-    element = await fixture(getTemplate({ publishableKey }));
+    const [describeTitle] = this.test.titlePath();
+    const tagName = unsafeStatic(describeTitle.replace(/<(.*)>/, '$1'));
+    element = await fixture(getTemplate(tagName, { publishableKey }));
     await element.updateComplete;
     initialStripe = element.stripe;
   };
@@ -269,31 +327,99 @@ export function removeAllBlueStyleTag() {
   document.getElementById('all-blue-styles').remove();
 }
 
+export function appendHeightStyleTag() {
+  document.head.appendChild(HEIGHT_STYLE_TAG);
+}
+
+export function removeHeightStyleTag() {
+  document.getElementById('height-styles').remove();
+}
+
 let appendedGlobalStyleTag;
 export function appendGlobalStyles() {
+  const [describeTitle] = this.test.titlePath();
+  const tagName = describeTitle.replace(/<(.*)>/, '$1');
   appendedGlobalStyleTag = document.createElement('style');
-  appendedGlobalStyleTag.id = 'stripe-elements-custom-css-properties';
+  appendedGlobalStyleTag.classList.add('artificially-appended-styles');
+  appendedGlobalStyleTag.id = `${tagName}-custom-css-properties`;
   document.head.appendChild(appendedGlobalStyleTag);
 }
 
 export function restoreAppended() {
+  document.querySelectorAll('.artificially-appended-styles').forEach(el => el.remove());
   appendedGlobalStyleTag = undefined;
+}
+
+export function listenFor(eventType) {
+  return async function() {
+    events.set(eventType, oneEvent(element, eventType));
+  };
+}
+
+export function awaitEvent(eventType) {
+  return async function() {
+    await events.get(eventType);
+  };
+}
+
+export function sleep(ms) {
+  return async function() {
+    await aTimeout(ms);
+  };
 }
 
 /* ASSERTIONS */
 
-export function assertProps(props) {
-  const assertEntry = ([name, value]) => expect(element[name]).to.equal(value);
+export function assertCalled(stub) {
   return function() {
-    return async function() {
-      await element.updateComplete;
-      Object.entries(props).forEach(assertEntry);
-    };
+    expect(stub).to.have.been.called;
+  };
+}
+
+export function assertFired(eventType) {
+  return async function() {
+    expect(await events.get(eventType), eventType).to.be.an.instanceof(Event);
+  };
+}
+
+export function assertEventDetail(eventType, expected) {
+  return async function() {
+    const { detail } = await events.get(eventType);
+    expect(detail, `${eventType} detail`).to.deep.equal(expected);
+  };
+}
+
+export function assertProps(props, { deep } = {}) {
+  return async function() {
+    await element.updateComplete;
+    Object.entries(props).forEach(([name, value]) => {
+      if (deep) expect(element[name]).to.deep.equal(value);
+      else expect(element[name]).to.equal(value);
+    });
+  };
+}
+
+export function assertErrorMessage(message) {
+  return function() {
+    expect(element.error?.message).to.equal(message);
+  };
+}
+
+export function assertPropsOk(props, { not } = {}) {
+  return async function() {
+    await element.updateComplete;
+    props.forEach(prop =>
+      not ? expect(element[prop]).to.not.be.ok
+      : expect(element[prop]).to.be.ok
+    );
   };
 }
 
 export function assertHasOneGlobalStyleTag() {
-  const queried = document.querySelectorAll('#stripe-elements-custom-css-properties');
+  const tagName = this.test.titlePath().shift().replace(/<(.*)>/, '$1');
+  appendedGlobalStyleTag = document.createElement('style');
+  appendedGlobalStyleTag.id = `${tagName}-custom-css-properties`;
+  const queried = document.querySelectorAll(`#${tagName}-custom-css-properties`);
   expect(queried.length).to.equal(1);
 }
 
@@ -331,10 +457,10 @@ export function testReadonlyNotifyingProp(name) {
   });
 }
 
-export async function assertFiresStripeChange() {
-  const name = 'stripe-change';
-  const { type } = await oneEvent(element, name);
-  expect(type).to.equal(name);
+export function assertElementErrorMessage(message) {
+  return function() {
+    expect(element.error.message).to.equal(`<${element.constructor.is}>: ${message}`);
+  };
 }
 
 /* ELEMENT METHODS */
@@ -383,9 +509,15 @@ export function setProps(props) {
   };
 }
 
-export function synthStripeEvent(...args) {
+export function synthCardEvent(...args) {
   return function() {
-    element.card.synthEvent(...args);
+    element.element.synthEvent(...args);
+  };
+}
+
+export function synthPaymentRequestEvent(...args) {
+  return function() {
+    element.paymentRequest.synthEvent(...args);
   };
 }
 
