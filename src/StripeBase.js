@@ -1,33 +1,63 @@
-import { LitElement, property } from 'lit-element';
+import { LitElement, property, html } from 'lit-element';
 import { LitNotify } from '@morbidick/lit-element-notify';
 
+import { ifDefined } from 'lit-html/directives/if-defined';
 import bound from 'bound-decorator';
 
 import { ReadOnlyPropertiesMixin } from './lib/read-only-properties';
-import { dash } from './lib/strings';
+import { appendTemplate, remove } from './lib/dom';
+import { dash, generateRandomMountElementId } from './lib/strings';
 import { isRepresentation } from './lib/predicates';
-import { stripeMethod } from './stripe-method-decorator';
+import { stripeMethod } from './lib/stripe-method-decorator';
 import { throwBadResponse } from './lib/fetch';
 
-/** @typedef {stripe.PaymentIntentResponse|stripe.PaymentMethodResponse|stripe.SetupIntentResponse|stripe.TokenResponse|stripe.SourceResponse} PaymentResponse */
-/** @typedef {{ owner: stripe.OwnerData }} SourceData */
+class StripeElementsError extends Error {
+  constructor(tag, message) {
+    super(`<${tag}>: ${message}`);
+  }
+}
+
+/* istanbul ignore next */
+const removeAllMounts = host =>
+  host.querySelectorAll('[slot="stripe-card"][name="stripe-card"]')
+    .forEach(remove);
+
+const slotTemplate =
+  html`<slot slot="stripe-card" name="stripe-card"></slot>`;
+
+const mountPointTemplate = ({ stripeMountId, tagName }) =>
+  html`<div id="${ifDefined(stripeMountId)}" class="${tagName.toLowerCase()}-mount"></div>`;
+
 
 /**
- * @fires 'stripe-error' - The validation error, or the error returned from stripe.com
- * @fires 'stripe-payment-intent' - The PaymentIntent received from stripe.com
- * @fires 'stripe-payment-method' - The PaymentMethod received from stripe.com
- * @fires 'stripe-source' - The Source received from stripe.com
- * @fires 'stripe-token' - The Token received from stripe.com
+ * @fires 'error' - The validation error, or the error returned from stripe.com
+ * @fires 'payment-method' - The PaymentMethod received from stripe.com
+ * @fires 'source' - The Source received from stripe.com
+ * @fires 'token' - The Token received from stripe.com
+ * @fires 'success' - When a payment succeeds
+ *
+ * @fires 'stripe-error' - DEPRECATED. Will be removed in a future major version.
+ * @fires 'stripe-payment-method' - DEPRECATED. Will be removed in a future major version.
+ * @fires 'stripe-source' - DEPRECATED. Will be removed in a future major version
+ * @fires 'stripe-token' - DEPRECATED. Will be removed in a future major version.
  *
  * @fires 'error-changed' - The new value of error
  * @fires 'has-error-changed' - The new value of has-error
- * @fires 'payment-intent-changed' - The new value of payment-intent
  * @fires 'payment-method-changed' - The new value of payment-method
  * @fires 'publishable-key-changed' - The new value of publishable-key
  * @fires 'source-changed' - The new value of source
  * @fires 'token-changed' - The new value of token
  */
 export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
+  /** @private */
+  static applyCustomCss() {
+    const id = `${this.is}-custom-css-properties`;
+    if (!document.getElementById(id)) {
+      const globalStyles = this.globalStyles.cssText;
+      appendTemplate(html`<style id="${id}">${globalStyles}</style>`, document.head);
+    }
+  }
+
   /* PAYMENT CONFIGURATION */
 
   /**
@@ -58,7 +88,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
 
   /**
    * Stripe PaymentMethod
-   * @type {stripe.PaymentMethod}
+   * @type {stripe.paymentMethod.PaymentMethod}
    * @readonly
    */
   @property({
@@ -103,6 +133,12 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @type {string}
    */
   @property({ type: String }) action;
+
+  /**
+   * The `client_secret` part of a Stripe `PaymentIntent`
+   * @type {String}
+   */
+  @property({ type: String, attribute: 'client-secret' }) clientSecret;
 
   /**
    * Type of payment representation to generate.
@@ -171,16 +207,52 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /* PRIVATE FIELDS */
 
   /**
-   * The id for the stripe mount point
-   * @type {string}
+   * Breadcrumbs back up to the document.
+   * @type {Node[]}
    * @private
    */
-  stripeMountId;
+  shadowHosts = [];
+
+  /**
+   * Stripe.js mount point element. Due to limitations in the Stripe.js library, this element must be connected to the document.
+   * @type {Element}
+   */
+  get stripeMount() { return document.getElementById(this.stripeMountId); }
+
+  /**
+   * Stripe.js mount point element id. Due to limitations in the Stripe.js library, this element must be connected to the document.
+   * @type {string}
+   * @protected
+   */
+  stripeMountId = generateRandomMountElementId();
 
   /* LIFECYCLE */
 
   /** @inheritdoc */
+  connectedCallback() {
+    super.connectedCallback();
+    this.constructor.applyCustomCss();
+  }
+
+  /** @inheritdoc */
+  render() {
+    const { error, showError } = this;
+    const { message: errorMessage = '' } = error || {};
+    return html`
+      <slot id="stripe-slot" name="stripe-card"></slot>
+      <div id="error" part="error" ?hidden="${!showError}">${errorMessage || error}</div>
+    `;
+  }
+
+  /** @inheritdoc */
+  firstUpdated() {
+    this.destroyMountPoints();
+    this.initMountPoints();
+  }
+
+  /** @inheritdoc */
   updated(changed) {
+    super.updated?.(changed);
     if (changed.has('error')) this.errorChanged();
     if (changed.has('publishableKey')) this.init();
     [...changed.keys()].forEach(this.representationChanged);
@@ -233,7 +305,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
       case 'source': return this.createSource();
       case 'token': return this.createToken();
       default: {
-        const error = new Error(`<${this.constructor.is}>: cannot generate ${this.generate}`);
+        const error = this.createError(`cannot generate ${this.generate}`);
         await this.set({ error });
         throw error;
       }
@@ -241,6 +313,10 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   }
 
   /* PRIVATE API */
+
+  createError(message) {
+    return new StripeElementsError(this.constructor.is, message);
+  }
 
   /** @private */
   async errorChanged() {
@@ -267,7 +343,20 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @private
    */
   fireError(error) {
+    this.dispatchEvent(new ErrorEvent('error', { error }));
+    // DEPRECATED
     this.dispatchEvent(new ErrorEvent('stripe-error', { bubbles: true, error }));
+  }
+
+  /**
+   * Gets a CSS Custom Property value, respecting ShadyCSS.
+   * @param  {string} propertyName    CSS Custom Property
+   * @param  {CSSStyleDeclaration}    [precomputedStyle] pre-computed style declaration
+   * @return {any}
+   */
+  getCSSCustomPropertyValue(propertyName, precomputedStyle) {
+    if (window.ShadyCSS) return ShadyCSS.getComputedStyleValue(this, propertyName);
+    else return precomputedStyle.getPropertyValue(propertyName);
   }
 
   /**
@@ -284,6 +373,63 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   }
 
   /**
+   * Reinitializes Stripe and mounts the element.
+   * @private
+   */
+  async init() {
+    this.destroyMountPoints();
+    this.initMountPoints();
+    await this.unmount();
+    await this.initStripe();
+    await this.initElement();
+    await this.mount();
+  }
+
+  /** @private */
+  destroyMountPoints() {
+    this.shadowHosts.forEach(removeAllMounts);
+    if (this.stripeMount) this.stripeMount.remove();
+  }
+
+  /** @private */
+  initMountPoints() {
+    this.stripeMountId = generateRandomMountElementId();
+    if (window.ShadyDOM) appendTemplate(mountPointTemplate(this), this);
+    else this.initShadowMountPoints();
+  }
+
+  /**
+   * Prepares to mount Stripe Elements in light DOM.
+   * @private
+   */
+  initShadowMountPoints() {
+    // trace each shadow boundary between us and the document
+    let host = this;
+    this.shadowHosts = [this];
+    while (host = host.getRootNode().host) this.shadowHosts.push(host); // eslint-disable-line prefer-destructuring, no-loops/no-loops
+
+    const { shadowHosts } = this;
+
+    // Prepare the shallowest breadcrumb slot at document level
+    const hosts = [...shadowHosts];
+    const root = hosts.pop();
+    if (!root.querySelector('[slot="stripe-card"]')) {
+      const div = document.createElement('div');
+      div.slot = 'stripe-card';
+      root.appendChild(div);
+    }
+
+    const container = root.querySelector('[slot="stripe-card"]');
+
+    // Render the form to the document, so that Stripe.js can mount
+    appendTemplate(mountPointTemplate(this), container);
+
+    // Append breadcrumb slots to each shadowroot in turn,
+    // from the document down to the <stripe-elements> instance.
+    hosts.forEach(appendTemplate(slotTemplate));
+  }
+
+  /**
    * Initializes Stripe and elements.
    * @private
    */
@@ -291,9 +437,28 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     const { publishableKey } = this;
     const stripe = (window.Stripe && publishableKey) ? Stripe(publishableKey) : null;
     const elements = stripe && stripe.elements();
-    const error = stripe ? null : new Error(`<${this.constructor.is}> requires Stripe.js to be loaded first.`);
+    const error = stripe ? null : this.createError('requires Stripe.js to be loaded first.');
     if (error) console.warn(error.message); // eslint-disable-line no-console
     await this.set({ elements, error, stripe });
+  }
+
+  /**
+   * Mounts the Stripe Element
+   * @private
+   */
+  async mount() {
+    /* istanbul ignore next */
+    if (!this.stripeMount) throw this.createError('Stripe Mount missing');
+    this.element?.mount(this.stripeMount);
+  }
+
+  /**
+   * Unmounts and nullifies the card.
+   * @private
+   */
+  async unmount() {
+    this.element?.unmount();
+    await this.set({ element: null });
   }
 
   /**
@@ -309,7 +474,11 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     const method = 'POST';
     return fetch(this.action, { body, headers, method })
       .then(throwBadResponse)
-      .then(success => this.fire('stripe-payment-success', success))
+      .then(success => {
+        this.fire('success', success);
+        // DEPRECATED
+        this.fire('stripe-payment-success', success);
+      })
       .catch(error => this.set({ error }));
   }
 
@@ -322,18 +491,21 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     const value = this[name];
     /* istanbul ignore if */
     if (!value) return;
+    // DEPRECATED
     this.fire(`stripe-${dash(name)}`, value);
+    this.fire(`${dash(name)}`, value);
     if (this.action) this.postRepresentation();
   }
 
   /** @private */
   resetRepresentations() {
     this.set({
-      paymentIntent: null,
       paymentMethod: null,
       token: null,
       source: null,
-      setupIntent: null,
     });
   }
 }
+
+/** @typedef {stripe.PaymentIntentResponse|stripe.PaymentMethodResponse|stripe.SetupIntentResponse|stripe.TokenResponse|stripe.SourceResponse} PaymentResponse */
+/** @typedef {{ owner: stripe.OwnerData }} SourceData */

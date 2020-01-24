@@ -60,7 +60,7 @@
         {
           "name": "payment-method",
           "description": "Stripe PaymentMethod",
-          "type": "stripe.PaymentMethod"
+          "type": "stripe.paymentMethod.PaymentMethod"
         },
         {
           "name": "source",
@@ -76,6 +76,11 @@
           "name": "action",
           "description": "If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),\nthe element will POST JSON data to this URL with an object containing\na key equal to the value of the `generate` property.",
           "type": "string"
+        },
+        {
+          "name": "client-secret",
+          "description": "The `client_secret` part of a Stripe `PaymentIntent`",
+          "type": "String"
         },
         {
           "name": "generate",
@@ -184,11 +189,6 @@
           "default": "false"
         },
         {
-          "name": "stripeMount",
-          "description": "Stripe Element mount point",
-          "type": "Element"
-        },
-        {
           "name": "billingDetails",
           "description": "billing_details object sent to create the payment representation. (optional)",
           "type": "stripe.BillingDetails",
@@ -216,7 +216,7 @@
           "name": "paymentMethod",
           "attribute": "payment-method",
           "description": "Stripe PaymentMethod",
-          "type": "stripe.PaymentMethod"
+          "type": "stripe.paymentMethod.PaymentMethod"
         },
         {
           "name": "source",
@@ -235,6 +235,12 @@
           "attribute": "action",
           "description": "If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),\nthe element will POST JSON data to this URL with an object containing\na key equal to the value of the `generate` property.",
           "type": "string"
+        },
+        {
+          "name": "clientSecret",
+          "attribute": "client-secret",
+          "description": "The `client_secret` part of a Stripe `PaymentIntent`",
+          "type": "String"
         },
         {
           "name": "generate",
@@ -286,16 +292,29 @@
           "attribute": "stripe",
           "description": "Stripe instance",
           "type": "stripe.Stripe"
+        },
+        {
+          "name": "stripeMount",
+          "description": "Stripe.js mount point element. Due to limitations in the Stripe.js library, this element must be connected to the document.",
+          "type": "Element"
         }
       ],
       "events": [
         {
-          "name": "stripe-change",
+          "name": "change",
           "description": "Stripe Element change event"
         },
         {
-          "name": "stripe-ready",
+          "name": "ready",
           "description": "Stripe has been initialized and mounted"
+        },
+        {
+          "name": "stripe-change",
+          "description": "DEPRECATED. Will be removed in a future major version"
+        },
+        {
+          "name": "stripe-ready",
+          "description": "DEPRECATED. Will be removed in a future major version"
         },
         {
           "name": "brand-changed",
@@ -318,24 +337,40 @@
           "description": "The new value of stripe-ready"
         },
         {
-          "name": "stripe-error",
+          "name": "error",
           "description": "The validation error, or the error returned from stripe.com"
         },
         {
-          "name": "stripe-payment-intent",
-          "description": "The PaymentIntent received from stripe.com"
-        },
-        {
-          "name": "stripe-payment-method",
+          "name": "payment-method",
           "description": "The PaymentMethod received from stripe.com"
         },
         {
-          "name": "stripe-source",
+          "name": "source",
           "description": "The Source received from stripe.com"
         },
         {
-          "name": "stripe-token",
+          "name": "token",
           "description": "The Token received from stripe.com"
+        },
+        {
+          "name": "success",
+          "description": "When a payment succeeds"
+        },
+        {
+          "name": "stripe-error",
+          "description": "DEPRECATED. Will be removed in a future major version."
+        },
+        {
+          "name": "stripe-payment-method",
+          "description": "DEPRECATED. Will be removed in a future major version."
+        },
+        {
+          "name": "stripe-source",
+          "description": "DEPRECATED. Will be removed in a future major version"
+        },
+        {
+          "name": "stripe-token",
+          "description": "DEPRECATED. Will be removed in a future major version."
         },
         {
           "name": "error-changed",
@@ -344,10 +379,6 @@
         {
           "name": "has-error-changed",
           "description": "The new value of has-error"
-        },
-        {
-          "name": "payment-intent-changed",
-          "description": "The new value of payment-intent"
         },
         {
           "name": "payment-method-changed",
@@ -542,6 +573,448 @@
         {
           "name": "--stripe-elements-invalid-text-transform",
           "description": "`text-transform` property for the element in its invalid state"
+        }
+      ]
+    },
+    {
+      "name": "stripe-payment-request",
+      "description": "Custom element wrapper for Stripe.js v3 Payment Request Buttons.\n\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--enter-a-stripe-publishable-key) 👀\n\n### 🧙‍♂️ Usage\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\n\n```html\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-payment-request.js\"></script>\n```\n\nAlternatively, load the module from the unpkg CDN\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-payment-request.js?module\"></script>\n```\n\nThen you can add the element to your page.\n\n```html\n\n<stripe-payment-request id=\"payment-request\"\n     publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\n     generate=\"token\"\n     action=\"/charges\"\n     country=\"CA\"\n     currency=\"cad\"\n     amount=\"1000\"\n     label=\"Ten Bones\"\n     request-payer-name\n     request-payer-email\n     request-payer-phone\n></stripe-payment-request>\n```\n\nSee the demos for more comprehensive examples.\n   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-plain-html-and-javascript).\n   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-lit-element).\n   - Using `<stripe-payment-request>` in a [Polymer Element](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-polymer-element).\n   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-vue-component).\n   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-an-angular-component).\n   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-react-component).\n   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-preact-component).",
+      "attributes": [
+        {
+          "name": "amount",
+          "description": "The amount in the currency's subunit (e.g. cents, yen, etc.)",
+          "type": "number"
+        },
+        {
+          "name": "can-make-payment",
+          "description": "Whether or not the device can make the payment request.",
+          "type": "object"
+        },
+        {
+          "name": "country",
+          "description": "The two-letter country code of your Stripe account (e.g., `US`)",
+          "type": "string"
+        },
+        {
+          "name": "currency",
+          "description": "Three character currency code (e.g., `usd`)",
+          "type": "string"
+        },
+        {
+          "name": "displayItems",
+          "description": "An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.",
+          "type": "stripe.paymentRequest.DisplayItem[]"
+        },
+        {
+          "name": "label",
+          "description": "A name that the browser shows the customer in the payment interface.",
+          "type": "string"
+        },
+        {
+          "name": "payment-intent",
+          "description": "Stripe PaymentIntent",
+          "type": "stripe.paymentIntents.PaymentIntent"
+        },
+        {
+          "name": "payment-request",
+          "description": "Stripe PaymentRequest",
+          "type": "stripe.paymentRequest.StripePaymentRequest"
+        },
+        {
+          "name": "pending",
+          "description": "If you might change the payment amount later (for example, after you have calcluated shipping costs), set this to true. Note that browsers treat this as a hint for how to display things, and not necessarily as something that will prevent submission.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "request-payer-email",
+          "description": "See the requestPayerName option.",
+          "type": "boolean"
+        },
+        {
+          "name": "request-payer-name",
+          "description": "By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.\n\nWe highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available.",
+          "type": "boolean"
+        },
+        {
+          "name": "request-payer-phone",
+          "description": "See the requestPayerName option.",
+          "type": "boolean"
+        },
+        {
+          "name": "request-shipping",
+          "description": "Collect shipping address by setting this option to true. The address appears in the PaymentResponse.\nYou must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback.",
+          "type": "boolean"
+        },
+        {
+          "name": "shippingOptions",
+          "description": "An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.",
+          "type": "stripe.paymentRequest.ShippingOption[]"
+        },
+        {
+          "name": "button-type",
+          "type": "'default'|'book'|'buy'|'donate'",
+          "default": "\"default\""
+        },
+        {
+          "name": "button-theme",
+          "type": "'dark'|'light'|'light-outline'",
+          "default": "\"dark\""
+        },
+        {
+          "name": "payment-method",
+          "description": "Stripe PaymentMethod",
+          "type": "stripe.paymentMethod.PaymentMethod"
+        },
+        {
+          "name": "source",
+          "description": "Stripe Source",
+          "type": "stripe.Source"
+        },
+        {
+          "name": "token",
+          "description": "Stripe Token",
+          "type": "stripe.Token"
+        },
+        {
+          "name": "action",
+          "description": "If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),\nthe element will POST JSON data to this URL with an object containing\na key equal to the value of the `generate` property.",
+          "type": "string"
+        },
+        {
+          "name": "client-secret",
+          "description": "The `client_secret` part of a Stripe `PaymentIntent`",
+          "type": "String"
+        },
+        {
+          "name": "generate",
+          "description": "Type of payment representation to generate.",
+          "type": "'payment-method'|'source'|'token'",
+          "default": "\"source\""
+        },
+        {
+          "name": "publishable-key",
+          "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
+          "type": "string"
+        },
+        {
+          "name": "show-error",
+          "description": "Whether to display the error message",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "element",
+          "description": "Stripe element instance",
+          "type": "stripe.elements.Element"
+        },
+        {
+          "name": "elements",
+          "description": "Stripe Elements instance",
+          "type": "stripe.elements.Elements"
+        },
+        {
+          "name": "error",
+          "description": "Stripe or validation error",
+          "type": "Error|stripe.Error"
+        },
+        {
+          "name": "has-error",
+          "description": "Whether the element has an error",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "stripe",
+          "description": "Stripe instance",
+          "type": "stripe.Stripe"
+        }
+      ],
+      "properties": [
+        {
+          "name": "amount",
+          "attribute": "amount",
+          "description": "The amount in the currency's subunit (e.g. cents, yen, etc.)",
+          "type": "number"
+        },
+        {
+          "name": "canMakePayment",
+          "attribute": "can-make-payment",
+          "description": "Whether or not the device can make the payment request.",
+          "type": "object"
+        },
+        {
+          "name": "country",
+          "attribute": "country",
+          "description": "The two-letter country code of your Stripe account (e.g., `US`)",
+          "type": "string"
+        },
+        {
+          "name": "currency",
+          "attribute": "currency",
+          "description": "Three character currency code (e.g., `usd`)",
+          "type": "string"
+        },
+        {
+          "name": "displayItems",
+          "attribute": "displayItems",
+          "description": "An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.",
+          "type": "stripe.paymentRequest.DisplayItem[]"
+        },
+        {
+          "name": "label",
+          "attribute": "label",
+          "description": "A name that the browser shows the customer in the payment interface.",
+          "type": "string"
+        },
+        {
+          "name": "paymentIntent",
+          "attribute": "payment-intent",
+          "description": "Stripe PaymentIntent",
+          "type": "stripe.paymentIntents.PaymentIntent"
+        },
+        {
+          "name": "paymentRequest",
+          "attribute": "payment-request",
+          "description": "Stripe PaymentRequest",
+          "type": "stripe.paymentRequest.StripePaymentRequest"
+        },
+        {
+          "name": "pending",
+          "attribute": "pending",
+          "description": "If you might change the payment amount later (for example, after you have calcluated shipping costs), set this to true. Note that browsers treat this as a hint for how to display things, and not necessarily as something that will prevent submission.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "requestPayerEmail",
+          "attribute": "request-payer-email",
+          "description": "See the requestPayerName option.",
+          "type": "boolean"
+        },
+        {
+          "name": "requestPayerName",
+          "attribute": "request-payer-name",
+          "description": "By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.\n\nWe highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available.",
+          "type": "boolean"
+        },
+        {
+          "name": "requestPayerPhone",
+          "attribute": "request-payer-phone",
+          "description": "See the requestPayerName option.",
+          "type": "boolean"
+        },
+        {
+          "name": "requestShipping",
+          "attribute": "request-shipping",
+          "description": "Collect shipping address by setting this option to true. The address appears in the PaymentResponse.\nYou must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback.",
+          "type": "boolean"
+        },
+        {
+          "name": "shippingOptions",
+          "attribute": "shippingOptions",
+          "description": "An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.",
+          "type": "stripe.paymentRequest.ShippingOption[]"
+        },
+        {
+          "name": "buttonType",
+          "attribute": "button-type",
+          "type": "'default'|'book'|'buy'|'donate'",
+          "default": "\"default\""
+        },
+        {
+          "name": "buttonTheme",
+          "attribute": "button-theme",
+          "type": "'dark'|'light'|'light-outline'",
+          "default": "\"dark\""
+        },
+        {
+          "name": "billingDetails",
+          "description": "billing_details object sent to create the payment representation. (optional)",
+          "type": "stripe.BillingDetails",
+          "default": "{}"
+        },
+        {
+          "name": "paymentMethodData",
+          "description": "Data passed to stripe.createPaymentMethod. (optional)",
+          "type": "stripe.PaymentMethodData",
+          "default": "{}"
+        },
+        {
+          "name": "sourceData",
+          "description": "Data passed to stripe.createSource. (optional)",
+          "type": "SourceData",
+          "default": "{}"
+        },
+        {
+          "name": "tokenData",
+          "description": "Data passed to stripe.createToken. (optional)",
+          "type": "stripe.TokenOptions",
+          "default": "{}"
+        },
+        {
+          "name": "paymentMethod",
+          "attribute": "payment-method",
+          "description": "Stripe PaymentMethod",
+          "type": "stripe.paymentMethod.PaymentMethod"
+        },
+        {
+          "name": "source",
+          "attribute": "source",
+          "description": "Stripe Source",
+          "type": "stripe.Source"
+        },
+        {
+          "name": "token",
+          "attribute": "token",
+          "description": "Stripe Token",
+          "type": "stripe.Token"
+        },
+        {
+          "name": "action",
+          "attribute": "action",
+          "description": "If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),\nthe element will POST JSON data to this URL with an object containing\na key equal to the value of the `generate` property.",
+          "type": "string"
+        },
+        {
+          "name": "clientSecret",
+          "attribute": "client-secret",
+          "description": "The `client_secret` part of a Stripe `PaymentIntent`",
+          "type": "String"
+        },
+        {
+          "name": "generate",
+          "attribute": "generate",
+          "description": "Type of payment representation to generate.",
+          "type": "'payment-method'|'source'|'token'",
+          "default": "\"source\""
+        },
+        {
+          "name": "publishableKey",
+          "attribute": "publishable-key",
+          "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
+          "type": "string"
+        },
+        {
+          "name": "showError",
+          "attribute": "show-error",
+          "description": "Whether to display the error message",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "element",
+          "attribute": "element",
+          "description": "Stripe element instance",
+          "type": "stripe.elements.Element"
+        },
+        {
+          "name": "elements",
+          "attribute": "elements",
+          "description": "Stripe Elements instance",
+          "type": "stripe.elements.Elements"
+        },
+        {
+          "name": "error",
+          "attribute": "error",
+          "description": "Stripe or validation error",
+          "type": "Error|stripe.Error"
+        },
+        {
+          "name": "hasError",
+          "attribute": "has-error",
+          "description": "Whether the element has an error",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "stripe",
+          "attribute": "stripe",
+          "description": "Stripe instance",
+          "type": "stripe.Stripe"
+        },
+        {
+          "name": "stripeMount",
+          "description": "Stripe.js mount point element. Due to limitations in the Stripe.js library, this element must be connected to the document.",
+          "type": "Element"
+        }
+      ],
+      "events": [
+        {
+          "name": "fail",
+          "description": "When a payment request fails"
+        },
+        {
+          "name": "cancel",
+          "description": "When a payment request is cancelled"
+        },
+        {
+          "name": "shippingaddresschange",
+          "description": "When the user chooses a different shipping address"
+        },
+        {
+          "name": "shippingoptionchange",
+          "description": "When the user chooses a different shipping option"
+        },
+        {
+          "name": "error",
+          "description": "The validation error, or the error returned from stripe.com"
+        },
+        {
+          "name": "payment-method",
+          "description": "The PaymentMethod received from stripe.com"
+        },
+        {
+          "name": "source",
+          "description": "The Source received from stripe.com"
+        },
+        {
+          "name": "token",
+          "description": "The Token received from stripe.com"
+        },
+        {
+          "name": "success",
+          "description": "When a payment succeeds"
+        },
+        {
+          "name": "stripe-error",
+          "description": "DEPRECATED. Will be removed in a future major version."
+        },
+        {
+          "name": "stripe-payment-method",
+          "description": "DEPRECATED. Will be removed in a future major version."
+        },
+        {
+          "name": "stripe-source",
+          "description": "DEPRECATED. Will be removed in a future major version"
+        },
+        {
+          "name": "stripe-token",
+          "description": "DEPRECATED. Will be removed in a future major version."
+        },
+        {
+          "name": "error-changed",
+          "description": "The new value of error"
+        },
+        {
+          "name": "has-error-changed",
+          "description": "The new value of has-error"
+        },
+        {
+          "name": "payment-method-changed",
+          "description": "The new value of payment-method"
+        },
+        {
+          "name": "publishable-key-changed",
+          "description": "The new value of publishable-key"
+        },
+        {
+          "name": "source-changed",
+          "description": "The new value of source"
+        },
+        {
+          "name": "token-changed",
+          "description": "The new value of token"
         }
       ]
     }

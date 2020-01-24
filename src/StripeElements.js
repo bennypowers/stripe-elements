@@ -1,64 +1,14 @@
 import { LitNotify } from '@morbidick/lit-element-notify';
-import { html, property } from 'lit-element';
+import { property } from 'lit-element';
 
-import { ifDefined } from 'lit-html/directives/if-defined';
 import bound from 'bound-decorator';
 
 import { StripeBase } from './StripeBase';
-import { appendTemplate, remove } from './lib/dom';
-import { dash, generateRandomMountElementId } from './lib/strings';
+import { dash } from './lib/strings';
+
 import sharedStyles from './shared.css';
 import style from './stripe-elements.css';
-
-/** @typedef {{ base?: stripe.elements.Style, complete?: stripe.elements.Style, empty?: stripe.elements.Style, invalid?: stripe.elements.Style}} StripeStyleInit */
-
-/* istanbul ignore next */
-const removeAllMounts = host =>
-  host.querySelectorAll('[slot="stripe-card"][name="stripe-card"]')
-    .forEach(remove);
-
-const slotTemplate =
-  html`<slot slot="stripe-card" name="stripe-card"></slot>`;
-
-const mountPointTemplate = ({ stripeMountId }) =>
-  html`<div id="${ifDefined(stripeMountId)}" class="stripe-elements-mount"></div>`;
-
-const stripeElementsCustomCssTemplate = document.createElement('template');
-stripeElementsCustomCssTemplate.id = 'stripe-elements-custom-css-properties';
-stripeElementsCustomCssTemplate.innerHTML = `
-  <style id="stripe-elements-custom-css-properties">
-    .StripeElement {
-      background-color: white;
-      padding: 8px 12px;
-      border-radius: 4px;
-      border: 1px solid transparent;
-      box-shadow: 0 1px 3px 0 #e6ebf1;
-      -webkit-transition: box-shadow 150ms ease;
-      transition: box-shadow 150ms ease;
-      min-width: var(--stripe-elements-width, 300px);
-      padding: var(--stripe-elements-element-padding, 14px);
-      background: var(--stripe-elements-element-background, initial);
-    }
-
-    .StripeElement--focus {
-      box-shadow: 0 1px 3px 0 #cfd7df;
-    }
-
-    .StripeElement--invalid {
-      border-color: #fa755a;
-    }
-
-    .StripeElement--webkit-autofill {
-      background-color: #fefde5 !important;
-    }
-  </style>
-`;
-
-function applyCustomCss() {
-  if (!document.getElementById('stripe-elements-custom-css-properties')) {
-    document.head.appendChild(stripeElementsCustomCssTemplate.content.cloneNode(true));
-  }
-}
+import globalStyles from './stripe-elements-global.css';
 
 const allowedStyles = [
   'color',
@@ -192,8 +142,11 @@ const allowedStyles = [
  * @element stripe-elements
  * @extends StripeBase
  *
- * @fires 'stripe-change' - Stripe Element change event
- * @fires 'stripe-ready' - Stripe has been initialized and mounted
+ * @fires 'change' - Stripe Element change event
+ * @fires 'ready' - Stripe has been initialized and mounted
+ *
+ * @fires 'stripe-change' - DEPRECATED. Will be removed in a future major version
+ * @fires 'stripe-ready' - DEPRECATED. Will be removed in a future major version
  *
  * @fires 'brand-changed' - The new value of brand
  * @fires 'card-changed' - The new value of card
@@ -205,6 +158,8 @@ export class StripeElements extends LitNotify(StripeBase) {
   static is = 'stripe-elements';
 
   static elementType = 'card';
+
+  static globalStyles = globalStyles;
 
   static styles = [
     sharedStyles,
@@ -292,47 +247,11 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /* PRIVATE FIELDS */
 
-  /**
-   * Breadcrumbs back up to the document.
-   * @type {Node[]}
-   * @private
-   */
-  shadowHosts = [];
-
-  /**
-   * Stripe Element mount point
-   * @type {Element}
-   */
-  get stripeMount() { return document.getElementById(this.stripeMountId); }
-
-  /**
-   * Mount Point Element id
-   * @type {string}
-   * @protected
-   */
-  stripeMountId;
-
   /* LIFECYCLE */
 
-  /** @inheritdoc */
-  connectedCallback() {
-    super.connectedCallback();
-    applyCustomCss();
-  }
-
-  /** @inheritdoc */
-  firstUpdated() {
-    this.resetMount();
-  }
-
-  /** @inheritdoc */
-  render() {
-    const { error, showError } = this;
-    const { message: errorMessage = '' } = error || {};
-    return html`
-      <slot id="stripe-slot" name="stripe-card"></slot>
-      <div id="error" part="error" ?hidden="${!showError}">${errorMessage || error}</div>
-    `;
+  updated(changed) {
+    super.updated(changed);
+    if (changed.has('element')) this.set({ card: this.element });
   }
 
   /* PUBLIC API */
@@ -360,7 +279,7 @@ export class StripeElements extends LitNotify(StripeBase) {
   validate() {
     const { isComplete, isEmpty, hasError } = this;
     const isValid = !hasError && isComplete && !isEmpty;
-    const error = new Error(`Credit card information is ${isEmpty ? 'empty' : 'incomplete'}.`);
+    const error = this.createError(`Credit card information is ${isEmpty ? 'empty' : 'incomplete'}.`);
     if (!isValid && !hasError) this.set({ error });
     return isValid;
   }
@@ -386,106 +305,33 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * Returns a Stripe-friendly style object computed from CSS custom properties
-   * @return {StripeStyleInit } Stripe Style initialization object.
+   * @return {StripeStyleInit} Stripe Style initialization object.
    * @private
    */
   getStripeElementsStyles() {
-    const computedStyle = window.ShadyCSS ? null : getComputedStyle(this);
-    return allowedStyles.reduce((acc, camelCase) => {
-      const dashCase = dash(camelCase);
-      Object.keys(acc).forEach(prefix => {
-        const customProperty = `--stripe-elements-${prefix}-${dashCase}`;
-        const propertyValue =
-          computedStyle ? computedStyle.getPropertyValue(customProperty)
-          : ShadyCSS.getComputedStyleValue(this, customProperty);
-        acc[prefix][camelCase] = propertyValue || undefined;
-      });
-      return acc;
-    }, { base: {}, complete: {}, empty: {}, invalid: {} });
+    const computedStyle = window.ShadyCSS ? undefined : getComputedStyle(this);
+    const getStyle = prop => this.getCSSCustomPropertyValue(prop, computedStyle) || undefined;
+    const styleReducer = ({ base = {}, complete = {}, empty = {}, invalid = {} }, camelCase) => ({
+      base: { ...base, [camelCase]: getStyle(`--stripe-elements-base-${dash(camelCase)}`) },
+      complete: { ...complete, [camelCase]: getStyle(`--stripe-elements-complete-${dash(camelCase)}`) },
+      empty: { ...empty, [camelCase]: getStyle(`--stripe-elements-empty-${dash(camelCase)}`) },
+      invalid: { ...invalid, [camelCase]: getStyle(`--stripe-elements-invalid-${dash(camelCase)}`) },
+    });
+    return allowedStyles.reduce(styleReducer, {});
   }
 
-  /**
-   * Reinitializes Stripe and mounts the card.
-   * @private
-   */
-  async init() {
-    this.resetMount();
-    await this.unmount();
-    await this.initStripe();
-    await this.mount();
-  }
-
-  /** @private */
-  initMountPoint() {
-    this.stripeMountId = generateRandomMountElementId();
-    if (window.ShadyDOM) this.initShadyDOMMount();
-    else this.initShadowDOMMounts();
-  }
-
-  /**
-   * Prepares to mount Stripe Elements in light DOM.
-   * @private
-   */
-  initShadowDOMMounts() {
-    // trace each shadow boundary between us and the document
-    let host = this;
-    this.shadowHosts = [this];
-    while (host = host.getRootNode().host) this.shadowHosts.push(host); // eslint-disable-line prefer-destructuring, no-loops/no-loops
-
-    const { shadowHosts, stripeMountId } = this;
-
-    // Prepare the shallowest breadcrumb slot at document level
-    const hosts = [...shadowHosts];
-    const root = hosts.pop();
-    if (!root.querySelector('[slot="stripe-card"]')) {
-      const div = document.createElement('div');
-      div.slot = 'stripe-card';
-      root.appendChild(div);
-    }
-
-    const container = root.querySelector('[slot="stripe-card"]');
-
-    // Render the form to the document, so that Stripe.js can mount
-    appendTemplate(mountPointTemplate({ stripeMountId }), container);
-
-    // Append breadcrumb slots to each shadowroot in turn,
-    // from the document down to the <stripe-elements> instance.
-    hosts.forEach(appendTemplate(slotTemplate));
-  }
-
-  /**
-   * Creates a mounting div for the shady dom stripe elements container
-   * @private
-   */
-  initShadyDOMMount() {
-    const { stripeMountId } = this;
-    const mountTemplate = mountPointTemplate({ stripeMountId });
-    appendTemplate(mountTemplate, this);
-  }
-
-  /**
-   * Creates and mounts Stripe Elements card.
-   * @private
-   */
-  async mount() {
+  async initElement() {
     if (!this.stripe) return;
     const { hidePostalCode, hideIcon, iconStyle, value } = this;
     const style = this.getStripeElementsStyles();
+    const options = { hideIcon, hidePostalCode, iconStyle, style, value };
 
-    const element = this.elements
-      .create('card', { hideIcon, hidePostalCode, iconStyle, style, value });
-
-    await this.set({ element, card: element });
-
-    /* istanbul ignore if */
-    if (!this.stripeMount) throw new Error('Stripe Mount missing');
-
-    element.mount(this.stripeMount);
+    const element = this.elements.create('card', options);
 
     element.addEventListener('ready', this.onReady);
     element.addEventListener('change', this.onChange);
 
-    await this.set({ isComplete: false, isEmpty: true });
+    await this.set({ element });
   }
 
   /**
@@ -501,6 +347,8 @@ export class StripeElements extends LitNotify(StripeBase) {
   @bound async onChange(event) {
     const { brand, complete: isComplete, empty: isEmpty, error = null } = event;
     await this.set({ error, brand, isComplete, isEmpty });
+    this.fire('change', event);
+    // DEPRECATED
     this.fire('stripe-change', event);
   }
 
@@ -511,27 +359,10 @@ export class StripeElements extends LitNotify(StripeBase) {
    */
   @bound async onReady(event) {
     await this.set({ stripeReady: true });
+    this.fire('ready', event);
+    // DEPRECATED
     this.fire('stripe-ready', event);
   }
-
-  /** @private */
-  removeStripeMounts() {
-    this.shadowHosts.forEach(removeAllMounts);
-    if (this.stripeMount) this.stripeMount.remove();
-  }
-
-  /** @private */
-  resetMount() {
-    this.removeStripeMounts();
-    this.initMountPoint();
-  }
-
-  /**
-   * Unmounts and nullifies the card.
-   * @private
-   */
-  async unmount() {
-    this.element?.unmount();
-    await this.set({ card: null, element: null, stripeReady: false });
-  }
 }
+
+/** @typedef {{ base?: stripe.elements.Style, complete?: stripe.elements.Style, empty?: stripe.elements.Style, invalid?: stripe.elements.Style}} StripeStyleInit */
