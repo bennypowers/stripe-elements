@@ -330,7 +330,7 @@ export class StripeElements extends LitNotify(StripeBase) {
   validate() {
     const { complete, empty, error } = this;
     const isValid = !error && complete && !empty;
-    if (!isValid && !error) this.set({ error: this.createError(`Credit card information is ${empty ? 'empty' : 'incomplete'}.`) });
+    if (empty && !error) this.set({ error: this.createError('Your card number is empty.') });
     return isValid;
   }
 
