@@ -8,7 +8,6 @@ import { dash } from './lib/strings';
 import { stripeMethod } from './lib/stripe-method-decorator';
 import sharedStyles from './shared.css';
 import style from './stripe-elements.css';
-import globalStyles from './stripe-elements-global.css';
 
 const allowedStyles = [
   'color',
@@ -88,6 +87,10 @@ const allowedStyles = [
  * - `text-shadow`
  * - `text-transform`
  *
+ * @cssprop [--stripe-elements-border-radius] - border radius of the element container. Default `4px`
+ * @cssprop [--stripe-elements-border] - border property of the element container. Default `1px solid transparent`
+ * @cssprop [--stripe-elements-box-shadow] - box shadow for the element container. Default `0 1px 3px 0 #e6ebf1`
+ * @cssprop [--stripe-elements-transition] - transition property for the element container. Default `box-shadow 150ms ease`
  *
  * @cssprop [--stripe-elements-base-color] - `color` property for the element in its base state
  * @cssprop [--stripe-elements-base-font-family] - `font-family` property for the element in its base state
@@ -157,8 +160,6 @@ export class StripeElements extends LitNotify(StripeBase) {
   static is = 'stripe-elements';
 
   static elementType = 'card';
-
-  static globalStyles = globalStyles;
 
   static styles = [
     sharedStyles,
