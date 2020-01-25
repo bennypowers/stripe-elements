@@ -29,6 +29,7 @@
     "url": "https://github.com/bennypowers/stripe-elements.git"
   },
   "files": [
+    "*.d.ts",
     "*.js",
     "*.js.map",
     "custom-elements.json",
