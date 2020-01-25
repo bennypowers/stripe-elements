@@ -284,6 +284,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * Reset the stripe element
    */
   reset() {
+    this.element?.clear?.();
     this.resetRepresentations();
     this.set({ error: null });
   }
