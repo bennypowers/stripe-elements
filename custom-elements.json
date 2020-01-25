@@ -47,20 +47,8 @@
           "default": "true"
         },
         {
-          "name": "focused",
-          "description": "If the element is focused.",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
           "name": "invalid",
           "description": "Whether the form is invalid.",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
-          "name": "ready",
-          "description": "Whether the stripe element is ready to receive focus.",
           "type": "boolean",
           "default": "false"
         },
@@ -80,13 +68,6 @@
         {
           "name": "is-complete",
           "description": "Whether the form is complete.\n**DEPRECATED**. Will be removed in a future version. use `complete` instead",
-          "type": "boolean",
-          "default": "false",
-          "deprecated": true
-        },
-        {
-          "name": "stripe-ready",
-          "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
           "type": "boolean",
           "default": "false",
           "deprecated": true
@@ -117,6 +98,12 @@
           "type": "String"
         },
         {
+          "name": "focused",
+          "description": "If the element is focused.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
           "name": "generate",
           "description": "Type of payment representation to generate.",
           "type": "'payment-method'|'source'|'token'",
@@ -126,6 +113,12 @@
           "name": "publishable-key",
           "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
           "type": "string"
+        },
+        {
+          "name": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "boolean",
+          "default": "false"
         },
         {
           "name": "show-error",
@@ -149,6 +142,11 @@
           "type": "Error|stripe.Error"
         },
         {
+          "name": "stripe",
+          "description": "Stripe instance",
+          "type": "stripe.Stripe"
+        },
+        {
           "name": "has-error",
           "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
           "type": "boolean",
@@ -156,9 +154,11 @@
           "deprecated": true
         },
         {
-          "name": "stripe",
-          "description": "Stripe instance",
-          "type": "stripe.Stripe"
+          "name": "stripe-ready",
+          "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
+          "type": "boolean",
+          "default": "false",
+          "deprecated": true
         }
       ],
       "properties": [
@@ -211,23 +211,9 @@
           "default": "true"
         },
         {
-          "name": "focused",
-          "attribute": "focused",
-          "description": "If the element is focused.",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
           "name": "invalid",
           "attribute": "invalid",
           "description": "Whether the form is invalid.",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
-          "name": "ready",
-          "attribute": "ready",
-          "description": "Whether the stripe element is ready to receive focus.",
           "type": "boolean",
           "default": "false"
         },
@@ -250,14 +236,6 @@
           "name": "isComplete",
           "attribute": "is-complete",
           "description": "Whether the form is complete.\n**DEPRECATED**. Will be removed in a future version. use `complete` instead",
-          "type": "boolean",
-          "default": "false",
-          "deprecated": true
-        },
-        {
-          "name": "stripeReady",
-          "attribute": "stripe-ready",
-          "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
           "type": "boolean",
           "default": "false",
           "deprecated": true
@@ -317,6 +295,13 @@
           "type": "String"
         },
         {
+          "name": "focused",
+          "attribute": "focused",
+          "description": "If the element is focused.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
           "name": "generate",
           "attribute": "generate",
           "description": "Type of payment representation to generate.",
@@ -328,6 +313,13 @@
           "attribute": "publishable-key",
           "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
           "type": "string"
+        },
+        {
+          "name": "ready",
+          "attribute": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "boolean",
+          "default": "false"
         },
         {
           "name": "showError",
@@ -355,6 +347,12 @@
           "type": "Error|stripe.Error"
         },
         {
+          "name": "stripe",
+          "attribute": "stripe",
+          "description": "Stripe instance",
+          "type": "stripe.Stripe"
+        },
+        {
           "name": "hasError",
           "attribute": "has-error",
           "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
@@ -363,10 +361,12 @@
           "deprecated": true
         },
         {
-          "name": "stripe",
-          "attribute": "stripe",
-          "description": "Stripe instance",
-          "type": "stripe.Stripe"
+          "name": "stripeReady",
+          "attribute": "stripe-ready",
+          "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
+          "type": "boolean",
+          "default": "false",
+          "deprecated": true
         },
         {
           "name": "stripeMount",
@@ -380,15 +380,7 @@
           "description": "Stripe Element change event"
         },
         {
-          "name": "ready",
-          "description": "Stripe has been initialized and mounted"
-        },
-        {
           "name": "stripe-change",
-          "description": "**DEPRECATED**. Will be removed in a future major version"
-        },
-        {
-          "name": "stripe-ready",
           "description": "**DEPRECATED**. Will be removed in a future major version"
         },
         {
@@ -406,14 +398,6 @@
         {
           "name": "is-empty-changed",
           "description": "The new value of is-empty"
-        },
-        {
-          "name": "ready-changed",
-          "description": "The new value of stripe-ready"
-        },
-        {
-          "name": "stripe-ready-changed",
-          "description": "**DEPRECATED**. will be removed in a future version. use `ready-changed` instead."
         },
         {
           "name": "error",
@@ -436,6 +420,14 @@
           "description": "When a payment succeeds"
         },
         {
+          "name": "ready",
+          "description": "Stripe has been initialized and mounted"
+        },
+        {
+          "name": "stripe-ready",
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `ready` instead"
+        },
+        {
           "name": "stripe-error",
           "description": "**DEPRECATED**. Will be removed in a future major version. Use `error` instead"
         },
@@ -450,6 +442,14 @@
         {
           "name": "stripe-token",
           "description": "**DEPRECATED**. Will be removed in a future major version. Use `token` instead"
+        },
+        {
+          "name": "ready-changed",
+          "description": "The new value of stripe-ready"
+        },
+        {
+          "name": "stripe-ready-changed",
+          "description": "**DEPRECATED**. will be removed in a future version. use `ready-changed` instead."
         },
         {
           "name": "error-changed",
@@ -782,6 +782,12 @@
           "type": "String"
         },
         {
+          "name": "focused",
+          "description": "If the element is focused.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
           "name": "generate",
           "description": "Type of payment representation to generate.",
           "type": "'payment-method'|'source'|'token'",
@@ -791,6 +797,12 @@
           "name": "publishable-key",
           "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
           "type": "string"
+        },
+        {
+          "name": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "boolean",
+          "default": "false"
         },
         {
           "name": "show-error",
@@ -814,6 +826,11 @@
           "type": "Error|stripe.Error"
         },
         {
+          "name": "stripe",
+          "description": "Stripe instance",
+          "type": "stripe.Stripe"
+        },
+        {
           "name": "has-error",
           "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
           "type": "boolean",
@@ -821,9 +838,11 @@
           "deprecated": true
         },
         {
-          "name": "stripe",
-          "description": "Stripe instance",
-          "type": "stripe.Stripe"
+          "name": "stripe-ready",
+          "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
+          "type": "boolean",
+          "default": "false",
+          "deprecated": true
         }
       ],
       "properties": [
@@ -979,6 +998,13 @@
           "type": "String"
         },
         {
+          "name": "focused",
+          "attribute": "focused",
+          "description": "If the element is focused.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
           "name": "generate",
           "attribute": "generate",
           "description": "Type of payment representation to generate.",
@@ -990,6 +1016,13 @@
           "attribute": "publishable-key",
           "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
           "type": "string"
+        },
+        {
+          "name": "ready",
+          "attribute": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "boolean",
+          "default": "false"
         },
         {
           "name": "showError",
@@ -1017,6 +1050,12 @@
           "type": "Error|stripe.Error"
         },
         {
+          "name": "stripe",
+          "attribute": "stripe",
+          "description": "Stripe instance",
+          "type": "stripe.Stripe"
+        },
+        {
           "name": "hasError",
           "attribute": "has-error",
           "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
@@ -1025,10 +1064,12 @@
           "deprecated": true
         },
         {
-          "name": "stripe",
-          "attribute": "stripe",
-          "description": "Stripe instance",
-          "type": "stripe.Stripe"
+          "name": "stripeReady",
+          "attribute": "stripe-ready",
+          "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
+          "type": "boolean",
+          "default": "false",
+          "deprecated": true
         },
         {
           "name": "stripeMount",
@@ -1074,6 +1115,14 @@
           "description": "When a payment succeeds"
         },
         {
+          "name": "ready",
+          "description": "Stripe has been initialized and mounted"
+        },
+        {
+          "name": "stripe-ready",
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `ready` instead"
+        },
+        {
           "name": "stripe-error",
           "description": "**DEPRECATED**. Will be removed in a future major version. Use `error` instead"
         },
@@ -1088,6 +1137,14 @@
         {
           "name": "stripe-token",
           "description": "**DEPRECATED**. Will be removed in a future major version. Use `token` instead"
+        },
+        {
+          "name": "ready-changed",
+          "description": "The new value of stripe-ready"
+        },
+        {
+          "name": "stripe-ready-changed",
+          "description": "**DEPRECATED**. will be removed in a future version. use `ready-changed` instead."
         },
         {
           "name": "error-changed",

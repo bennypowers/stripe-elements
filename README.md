@@ -177,7 +177,7 @@ There are 11 properties for each state that you can set which will be read into 
 | `stripe-change`           | **DEPRECATED**. Will be removed in a future major version |
 | `stripe-error`            | **DEPRECATED**. Will be removed in a future major version. Use `error` instead |
 | `stripe-payment-method`   | **DEPRECATED**. Will be removed in a future major version. Use `payment-method` instead |
-| `stripe-ready`            | **DEPRECATED**. Will be removed in a future major version |
+| `stripe-ready`            | **DEPRECATED**. Will be removed in a future major version. Use `ready` instead |
 | `stripe-ready-changed`    | **DEPRECATED**. will be removed in a future version. use `ready-changed` instead. |
 | `stripe-source`           | **DEPRECATED**. Will be removed in a future major version. Use `source` instead |
 | `stripe-token`            | **DEPRECATED**. Will be removed in a future major version. Use `token` instead |
@@ -305,6 +305,7 @@ cssprop '--stripe-payment-request-element-background' background property of the
 | `element`           | `element`             | readonly  | `stripe.elements.Element`                    | null      | Stripe element instance                          |
 | `elements`          | `elements`            | readonly  | `stripe.elements.Elements`                   | null      | Stripe Elements instance                         |
 | `error`             | `error`               | readonly  | `Error\|stripe.Error`                        | null      | Stripe or validation error                       |
+| `focused`           | `focused`             |           | `boolean`                                    | false     | If the element is focused.                       |
 | `generate`          | `generate`            |           | `'payment-method'\|'source'\|'token'`        | "source"  | Type of payment representation to generate.      |
 | `hasError`          | `has-error`           | readonly  | `boolean`                                    | false     | Whether the element has an error<br />**DEPRECATED**. Will be removed in a future version. Use `error` instead |
 | `label`             | `label`               |           | `string`                                     |           | A name that the browser shows the customer in the payment interface. |
@@ -314,6 +315,7 @@ cssprop '--stripe-payment-request-element-background' background property of the
 | `paymentRequest`    | `payment-request`     |           | `stripe.paymentRequest.StripePaymentRequest` | null      | Stripe PaymentRequest                            |
 | `pending`           | `pending`             |           | `boolean`                                    | false     | If you might change the payment amount later (for example, after you have calcluated shipping costs), set this to true. Note that browsers treat this as a hint for how to display things, and not necessarily as something that will prevent submission. |
 | `publishableKey`    | `publishable-key`     |           | `string`                                     |           | Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX` |
+| `ready`             | `ready`               |           | `boolean`                                    | false     | Whether the stripe element is ready to receive focus. |
 | `requestPayerEmail` | `request-payer-email` |           | `boolean`                                    |           | See the requestPayerName option.                 |
 | `requestPayerName`  | `request-payer-name`  |           | `boolean`                                    |           | By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.<br /><br />We highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available. |
 | `requestPayerPhone` | `request-payer-phone` |           | `boolean`                                    |           | See the requestPayerName option.                 |
@@ -324,6 +326,7 @@ cssprop '--stripe-payment-request-element-background' background property of the
 | `sourceData`        |                       |           | `SourceData`                                 | {}        | Data passed to stripe.createSource. (optional)   |
 | `stripe`            | `stripe`              | readonly  | `stripe.Stripe`                              | null      | Stripe instance                                  |
 | `stripeMount`       |                       | readonly  | `Element`                                    |           | Stripe.js mount point element. Due to limitations in the Stripe.js library, this element must be connected to the document. |
+| `stripeReady`       | `stripe-ready`        |           | `boolean`                                    | false     | Whether the stripe element is ready to receive focus.<br />**DEPRECATED**. Will be removed in a future version. use `ready` instead. |
 | `token`             | `token`               | readonly  | `stripe.Token`                               | null      | Stripe Token                                     |
 | `tokenData`         |                       |           | `stripe.TokenOptions`                        | {}        | Data passed to stripe.createToken. (optional)    |
 
@@ -347,12 +350,16 @@ cssprop '--stripe-payment-request-element-background' background property of the
 | `payment-method`          | The PaymentMethod received from stripe.com       |
 | `payment-method-changed`  | The new value of payment-method                  |
 | `publishable-key-changed` | The new value of publishable-key                 |
+| `ready`                   | Stripe has been initialized and mounted          |
+| `ready-changed`           | The new value of stripe-ready                    |
 | `shippingaddresschange`   | When the user chooses a different shipping address |
 | `shippingoptionchange`    | When the user chooses a different shipping option |
 | `source`                  | The Source received from stripe.com              |
 | `source-changed`          | The new value of source                          |
 | `stripe-error`            | **DEPRECATED**. Will be removed in a future major version. Use `error` instead |
 | `stripe-payment-method`   | **DEPRECATED**. Will be removed in a future major version. Use `payment-method` instead |
+| `stripe-ready`            | **DEPRECATED**. Will be removed in a future major version. Use `ready` instead |
+| `stripe-ready-changed`    | **DEPRECATED**. will be removed in a future version. use `ready-changed` instead. |
 | `stripe-source`           | **DEPRECATED**. Will be removed in a future major version. Use `source` instead |
 | `stripe-token`            | **DEPRECATED**. Will be removed in a future major version. Use `token` instead |
 | `success`                 | When a payment succeeds                          |
