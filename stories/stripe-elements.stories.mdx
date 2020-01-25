@@ -178,15 +178,20 @@ For simple integrations, you can automatically post the source or token to your 
   }}</Story>
 </Preview>
 
+## API
+
+<Props of="stripe-elements" />
+
 # Using `<stripe-elements>` Across Frameworks
 
 Since `<stripe-elements>` is a custom-element, you can easily use it across frameworks.
 
-<Story name="In Plain HTML and JavaScript"> </Story>
-
 ## Using with Plain HTML and JavaScript
 
-<codesandbox-button sandbox-id="y4h9n"> </codesandbox-button>
+<Story name="In Plain HTML and JavaScript">
+ {html`<codesandbox-button sandbox-id="y4h9n"> </codesandbox-button>`}
+</Story>
+
 
 ```html
 <script type="module" src="https://unpkg.com/@power-elements/stripe-elements?module"></script>
@@ -274,8 +279,6 @@ class PaymentForm extends LitElement {
   }
 }
 ```
-
-<Story name="In a Polymer Element"> </Story>
 
 ### In a Vue Component
 
@@ -488,7 +491,3 @@ if (typeof window !== "undefined") {
   render(<App />, document.getElementById("root"));
 }
 ```
-
-## API
-
-<Props of="stripe-elements" />

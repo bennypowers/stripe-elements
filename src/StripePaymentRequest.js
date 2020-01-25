@@ -52,7 +52,6 @@ const parseDataset = mapDataset(parseAmount);
  * See the demos for more comprehensive examples.
  *   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-plain-html-and-javascript).
  *   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-lit-element).
- *   - Using `<stripe-payment-request>` in a [Polymer Element](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-polymer-element).
  *   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-vue-component).
  *   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-an-angular-component).
  *   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-react-component).
@@ -248,6 +247,9 @@ export class StripePaymentRequest extends StripeBase {
     };
   }
 
+  /**
+   * @private
+   */
   async initElement() {
     await this.initPaymentRequest();
     await this.initPaymentRequestListeners();
@@ -311,6 +313,7 @@ export class StripePaymentRequest extends StripeBase {
    * @param {stripe.Error} [confirmationError] error from Stripe#confirmCardPayment. Should be thrown so that element state remains sane.
    * @resolvees {PaymentResponse}
    * @sideeffect
+   * @private
    */
   @bound async complete(paymentResponse, confirmationError) {
     const { error: paymentResponseError } = paymentResponse;

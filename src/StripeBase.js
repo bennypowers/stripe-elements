@@ -36,10 +36,10 @@ const mountPointTemplate = ({ stripeMountId, tagName }) =>
  * @fires 'token' - The Token received from stripe.com
  * @fires 'success' - When a payment succeeds
  *
- * @fires 'stripe-error' - DEPRECATED. Will be removed in a future major version.
- * @fires 'stripe-payment-method' - DEPRECATED. Will be removed in a future major version.
- * @fires 'stripe-source' - DEPRECATED. Will be removed in a future major version
- * @fires 'stripe-token' - DEPRECATED. Will be removed in a future major version.
+ * @fires 'stripe-error' - **DEPRECATED**. Will be removed in a future major version. Use `error` instead
+ * @fires 'stripe-payment-method' - **DEPRECATED**. Will be removed in a future major version. Use `payment-method` instead
+ * @fires 'stripe-source' - **DEPRECATED**. Will be removed in a future major version. Use `source` instead
+ * @fires 'stripe-token' - **DEPRECATED**. Will be removed in a future major version. Use `token` instead
  *
  * @fires 'error-changed' - The new value of error
  * @fires 'has-error-changed' - The new value of has-error
@@ -186,8 +186,10 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
 
   /**
    * Whether the element has an error
+   * **DEPRECATED**. Will be removed in a future version. Use `error` instead
    * @type {boolean}
    * @readonly
+   * @deprecated
    */
   @property({
     type: Boolean,
@@ -314,6 +316,12 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
 
   /* PRIVATE API */
 
+  /**
+   * Creates a new StripeElementsError
+   * @param  {string} message
+   * @return {StripeElementsError}
+   * @private
+   */
   createError(message) {
     return new StripeElementsError(this.constructor.is, message);
   }
@@ -321,7 +329,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /** @private */
   async errorChanged() {
     const hasError = !!this.error;
-    await this.set({ hasError });
+    await this.set({ hasError }); // DEPRECATED
     this.resetRepresentations();
     this.fireError(this.error);
   }
@@ -353,6 +361,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @param  {string} propertyName    CSS Custom Property
    * @param  {CSSStyleDeclaration}    [precomputedStyle] pre-computed style declaration
    * @return {any}
+   * @private
    */
   getCSSCustomPropertyValue(propertyName, precomputedStyle) {
     if (window.ShadyCSS) return ShadyCSS.getComputedStyleValue(this, propertyName);
