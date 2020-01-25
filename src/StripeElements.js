@@ -279,10 +279,6 @@ export class StripeElements extends LitNotify(StripeBase) {
     readOnly: true,
   }) stripeReady = false;
 
-  /* PRIVATE FIELDS */
-
-  /* LIFECYCLE */
-
   updated(changed) {
     super.updated(changed);
     // DEPRECATED
