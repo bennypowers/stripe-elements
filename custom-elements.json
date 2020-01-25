@@ -98,12 +98,6 @@
           "type": "String"
         },
         {
-          "name": "focused",
-          "description": "If the element is focused.",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
           "name": "generate",
           "description": "Type of payment representation to generate.",
           "type": "'payment-method'|'source'|'token'",
@@ -113,12 +107,6 @@
           "name": "publishable-key",
           "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
           "type": "string"
-        },
-        {
-          "name": "ready",
-          "description": "Whether the stripe element is ready to receive focus.",
-          "type": "boolean",
-          "default": "false"
         },
         {
           "name": "show-error",
@@ -140,6 +128,18 @@
           "name": "error",
           "description": "Stripe or validation error",
           "type": "Error|stripe.Error"
+        },
+        {
+          "name": "focused",
+          "description": "If the element is focused.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "boolean",
+          "default": "false"
         },
         {
           "name": "stripe",
@@ -295,13 +295,6 @@
           "type": "String"
         },
         {
-          "name": "focused",
-          "attribute": "focused",
-          "description": "If the element is focused.",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
           "name": "generate",
           "attribute": "generate",
           "description": "Type of payment representation to generate.",
@@ -313,13 +306,6 @@
           "attribute": "publishable-key",
           "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
           "type": "string"
-        },
-        {
-          "name": "ready",
-          "attribute": "ready",
-          "description": "Whether the stripe element is ready to receive focus.",
-          "type": "boolean",
-          "default": "false"
         },
         {
           "name": "showError",
@@ -345,6 +331,20 @@
           "attribute": "error",
           "description": "Stripe or validation error",
           "type": "Error|stripe.Error"
+        },
+        {
+          "name": "focused",
+          "attribute": "focused",
+          "description": "If the element is focused.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "ready",
+          "attribute": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "boolean",
+          "default": "false"
         },
         {
           "name": "stripe",
@@ -378,26 +378,6 @@
         {
           "name": "change",
           "description": "Stripe Element change event"
-        },
-        {
-          "name": "stripe-change",
-          "description": "**DEPRECATED**. Will be removed in a future major version"
-        },
-        {
-          "name": "brand-changed",
-          "description": "The new value of brand"
-        },
-        {
-          "name": "card-changed",
-          "description": "The new value of card"
-        },
-        {
-          "name": "is-complete-changed",
-          "description": "The new value of is-complete"
-        },
-        {
-          "name": "is-empty-changed",
-          "description": "The new value of is-empty"
         },
         {
           "name": "error",
@@ -442,38 +422,6 @@
         {
           "name": "stripe-token",
           "description": "**DEPRECATED**. Will be removed in a future major version. Use `token` instead"
-        },
-        {
-          "name": "ready-changed",
-          "description": "The new value of stripe-ready"
-        },
-        {
-          "name": "stripe-ready-changed",
-          "description": "**DEPRECATED**. will be removed in a future version. use `ready-changed` instead."
-        },
-        {
-          "name": "error-changed",
-          "description": "The new value of error"
-        },
-        {
-          "name": "has-error-changed",
-          "description": "The new value of has-error"
-        },
-        {
-          "name": "payment-method-changed",
-          "description": "The new value of payment-method"
-        },
-        {
-          "name": "publishable-key-changed",
-          "description": "The new value of publishable-key"
-        },
-        {
-          "name": "source-changed",
-          "description": "The new value of source"
-        },
-        {
-          "name": "token-changed",
-          "description": "The new value of token"
         }
       ],
       "cssProperties": [
@@ -669,11 +617,21 @@
           "name": "--stripe-elements-invalid-text-transform",
           "description": "`text-transform` property for the element in its invalid state"
         }
+      ],
+      "cssParts": [
+        {
+          "name": "error",
+          "description": "container for the error message"
+        },
+        {
+          "name": "stripe",
+          "description": "container for the stripe element"
+        }
       ]
     },
     {
       "name": "stripe-payment-request",
-      "description": "Custom element wrapper for Stripe.js v3 Payment Request Buttons.\n\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--enter-a-stripe-publishable-key) 👀\n\n### 🧙‍♂️ Usage\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\n\n```html\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-payment-request.js\"></script>\n```\n\nAlternatively, load the module from the unpkg CDN\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-payment-request.js?module\"></script>\n```\n\nThen you can add the element to your page.\n\n```html\n\n<stripe-payment-request id=\"payment-request\"\n     publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\n     generate=\"token\"\n     action=\"/charges\"\n     country=\"CA\"\n     currency=\"cad\"\n     amount=\"1000\"\n     label=\"Ten Bones\"\n     request-payer-name\n     request-payer-email\n     request-payer-phone\n></stripe-payment-request>\n```\n\nSee the demos for more comprehensive examples.\n   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-plain-html-and-javascript).\n   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-lit-element).\n   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-vue-component).\n   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-an-angular-component).\n   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-react-component).\n   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-preact-component).\n\ncssprop '--stripe-payment-request-element-min-width' min-width property of the container element. Default `300px`\ncssprop '--stripe-payment-request-element-padding' padding property of the container element. Default `8px 12px`\ncssprop '--stripe-payment-request-element-background' background property of the container element. Default `white`",
+      "description": "Custom element wrapper for Stripe.js v3 Payment Request Buttons.\n\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--enter-a-stripe-publishable-key) 👀\n\n### 🧙‍♂️ Usage\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\n\n```html\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-payment-request.js\"></script>\n```\n\nAlternatively, load the module from the unpkg CDN\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-payment-request.js?module\"></script>\n```\n\nThen you can add the element to your page.\n\n```html\n\n<stripe-payment-request id=\"payment-request\"\n     publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\n     generate=\"token\"\n     action=\"/charges\"\n     country=\"CA\"\n     currency=\"cad\"\n     amount=\"1000\"\n     label=\"Ten Bones\"\n     request-payer-name\n     request-payer-email\n     request-payer-phone\n></stripe-payment-request>\n```\n\nSee the demos for more comprehensive examples.\n   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-plain-html-and-javascript).\n   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-lit-element).\n   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-vue-component).\n   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-an-angular-component).\n   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-react-component).\n   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-preact-component).",
       "attributes": [
         {
           "name": "amount",
@@ -782,12 +740,6 @@
           "type": "String"
         },
         {
-          "name": "focused",
-          "description": "If the element is focused.",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
           "name": "generate",
           "description": "Type of payment representation to generate.",
           "type": "'payment-method'|'source'|'token'",
@@ -797,12 +749,6 @@
           "name": "publishable-key",
           "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
           "type": "string"
-        },
-        {
-          "name": "ready",
-          "description": "Whether the stripe element is ready to receive focus.",
-          "type": "boolean",
-          "default": "false"
         },
         {
           "name": "show-error",
@@ -824,6 +770,18 @@
           "name": "error",
           "description": "Stripe or validation error",
           "type": "Error|stripe.Error"
+        },
+        {
+          "name": "focused",
+          "description": "If the element is focused.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "boolean",
+          "default": "false"
         },
         {
           "name": "stripe",
@@ -998,13 +956,6 @@
           "type": "String"
         },
         {
-          "name": "focused",
-          "attribute": "focused",
-          "description": "If the element is focused.",
-          "type": "boolean",
-          "default": "false"
-        },
-        {
           "name": "generate",
           "attribute": "generate",
           "description": "Type of payment representation to generate.",
@@ -1016,13 +967,6 @@
           "attribute": "publishable-key",
           "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
           "type": "string"
-        },
-        {
-          "name": "ready",
-          "attribute": "ready",
-          "description": "Whether the stripe element is ready to receive focus.",
-          "type": "boolean",
-          "default": "false"
         },
         {
           "name": "showError",
@@ -1048,6 +992,20 @@
           "attribute": "error",
           "description": "Stripe or validation error",
           "type": "Error|stripe.Error"
+        },
+        {
+          "name": "focused",
+          "attribute": "focused",
+          "description": "If the element is focused.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "ready",
+          "attribute": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "boolean",
+          "default": "false"
         },
         {
           "name": "stripe",
@@ -1137,38 +1095,26 @@
         {
           "name": "stripe-token",
           "description": "**DEPRECATED**. Will be removed in a future major version. Use `token` instead"
+        }
+      ],
+      "cssProperties": [
+        {
+          "name": "'--stripe-payment-request-element-min",
+          "description": "width' min-width property of the container element. Default `300px`"
         },
         {
-          "name": "ready-changed",
-          "description": "The new value of stripe-ready"
+          "name": "'--stripe-payment-request-element",
+          "description": "padding' padding property of the container element. Default `8px 12px`"
+        }
+      ],
+      "cssParts": [
+        {
+          "name": "error",
+          "description": "container for the error message"
         },
         {
-          "name": "stripe-ready-changed",
-          "description": "**DEPRECATED**. will be removed in a future version. use `ready-changed` instead."
-        },
-        {
-          "name": "error-changed",
-          "description": "The new value of error"
-        },
-        {
-          "name": "has-error-changed",
-          "description": "The new value of has-error"
-        },
-        {
-          "name": "payment-method-changed",
-          "description": "The new value of payment-method"
-        },
-        {
-          "name": "publishable-key-changed",
-          "description": "The new value of publishable-key"
-        },
-        {
-          "name": "source-changed",
-          "description": "The new value of source"
-        },
-        {
-          "name": "token-changed",
-          "description": "The new value of token"
+          "name": "stripe",
+          "description": "container for the stripe element"
         }
       ]
     }
