@@ -144,17 +144,13 @@ const allowedStyles = [
  * @extends StripeBase
  *
  * @fires 'change' - Stripe Element change event
- * @fires 'ready' - Stripe has been initialized and mounted
  *
  * @fires 'stripe-change' - **DEPRECATED**. Will be removed in a future major version
- * @fires 'stripe-ready' - **DEPRECATED**. Will be removed in a future major version
  *
  * @fires 'brand-changed' - The new value of brand
  * @fires 'card-changed' - The new value of card
  * @fires 'is-complete-changed' - The new value of is-complete
  * @fires 'is-empty-changed' - The new value of is-empty
- * @fires 'ready-changed' - The new value of stripe-ready
- * @fires 'stripe-ready-changed' - **DEPRECATED**. will be removed in a future version. use `ready-changed` instead.
  */
 export class StripeElements extends LitNotify(StripeBase) {
   static is = 'stripe-elements';
@@ -220,12 +216,6 @@ export class StripeElements extends LitNotify(StripeBase) {
    */
   @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) invalid = false;
 
-  /**
-   * Whether the stripe element is ready to receive focus.
-   * @type {boolean}
-   */
-  @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) ready = false;
-
   // DEPRECATED
 
   /**
@@ -264,20 +254,6 @@ export class StripeElements extends LitNotify(StripeBase) {
     notify: true,
     readOnly: true,
   }) isComplete = false;
-
-  /**
-   * Whether the stripe element is ready to receive focus.
-   * **DEPRECATED**. Will be removed in a future version. use `ready` instead.
-   * @deprecated
-   * @type {boolean}
-   */
-  @property({
-    type: Boolean,
-    attribute: 'stripe-ready',
-    reflect: true,
-    notify: true,
-    readOnly: true,
-  }) stripeReady = false;
 
   updated(changed) {
     super.updated(changed);
@@ -405,7 +381,6 @@ export class StripeElements extends LitNotify(StripeBase) {
 
     const element = this.elements.create('card', options);
 
-    element.addEventListener('ready', this.onReady);
     element.addEventListener('change', this.onChange);
 
     await this.set({
@@ -415,9 +390,6 @@ export class StripeElements extends LitNotify(StripeBase) {
     });
   }
 
-  /**
-   * Sets the error.
-   * @param  {StripeChangeEvent}         event
   /**
    * Updates the element's state.
    * @param  {stripe.elements.ElementChangeResponse}         event
@@ -441,25 +413,11 @@ export class StripeElements extends LitNotify(StripeBase) {
       // DEPRECATED
       isComplete: complete,
       isEmpty: empty,
-      hasError: !!error,
     });
     this.fire('change', event);
     // DEPRECATED
     this.fire('stripe-change', event);
   }
-
-  /**
-   * Sets the `ready` property when the stripe element is ready to receive focus.
-   * @param  {Event} event
-   * @private
-   */
-  @bound async onReady(event) {
-    await this.set({ ready: true, stripeReady: true });
-    this.fire('ready', event);
-    // DEPRECATED
-    this.fire('stripe-ready', event);
-  }
 }
 
 /** @typedef {{ base?: stripe.elements.Style, complete?: stripe.elements.Style, empty?: stripe.elements.Style, invalid?: stripe.elements.Style}} StripeStyleInit */
-/** @typedef {{ elementType: stripe.elements.elementsType }} StripeFocusEvent */
