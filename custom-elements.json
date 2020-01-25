@@ -3,7 +3,7 @@
   "tags": [
     {
       "name": "stripe-elements",
-      "description": "[Stripe.js v3 Card Elements](https://stripe.com/docs/elements), but it's a Web Component!\nSupports Shadow DOM.\n\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--enter-a-stripe-publishable-key) 👀\n\n### 🧙‍♂️ Usage\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\n\n```html\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-elements.js\"></script>\n```\n\nAlternatively, load the module from the unpkg CDN\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-elements.js?module\"></script>\n```\n\nThen you can add the element to your page.\n\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-elements.js?module\"></script>\n<stripe-elements id=\"stripe\"\n     action=\"/payment\"\n     publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\n></stripe-elements>\n```\n\nSee the demos for more comprehensive examples.\n   - Using `<stripe-elements>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-plain-html-and-javascript).\n   - Using `<stripe-elements>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-lit-element).\n   - Using `<stripe-elements>` in a [Polymer Element](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-polymer-element).\n   - Using `<stripe-elements>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-vue-component).\n   - Using `<stripe-elements>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-an-angular-component).\n   - Using `<stripe-elements>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-react-component).\n   - Using `<stripe-elements>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-preact-component).\n\n## Styling\n\nStripe v3's 'Stripe Elements' are not custom elements, but rather forms\nhosted by stripe and injected into your page via an iFrame. When we refer to the\n'Stripe Element' in this document, we are referring to the hosted Stripe form,\nnot the `<stripe-element>` custom element. But when I mention the 'element', I mean the custom element.\n\nWhen you apply CSS to the custom properties available, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame.\n\n- `base` styles are inherited by all other variants.\n- `complete` styles are applied when the Stripe Element has valid input.\n- `empty` styles are applied when the Stripe Element has no user input.\n- `invalid` styles are applied when the Stripe Element has invalid input.\n\nThere are 11 properties for each state that you can set which will be read into the Stripe Element iFrame:\n\n- `color`\n- `font-family`\n- `font-size`\n- `font-smoothing`\n- `font-variant`\n- `icon-color`\n- `line-height`\n- `letter-spacing`\n- `text-decoration`\n- `text-shadow`\n- `text-transform`",
+      "description": "[Stripe.js v3 Card Elements](https://stripe.com/docs/elements), but it's a Web Component!\nSupports Shadow DOM.\n\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--enter-a-stripe-publishable-key) 👀\n\n### 🧙‍♂️ Usage\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\n\n```html\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-elements.js\"></script>\n```\n\nAlternatively, load the module from the unpkg CDN\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-elements.js?module\"></script>\n```\n\nThen you can add the element to your page.\n\n```html\n<stripe-elements id=\"stripe\"\n     action=\"/payment\"\n     publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\n></stripe-elements>\n```\n\nSee the demos for more comprehensive examples.\n   - Using `<stripe-elements>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-plain-html-and-javascript).\n   - Using `<stripe-elements>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-lit-element).\n   - Using `<stripe-elements>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-vue-component).\n   - Using `<stripe-elements>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-an-angular-component).\n   - Using `<stripe-elements>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-react-component).\n   - Using `<stripe-elements>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-preact-component).\n\n## Styling\n\nStripe v3's 'Stripe Elements' are not custom elements, but rather forms\nhosted by stripe and injected into your page via an iFrame. When we refer to the\n'Stripe Element' in this document, we are referring to the hosted Stripe form,\nnot the `<stripe-element>` custom element. But when I mention the 'element', I mean the custom element.\n\nWhen you apply CSS to the custom properties available, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame.\n\n- `base` styles are inherited by all other variants.\n- `complete` styles are applied when the Stripe Element has valid input.\n- `empty` styles are applied when the Stripe Element has no user input.\n- `invalid` styles are applied when the Stripe Element has invalid input.\n\nThere are 11 properties for each state that you can set which will be read into the Stripe Element iFrame:\n\n- `color`\n- `font-family`\n- `font-size`\n- `font-smoothing`\n- `font-variant`\n- `icon-color`\n- `line-height`\n- `letter-spacing`\n- `text-decoration`\n- `text-shadow`\n- `text-transform`",
       "attributes": [
         {
           "name": "hide-icon",
@@ -35,27 +35,61 @@
           "type": "string"
         },
         {
-          "name": "card",
-          "description": "The Stripe card object.",
-          "type": "stripe.elements.Element"
-        },
-        {
-          "name": "is-complete",
-          "description": "If the form is complete.",
+          "name": "complete",
+          "description": "Whether the form is complete.",
           "type": "boolean",
           "default": "false"
         },
         {
-          "name": "is-empty",
+          "name": "empty",
           "description": "If the form is empty.",
           "type": "boolean",
           "default": "true"
         },
         {
-          "name": "stripe-ready",
-          "description": "If the stripe element is ready to receive focus.",
+          "name": "focused",
+          "description": "If the element is focused.",
           "type": "boolean",
           "default": "false"
+        },
+        {
+          "name": "invalid",
+          "description": "Whether the form is invalid.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "card",
+          "description": "The Stripe card object.\n**DEPRECATED**. Will be removed in a future version. use `element` instead",
+          "type": "stripe.elements.Element",
+          "deprecated": true
+        },
+        {
+          "name": "is-empty",
+          "description": "Whether the form is empty.\n**DEPRECATED**. Will be removed in a future version. use `empty` instead",
+          "type": "boolean",
+          "default": "true",
+          "deprecated": true
+        },
+        {
+          "name": "is-complete",
+          "description": "Whether the form is complete.\n**DEPRECATED**. Will be removed in a future version. use `complete` instead",
+          "type": "boolean",
+          "default": "false",
+          "deprecated": true
+        },
+        {
+          "name": "stripe-ready",
+          "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
+          "type": "boolean",
+          "default": "false",
+          "deprecated": true
         },
         {
           "name": "payment-method",
@@ -116,9 +150,10 @@
         },
         {
           "name": "has-error",
-          "description": "Whether the element has an error",
+          "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
           "type": "boolean",
-          "default": "false"
+          "default": "false",
+          "deprecated": true
         },
         {
           "name": "stripe",
@@ -162,31 +197,70 @@
           "type": "string"
         },
         {
-          "name": "card",
-          "attribute": "card",
-          "description": "The Stripe card object.",
-          "type": "stripe.elements.Element"
-        },
-        {
-          "name": "isComplete",
-          "attribute": "is-complete",
-          "description": "If the form is complete.",
+          "name": "complete",
+          "attribute": "complete",
+          "description": "Whether the form is complete.",
           "type": "boolean",
           "default": "false"
         },
         {
-          "name": "isEmpty",
-          "attribute": "is-empty",
+          "name": "empty",
+          "attribute": "empty",
           "description": "If the form is empty.",
           "type": "boolean",
           "default": "true"
         },
         {
-          "name": "stripeReady",
-          "attribute": "stripe-ready",
-          "description": "If the stripe element is ready to receive focus.",
+          "name": "focused",
+          "attribute": "focused",
+          "description": "If the element is focused.",
           "type": "boolean",
           "default": "false"
+        },
+        {
+          "name": "invalid",
+          "attribute": "invalid",
+          "description": "Whether the form is invalid.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "ready",
+          "attribute": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "card",
+          "attribute": "card",
+          "description": "The Stripe card object.\n**DEPRECATED**. Will be removed in a future version. use `element` instead",
+          "type": "stripe.elements.Element",
+          "deprecated": true
+        },
+        {
+          "name": "isEmpty",
+          "attribute": "is-empty",
+          "description": "Whether the form is empty.\n**DEPRECATED**. Will be removed in a future version. use `empty` instead",
+          "type": "boolean",
+          "default": "true",
+          "deprecated": true
+        },
+        {
+          "name": "isComplete",
+          "attribute": "is-complete",
+          "description": "Whether the form is complete.\n**DEPRECATED**. Will be removed in a future version. use `complete` instead",
+          "type": "boolean",
+          "default": "false",
+          "deprecated": true
+        },
+        {
+          "name": "stripeReady",
+          "attribute": "stripe-ready",
+          "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
+          "type": "boolean",
+          "default": "false",
+          "deprecated": true
         },
         {
           "name": "billingDetails",
@@ -283,9 +357,10 @@
         {
           "name": "hasError",
           "attribute": "has-error",
-          "description": "Whether the element has an error",
+          "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
           "type": "boolean",
-          "default": "false"
+          "default": "false",
+          "deprecated": true
         },
         {
           "name": "stripe",
@@ -310,11 +385,11 @@
         },
         {
           "name": "stripe-change",
-          "description": "DEPRECATED. Will be removed in a future major version"
+          "description": "**DEPRECATED**. Will be removed in a future major version"
         },
         {
           "name": "stripe-ready",
-          "description": "DEPRECATED. Will be removed in a future major version"
+          "description": "**DEPRECATED**. Will be removed in a future major version"
         },
         {
           "name": "brand-changed",
@@ -333,8 +408,12 @@
           "description": "The new value of is-empty"
         },
         {
-          "name": "stripe-ready-changed",
+          "name": "ready-changed",
           "description": "The new value of stripe-ready"
+        },
+        {
+          "name": "stripe-ready-changed",
+          "description": "**DEPRECATED**. will be removed in a future version. use `ready-changed` instead."
         },
         {
           "name": "error",
@@ -358,19 +437,19 @@
         },
         {
           "name": "stripe-error",
-          "description": "DEPRECATED. Will be removed in a future major version."
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `error` instead"
         },
         {
           "name": "stripe-payment-method",
-          "description": "DEPRECATED. Will be removed in a future major version."
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `payment-method` instead"
         },
         {
           "name": "stripe-source",
-          "description": "DEPRECATED. Will be removed in a future major version"
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `source` instead"
         },
         {
           "name": "stripe-token",
-          "description": "DEPRECATED. Will be removed in a future major version."
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `token` instead"
         },
         {
           "name": "error-changed",
@@ -398,6 +477,22 @@
         }
       ],
       "cssProperties": [
+        {
+          "name": "--stripe-elements-border-radius",
+          "description": "border radius of the element container. Default `4px`"
+        },
+        {
+          "name": "--stripe-elements-border",
+          "description": "border property of the element container. Default `1px solid transparent`"
+        },
+        {
+          "name": "--stripe-elements-box-shadow",
+          "description": "box shadow for the element container. Default `0 1px 3px 0 #e6ebf1`"
+        },
+        {
+          "name": "--stripe-elements-transition",
+          "description": "transition property for the element container. Default `box-shadow 150ms ease`"
+        },
         {
           "name": "--stripe-elements-base-color",
           "description": "`color` property for the element in its base state"
@@ -578,7 +673,7 @@
     },
     {
       "name": "stripe-payment-request",
-      "description": "Custom element wrapper for Stripe.js v3 Payment Request Buttons.\n\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--enter-a-stripe-publishable-key) 👀\n\n### 🧙‍♂️ Usage\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\n\n```html\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-payment-request.js\"></script>\n```\n\nAlternatively, load the module from the unpkg CDN\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-payment-request.js?module\"></script>\n```\n\nThen you can add the element to your page.\n\n```html\n\n<stripe-payment-request id=\"payment-request\"\n     publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\n     generate=\"token\"\n     action=\"/charges\"\n     country=\"CA\"\n     currency=\"cad\"\n     amount=\"1000\"\n     label=\"Ten Bones\"\n     request-payer-name\n     request-payer-email\n     request-payer-phone\n></stripe-payment-request>\n```\n\nSee the demos for more comprehensive examples.\n   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-plain-html-and-javascript).\n   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-lit-element).\n   - Using `<stripe-payment-request>` in a [Polymer Element](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-polymer-element).\n   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-vue-component).\n   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-an-angular-component).\n   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-react-component).\n   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-preact-component).",
+      "description": "Custom element wrapper for Stripe.js v3 Payment Request Buttons.\n\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--enter-a-stripe-publishable-key) 👀\n\n### 🧙‍♂️ Usage\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\n\n```html\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-payment-request.js\"></script>\n```\n\nAlternatively, load the module from the unpkg CDN\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-payment-request.js?module\"></script>\n```\n\nThen you can add the element to your page.\n\n```html\n\n<stripe-payment-request id=\"payment-request\"\n     publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\n     generate=\"token\"\n     action=\"/charges\"\n     country=\"CA\"\n     currency=\"cad\"\n     amount=\"1000\"\n     label=\"Ten Bones\"\n     request-payer-name\n     request-payer-email\n     request-payer-phone\n></stripe-payment-request>\n```\n\nSee the demos for more comprehensive examples.\n   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-plain-html-and-javascript).\n   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-lit-element).\n   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-vue-component).\n   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-an-angular-component).\n   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-react-component).\n   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-preact-component).\n\ncssprop '--stripe-payment-request-element-min-width' min-width property of the container element. Default `300px`\ncssprop '--stripe-payment-request-element-padding' padding property of the container element. Default `8px 12px`\ncssprop '--stripe-payment-request-element-background' background property of the container element. Default `white`",
       "attributes": [
         {
           "name": "amount",
@@ -720,9 +815,10 @@
         },
         {
           "name": "has-error",
-          "description": "Whether the element has an error",
+          "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
           "type": "boolean",
-          "default": "false"
+          "default": "false",
+          "deprecated": true
         },
         {
           "name": "stripe",
@@ -923,9 +1019,10 @@
         {
           "name": "hasError",
           "attribute": "has-error",
-          "description": "Whether the element has an error",
+          "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
           "type": "boolean",
-          "default": "false"
+          "default": "false",
+          "deprecated": true
         },
         {
           "name": "stripe",
@@ -978,19 +1075,19 @@
         },
         {
           "name": "stripe-error",
-          "description": "DEPRECATED. Will be removed in a future major version."
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `error` instead"
         },
         {
           "name": "stripe-payment-method",
-          "description": "DEPRECATED. Will be removed in a future major version."
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `payment-method` instead"
         },
         {
           "name": "stripe-source",
-          "description": "DEPRECATED. Will be removed in a future major version"
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `source` instead"
         },
         {
           "name": "stripe-token",
-          "description": "DEPRECATED. Will be removed in a future major version."
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `token` instead"
         },
         {
           "name": "error-changed",

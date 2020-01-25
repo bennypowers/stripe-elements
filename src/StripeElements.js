@@ -46,7 +46,6 @@ const allowedStyles = [
  * Then you can add the element to your page.
  *
  * ```html
- * <script type="module" src="https://unpkg.com/@power-elements/stripe-elements/stripe-elements.js?module"></script>
  * <stripe-elements id="stripe"
  *     action="/payment"
  *     publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"
@@ -56,7 +55,6 @@ const allowedStyles = [
  * See the demos for more comprehensive examples.
  *   - Using `<stripe-elements>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-plain-html-and-javascript).
  *   - Using `<stripe-elements>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-lit-element).
- *   - Using `<stripe-elements>` in a [Polymer Element](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-polymer-element).
  *   - Using `<stripe-elements>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-vue-component).
  *   - Using `<stripe-elements>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-an-angular-component).
  *   - Using `<stripe-elements>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-react-component).
@@ -145,8 +143,8 @@ const allowedStyles = [
  * @fires 'change' - Stripe Element change event
  * @fires 'ready' - Stripe has been initialized and mounted
  *
- * @fires 'stripe-change' - DEPRECATED. Will be removed in a future major version
- * @fires 'stripe-ready' - DEPRECATED. Will be removed in a future major version
+ * @fires 'stripe-change' - **DEPRECATED**. Will be removed in a future major version
+ * @fires 'stripe-ready' - **DEPRECATED**. Will be removed in a future major version
  *
  * @fires 'brand-changed' - The new value of brand
  * @fires 'card-changed' - The new value of card
@@ -204,8 +202,10 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * The Stripe card object.
+   * **DEPRECATED**. Will be removed in a future version. use `element` instead
    * @type {stripe.elements.Element}
    * @readonly
+   * @deprecated
    */
   @property({ type: Object, notify: true, readOnly: true }) card = null;
 
@@ -251,7 +251,8 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   updated(changed) {
     super.updated(changed);
-    if (changed.has('element')) this.set({ card: this.element });
+    // DEPRECATED
+    if (changed.has('element') && !this.element) this.set({ card: null });
   }
 
   /* PUBLIC API */
@@ -269,7 +270,7 @@ export class StripeElements extends LitNotify(StripeBase) {
    */
   reset() {
     super.reset();
-    this.element && this.element.clear();
+    this.element?.clear();
   }
 
   /**
@@ -294,7 +295,7 @@ export class StripeElements extends LitNotify(StripeBase) {
    */
   getPaymentMethodData() {
     const type = 'card';
-    const { billingDetails, card, paymentMethodData } = this;
+    const { billingDetails, element: card, paymentMethodData } = this;
     return ({
       billing_details: billingDetails,
       ...paymentMethodData,
@@ -320,6 +321,9 @@ export class StripeElements extends LitNotify(StripeBase) {
     return allowedStyles.reduce(styleReducer, {});
   }
 
+  /**
+   * @private
+   */
   async initElement() {
     if (!this.stripe) return;
     const { hidePostalCode, hideIcon, iconStyle, value } = this;
@@ -331,7 +335,11 @@ export class StripeElements extends LitNotify(StripeBase) {
     element.addEventListener('ready', this.onReady);
     element.addEventListener('change', this.onChange);
 
-    await this.set({ element });
+    await this.set({
+      element,
+      // DEPRECATED
+      card: element,
+    });
   }
 
   /**
@@ -340,7 +348,7 @@ export class StripeElements extends LitNotify(StripeBase) {
    * @param  {boolean}       event.empty     true if value is empty
    * @param  {boolean}       event.complete  true if value is well-formed and potentially complete.
    * @param  {string}        event.brand     brand of the card being entered e.g. 'visa' or 'amex'
-   * @param  {stripe.Error}        event.error     The current validation error, if any.
+   * @param  {stripe.Error}  event.error     The current validation error, if any.
    * @param  {String|Object} event.value     Value of the form. Only non-sensitive information e.g. postalCode is present.
    * @private
    */
@@ -366,3 +374,4 @@ export class StripeElements extends LitNotify(StripeBase) {
 }
 
 /** @typedef {{ base?: stripe.elements.Style, complete?: stripe.elements.Style, empty?: stripe.elements.Style, invalid?: stripe.elements.Style}} StripeStyleInit */
+/** @typedef {{ elementType: stripe.elements.elementsType }} StripeFocusEvent */
