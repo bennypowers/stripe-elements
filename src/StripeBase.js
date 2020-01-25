@@ -8,7 +8,6 @@ import { ReadOnlyPropertiesMixin } from './lib/read-only-properties';
 import { appendTemplate, remove } from './lib/dom';
 import { dash, generateRandomMountElementId } from './lib/strings';
 import { isRepresentation } from './lib/predicates';
-import { stripeMethod } from './lib/stripe-method-decorator';
 import { throwBadResponse } from './lib/fetch';
 
 class StripeElementsError extends Error {
@@ -263,33 +262,6 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /* PUBLIC API */
 
   /**
-   * Submit payment information to generate a paymentMethod
-   * @param {stripe.PaymentMethodData} [paymentMethodData={}]
-   * @resolves {stripe.PaymentMethodResponse}
-   */
-  @stripeMethod async createPaymentMethod(paymentMethodData = this.getPaymentMethodData()) {
-    return this.stripe.createPaymentMethod(paymentMethodData);
-  }
-
-  /**
-   * Submit payment information to generate a source
-   * @param {{ owner: stripe.OwnerInfo }} [sourceData={}]
-   * @resolves {stripe.SourceResponse}
-   */
-  @stripeMethod async createSource(sourceData = this.sourceData) {
-    return this.stripe.createSource(this.element, sourceData);
-  }
-
-  /**
-   * Submit payment information to generate a token
-   * @param {TokenData} [tokenData=this.tokenData]
-   * @resolves {stripe.TokenResponse}
-   */
-  @stripeMethod async createToken(tokenData = this.tokenData) {
-    return this.stripe.createToken(this.element, tokenData);
-  }
-
-  /**
    * Reset the stripe element
    */
   reset() {
@@ -297,21 +269,6 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     this.set({ error: null });
   }
 
-  /**
-   * Generates a payment representation of the type specified by `generate`.
-   * @resolves {PaymentResponse}
-   */
-  async submit() {
-    switch (this.generate) {
-      case 'payment-method': return this.createPaymentMethod();
-      case 'source': return this.createSource();
-      case 'token': return this.createToken();
-      default: {
-        const error = this.createError(`cannot generate ${this.generate}`);
-        await this.set({ error });
-        throw error;
-      }
-    }
   }
 
   /* PRIVATE API */
@@ -342,7 +299,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @private
    */
   fire(type, detail, opts = {}) {
-    this.dispatchEvent(new CustomEvent(type, { bubbles: true, detail, ...opts }));
+    this.dispatchEvent(new CustomEvent(type, { detail, ...opts }));
   }
 
   /**
