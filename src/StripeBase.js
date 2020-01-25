@@ -6,13 +6,14 @@ import bound from 'bound-decorator';
 
 import { ReadOnlyPropertiesMixin } from './lib/read-only-properties';
 import { appendTemplate, remove } from './lib/dom';
-import { dash, generateRandomMountElementId } from './lib/strings';
+import { dash, generateRandomMountElementId, isString } from './lib/strings';
 import { isRepresentation } from './lib/predicates';
 import { throwBadResponse } from './lib/fetch';
 
 class StripeElementsError extends Error {
   constructor(tag, message) {
     super(`<${tag}>: ${message}`);
+    this.originalMessage = message;
   }
 }
 
@@ -175,7 +176,9 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @type {Error|stripe.Error}
    * @readonly
    */
-  @property({ type: String, notify: true, readOnly: true }) error = null;
+  @property({ type: Object, notify: true, readOnly: true, reflect: true, converter: {
+    toAttribute: error => !error ? null : error.originalMessage || error.message || '',
+  } }) error = null;
 
   /**
    * Whether the element has an error
@@ -226,7 +229,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /** @inheritdoc */
   render() {
     const { error, showError } = this;
-    const { message: errorMessage = '' } = error || {};
+    const errorMessage = isString(error) ? error : error?.originalMessage || error?.message;
     return html`
       <div id="stripe" part="stripe" tabindex="0" @focus="${this.focus}" @blur="${this.blur}">
         <slot id="stripe-slot" name="stripe-card"></slot>
