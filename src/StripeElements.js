@@ -5,7 +5,7 @@ import bound from 'bound-decorator';
 
 import { StripeBase } from './StripeBase';
 import { dash } from './lib/strings';
-
+import { stripeMethod } from './lib/stripe-method-decorator';
 import sharedStyles from './shared.css';
 import style from './stripe-elements.css';
 import globalStyles from './stripe-elements-global.css';
@@ -291,6 +291,33 @@ export class StripeElements extends LitNotify(StripeBase) {
   /* PUBLIC API */
 
   /**
+   * Submit payment information to generate a paymentMethod
+   * @param {stripe.PaymentMethodData} [paymentMethodData={}]
+   * @resolves {stripe.PaymentMethodResponse}
+   */
+  @stripeMethod async createPaymentMethod(paymentMethodData = this.getPaymentMethodData()) {
+    return this.stripe.createPaymentMethod(paymentMethodData);
+  }
+
+  /**
+   * Submit payment information to generate a source
+   * @param {{ owner: stripe.OwnerInfo }} [sourceData={}]
+   * @resolves {stripe.SourceResponse}
+   */
+  @stripeMethod async createSource(sourceData = this.sourceData) {
+    return this.stripe.createSource(this.element, sourceData);
+  }
+
+  /**
+   * Submit payment information to generate a token
+   * @param {TokenData} [tokenData=this.tokenData]
+   * @resolves {stripe.TokenResponse}
+   */
+  @stripeMethod async createToken(tokenData = this.tokenData) {
+    return this.stripe.createToken(this.element, tokenData);
+  }
+
+  /**
    * Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid.
    * @return {boolean} true if the Stripe form is potentially valid
    */
@@ -304,6 +331,23 @@ export class StripeElements extends LitNotify(StripeBase) {
   reset() {
     super.reset();
     this.element?.clear();
+  }
+
+  /**
+   * Generates a payment representation of the type specified by `generate`.
+   * @resolves {PaymentResponse}
+   */
+  async submit() {
+    switch (this.generate) {
+      case 'payment-method': return this.createPaymentMethod();
+      case 'source': return this.createSource();
+      case 'token': return this.createToken();
+      default: {
+        const error = this.createError(`cannot generate ${this.generate}`);
+        await this.set({ error });
+        throw error;
+      }
+    }
   }
 
   /**
