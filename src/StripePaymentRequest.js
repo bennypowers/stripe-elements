@@ -49,16 +49,16 @@ const parseDataset = mapDataset(parseAmount);
  * ```
  *
  * See the demos for more comprehensive examples.
- *   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-plain-html-and-javascript).
- *   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-lit-element).
- *   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-vue-component).
- *   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-an-angular-component).
- *   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-react-component).
- *   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-preact-component).
+ *   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vanilla--stripe-payment-request).
+ *   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-litelement--stripe-payment-request).
+ *   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vue--stripe-payment-request).
+ *   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-angular--stripe-payment-request).
+ *   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-react--stripe-payment-request).
+ *   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-preact--stripe-payment-request).
  *
- * @cssprop '--stripe-payment-request-element-min-width' min-width property of the container element. Default `300px`
- * @cssprop '--stripe-payment-request-element-padding' padding property of the container element. Default `8px 12px`
- * @cssprop '--stripe-payment-request-element-background' background property of the container element. Default `white`
+ * @cssprop [--stripe-payment-request-element-min-width] - min-width property of the container element. Default `300px`
+ * @cssprop [--stripe-payment-request-element-padding] - padding property of the container element. Default `8px 12px`
+ * @cssprop [--stripe-payment-request-element-background] - background property of the container element. Default `white`
  *
  * @element stripe-payment-request
  * @extends StripeBase
@@ -85,6 +85,7 @@ export class StripePaymentRequest extends StripeBase {
   /**
    * Whether or not the device can make the payment request.
    * @type {object}
+   * @readonly
    */
   @property({
     type: Boolean,

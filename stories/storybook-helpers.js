@@ -1,7 +1,11 @@
 import { LitElement, css, html } from 'lit-element';
 
+import { camel } from '../src/lib/strings';
+
 export const $ = x => document.querySelector(x);
 export const $$ = x => [...document.querySelectorAll(x)];
+
+const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
 
 const LS_KEYS = Object.freeze({
   publishableKey: '__STRIPE_PUBLISHABLE_KEY__',
@@ -11,19 +15,21 @@ const LS_KEYS = Object.freeze({
 export const publishableKey =
   localStorage.getItem(LS_KEYS.publishableKey) || 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX';
 
-export const clientSecret =
-  localStorage.getItem(LS_KEYS.clientSecret) || undefined;
-
 const setProp = (prop, value) => el =>
   (el[prop] = value);
 
-const setProps = propName => selector => ({ target: { value } }) => {
-  localStorage.setItem(LS_KEYS[propName], value);
-  return $$(selector)
-    .forEach(setProp(propName, value));
+const storePublishableKey = publishableKey => {
+  localStorage.setItem(LS_KEYS.publishableKey, publishableKey);
+  return publishableKey;
 };
 
-export const setKeys = setProps('publishableKey');
+const setProps = propName => selector => ({ target: { value } }) => {
+  $$(selector).forEach(setProp(propName, value));
+  return value;
+};
+
+export const setKeys = x => compose(storePublishableKey, setProps('publishableKey')(x));
+
 export const setClientSecrets = setProps('clientSecret');
 
 export const displayObject = ({ target, detail }) => {
@@ -85,8 +91,8 @@ class DemoBase extends LitElement {
   }
 
   removeStripeListeners() {
-    this.stripe.addEventListener('success', this.display);
-    this.stripe.addEventListener('fail', this.display);
+    this.stripe.removeEventListener('success', this.display);
+    this.stripe.removeEventListener('fail', this.display);
   }
 
   connectedCallback() {
@@ -102,7 +108,7 @@ class DemoBase extends LitElement {
   }
 
   display({ target }) {
-    const val = target[target.generate];
+    const val = target[camel(target.generate)];
     this.output = val;
   }
 }
@@ -148,7 +154,7 @@ customElements.define('elements-demo', class ElementsDemo extends DemoBase {
 
   removeStripeListeners() {
     super.removeStripeListeners();
-    this.stripe.remoteventListener('change', this.onChange);
+    this.stripe.removeEventListener('change', this.onChange);
   }
 
   validate() {

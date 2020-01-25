@@ -67,12 +67,12 @@ Then you can add the element to your page.
 ```
 
 See the demos for more comprehensive examples.
-   - Using `<stripe-elements>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-plain-html-and-javascript).
-   - Using `<stripe-elements>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-lit-element).
-   - Using `<stripe-elements>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-vue-component).
-   - Using `<stripe-elements>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-an-angular-component).
-   - Using `<stripe-elements>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-react-component).
-   - Using `<stripe-elements>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--in-a-preact-component).
+   - Using `<stripe-elements>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-html--stripe-elements).
+   - Using `<stripe-elements>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-litelement--stripe-elements).
+   - Using `<stripe-elements>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vue--stripe-elements).
+   - Using `<stripe-elements>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-angular--stripe-elements).
+   - Using `<stripe-elements>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-react--stripe-elements).
+   - Using `<stripe-elements>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-preact--stripe-elements).
 
 ## Styling
 
@@ -269,12 +269,12 @@ Then you can add the element to your page.
 ```
 
 See the demos for more comprehensive examples.
-   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-plain-html-and-javascript).
-   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-lit-element).
-   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-vue-component).
-   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-an-angular-component).
-   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-react-component).
-   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-preact-component).
+   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vanilla--stripe-payment-request).
+   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-litelement--stripe-payment-request).
+   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vue--stripe-payment-request).
+   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-angular--stripe-payment-request).
+   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-react--stripe-payment-request).
+   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-preact--stripe-payment-request).
 
 **Mixins:** ReadOnlyPropertiesMixin, LitNotify
 
@@ -287,7 +287,7 @@ See the demos for more comprehensive examples.
 | `billingDetails`    |                       |           | `stripe.BillingDetails`                      | {}        | billing_details object sent to create the payment representation. (optional) |
 | `buttonTheme`       | `button-theme`        |           | `'dark'\|'light'\|'light-outline'`           | "dark"    |                                                  |
 | `buttonType`        | `button-type`         |           | `'default'\|'book'\|'buy'\|'donate'`         | "default" |                                                  |
-| `canMakePayment`    | `can-make-payment`    |           | `object`                                     | null      | Whether or not the device can make the payment request. |
+| `canMakePayment`    | `can-make-payment`    | readonly  | `object`                                     | null      | Whether or not the device can make the payment request. |
 | `clientSecret`      | `client-secret`       |           | `String`                                     |           | The `client_secret` part of a Stripe `PaymentIntent` |
 | `country`           | `country`             |           | `string`                                     |           | The two-letter country code of your Stripe account (e.g., `US`) |
 | `currency`          | `currency`            |           | `string`                                     |           | Three character currency code (e.g., `usd`)      |
@@ -357,8 +357,9 @@ See the demos for more comprehensive examples.
 
 #### CSS Custom Properties
 
-| Property                                | Description                                      |
-|-----------------------------------------|--------------------------------------------------|
-| `'--stripe-payment-request-element`     | padding' padding property of the container element. Default `8px 12px` |
-| `'--stripe-payment-request-element-min` | width' min-width property of the container element. Default `300px` |
+| Property                                      | Description                                      |
+|-----------------------------------------------|--------------------------------------------------|
+| `--stripe-payment-request-element-background` | background property of the container element. Default `white` |
+| `--stripe-payment-request-element-min-width`  | min-width property of the container element. Default `300px` |
+| `--stripe-payment-request-element-padding`    | padding property of the container element. Default `8px 12px` |
 
