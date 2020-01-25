@@ -150,7 +150,8 @@ const allowedStyles = [
  * @fires 'card-changed' - The new value of card
  * @fires 'is-complete-changed' - The new value of is-complete
  * @fires 'is-empty-changed' - The new value of is-empty
- * @fires 'stripe-ready-changed' - The new value of stripe-ready
+ * @fires 'ready-changed' - The new value of stripe-ready
+ * @fires 'stripe-ready-changed' - **DEPRECATED**. will be removed in a future version. use `ready-changed` instead.
  */
 export class StripeElements extends LitNotify(StripeBase) {
   static is = 'stripe-elements';
@@ -201,6 +202,14 @@ export class StripeElements extends LitNotify(StripeBase) {
   @property({ type: String, notify: true, readOnly: true }) brand = null;
 
   /**
+   * Whether the stripe element is ready to receive focus.
+   * @type {boolean}
+   */
+  @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) ready = false;
+
+  // DEPRECATED
+
+  /**
    * The Stripe card object.
    * **DEPRECATED**. Will be removed in a future version. use `element` instead
    * @type {stripe.elements.Element}
@@ -234,7 +243,9 @@ export class StripeElements extends LitNotify(StripeBase) {
   }) isEmpty = true;
 
   /**
-   * If the stripe element is ready to receive focus.
+   * Whether the stripe element is ready to receive focus.
+   * **DEPRECATED**. Will be removed in a future version. use `ready` instead.
+   * @deprecated
    * @type {boolean}
    */
   @property({
@@ -366,7 +377,7 @@ export class StripeElements extends LitNotify(StripeBase) {
    * @private
    */
   @bound async onReady(event) {
-    await this.set({ stripeReady: true });
+    await this.set({ ready: true, stripeReady: true });
     this.fire('ready', event);
     // DEPRECATED
     this.fire('stripe-ready', event);
