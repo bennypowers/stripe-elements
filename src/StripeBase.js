@@ -43,17 +43,8 @@ const mountPointTemplate = ({ stripeMountId, tagName }) =>
  * @fires 'stripe-source' - **DEPRECATED**. Will be removed in a future major version. Use `source` instead
  * @fires 'stripe-token' - **DEPRECATED**. Will be removed in a future major version. Use `token` instead
  *
- * @fires 'ready-changed' - The new value of stripe-ready
- * @fires 'stripe-ready-changed' - **DEPRECATED**. will be removed in a future version. use `ready-changed` instead.
- * @fires 'error-changed' - The new value of error
- * @fires 'has-error-changed' - The new value of has-error
- * @fires 'payment-method-changed' - The new value of payment-method
- * @fires 'publishable-key-changed' - The new value of publishable-key
- * @fires 'source-changed' - The new value of source
- * @fires 'token-changed' - The new value of token
- *
- * @cssspart 'error' - container for the error message
- * @cssspart 'stripe' - container for the stripe element
+ * @csspart 'error' - container for the error message
+ * @csspart 'stripe' - container for the stripe element
  */
 export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /* PAYMENT CONFIGURATION */
@@ -139,12 +130,6 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   @property({ type: String, attribute: 'client-secret' }) clientSecret;
 
   /**
-   * If the element is focused.
-   * @type {boolean}
-   */
-  @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) focused = false;
-
-  /**
    * Type of payment representation to generate.
    * @type {'payment-method'|'source'|'token'}
    * @required
@@ -161,12 +146,6 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     reflect: true,
     notify: true,
   }) publishableKey;
-
-  /**
-   * Whether the stripe element is ready to receive focus.
-   * @type {boolean}
-   */
-  @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) ready = false;
 
   /** Whether to display the error message */
   @property({ type: Boolean, attribute: 'show-error', reflect: true }) showError = false;
@@ -195,6 +174,20 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   @property({ type: Object, notify: true, readOnly: true, reflect: true, converter: {
     toAttribute: error => !error ? null : error.originalMessage || error.message || '',
   } }) error = null;
+
+  /**
+   * If the element is focused.
+   * @type {boolean}
+   * @readonly
+   */
+  @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) focused = false;
+
+  /**
+   * Whether the stripe element is ready to receive focus.
+   * @type {boolean}
+   * @readonly
+   */
+  @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) ready = false;
 
   /**
    * Stripe instance

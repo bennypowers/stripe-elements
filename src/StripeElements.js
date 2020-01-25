@@ -144,13 +144,6 @@ const allowedStyles = [
  * @extends StripeBase
  *
  * @fires 'change' - Stripe Element change event
- *
- * @fires 'stripe-change' - **DEPRECATED**. Will be removed in a future major version
- *
- * @fires 'brand-changed' - The new value of brand
- * @fires 'card-changed' - The new value of card
- * @fires 'is-complete-changed' - The new value of is-complete
- * @fires 'is-empty-changed' - The new value of is-empty
  */
 export class StripeElements extends LitNotify(StripeBase) {
   static is = 'stripe-elements';
@@ -201,18 +194,21 @@ export class StripeElements extends LitNotify(StripeBase) {
   /**
    * Whether the form is complete.
    * @type {boolean}
+   * @readonly
    */
   @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) complete = false;
 
   /**
    * If the form is empty.
    * @type {boolean}
+   * @readonly
    */
   @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) empty = true;
 
   /**
    * Whether the form is invalid.
    * @type {boolean}
+   * @readonly
    */
   @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) invalid = false;
 

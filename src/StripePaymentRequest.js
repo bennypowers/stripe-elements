@@ -56,9 +56,9 @@ const parseDataset = mapDataset(parseAmount);
  *   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-react-component).
  *   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--in-a-preact-component).
  *
- * cssprop '--stripe-payment-request-element-min-width' min-width property of the container element. Default `300px`
- * cssprop '--stripe-payment-request-element-padding' padding property of the container element. Default `8px 12px`
- * cssprop '--stripe-payment-request-element-background' background property of the container element. Default `white`
+ * @cssprop '--stripe-payment-request-element-min-width' min-width property of the container element. Default `300px`
+ * @cssprop '--stripe-payment-request-element-padding' padding property of the container element. Default `8px 12px`
+ * @cssprop '--stripe-payment-request-element-background' background property of the container element. Default `white`
  *
  * @element stripe-payment-request
  * @extends StripeBase
