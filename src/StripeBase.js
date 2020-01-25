@@ -261,13 +261,13 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /** @inheritdoc */
   render() {
     const { error, showError } = this;
-    const errorMessage = isString(error) ? error : error?.originalMessage || error?.message;
+    const errorMessage = error?.originalMessage || error?.message;
     return html`
       <div id="stripe" part="stripe" tabindex="0" @focus="${this.focus}" @blur="${this.blur}">
         <slot id="stripe-slot" name="stripe-card"></slot>
       </div>
 
-      <div id="error" part="error" ?hidden="${!showError}">${errorMessage}</div>
+      <div id="error" part="error" ?hidden="${!showError}">${ifDefined(errorMessage)}</div>
     `;
   }
 
