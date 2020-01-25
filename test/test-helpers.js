@@ -263,7 +263,6 @@ export function spyCardClear() {
 }
 
 export function spyStripeElementBlur() {
-  console.log('element.element.blur', element.element.blur);
   spy(element.element, 'blur');
 }
 
@@ -272,7 +271,6 @@ export function restoreStripeElementBlur() {
 }
 
 export function spyStripeElementFocus() {
-  console.log('element.element.focus', element.element.focus);
   spy(element.element, 'focus');
 }
 

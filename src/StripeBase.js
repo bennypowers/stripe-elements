@@ -6,7 +6,7 @@ import bound from 'bound-decorator';
 
 import { ReadOnlyPropertiesMixin } from './lib/read-only-properties';
 import { appendTemplate, remove } from './lib/dom';
-import { dash, generateRandomMountElementId, isString } from './lib/strings';
+import { dash, generateRandomMountElementId } from './lib/strings';
 import { isRepresentation } from './lib/predicates';
 import { throwBadResponse } from './lib/fetch';
 

@@ -4,6 +4,8 @@ import {
   Preview,
   Props,
   Story,
+  withKnobs,
+  withWebComponentsKnobs,
 } from '@open-wc/demoing-storybook';
 
 import { ifDefined } from 'lit-html/directives/if-defined';
@@ -13,15 +15,9 @@ import '../stripe-payment-request.js';
 import '@power-elements/json-viewer';
 import '@material/mwc-textfield';
 
-import { $$, clientSecret, publishableKey, setClientSecrets, setKeys } from './storybook-helpers.js';
+import { $$, publishableKey, setClientSecrets, setKeys } from './storybook-helpers.js';
 
-<Meta
-  title="Stripe Payment Request"
-  parameters={{
-    component: 'stripe-payment-request',
-    options: { selectedPanel: 'storybookjs/docs/panel' }
-  }}
-/>
+<Meta title="Elements/Stripe Payment Request" />
 
 # Stripe Payment Request Web Component
 
@@ -31,7 +27,7 @@ To get started, add the element to your page with the `publishable-key` attribut
 
 Enter your publishable key here (use the test key, not the production key) to run the examples against your Stripe account.
 
-<Story name="Enter a Stripe Publishable Key" height="80px">{html`
+<Story name="Enter a Publishable Key" height="80px">{html`
   <mwc-textfield outlined label="Publishable Key" @change="${setKeys('stripe-payment-request')}" value="${publishableKey}"> </mwc-textfield>`
 }</Story>
 
@@ -128,18 +124,20 @@ Stripe provides a PaymentIntent API which is both more secure and more compatibl
 To take advantage of those features, generate a `PaymentIntent` object on your server and
 pass it's `client_secret` property to the `<stripe-payment-request>` element.
 
-Enter your client secret to run the examples. **Note**: This demo will store the client secret in localstorage for your convenience.
+You can generate one quickly using the stripe cli:
+
+```bash
+stripe payment_intents create --amount=326 --currency=cad | jq -r '.client_secret'
+```
+
+Enter your client secret to run the examples.
 
 <Story name="Enter a Client Secret" height="80px">
   {html`
-    <mwc-textfield id="client-secret-input"
-        outlined
-        value="${ifDefined(clientSecret)}"
-        label="Client Secret"
-        @change="${setClientSecrets('.uses-client-secret stripe-payment-request')}">
-    </mwc-textfield>`
+    <mwc-textfield id="client-secret-input" outlined label="Client Secret" @change="${setClientSecrets('.uses-client-secret stripe-payment-request')}"> </mwc-textfield>`
   }
 </Story>
+
 
 <Preview withSource="open">
   <Story name="Payment Request with Payment Intent">{
@@ -148,7 +146,7 @@ Enter your client secret to run the examples. **Note**: This demo will store the
         <stripe-payment-request
             publishable-key="${publishableKey}"
             generate="payment-method"
-            client-secret="${ifDefined(clientSecret)}"
+            client-secret="pi_XXXXXXXXXXXXXXXXXXXXXXXX_secret_XXXXXXXXXXXXXXXXXXXXXXXXX"
             request-payer-name
             request-payer-email
             request-payer-phone
@@ -165,304 +163,3 @@ Enter your client secret to run the examples. **Note**: This demo will store the
 ## API
 
 <Props of="stripe-payment-request" />
-
-# Using `<stripe-payment-request>` Across Frameworks
-
-Since `<stripe-payment-request>` is a custom-element, you can easily use it across frameworks.
-
-## Using with Plain HTML and JavaScript
-
-<Story name="In Plain HTML and JavaScript">
- {html`<codesandbox-button sandbox-id="5h7uy"> </codesandbox-button>`}
-</Story>
-
-```html
-<stripe-payment-request
-    publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"
-    generate="payment-method"
-    request-payer-name
-    request-payer-email
-    request-payer-phone
-    amount="326"
-    label="Double Double"
-    country="CA"
-    currency="cad">
-  <stripe-display-item data-amount="125" data-label="Double Double"> </stripe-display-item>
-  <stripe-display-item data-amount="199" data-label="Box of 10 Timbits"> </stripe-display-item>
-  <stripe-shipping-option data-id="pick-up" data-label="Pick Up" data-detail="Pick Up at Your Local Timmy's" data-amount="0"> </stripe-shipping-option>
-  <stripe-shipping-option data-id="delivery" data-label="Delivery" data-detail="Timbits to Your Door" data-amount="200"> </stripe-shipping-option>
-</stripe-payment-request>
-
-<json-viewer></json-viewer>
-
-<script>
-  const viewer = document.querySelector("json-viewer");
-  const stripe = document.querySelector("stripe-payment-request");
-
-  stripe.addEventListener("payment-method", onPaymentMethod);
-
-  function onPaymentMethod({ target: { paymentMethod } }) {
-    const handleAsJson = response => response.json();
-    const viewJson = object => (viewer.object = object);
-
-    const method = "POST";
-    const body = JSON.stringify(paymentMethod);
-    const headers = { "Content-Type": "application/json" };
-
-    fetch("/payments", { method, body, headers })
-      .then(handleAsJson)
-      .then(viewJson)
-      .catch(viewJson);
-  }
-</script>
-```
-
-## In a `LitElement`
-
-<Story name="In a LitElement">
- {html`<codesandbox-button sandbox-id="8m7uk"></codesandbox-button>`}
-</Story>
-
-```js
-import { LitElement, html } from 'lit-element';
-import { PUBLISHABLE_KEY } from './config.js';
-
-const displayItems = [
-  { amount: '125', label: 'Double Double' },
-  { amount: '199', label: 'Box of 10 Timbits' },
-]
-
-const shippingOptions = [
-  { id: 'pick-up',  amount: 0,   label: 'Pick Up',  detail: "Pick Up at Your Local Timmy's" },
-  { id: 'delivery', amount: 200, label: 'Delivery', detail: 'Timbits to Your Door' }
-]
-
-class PaymentForm extends LitElement {
-  static get properties() {
-    return {
-      paymentMethod: { type: Object },
-    };
-  }
-
-  render() {
-    return html`
-      <stripe-payment-request
-          publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"
-          .shippingOptions="${shippingOptions}"
-          .displayItems="${displayItems}"
-          @payment-method="${this.onPaymentMethod}"
-          generate="payment-method"
-          request-payer-name
-          request-payer-email
-          request-payer-phone
-          amount="326"
-          label="Double Double"
-          country="CA"
-          currency="cad">
-      </stripe-payment-request>
-
-      <json-viewer .object="${ifDefined(this.paymentMethod)}"></json-viewer>
-    `;
-  }
-
-  onPaymentMethod({ detail: paymentMethod }) {
-    this.paymentMethod = paymentMethod;
-  }
-}
-```
-
-### In a Vue Component
-
-<Story name="In a Vue Component">
-  {html`<codesandbox-button sandbox-id="23edw" module="/src/Payment.vue"> </codesandbox-button>`}
-</Story>
-
-
-```html
-<template>
-  <article>
-    <stripe-payment-request
-      ref="stripe"
-      @payment-method="onPaymentMethod"
-      @error="onError"
-      :publishable-key="publishableKey"
-      generate="payment-method"
-      request-payer-name
-      request-payer-email
-      request-payer-phone
-      amount="326"
-      label="Double Double"
-      country="CA"
-      currency="cad"
-    ></stripe-payment-request>
-
-    <json-viewer v-if="error || paymentMethod" :object.prop="error || paymentMethod"></json-viewer>
-  </article>
-</template>
-
-<script>
-import { PUBLISHABLE_KEY } from './config';
-
-export default {
-  name: "payment-form",
-  data() {
-    return {
-      publishableKey: PUBLISHABLE_KEY,
-      paymentMethod: null,
-      error: null,
-    };
-  },
-  methods: {
-    onPaymentMethod({ detail: paymentMethod }) {
-      this.paymentMethod = paymentMethod;
-    },
-
-    onError({ detail: error }) {
-      this.error = error;
-    },
-  }
-};
-</script>
-```
-
-### In an Angular Component
-
-<Story name="In an Angular Component">
-  {html`<codesandbox-button sandbox-id="97z2t" module="/src/app/app.component.ts"> </codesandbox-button>`}
-</Story>
-
-
-```ts
-import { Component } from "@angular/core";
-import { PUBLISHABLE_KEY } from './config';
-
-const template = `
-  <stripe-payment-request
-    (paymentMethod)="paymentMethod = $event.detail"
-    (error)="error = $event.detail"
-    [publishableKey]="publishableKey"
-    generate="payment-method"
-    request-payer-name
-    request-payer-email
-    request-payer-phone
-    amount="326"
-    label="Double Double"
-    country="CA"
-    currency="cad"
-  ></stripe-payment-request>
-
-  <json-viewer *ngIf="error || paymentMethod" [object]="error || paymentMethod"></json-viewer>
-`;
-
-const styleUrls = ["./app.component.css"];
-
-@Component({ selector: "app-root", template, styleUrls })
-export class AppComponent {
-  publishableKey: string = PUBLISHABLE_KEY;
-  paymentMethod?: stripe.paymentMethod.PaymentMethod = null;
-  error?: Error | stripe.Error = null;
-}
-```
-
-### In a React Component
-
-<Story name="In a React Component">
-  {html`<codesandbox-button sandbox-id="0kktv"> </codesandbox-button>`}
-</Story>
-
-
-```jsx
-import React, { useState, useRef, useEffect } from "react";
-import ReactDOM from "react-dom";
-import { getPropOr, compose } from "crocks";
-import { PUBLISHABLE_KEY } from './config';
-import "./styles.css";
-
-const getDetail = getPropOr(null, "detail");
-const getPaymentMethod = getPropOr(null, "paymentMethod");
-
-function App() {
-  const stripeRef = useRef(null);
-  const viewerRef = useRef(null);
-  const [paymentMethod, setPaymentMethod] = useState(null);
-  const [error, setError] = useState(null);
-
-  const onError = compose(setError, getDetail);
-  const onPaymentMethod = compose(setPaymentMethod, getPaymentMethod);
-
-  useEffect(() => {
-    stripeRef.current.addEventListener("error", onError);
-    stripeRef.current.addEventListener("payment-method", onPaymentMethod);
-    if (paymentMethod || error) viewerRef.current.object = paymentMethod;
-  });
-
-  return (
-    <article className="App">
-      <stripe-payment-request ref={stripeRef} publishable-key={PUBLISHABLE_KEY}
-        generate="payment-method"
-        request-payer-name
-        request-payer-email
-        request-payer-phone
-        amount="326"
-        label="Double Double"
-        country="CA"
-        currency="cad"
-      />
-      <json-viewer ref={viewerRef} />
-    </article>
-  );
-}
-
-ReactDOM.render(<App />, document.getElementById("root"));
-```
-
-### In a Preact Component
-
-<Story name="In a Preact Component">
-  {html`<codesandbox-button sandbox-id="6og3s"> </codesandbox-button>`}
-</Story>
-
-```jsx
-import { loadScripts } from "./loadScripts";
-import { render } from "preact";
-import { useState, useRef } from "preact/hooks";
-import { getPropOr, compose } from "crocks";
-import { PUBLISHABLE_KEY } from './config';
-import "./style";
-
-const getDetail = getPropOr(null, "detail");
-const getPaymentMethod = getPropOr(null, "paymentMethod");
-
-export default function App() {
-  const stripeRef = useRef(null);
-  const [paymentMethod, setPaymentMethod] = useState(null);
-  const [error, setError] = useState(null);
-
-  const onError = compose(setError, getDetail);
-  const onPaymentMethod = compose(setPaymentMethod, getPaymentMethod);
-
-  return (
-    <article className="App">
-      <stripe-payment-request
-        ref={stripeRef}
-        onerror={onError}
-        onpayment-method={onPaymentMethod}
-        publishable-key={publishableKey}
-        generate="payment-method"
-        request-payer-name
-        request-payer-email
-        request-payer-phone
-        amount="326"
-        label="Double Double"
-        country="CA"
-        currency="cad"
-      />
-      {(error || paymentMethod) && <json-viewer object={error || paymentMethod} />}
-    </article>
-  );
-}
-
-if (typeof window !== "undefined") {
-  render(<App />, document.getElementById("root"));
-}
-```
