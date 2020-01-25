@@ -202,6 +202,24 @@ export class StripeElements extends LitNotify(StripeBase) {
   @property({ type: String, notify: true, readOnly: true }) brand = null;
 
   /**
+   * Whether the form is complete.
+   * @type {boolean}
+   */
+  @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) complete = false;
+
+  /**
+   * If the form is empty.
+   * @type {boolean}
+   */
+  @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) empty = true;
+
+  /**
+   * Whether the form is invalid.
+   * @type {boolean}
+   */
+  @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) invalid = false;
+
+  /**
    * Whether the stripe element is ready to receive focus.
    * @type {boolean}
    */
@@ -219,20 +237,10 @@ export class StripeElements extends LitNotify(StripeBase) {
   @property({ type: Object, notify: true, readOnly: true }) card = null;
 
   /**
-   * If the form is complete.
+   * Whether the form is empty.
+   * **DEPRECATED**. Will be removed in a future version. use `empty` instead
    * @type {boolean}
-   */
-  @property({
-    type: Boolean,
-    attribute: 'is-complete',
-    reflect: true,
-    notify: true,
-    readOnly: true,
-  }) isComplete = false;
-
-  /**
-   * If the form is empty.
-   * @type {boolean}
+   * @deprecated
    */
   @property({
     type: Boolean,
@@ -241,6 +249,20 @@ export class StripeElements extends LitNotify(StripeBase) {
     notify: true,
     readOnly: true,
   }) isEmpty = true;
+
+  /**
+   * Whether the form is complete.
+   * **DEPRECATED**. Will be removed in a future version. use `complete` instead
+   * @type {boolean}
+   * @deprecated
+   */
+  @property({
+    type: Boolean,
+    attribute: 'is-complete',
+    reflect: true,
+    notify: true,
+    readOnly: true,
+  }) isComplete = false;
 
   /**
    * Whether the stripe element is ready to receive focus.
@@ -273,7 +295,7 @@ export class StripeElements extends LitNotify(StripeBase) {
    * @return {boolean} true if the Stripe form is potentially valid
    */
   isPotentiallyValid() {
-    return (!this.isComplete && !this.isEmpty && !this.hasError) || this.validate();
+    return (!this.complete && !this.empty && !this.error) || this.validate();
   }
 
   /**
@@ -289,10 +311,9 @@ export class StripeElements extends LitNotify(StripeBase) {
    * @return {boolean} true if the Stripe form is valid
    */
   validate() {
-    const { isComplete, isEmpty, hasError } = this;
-    const isValid = !hasError && isComplete && !isEmpty;
-    const error = this.createError(`Credit card information is ${isEmpty ? 'empty' : 'incomplete'}.`);
-    if (!isValid && !hasError) this.set({ error });
+    const { complete, empty, error } = this;
+    const isValid = !error && complete && !empty;
+    if (!isValid && !error) this.set({ error: this.createError(`Credit card information is ${empty ? 'empty' : 'incomplete'}.`) });
     return isValid;
   }
 
@@ -356,6 +377,9 @@ export class StripeElements extends LitNotify(StripeBase) {
   /**
    * Sets the error.
    * @param  {StripeChangeEvent}         event
+  /**
+   * Updates the element's state.
+   * @param  {stripe.elements.ElementChangeResponse}         event
    * @param  {boolean}       event.empty     true if value is empty
    * @param  {boolean}       event.complete  true if value is well-formed and potentially complete.
    * @param  {string}        event.brand     brand of the card being entered e.g. 'visa' or 'amex'
@@ -364,15 +388,27 @@ export class StripeElements extends LitNotify(StripeBase) {
    * @private
    */
   @bound async onChange(event) {
-    const { brand, complete: isComplete, empty: isEmpty, error = null } = event;
-    await this.set({ error, brand, isComplete, isEmpty });
+    const { brand, complete, empty, error = null } = event;
+    const invalid = error || (!empty && !complete);
+    await this.set({
+      brand,
+      complete,
+      empty,
+      error,
+      invalid,
+
+      // DEPRECATED
+      isComplete: complete,
+      isEmpty: empty,
+      hasError: !!error,
+    });
     this.fire('change', event);
     // DEPRECATED
     this.fire('stripe-change', event);
   }
 
   /**
-   * Sets the stripeReady property when the stripe element is ready to receive focus.
+   * Sets the `ready` property when the stripe element is ready to receive focus.
    * @param  {Event} event
    * @private
    */
