@@ -13,20 +13,22 @@ import {
   NO_STRIPE_CREATE_TOKEN_ERROR,
   NO_STRIPE_JS_ERROR,
   appendAllBlueStyleTag,
-  appendGlobalStyles,
   assertElementErrorMessage,
   assertEventDetail,
   assertFired,
-  assertHasOneGlobalStyleTag,
   assertProps,
   assignedNodes,
   awaitEvent,
+  blur,
+  blurStripeElement,
   createPaymentMethod,
   createSource,
   createToken,
   element,
   expectedLightDOM,
   fetchStub,
+  focus,
+  focusStripeElement,
   initialStripe,
   initialStripeMountId,
   listenFor,
@@ -39,7 +41,6 @@ import {
   removeStripeMount,
   reset,
   resetTestState,
-  restoreAppended,
   restoreCardClear,
   restoreConsoleWarn,
   restoreFetch,
@@ -47,11 +48,15 @@ import {
   restoreShadyCSS,
   restoreShadyDOM,
   restoreStripe,
+  restoreStripeElementBlur,
+  restoreStripeElementFocus,
   setProps,
   setupNoProps,
   setupWithPublishableKey,
   spyConsoleWarn,
   spyGetComputedStyleValue,
+  spyStripeElementBlur,
+  spyStripeElementFocus,
   stubFetch,
   submit,
   synthCardEvent,
@@ -60,6 +65,7 @@ import {
   testReadOnlyProp,
   testReadonlyNotifyingProp,
   testWritableNotifyingProp,
+  updateComplete,
   validate,
 } from '../test/test-helpers';
 import {
@@ -89,8 +95,13 @@ const READ_ONLY_PROPS = Object.freeze([
   ...BASE_READ_ONLY_PROPS,
   'brand',
   'card',
+  'complete',
+  'empty',
+  'error',
+  'invalid',
   'isComplete',
   'isEmpty',
+  'ready',
   'stripeReady',
 ]);
 
@@ -98,8 +109,13 @@ const NOTIFYING_PROPS = Object.freeze([
   ...BASE_NOTIFYING_PROPS,
   'brand',
   'card',
+  'complete',
+  'empty',
+  'error',
+  'invalid',
   'isComplete',
   'isEmpty',
+  'ready',
   'stripeReady',
 ]);
 
@@ -133,18 +149,6 @@ describe('<stripe-elements>', function() {
       beforeEach(setupNoProps);
       READ_ONLY_PROPS.filter(elem(NOTIFYING_PROPS)).forEach(testReadonlyNotifyingProp);
     });
-  });
-
-  describe('with global CSS present in the document', function() {
-    beforeEach(appendGlobalStyles);
-    beforeEach(setupNoProps);
-    afterEach(restoreAppended);
-    it('does not append a second stylesheet to the document', assertHasOneGlobalStyleTag);
-  });
-
-  describe('without global CSS in the document', function() {
-    beforeEach(setupNoProps);
-    it('appends a stylesheet to the document', assertHasOneGlobalStyleTag);
   });
 
   describe('when Mocked ShadyDOM polyfill is in use', function shadyDOM() {
@@ -452,6 +456,38 @@ describe('<stripe-elements>', function() {
         expect(element.card).to.equal(element.element);
       });
 
+      describe('calling blur()', function() {
+        beforeEach(spyStripeElementBlur);
+        beforeEach(blur);
+        afterEach(restoreStripeElementBlur);
+        it('calls StripeElement#blur', function() {
+          expect(element.element.blur).to.have.been.called;
+        });
+      });
+
+      describe('calling focus()', function() {
+        beforeEach(spyStripeElementFocus);
+        beforeEach(focus);
+        afterEach(restoreStripeElementFocus);
+        it('calls StripeElement#focus', function() {
+          expect(element.element.focus).to.have.been.called;
+        });
+      });
+
+      describe('when stripe element is focused', function() {
+        beforeEach(focusStripeElement);
+        beforeEach(updateComplete);
+        it('sets the `focused` property', assertProps({ focused: true }));
+      });
+
+      describe('when stripe element is blurred', function() {
+        beforeEach(focusStripeElement);
+        beforeEach(updateComplete);
+        beforeEach(blurStripeElement);
+        beforeEach(updateComplete);
+        it('unsets the `focused` property', assertProps({ focused: false }));
+      });
+
       describe('when publishable key is changed', function publishableKeyReset() {
         let initialStripeMountId;
         beforeEach(function() { initialStripeMountId = element.stripeMountId; });
@@ -555,6 +591,7 @@ describe('<stripe-elements>', function() {
 
         describe('describing a non-empty, incomplete card', function() {
           beforeEach(listenFor('is-empty-changed'));
+          beforeEach(listenFor('empty-changed'));
           beforeEach(synthCardEvent('change', { brand: 'visa', empty: false, complete: false }));
           it('fires `is-empty-changed` event', assertEventDetail('is-empty-changed', { value: false }));
           describe('and then', function() {
@@ -592,10 +629,12 @@ describe('<stripe-elements>', function() {
           });
 
           describe('calling validate()', function() {
+            beforeEach(validate);
             it('returns false', function() {
               expect(element.validate()).to.be.false;
             });
           });
+
 
           describe('calling isPotentiallyValid()', function() {
             it('returns false', function() {

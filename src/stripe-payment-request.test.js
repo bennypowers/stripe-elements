@@ -7,21 +7,20 @@ import {
   BASE_DEFAULT_PROPS,
   BASE_NOTIFYING_PROPS,
   BASE_READ_ONLY_PROPS,
-  NO_STRIPE_CREATE_PAYMENT_METHOD_ERROR,
-  NO_STRIPE_CREATE_SOURCE_ERROR,
-  NO_STRIPE_CREATE_TOKEN_ERROR,
   NO_STRIPE_JS_ERROR,
-  appendGlobalStyles,
   appendHeightStyleTag,
   assertCalled,
   assertElementErrorMessage,
   assertFired,
-  assertHasOneGlobalStyleTag,
   assertProps,
   assertPropsOk,
   assignedNodes,
+  blur,
+  blurStripeElement,
   element,
   expectedLightDOM,
+  focus,
+  focusStripeElement,
   initialStripe,
   initialStripeMountId,
   listenFor,
@@ -34,22 +33,26 @@ import {
   removeStripeMount,
   reset,
   resetTestState,
-  restoreAppended,
   restoreCanMakePayment,
   restoreConsoleWarn,
   restoreShadyCSS,
   restoreShadyDOM,
   restoreStripe,
+  restoreStripeElementBlur,
+  restoreStripeElementFocus,
   setProps,
   setupNoProps,
   setupWithPublishableKey,
   setupWithTemplate,
   spyConsoleWarn,
+  spyStripeElementBlur,
+  spyStripeElementFocus,
   synthPaymentRequestEvent,
   testDefaultPropEntry,
   testReadOnlyProp,
   testReadonlyNotifyingProp,
   testWritableNotifyingProp,
+  updateComplete,
 } from '../test/test-helpers';
 import {
   CARD_CONFIRM_ERROR_SECRET,
@@ -167,18 +170,6 @@ describe('<stripe-payment-request>', function() {
       beforeEach(setProps({ shippingOptions: shippingOptionsProperty }));
       it('gets the `shippingOptions` property based on DOM property', assertProps({ shippingOptions: shippingOptionsProperty }, { deep: true }));
     });
-  });
-
-  describe('with global CSS present in the document', function() {
-    beforeEach(appendGlobalStyles);
-    beforeEach(setupNoProps);
-    afterEach(restoreAppended);
-    it('does not append a second stylesheet to the document', assertHasOneGlobalStyleTag);
-  });
-
-  describe('without global CSS in the document', function() {
-    beforeEach(setupNoProps);
-    it('appends a stylesheet to the document', assertHasOneGlobalStyleTag);
   });
 
   describe('when Mocked ShadyDOM polyfill is in use', function shadyDOM() {
@@ -325,42 +316,6 @@ describe('<stripe-payment-request>', function() {
         });
 
         it('sets the `error` property', assertElementErrorMessage(NO_STRIPE_JS_ERROR));
-
-        it('throws an error when creating payment method', async function() {
-          try {
-            await element.createPaymentMethod();
-            expect.fail('Resolved source promise without Stripe.js');
-          } catch (err) {
-            expect(err.message).to.equal(`<${element.constructor.is}>: ${NO_STRIPE_CREATE_PAYMENT_METHOD_ERROR}`);
-          }
-        });
-
-        it('throws an error when creating token', async function() {
-          try {
-            await element.createToken();
-            expect.fail('Resolved token promise without Stripe.js');
-          } catch (err) {
-            expect(err.message).to.equal(`<${element.constructor.is}>: ${NO_STRIPE_CREATE_TOKEN_ERROR}`);
-          }
-        });
-
-        it('throws an error when creating source', async function() {
-          try {
-            await element.createSource();
-            expect.fail('Resolved source promise without Stripe.js');
-          } catch (err) {
-            expect(err.message).to.equal(`<${element.constructor.is}>: ${NO_STRIPE_CREATE_SOURCE_ERROR}`);
-          }
-        });
-
-        it('throws an error when calling submit', async function() {
-          try {
-            await element.submit();
-            expect.fail('Resolved submit promise without Stripe.js');
-          } catch (err) {
-            expect(err.message).to.equal(`<${element.constructor.is}>: ${NO_STRIPE_CREATE_SOURCE_ERROR}`);
-          }
-        });
       });
     });
 
@@ -378,6 +333,38 @@ describe('<stripe-payment-request>', function() {
           describe('with a mocked ShadyCSS shim', function() {
             beforeEach(mockShadyCSS);
             afterEach(restoreShadyCSS);
+
+            describe('calling blur()', function() {
+              beforeEach(spyStripeElementBlur);
+              beforeEach(blur);
+              afterEach(restoreStripeElementBlur);
+              it('calls StripeElement#blur', function() {
+                expect(element.element.blur).to.have.been.called;
+              });
+            });
+
+            describe('calling focus()', function() {
+              beforeEach(spyStripeElementFocus);
+              beforeEach(focus);
+              afterEach(restoreStripeElementFocus);
+              it('calls StripeElement#focus', function() {
+                expect(element.element.focus).to.have.been.called;
+              });
+            });
+
+            describe('when stripe element is focused', function() {
+              beforeEach(focusStripeElement);
+              beforeEach(updateComplete);
+              it('sets the `focused` property', assertProps({ focused: true }));
+            });
+
+            describe('when stripe element is blurred', function() {
+              beforeEach(focusStripeElement);
+              beforeEach(updateComplete);
+              beforeEach(blurStripeElement);
+              beforeEach(updateComplete);
+              it('unsets the `focused` property', assertProps({ focused: false }));
+            });
 
             describe('when publishable key is changed', function publishableKeyReset() {
               beforeEach(setProps({ publishableKey: 'foo' }));

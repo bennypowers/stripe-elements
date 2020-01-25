@@ -73,11 +73,8 @@ export const NO_STRIPE_CREATE_SOURCE_ERROR =
 export const NO_STRIPE_CREATE_TOKEN_ERROR =
   'Stripe must be initialized before calling createToken.';
 
-export const INCOMPLETE_CC_ERROR =
-  'Credit card information is incomplete.';
-
 export const EMPTY_CC_ERROR =
-  'Credit card information is empty.';
+  'Your card number is empty.';
 
 export const BASE_DEFAULT_PROPS = Object.freeze({
   billingDetails: {},
@@ -265,6 +262,24 @@ export function spyCardClear() {
   if (element?.card?.clear) spy(element.card, 'clear');
 }
 
+export function spyStripeElementBlur() {
+  console.log('element.element.blur', element.element.blur);
+  spy(element.element, 'blur');
+}
+
+export function restoreStripeElementBlur() {
+  element.element.blur?.restore?.();
+}
+
+export function spyStripeElementFocus() {
+  console.log('element.element.focus', element.element.focus);
+  spy(element.element, 'focus');
+}
+
+export function restoreStripeElementFocus() {
+  element.element.focus?.restore?.();
+}
+
 export function restoreCardClear() {
   element?.card?.clear?.restore();
 }
@@ -335,21 +350,6 @@ export function removeHeightStyleTag() {
   document.getElementById('height-styles').remove();
 }
 
-let appendedGlobalStyleTag;
-export function appendGlobalStyles() {
-  const [describeTitle] = this.test.titlePath();
-  const tagName = describeTitle.replace(/<(.*)>/, '$1');
-  appendedGlobalStyleTag = document.createElement('style');
-  appendedGlobalStyleTag.classList.add('artificially-appended-styles');
-  appendedGlobalStyleTag.id = `${tagName}-custom-css-properties`;
-  document.head.appendChild(appendedGlobalStyleTag);
-}
-
-export function restoreAppended() {
-  document.querySelectorAll('.artificially-appended-styles').forEach(el => el.remove());
-  appendedGlobalStyleTag = undefined;
-}
-
 export function listenFor(eventType) {
   return async function() {
     events.set(eventType, oneEvent(element, eventType));
@@ -415,14 +415,6 @@ export function assertPropsOk(props, { not } = {}) {
   };
 }
 
-export function assertHasOneGlobalStyleTag() {
-  const tagName = this.test.titlePath().shift().replace(/<(.*)>/, '$1');
-  appendedGlobalStyleTag = document.createElement('style');
-  appendedGlobalStyleTag.id = `${tagName}-custom-css-properties`;
-  const queried = document.querySelectorAll(`#${tagName}-custom-css-properties`);
-  expect(queried.length).to.equal(1);
-}
-
 export function testDefaultPropEntry([name, value]) {
   return it(name, async function() {
     expect(element[name], name).to.eql(value);
@@ -464,6 +456,22 @@ export function assertElementErrorMessage(message) {
 }
 
 /* ELEMENT METHODS */
+
+export async function blur() {
+  element.blur();
+}
+
+export async function focus() {
+  element.focus();
+}
+
+export async function blurStripeElement() {
+  element.element.synthEvent('blur');
+}
+
+export async function focusStripeElement() {
+  element.element.synthEvent('focus');
+}
 
 export async function submit() {
   const submitPromise = element.submit();
