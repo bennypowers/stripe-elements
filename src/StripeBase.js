@@ -46,17 +46,11 @@ const mountPointTemplate = ({ stripeMountId, tagName }) =>
  * @fires 'publishable-key-changed' - The new value of publishable-key
  * @fires 'source-changed' - The new value of source
  * @fires 'token-changed' - The new value of token
+ *
+ * @cssspart 'error' - container for the error message
+ * @cssspart 'stripe' - container for the stripe element
  */
 export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
-  /** @private */
-  static applyCustomCss() {
-    const id = `${this.is}-custom-css-properties`;
-    if (!document.getElementById(id)) {
-      const globalStyles = this.globalStyles.cssText;
-      appendTemplate(html`<style id="${id}">${globalStyles}</style>`, document.head);
-    }
-  }
-
   /* PAYMENT CONFIGURATION */
 
   /**
@@ -230,18 +224,15 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /* LIFECYCLE */
 
   /** @inheritdoc */
-  connectedCallback() {
-    super.connectedCallback();
-    this.constructor.applyCustomCss();
-  }
-
-  /** @inheritdoc */
   render() {
     const { error, showError } = this;
     const { message: errorMessage = '' } = error || {};
     return html`
-      <slot id="stripe-slot" name="stripe-card"></slot>
-      <div id="error" part="error" ?hidden="${!showError}">${errorMessage || error}</div>
+      <div id="stripe" part="stripe" tabindex="0" @focus="${this.focus}" @blur="${this.blur}">
+        <slot id="stripe-slot" name="stripe-card"></slot>
+      </div>
+
+      <div id="error" part="error" ?hidden="${!showError}">${errorMessage}</div>
     `;
   }
 
