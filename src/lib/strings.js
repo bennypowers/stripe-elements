@@ -18,5 +18,3 @@ export const dash = memoize(identity, eagerDash);
 export function generateRandomMountElementId() {
   return `stripe-elements-mount-point-${(Date.now() + (Math.random() * 1000)).toString(36).substr(0, 8)}`;
 }
-
-export const isString = x => typeof x === 'string';
