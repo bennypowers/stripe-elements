@@ -70,23 +70,23 @@ class DemoBase extends LitElement {
     };
   }
 
+  get stripe() {
+    return this.querySelector(this.constructor.selector);
+  }
+
   constructor() {
     super();
     this.display = this.display.bind(this);
   }
 
   attachStripeListeners() {
-    const stripe = this.querySelector(this.constructor.selector);
-    if (!stripe) return;
-    stripe.addEventListener('success', this.display);
-    stripe.addEventListener('fail', this.display);
+    this.stripe.addEventListener('success', this.display);
+    this.stripe.addEventListener('fail', this.display);
   }
 
-  detatchStripeListeners() {
-    const stripe = this.querySelector(this.constructor.selector);
-    if (!stripe) return;
-    stripe.addEventListener('success', this.display);
-    stripe.addEventListener('fail', this.display);
+  removeStripeListeners() {
+    this.stripe.addEventListener('success', this.display);
+    this.stripe.addEventListener('fail', this.display);
   }
 
   connectedCallback() {
@@ -98,7 +98,7 @@ class DemoBase extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.detachStripeListeners();
+    this.removeStripeListeners();
   }
 
   display({ target }) {
@@ -135,8 +135,24 @@ customElements.define('elements-demo', class ElementsDemo extends DemoBase {
 
   constructor() {
     super();
+    this.onChange = this.onChange.bind(this);
     this.submitDisabled = true;
-    this.addEventListener('change', this.onStripeChange.bind(this));
+    const stripe = this.querySelector(this.constructor.selector);
+    if (!stripe) return;
+  }
+
+  attachStripeListeners() {
+    super.attachStripeListeners();
+    this.stripe.addEventListener('change', this.onChange);
+  }
+
+  removeStripeListeners() {
+    super.removeStripeListeners();
+    this.stripe.remoteventListener('change', this.onChange);
+  }
+
+  validate() {
+    return this.stripe.validate();
   }
 
   get billingDetails() {
@@ -149,7 +165,7 @@ customElements.define('elements-demo', class ElementsDemo extends DemoBase {
   render() {
     return html`
       <div id="stripe" ?hidden="${this.output}">
-        <slot name="stripe"></slot>
+        <slot></slot>
       </div>
 
       <div id="actions" ?hidden="${this.output}">
@@ -166,12 +182,12 @@ customElements.define('elements-demo', class ElementsDemo extends DemoBase {
   }
 
   async onClickSubmit() {
-    const [element] = this.shadowRoot.querySelector('slot[name="stripe"]');
+    const [element] = this.shadowRoot.querySelector('#stripe slot').assignedElements();
     element.billingDetails = this.billingDetails;
     this.output = await element.submit();
   }
 
-  onStripeChange({ target: { isComplete } }) {
+  onChange({ target: { isComplete } }) {
     this.submitDisabled = !isComplete;
   }
 });

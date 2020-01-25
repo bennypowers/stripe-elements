@@ -58,7 +58,7 @@ Enter your publishable key here (use the test key, not the production key) to ru
   <Story name="Generate a PaymentMethod" height="220px">{
     html`
       <elements-demo label="Generate PaymentMethod">
-        <stripe-elements slot="stripe" generate="payment-method" publishable-key="${publishableKey}"> </stripe-elements>
+        <stripe-elements generate="payment-method" publishable-key="${publishableKey}"> </stripe-elements>
       </elements-demo>
     `
   }</Story>
@@ -70,7 +70,7 @@ Enter your publishable key here (use the test key, not the production key) to ru
   <Story name="Generate a Source" height="220px">{
     html`
       <elements-demo label="Generate Source">
-        <stripe-elements slot="stripe" generate="source" publishable-key="${publishableKey}"> </stripe-elements>
+        <stripe-elements generate="source" publishable-key="${publishableKey}"> </stripe-elements>
       </elements-demo>
     `
   }</Story>
@@ -85,69 +85,104 @@ you may generate a token from the filled-out form by calling the `createToken()`
   <Story name="Generate a Token" height="220px">{
     html`
       <elements-demo label="Generate Token">
-        <stripe-elements slot="stripe" generate="token" publishable-key="${publishableKey}"> </stripe-elements>
+        <stripe-elements generate="token" publishable-key="${publishableKey}"> </stripe-elements>
       </elements-demo>
     `
   }</Story>
 </Preview>
 
-## Validation
+## Validation and Styling
 
 `<stripe-elements>` has a `show-error` boolean attribute which will display the error message for you.
 This is useful for simple validation in cases where you don't need to build your own validation UI.
 
 <Preview>
-  <Story name="Error Display" height="120px">{
+  <Story name="Validation" height="120px">{
     html`
-      <article id="show-error">
+      <elements-demo>
         <stripe-elements publishable-key="should-error-use-bad-key" show-error> </stripe-elements>
-        <mwc-button outlined @click="${event => event.target.parentElement.querySelector('stripe-elements').validate()}">Validate</mwc-button>
-      </article>
+        <mwc-button slot="actions" outlined @click="${event => event.target.parentElement.querySelector('stripe-elements').validate()}">Validate</mwc-button>
+      </elements-demo>
     `
   }</Story>
 </Preview>
 
-## Advanced Validation
+### Custom Validation
 
 `<stripe-elements>` comes with several properties, events, and methods for validation.
-Listen for the `is-complete-changed`, `is-empty-changed`, and `has-error-changed` events
-and check the `isComplete`, `isEmpty`, and `hasError` properties to react to validation changes.
-These properties to their dash-cased attributes,
-so you can use CSS to style your element in its various states.
+Listen for the `change` and `error` events and check the `complete`, `empty`, `error`, and `invalid`
+properties to react to validation changes.
+
+These states reflect as attributes, so you can use CSS to style your element in its various states.
+
+Use the `stripe` and `error` [CSS Shadow Parts](https://developer.mozilla.org/en-US/docs/Web/CSS/::part)
+to style the element as needed. If your target browsers don't yet support shadow parts,
+You can still configure the element somewhat using the exposed CSS Custom Properties,
+see the README for more information.
 
 ```css
-.StripeElement {
-  border: none;
-  box-shadow: none;
-}
-
-stripe-elements {
+stripe-elements::part(stripe) {
   border-radius: 4px;
-  border: 2px solid transparent;
+  border: 1px solid var(--mdc-button-outline-color, var(--mdc-theme-primary, #6200ee));
+  box-shadow: none;
+  height: 36px;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
 }
 
-stripe-elements[is-complete] { border-color: rebeccapurple; }
-stripe-elements[has-error] { border-color: salmon; }
+stripe-elements[complete]::part(stripe) {
+  border-color: var(--material-green-a700, #00C853);
+}
+
+stripe-elements[invalid]::part(stripe) {
+  border-color: var(--material-amber-a700, #FFAB00);
+}
+
+stripe-elements[error]::part(stripe) {
+  border-color: var(--material-red-a700, #D50000);
+}
+
+stripe-elements::part(error) {
+  text-align: right;
+  color: var(--material-grey-800, #424242);
+}
 ```
 
 <Preview>
-  <Story name="Validation States" height="120px">{
+  <Story name="Custom Validation" height="120px">{
     html`
       <style>
-      #states .StripeElement { border: none; box-shadow: none; }
-      #states stripe-elements { border-radius: 4px; border: 2px solid transparent; }
-      #states stripe-elements[is-complete] { border-color: rebeccapurple; }
-      #states stripe-elements[has-error] { border-color: salmon; }
+      #states stripe-elements::part(stripe) {
+        border-radius: 4px;
+        border: 1px solid var(--mdc-button-outline-color, var(--mdc-theme-primary, #6200ee));
+        box-shadow: none;
+        height: 36px;
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+      }
+      #states stripe-elements[complete]::part(stripe) {
+        border-color: var(--material-green-a700, #00C853);
+      }
+      #states stripe-elements[invalid]::part(stripe) {
+        border-color: var(--material-amber-a700, #FFAB00);
+      }
+      #states stripe-elements[error]::part(stripe) {
+        border-color: var(--material-red-a700, #D50000);
+      }
+      #states stripe-elements::part(error) {
+        text-align: right;
+        color: var(--material-grey-800, #424242);
+      }
       </style>
       <article id="states">
-        <stripe-elements publishable-key="${publishableKey}"> </stripe-elements>
+        <stripe-elements show-error publishable-key="${publishableKey}"> </stripe-elements>
         <mwc-button outlined @click="${event => event.target.parentElement.querySelector('stripe-elements').validate()}"> Validate</mwc-button>
       </article>
     `
   }</Story>
 </Preview>
-
-For more complex needs, you can listen for the `stripe-error` event.
 
 ## Automatically Posting the Payment Info
 
@@ -266,8 +301,8 @@ class PaymentForm extends LitElement {
     `;
   }
 
-  onChange({ target: { isComplete, hasError } }) {
-    this.submitDisabled = !(isComplete && !hasError);
+  onChange({ target: { complete, hasError } }) {
+    this.submitDisabled = !(complete && !hasError);
   }
 
   onClick() {
@@ -298,7 +333,7 @@ class PaymentForm extends LitElement {
       :publishable-key="publishableKey"
     ></stripe-elements>
 
-    <mwc-button :disabled="!isComplete || isEmpty" @click="onClick">Get Token</mwc-button>
+    <mwc-button :disabled="!complete || empty" @click="onClick">Get Token</mwc-button>
 
     <json-viewer v-if="error || token" :object.prop="error || token"></json-viewer>
   </article>
@@ -314,14 +349,14 @@ export default {
       publishableKey: PUBLISHABLE_KEY,
       token: null,
       error: null,
-      isComplete: false,
-      isEmpty: true
+      complete: false,
+      empty: true
     };
   },
   methods: {
-    onChange({ target: { isComplete, isEmpty } }) {
-      this.isComplete = isComplete;
-      this.isEmpty = isEmpty;
+    onChange({ target: { complete, empty } }) {
+      this.complete = complete;
+      this.empty = empty;
     },
 
     onClick() {
@@ -354,7 +389,7 @@ import { PUBLISHABLE_KEY } from './config';
 const template = `
   <stripe-elements
     #stripe
-    (change)="disabled = !$event.target.isComplete"
+    (change)="disabled = !$event.target.complete"
     (token)="token = $event.detail"
     (error)="error = $event.detail"
     [publishableKey]="publishableKey"
@@ -394,7 +429,7 @@ import { getPropOr, compose } from "crocks";
 import { PUBLISHABLE_KEY } from './config';
 import "./styles.css";
 
-const isDisabled = ({ isComplete, isEmpty }) => !isComplete || isEmpty;
+const isDisabled = ({ complete, empty }) => !complete || empty;
 const getTarget = getPropOr({}, "target");
 const getDetail = getPropOr(null, "detail");
 const getToken = getPropOr(null, "token");
@@ -452,7 +487,7 @@ import { getPropOr, compose } from "crocks";
 import { PUBLISHABLE_KEY } from './config';
 import "./style";
 
-const isDisabled = ({ isComplete, isEmpty }) => !isComplete || isEmpty;
+const isDisabled = ({ complete, empty }) => !complete || empty;
 const getTarget = getPropOr({}, "target");
 const getDetail = getPropOr(null, "detail");
 const getToken = getPropOr(null, "token");
