@@ -55,6 +55,17 @@
       "pre-commit": "npm run build:analyze:markdown && npm run build:analyze:json && git add README.md && git add custom-elements.json"
     }
   },
+  "release": {
+    "branches": ["master"],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/github",
+      "@semantic-release/npm",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/git",
+      "@semantic-release/changelog"
+    ]
+  },
   "devDependencies": {
     "@apollo-elements/eslint-config": "^1.1.1",
     "@babel/core": "^7.8.0",
