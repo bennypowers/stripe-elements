@@ -112,7 +112,7 @@ There are 11 properties for each state that you can set which will be read into 
 | `billingDetails`    |                    |           | `stripe.BillingDetails`               | {}        | billing_details object sent to create the payment representation. (optional) |
 | `brand`             | `brand`            | readonly  | `string`                              | null      | The card brand detected by Stripe                |
 | `card`              | `card`             | readonly  | `stripe.elements.Element`             | null      | The Stripe card object.<br />**DEPRECATED**. Will be removed in a future version. use `element` instead |
-| `clientSecret`      | `client-secret`    |           | `String`                              |           | The `client_secret` part of a Stripe `PaymentIntent` |
+| `clientSecret`      | `client-secret`    |           | `string`                              |           | The `client_secret` part of a Stripe `PaymentIntent` |
 | `complete`          | `complete`         | readonly  | `boolean`                             | false     | Whether the form is complete.                    |
 | `element`           | `element`          | readonly  | `stripe.elements.Element`             | null      | Stripe element instance                          |
 | `elements`          | `elements`         | readonly  | `stripe.elements.Elements`            | null      | Stripe Elements instance                         |
@@ -135,7 +135,6 @@ There are 11 properties for each state that you can set which will be read into 
 | `source`            | `source`           | readonly  | `stripe.Source`                       | null      | Stripe Source                                    |
 | `sourceData`        |                    |           | `SourceData`                          | {}        | Data passed to stripe.createSource. (optional)   |
 | `stripe`            | `stripe`           | readonly  | `stripe.Stripe`                       | null      | Stripe instance                                  |
-| `stripeMount`       |                    | readonly  | `Element`                             |           | Stripe.js mount point element. Due to limitations in the Stripe.js library, this element must be connected to the document. |
 | `stripeReady`       | `stripe-ready`     |           | `boolean`                             | false     | Whether the stripe element is ready to receive focus.<br />**DEPRECATED**. Will be removed in a future version. use `ready` instead. |
 | `token`             | `token`            | readonly  | `stripe.Token`                        | null      | Stripe Token                                     |
 | `tokenData`         |                    |           | `stripe.TokenOptions`                 | {}        | Data passed to stripe.createToken. (optional)    |
@@ -145,11 +144,11 @@ There are 11 properties for each state that you can set which will be read into 
 
 | Method                | Type                                             | Description                                      |
 |-----------------------|--------------------------------------------------|--------------------------------------------------|
-| `blur`                | `(): void`                                       | Blur the element.                                |
+| `blur`                | `(): void`                                       | Blurs the element.                               |
 | `createPaymentMethod` | `(paymentMethodData?: PaymentMethodData \| undefined): Promise<PaymentMethodResponse>` | Submit payment information to generate a paymentMethod |
 | `createSource`        | `(sourceData?: { owner: OwnerInfo; } \| undefined): Promise<SourceResponse>` | Submit payment information to generate a source  |
 | `createToken`         | `(tokenData?: TokenData): Promise<TokenResponse>` | Submit payment information to generate a token   |
-| `focus`               | `(): void`                                       | Focus the element.                               |
+| `focus`               | `(): void`                                       | Focuses the element.                             |
 | `isPotentiallyValid`  | `(): boolean`                                    | Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid. |
 | `reset`               | `(): void`                                       | Resets the Stripe card.                          |
 | `submit`              | `(): Promise<PaymentMethodResponse \| SourceResponse \| TokenResponse>` | Generates a payment representation of the type specified by `generate`. |
@@ -288,7 +287,7 @@ See the demos for more comprehensive examples.
 | `buttonTheme`       | `button-theme`        |           | `'dark'\|'light'\|'light-outline'`           | "dark"    |                                                  |
 | `buttonType`        | `button-type`         |           | `'default'\|'book'\|'buy'\|'donate'`         | "default" |                                                  |
 | `canMakePayment`    | `can-make-payment`    | readonly  | `object`                                     | null      | Whether or not the device can make the payment request. |
-| `clientSecret`      | `client-secret`       |           | `String`                                     |           | The `client_secret` part of a Stripe `PaymentIntent` |
+| `clientSecret`      | `client-secret`       |           | `string`                                     |           | The `client_secret` part of a Stripe `PaymentIntent` |
 | `country`           | `country`             |           | `string`                                     |           | The two-letter country code of your Stripe account (e.g., `US`) |
 | `currency`          | `currency`            |           | `string`                                     |           | Three character currency code (e.g., `usd`)      |
 | `displayItems`      | `displayItems`        |           | `stripe.paymentRequest.DisplayItem[]`        |           | An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above. |
@@ -315,18 +314,17 @@ See the demos for more comprehensive examples.
 | `source`            | `source`              | readonly  | `stripe.Source`                              | null      | Stripe Source                                    |
 | `sourceData`        |                       |           | `SourceData`                                 | {}        | Data passed to stripe.createSource. (optional)   |
 | `stripe`            | `stripe`              | readonly  | `stripe.Stripe`                              | null      | Stripe instance                                  |
-| `stripeMount`       |                       | readonly  | `Element`                                    |           | Stripe.js mount point element. Due to limitations in the Stripe.js library, this element must be connected to the document. |
 | `stripeReady`       | `stripe-ready`        |           | `boolean`                                    | false     | Whether the stripe element is ready to receive focus.<br />**DEPRECATED**. Will be removed in a future version. use `ready` instead. |
 | `token`             | `token`               | readonly  | `stripe.Token`                               | null      | Stripe Token                                     |
 | `tokenData`         |                       |           | `stripe.TokenOptions`                        | {}        | Data passed to stripe.createToken. (optional)    |
 
 #### Methods
 
-| Method  | Type       | Description              |
-|---------|------------|--------------------------|
-| `blur`  | `(): void` | Blur the element.        |
-| `focus` | `(): void` | Focus the element.       |
-| `reset` | `(): void` | Reset the stripe element |
+| Method  | Type       | Description                           |
+|---------|------------|---------------------------------------|
+| `blur`  | `(): void` | Blurs the element.                    |
+| `focus` | `(): void` | Focuses the element.                  |
+| `reset` | `(): void` | Resets and clears the stripe element. |
 
 #### Events
 

@@ -17,6 +17,7 @@ cc-test-reporter
 /shared.js
 /*.d.ts
 /*.js.map
+/index.js
 /lib
 
 bower_components/

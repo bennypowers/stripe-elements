@@ -201,6 +201,18 @@ export class StripePaymentRequest extends StripeBase {
    */
   @property({ type: String, attribute: 'button-theme' }) buttonTheme = 'dark';
 
+  /**
+   * @type {stripe.paymentRequest.ShippingOption[]}
+   * @private
+   */
+  __shippingOptions = [];
+
+  /**
+   * @type {stripe.paymentRequest.DisplayItem[]}
+   * @private
+   */
+  __displayItems = [];
+
   /* PUBLIC API */
 
   reset() {
@@ -249,6 +261,7 @@ export class StripePaymentRequest extends StripeBase {
   }
 
   /**
+   * Initializes the PaymentRequest Object.
    * @private
    */
   async initElement() {
@@ -384,11 +397,11 @@ export class StripePaymentRequest extends StripeBase {
   }
 
   /**
- * Parses an element's dataset number props from string to number
- * @param {String} selector
- * @return {Object}
- * @private
- */
+   * Parses an element's dataset number props from string to number
+   * @param {String} selector
+   * @return {Object}
+   * @private
+   */
   parseDatasets(selector) {
     const elements = [...this.querySelectorAll(selector)];
     return !elements.length ? undefined : elements

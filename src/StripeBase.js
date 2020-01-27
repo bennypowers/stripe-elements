@@ -125,7 +125,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
 
   /**
    * The `client_secret` part of a Stripe `PaymentIntent`
-   * @type {String}
+   * @type {string}
    */
   @property({ type: String, attribute: 'client-secret' }) clientSecret;
 
@@ -239,6 +239,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /**
    * Stripe.js mount point element. Due to limitations in the Stripe.js library, this element must be connected to the document.
    * @type {Element}
+   * @protected
    */
   get stripeMount() { return document.getElementById(this.stripeMountId); }
 
@@ -281,7 +282,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /* PUBLIC API */
 
   /**
-   * Reset the stripe element
+   * Resets and clears the stripe element.
    */
   reset() {
     this.element?.clear?.();
@@ -289,12 +290,12 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     this.set({ error: null });
   }
 
-  /** Blur the element. */
+  /** Blurs the element. */
   blur() {
     this.element?.blur();
   }
 
-  /** Focus the element. */
+  /** Focuses the element. */
   focus() {
     this.element?.focus();
   }
@@ -311,10 +312,15 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     return new StripeElementsError(this.constructor.is, message);
   }
 
-  /** @private */
+  /**
+   * Clears the Payment Representation and fires an error event
+   * @private
+   */
   async errorChanged() {
+    // DEPRECATED
     const hasError = !!this.error;
-    await this.set({ hasError }); // DEPRECATED
+    await this.set({ hasError });
+    // END DEPRECATED
     this.resetRepresentations();
     this.fireError(this.error);
   }
@@ -380,20 +386,29 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     this.mount();
   }
 
-  /** @private */
+  /**
+   * Removes all mount points from the DOM
+   * @private
+   */
   destroyMountPoints() {
     this.shadowHosts.forEach(removeAllMounts);
     if (this.stripeMount) this.stripeMount.remove();
   }
 
-  /** @private */
+  /**
+   * Adds `ready`, `focus`, and `blur` listeners to the Stripe Element
+   * @private
+   */
   initElementListeners() {
     this.element.addEventListener('ready', this.onReady);
     this.element.addEventListener('focus', this.onFocus);
     this.element.addEventListener('blur', this.onBlur);
   }
 
-  /** @private */
+  /**
+   * Creates mount points for the Stripe Element
+   * @private
+   */
   initMountPoints() {
     this.stripeMountId = generateRandomMountElementId();
     if (window.ShadyDOM) appendTemplate(mountPointTemplate(this), this);
@@ -463,71 +478,77 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     await this.set({ element: null });
   }
 
-    /**
-     * @param  {StripeFocusEvent} event
-     * @private
-     */
-    @bound async onBlur(event) {
+  /**
+   * @param  {StripeFocusEvent} event
+   * @private
+   */
+  @bound async onBlur(event) {
     await this.set({ focused: false });
   }
 
-    /**
-     * @param  {StripeFocusEvent} event
-     * @private
-     */
-    @bound async onFocus(event) {
-      await this.set({ focused: true });
-    }
-
-    /**
-     * Sets the `ready` property when the stripe element is ready to receive focus.
-     * @param  {Event} event
-     * @private
-     */
-    @bound async onReady(event) {
-      await this.set({ ready: true, stripeReady: true });
-      this.fire('ready', event);
-      // DEPRECATED
-      this.fire('stripe-ready', event);
-    }
-
-    /**
-   * POSTs the payment info represenation to the endpoint at `/action`
+  /**
+   * @param  {StripeFocusEvent} event
    * @private
    */
-    async postRepresentation() {
-      const token = this.token || undefined;
-      const source = this.source || undefined;
-      const paymentMethod = this.paymentMethod || undefined;
-      const body = JSON.stringify({ token, source, paymentMethod });
-      const headers = { 'Content-Type': 'application/json' };
-      const method = 'POST';
-      return fetch(this.action, { body, headers, method })
-        .then(throwBadResponse)
-        .then(success => {
-          this.fire('success', success);
-          // DEPRECATED
-          this.fire('stripe-payment-success', success);
-        })
-        .catch(error => this.set({ error }));
-    }
+  @bound async onFocus(event) {
+    await this.set({ focused: true });
+  }
+
+  /**
+   * Sets the `ready` property when the stripe element is ready to receive focus.
+   * @param  {Event} event
+   * @private
+   */
+  @bound async onReady(event) {
+    await this.set({ ready: true, stripeReady: true });
+    this.fire('ready', event);
+    // DEPRECATED
+    this.fire('stripe-ready', event);
+  }
+
+  /**
+   * POSTs the payment info represenation to the endpoint at `/action`
+   * @resolves {void}
+   * @private
+   */
+  async postRepresentation() {
+    const onError = error => this.set({ error });
+    const onSuccess = success => {
+      this.fire('success', success);
+      // DEPRECATED
+      this.fire('stripe-payment-success', success);
+    };
+    const token = this.token || undefined;
+    const source = this.source || undefined;
+    const paymentMethod = this.paymentMethod || undefined;
+    const body = JSON.stringify({ token, source, paymentMethod });
+    const headers = { 'Content-Type': 'application/json' };
+    const method = 'POST';
+    return fetch(this.action, { body, headers, method })
+      .then(throwBadResponse)
+      .then(onSuccess)
+      .catch(onError);
+  }
 
   /**
    * @param {string} name
    * @private
    */
   @bound representationChanged(name) {
-      if (!isRepresentation(name)) return;
-      const value = this[name];
-      /* istanbul ignore if */
-      if (!value) return;
-      // DEPRECATED
-      this.fire(`stripe-${dash(name)}`, value);
-      this.fire(`${dash(name)}`, value);
-      if (this.action) this.postRepresentation();
-    }
+    if (!isRepresentation(name)) return;
+    const value = this[name];
+    /* istanbul ignore if */
+    if (!value) return;
+    // DEPRECATED
+    this.fire(`stripe-${dash(name)}`, value);
+    this.fire(`${dash(name)}`, value);
+    if (this.action) this.postRepresentation();
+  }
 
-  /** @private */
+  /**
+   * Resets the Payment Representations
+   * @private
+   */
   resetRepresentations() {
     this.set({
       paymentMethod: null,
@@ -539,5 +560,4 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
 
 /** @typedef {stripe.PaymentIntentResponse|stripe.PaymentMethodResponse|stripe.SetupIntentResponse|stripe.TokenResponse|stripe.SourceResponse} PaymentResponse */
 /** @typedef {{ owner: stripe.OwnerData }} SourceData */
-
 /** @typedef {{ elementType: stripe.elements.elementsType }} StripeFocusEvent */

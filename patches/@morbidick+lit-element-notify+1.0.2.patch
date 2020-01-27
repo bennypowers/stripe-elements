@@ -1,5 +1,5 @@
 diff --git a/node_modules/@morbidick/lit-element-notify/notify.js b/node_modules/@morbidick/lit-element-notify/notify.js
-index b6790b2..6694eb1 100644
+index b6790b2..4abb133 100644
 --- a/node_modules/@morbidick/lit-element-notify/notify.js
 +++ b/node_modules/@morbidick/lit-element-notify/notify.js
 @@ -1,3 +1,4 @@
@@ -7,7 +7,28 @@ index b6790b2..6694eb1 100644
  /**
   * Returns the event name for the given property.
   */
-@@ -25,7 +26,7 @@ export const LitNotify = (baseElement) => class extends baseElement {
+@@ -13,19 +14,26 @@ export function eventNameForProperty(name, options = {}) {
+     return `${name.toLowerCase()}-changed`;
+ }
+ 
++/**
++ * @template TBase
++ * @typedef {new (...args: any[]) => import('lit-element').LitElement & TBase} Constructor
++ */
++
++// eslint-disable-next-line valid-jsdoc
+ /**
+  * Enables the nofity option for properties to fire change notification events
+  *
+- * @param {LitElement} baseElement - the LitElement to extend
++ * @template TBase
++ * @param {Constructor<TBase>} baseElement
+  */
+-export const LitNotify = (baseElement) => class extends baseElement {
++export const LitNotify = (baseElement) => class NotifyingElement extends baseElement {
+     /**
+      * Extend the LitElement `createProperty` method to map properties to events
+      */
      static createProperty(name, options) {
          super.createProperty(name, options);
  
@@ -16,7 +37,7 @@ index b6790b2..6694eb1 100644
              this._propertyEventMap = new Map();
          }
  
-@@ -50,8 +51,8 @@ export const LitNotify = (baseElement) => class extends baseElement {
+@@ -50,8 +58,8 @@ export const LitNotify = (baseElement) => class extends baseElement {
                      detail: {
                          value: this[eventProp],
                      },

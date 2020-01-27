@@ -95,7 +95,7 @@
         {
           "name": "client-secret",
           "description": "The `client_secret` part of a Stripe `PaymentIntent`",
-          "type": "String"
+          "type": "string"
         },
         {
           "name": "generate",
@@ -292,7 +292,7 @@
           "name": "clientSecret",
           "attribute": "client-secret",
           "description": "The `client_secret` part of a Stripe `PaymentIntent`",
-          "type": "String"
+          "type": "string"
         },
         {
           "name": "generate",
@@ -367,11 +367,6 @@
           "type": "boolean",
           "default": "false",
           "deprecated": true
-        },
-        {
-          "name": "stripeMount",
-          "description": "Stripe.js mount point element. Due to limitations in the Stripe.js library, this element must be connected to the document.",
-          "type": "Element"
         }
       ],
       "events": [
@@ -737,7 +732,7 @@
         {
           "name": "client-secret",
           "description": "The `client_secret` part of a Stripe `PaymentIntent`",
-          "type": "String"
+          "type": "string"
         },
         {
           "name": "generate",
@@ -953,7 +948,7 @@
           "name": "clientSecret",
           "attribute": "client-secret",
           "description": "The `client_secret` part of a Stripe `PaymentIntent`",
-          "type": "String"
+          "type": "string"
         },
         {
           "name": "generate",
@@ -1028,11 +1023,6 @@
           "type": "boolean",
           "default": "false",
           "deprecated": true
-        },
-        {
-          "name": "stripeMount",
-          "description": "Stripe.js mount point element. Due to limitations in the Stripe.js library, this element must be connected to the document.",
-          "type": "Element"
         }
       ],
       "events": [

@@ -1,5 +1,17 @@
 /** @typedef {import('lit-element').PropertyDeclaration & { readOnly: Boolean }} AugmentedPropertyDeclaration */
 
+/**
+ * @template TBase
+ * @typedef {new (...args: any[]) => import('lit-element').LitElement & TBase} Constructor
+ */
+
+// eslint-disable-next-line valid-jsdoc
+/**
+ * Enables the nofity option for properties to fire change notification events
+ *
+ * @template TBase
+ * @param {Constructor<TBase>} baseElement
+ */
 export const ReadOnlyPropertiesMixin = baseElement => {
   /**
    * @type {Map<string, symbol>}
@@ -55,12 +67,10 @@ export const ReadOnlyPropertiesMixin = baseElement => {
     /**
      * Set read-only properties
      * @param  {Object<string, unknown>}  props
-     * @return {Promise<this>}
-     * @protected
+     * @private
      */
     async set(props) {
       await Promise.all(Object.entries(props).map(this._setPropEntry));
-      return this;
     }
 
     /**

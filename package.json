@@ -2,17 +2,17 @@
   "name": "@power-elements/stripe-elements",
   "version": "2.0.1",
   "description": "Web Component wrapper for stripe elements",
-  "main": "stripe-elements.js",
-  "module": "stripe-elements.js",
+  "main": "index.js",
+  "module": "index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "postinstall": "patch-package",
     "prepare": "npm run build",
-    "build": "run-p build:**",
+    "build": "run-s build:**",
     "build:rollup": "rollup -c",
-    "build:types": "tsc",
+    "build:types": "tsc && sh scripts/finish-declarations.sh",
     "build:analyze:json": "wca analyze src/*.js --outFile custom-elements.json",
     "build:analyze:markdown": "cp src/README.template.md README.md && wca analyze src/*.js --silent --markdown.headerLevel 3 >> README.md",
     "test": "karma start --coverage",
@@ -37,26 +37,31 @@
     "README.md",
     "src/*"
   ],
+  "types": "index.d.ts",
   "keywords": [
     "web-components",
     "lit-element",
     "lit-element-2.0",
     "stripe",
-    "payment"
+    "payment",
+    "payment-request",
+    "payment request api"
   ],
   "author": "Benny Powers <web@bennypowers.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/bennypowers/stripe-elements/issues"
   },
-  "homepage": "https://github.com/bennypowers/stripe-elements#readme",
+  "homepage": "https://bennypowers.dev/stripe-elements",
   "husky": {
     "hooks": {
       "pre-commit": "npm run build:analyze:markdown && npm run build:analyze:json && git add README.md && git add custom-elements.json"
     }
   },
   "release": {
-    "branches": ["master"],
+    "branches": [
+      "master"
+    ],
     "plugins": [
       "@semantic-release/commit-analyzer",
       "@semantic-release/github",
@@ -86,7 +91,6 @@
     "@rollup/plugin-commonjs": "^11.0.1",
     "@rollup/plugin-node-resolve": "^7.0.0",
     "@types/karma": "^3.0.5",
-    "@types/stripe-v3": "^3.1.14",
     "babel-eslint": "^10.0.3",
     "bound-decorator": "^1.1.0",
     "chai-things": "^0.2.0",
@@ -102,6 +106,7 @@
     "husky": "^4.2.1",
     "karma-helpful-reporter": "^0.3.4",
     "karma-osx-reporter": "^0.2.1",
+    "karma-tap-reporter": "0.0.6",
     "karma-tape-reporter": "^1.0.3",
     "luhn-js": "^1.1.2",
     "npm-run-all": "^4.1.5",
@@ -124,7 +129,7 @@
     "@open-wc/lit-helpers": "^0.2.6",
     "@pacote/memoize": "^1.1.1",
     "@typed/curry": "^1.0.1",
-    "karma-tap-reporter": "0.0.6",
+    "@types/stripe-v3": "^3.1.14",
     "lit-element": "^2.2.1"
   }
 }

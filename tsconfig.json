@@ -3,8 +3,13 @@
     "allowJs": true,
     "declaration": true,
     "emitDeclarationOnly": true,
+    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "outDir": "."
+    "lib": [ "DOM", "ES2018" ],
+    "moduleResolution": "node",
+    "outDir": ".",
+    "sourceMap": true,
+    "target": "ES2018"
   },
   "include": [
     "src/**/*"
@@ -12,5 +17,5 @@
   "exclude": [
     "node_modules",
     "**/*.test.js"
-  ],
+  ]
 }
