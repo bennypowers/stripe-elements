@@ -35,15 +35,15 @@ self.__precacheManifest = [
   },
   {
     "url": "iframe.html",
-    "revision": "c30bc90b56d734ed2ab828e07fb70db5"
+    "revision": "882df4275be8e6e96183f925d81ce639"
   },
   {
     "url": "index.html",
     "revision": "46d246ee1547961c6673cbe6b390dc3c"
   },
   {
-    "url": "inline-entry.0-123c32c9.js",
-    "revision": "5b656a8a7b71a066cf6ef333f317a60b"
+    "url": "inline-entry.0-d4074bb9.js",
+    "revision": "28f1798b37254ec130fbaa6b267f76b6"
   },
   {
     "url": "legacy/angular.stories-f4c3503b.js",
@@ -54,8 +54,8 @@ self.__precacheManifest = [
     "revision": "f7227f74071796e4ac12fec12bdbbd0f"
   },
   {
-    "url": "legacy/inline-entry.0-a60da632.js",
-    "revision": "40351655d2ee9dbb07639fcac0347234"
+    "url": "legacy/inline-entry.0-5a3c5e39.js",
+    "revision": "0a53383421222856fcbfcc4ca9d0280a"
   },
   {
     "url": "legacy/lit-element-d82f920d.js",
@@ -78,16 +78,16 @@ self.__precacheManifest = [
     "revision": "7c83daede4379c17ae12ee62d3c033f1"
   },
   {
-    "url": "legacy/storybook-helpers-35c8254a.js",
-    "revision": "d6005de5578df558390b7b500fd0cbfd"
+    "url": "legacy/storybook-helpers-f3c1a813.js",
+    "revision": "edac5149daef1211b81029e2f9e9f5b6"
   },
   {
-    "url": "legacy/stripe-elements.stories-48183533.js",
-    "revision": "37c4964e1763e22b2d4cf3c0b1bdeb84"
+    "url": "legacy/stripe-elements.stories-3706d861.js",
+    "revision": "3bac495e68a8c46b46fb8b21ccd976e3"
   },
   {
-    "url": "legacy/stripe-payment-request.stories-16f116df.js",
-    "revision": "84443cf7e010f62a1ded911e866f0429"
+    "url": "legacy/stripe-payment-request.stories-870d65f2.js",
+    "revision": "6a733d4d73e6347541bb40271adb7e78"
   },
   {
     "url": "legacy/vanilla.stories-335939f1.js",
@@ -146,16 +146,16 @@ self.__precacheManifest = [
     "revision": "113f6129ccde74077e2842fa897c1c69"
   },
   {
-    "url": "storybook-helpers-e0d44384.js",
-    "revision": "783922ceedb47b173e59985d711053f0"
+    "url": "storybook-helpers-ed1dc679.js",
+    "revision": "a10836534d4672df1d45d974e34b9053"
   },
   {
-    "url": "stripe-elements.stories-c930d69a.js",
-    "revision": "f75d9942bbf2b2f3256c0e9a7d9fbfcb"
+    "url": "stripe-elements.stories-9054a049.js",
+    "revision": "a09c4cadd9041e62c71c578fb180f3ec"
   },
   {
-    "url": "stripe-payment-request.stories-ef1ee0f6.js",
-    "revision": "d2b7bfac4ca358e364fe0319b07c71c9"
+    "url": "stripe-payment-request.stories-0034c9ba.js",
+    "revision": "66620bf01b218d2d488049960d4b39c1"
   },
   {
     "url": "vanilla.stories-e5f2e2f8.js",
