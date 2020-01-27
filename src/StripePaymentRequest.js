@@ -111,11 +111,13 @@ export class StripePaymentRequest extends StripeBase {
    * @type {stripe.paymentRequest.DisplayItem[]}
    */
   @property({ type: Array }) get displayItems() {
-    return this.__displayItems || this.parseDatasets('stripe-display-item');
+    const value = this.__displayItems;
+    return Array.isArray(value) ? value : this.parseDatasets('stripe-display-item');
   }
 
   set displayItems(value) {
     const oldValue = this.displayItems;
+    /** @private */
     this.__displayItems = value;
     this.requestUpdate('displayItems', oldValue);
   }
@@ -182,11 +184,13 @@ export class StripePaymentRequest extends StripeBase {
    * @type {stripe.paymentRequest.ShippingOption[]}
    */
   @property({ type: Array }) get shippingOptions() {
-    return this.__shippingOptions || this.parseDatasets('stripe-shipping-option');
+    const value = this.__shippingOptions;
+    return Array.isArray(value) ? value : this.parseDatasets('stripe-shipping-option');
   }
 
   set shippingOptions(value) {
     const oldValue = this.shippingOptions;
+    /** @private */
     this.__shippingOptions = value;
     this.requestUpdate('shippingOptions', oldValue);
   }
@@ -200,18 +204,6 @@ export class StripePaymentRequest extends StripeBase {
    * @type {'dark'|'light'|'light-outline'}
    */
   @property({ type: String, attribute: 'button-theme' }) buttonTheme = 'dark';
-
-  /**
-   * @type {stripe.paymentRequest.ShippingOption[]}
-   * @private
-   */
-  __shippingOptions = [];
-
-  /**
-   * @type {stripe.paymentRequest.DisplayItem[]}
-   * @private
-   */
-  __displayItems = [];
 
   /* PUBLIC API */
 
