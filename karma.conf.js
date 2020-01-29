@@ -17,14 +17,6 @@ module.exports = config => {
     esm: {
       nodeResolve: true,
       babel: true,
-      coverageExclude: [
-        'src/*.test.js',
-        'src/**/*.test.js',
-        'node_modules',
-        'stories/*',
-        'test/*',
-        'src/lib/strings.test.js',
-      ],
     },
     coverageIstanbulReporter: {
       thresholds: {

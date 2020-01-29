@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import '../stripe-elements.js';
 
 import { expect, fixture, oneEvent, nextFrame } from '@open-wc/testing';

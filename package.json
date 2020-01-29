@@ -16,7 +16,7 @@
     "build:analyze:json": "wca analyze src/*.js --outFile custom-elements.json",
     "build:analyze:markdown": "cp src/README.template.md README.md && wca analyze src/*.js --silent --markdown.headerLevel 3 >> README.md",
     "test": "karma start --coverage",
-    "test:watch": "karma start --auto-watch=true --single-run=false --reporters mocha,osx",
+    "test:watch": "karma start --coverage --auto-watch=true --single-run=false --reporters mocha,osx",
     "test:update-snapshots": "karma start --update-snapshots",
     "test:prune-snapshots": "karma start --prune-snapshots",
     "site:build": "npm run storybook:build",
@@ -53,22 +53,6 @@
     "url": "https://github.com/bennypowers/stripe-elements/issues"
   },
   "homepage": "https://bennypowers.dev/stripe-elements",
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run build:analyze:markdown && npm run build:analyze:json && git add README.md && git add custom-elements.json"
-    }
-  },
-  "release": {
-    "branches": [ "master" ],
-    "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/github",
-      "@semantic-release/npm",
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      "@semantic-release/git"
-    ]
-  },
   "devDependencies": {
     "@apollo-elements/eslint-config": "^1.1.1",
     "@babel/core": "^7.8.0",

@@ -1,0 +1,5 @@
+{
+  "hooks": {
+    "pre-commit": "npm run build:analyze:markdown && npm run build:analyze:json && git add README.md && git add custom-elements.json"
+  }
+}
