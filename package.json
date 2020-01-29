@@ -16,7 +16,7 @@
     "build:analyze:json": "wca analyze src/*.js --outFile custom-elements.json",
     "build:analyze:markdown": "cp src/README.template.md README.md && wca analyze src/*.js --silent --markdown.headerLevel 3 >> README.md",
     "test": "karma start --coverage",
-    "test:watch": "karma start --coverage --auto-watch=true --single-run=false --reporters mocha,osx",
+    "test:watch": "npm t -- --auto-watch=true --single-run=false --reporters mocha,osx",
     "test:update-snapshots": "karma start --update-snapshots",
     "test:prune-snapshots": "karma start --prune-snapshots",
     "site:build": "npm run storybook:build",
