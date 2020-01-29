@@ -487,7 +487,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @param  {StripeFocusEvent} event
    * @private
    */
-  @bound async onBlur(event) {
+  @bound async onBlur() {
     await this.set({ focused: false });
   }
 
@@ -495,7 +495,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @param  {StripeFocusEvent} event
    * @private
    */
-  @bound async onFocus(event) {
+  @bound async onFocus() {
     await this.set({ focused: true });
   }
 
