@@ -377,9 +377,9 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @private
    */
   async init() {
+    await this.unmount();
     this.destroyMountPoints();
     this.initMountPoints();
-    await this.unmount();
     await this.initStripe();
     await this.initElement();
     this.initElementListeners();
