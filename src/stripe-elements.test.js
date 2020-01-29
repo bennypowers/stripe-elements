@@ -377,6 +377,7 @@ describe('<stripe-elements>', function() {
         beforeEach(removeStripeMount);
         describe('then publishable key is set', function() {
           beforeEach(setProps({ publishableKey: PUBLISHABLE_KEY }));
+          beforeEach(nextFrame);
           it('rebuilds its DOM', function() {
             const { stripeMountId } = element;
             expect(element).lightDom.to.equal(expectedLightDOM({ stripeMountId }));

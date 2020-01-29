@@ -2,6 +2,7 @@ import { LitElement, property, html } from 'lit-element';
 import { LitNotify } from '@morbidick/lit-element-notify';
 
 import { ifDefined } from 'lit-html/directives/if-defined';
+
 import bound from 'bound-decorator';
 
 import { ReadOnlyPropertiesMixin } from './lib/read-only-properties';
@@ -378,26 +379,26 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   }
 
   /**
-   * Reinitializes Stripe and mounts the element.
-   * @private
-   */
-  async init() {
-    await this.unmount();
-    this.destroyMountPoints();
-    this.initMountPoints();
-    await this.initStripe();
-    await this.initElement();
-    this.initElementListeners();
-    this.mount();
-  }
-
-  /**
    * Removes all mount points from the DOM
    * @private
    */
   destroyMountPoints() {
     this.shadowHosts.forEach(removeAllMounts);
     if (this.stripeMount) this.stripeMount.remove();
+  }
+
+  /**
+   * Reinitializes Stripe and mounts the element.
+   * @private
+   */
+  async init() {
+    await this.unmount();
+    await this.initStripe();
+    await this.initElement();
+    this.initElementListeners();
+    this.destroyMountPoints();
+    this.initMountPoints();
+    this.mount();
   }
 
   /**
