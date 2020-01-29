@@ -1,3 +1,11 @@
+## [2.2.4](https://github.com/bennypowers/stripe-elements/compare/v2.2.3...v2.2.4) (2020-01-29)
+
+
+### Bug Fixes
+
+* more semantic HTML for error output ([21443f5](https://github.com/bennypowers/stripe-elements/commit/21443f5836e851e308eb5d72a6fcbaf1376a5d1d))
+* unmount element before removing mountpoints when initializing ([8f2dd6f](https://github.com/bennypowers/stripe-elements/commit/8f2dd6f179e494fbff0e6c9f253fbb13f632682b))
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
