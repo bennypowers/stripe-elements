@@ -143,6 +143,7 @@ export const ALL_BLUE_STYLES = ALLOWED_STYLES.flatMap(camelCase => STYLE_PREFIXE
 
 export let fetchStub;
 
+/** @type {StripeElements|StripePaymentRequest} */
 export let element;
 export let initialStripeMountId;
 export let initialStripe;

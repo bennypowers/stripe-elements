@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import '../stripe-payment-request.js';
 
 import { expect, fixture, nextFrame } from '@open-wc/testing';
