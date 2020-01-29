@@ -406,6 +406,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @private
    */
   initElementListeners() {
+    if (!this.element) return;
     this.element.addEventListener('ready', this.onReady);
     this.element.addEventListener('focus', this.onFocus);
     this.element.addEventListener('blur', this.onBlur);
