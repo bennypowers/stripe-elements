@@ -1,3 +1,15 @@
+# [2.3.0](https://github.com/bennypowers/stripe-elements/compare/v2.2.4...v2.3.0) (2020-01-29)
+
+
+### Bug Fixes
+
+* prevent typeerror if payment is unsupported ([d9f1146](https://github.com/bennypowers/stripe-elements/commit/d9f11468f35ccc9343f7a935f3b7936327a68d0c))
+
+
+### Features
+
+* **payment-request:** add `unsupported` event ([de6555b](https://github.com/bennypowers/stripe-elements/commit/de6555b1879602481930360d491057ed7ce0485f))
+
 ## [2.2.4](https://github.com/bennypowers/stripe-elements/compare/v2.2.3...v2.2.4) (2020-01-29)
 
 
