@@ -35,15 +35,15 @@ self.__precacheManifest = [
   },
   {
     "url": "iframe.html",
-    "revision": "fce6fdd154231ac2d0ef5616ff43217a"
+    "revision": "26fd59fcefd2ce8d292ad650968c044b"
   },
   {
     "url": "index.html",
     "revision": "46d246ee1547961c6673cbe6b390dc3c"
   },
   {
-    "url": "inline-entry.0-880526d2.js",
-    "revision": "c47d844cb57796c60c63dd82aed69c4d"
+    "url": "inline-entry.0-61bbe905.js",
+    "revision": "7cda85f84f1b48a8600a3e0f8865f7ae"
   },
   {
     "url": "legacy/angular.stories-f4c3503b.js",
@@ -54,8 +54,8 @@ self.__precacheManifest = [
     "revision": "f7227f74071796e4ac12fec12bdbbd0f"
   },
   {
-    "url": "legacy/inline-entry.0-7143c3f6.js",
-    "revision": "ae518fc0fce2260f6b660da09c4b4c1f"
+    "url": "legacy/inline-entry.0-db63bad9.js",
+    "revision": "07263953492dd35da9290f0cf051a741"
   },
   {
     "url": "legacy/lit-element-d82f920d.js",
@@ -70,24 +70,24 @@ self.__precacheManifest = [
     "revision": "be782b0055cf9b2973c8e84ef24ad59c"
   },
   {
-    "url": "legacy/preview-396c3c10.js",
-    "revision": "6510a0d0098b045adf4ee3aaa742d277"
+    "url": "legacy/preview-4f0b149f.js",
+    "revision": "f2583546103fd6d8827ed967325e15d3"
   },
   {
     "url": "legacy/react.stories-cb24a325.js",
     "revision": "7c83daede4379c17ae12ee62d3c033f1"
   },
   {
-    "url": "legacy/storybook-helpers-46eba3fd.js",
-    "revision": "96a3b75755c2b4a2d3031c3accc3b95f"
+    "url": "legacy/storybook-helpers-62b5095e.js",
+    "revision": "d6a5a5a6ffbfd305f702fde29febcb99"
   },
   {
-    "url": "legacy/stripe-elements.stories-ed3d7be3.js",
-    "revision": "5587fa5dc13ca8c8b1fbd2da91848c63"
+    "url": "legacy/stripe-elements.stories-bb821f6f.js",
+    "revision": "07ca5ccaa241dc6052aa7514cfa79ade"
   },
   {
-    "url": "legacy/stripe-payment-request.stories-3363d94b.js",
-    "revision": "535f91b5dd520ad152e603c24ef065b4"
+    "url": "legacy/stripe-payment-request.stories-a86da37c.js",
+    "revision": "6287595c1cdf476df24dd9ffe4b75b43"
   },
   {
     "url": "legacy/vanilla.stories-335939f1.js",
@@ -138,24 +138,24 @@ self.__precacheManifest = [
     "revision": "82ed900dddc3ced62b34d8e74747d2a6"
   },
   {
-    "url": "preview-e8603077.js",
-    "revision": "faa2431056fabf1ac37d5ea2369ca39d"
+    "url": "preview-632627ee.js",
+    "revision": "a61836fa1361bc3d728f8c0ec6037ae0"
   },
   {
     "url": "react.stories-1a647028.js",
     "revision": "113f6129ccde74077e2842fa897c1c69"
   },
   {
-    "url": "storybook-helpers-d04c935d.js",
-    "revision": "000d4731c2fa21cb1a490c9be5cb8827"
+    "url": "storybook-helpers-10884108.js",
+    "revision": "f458f621b272c79b01f82a57a89487fc"
   },
   {
-    "url": "stripe-elements.stories-1e430075.js",
-    "revision": "773e13318d5b81155967c1cc03510f16"
+    "url": "stripe-elements.stories-613efca2.js",
+    "revision": "c9ebc24d0c03f5ac75929a43f5e4619d"
   },
   {
-    "url": "stripe-payment-request.stories-70c1223f.js",
-    "revision": "dad5429361994dd59eda15bb6b9a5e43"
+    "url": "stripe-payment-request.stories-d08ecd6a.js",
+    "revision": "2e8752b818a7fd477dbf701c92aebcc0"
   },
   {
     "url": "vanilla.stories-e5f2e2f8.js",
