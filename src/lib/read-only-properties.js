@@ -10,16 +10,16 @@
  * Enables the nofity option for properties to fire change notification events
  *
  * @template TBase
- * @param {Constructor<TBase>} baseElement
+ * @param {Constructor<TBase>} superclass
  */
-export const ReadOnlyPropertiesMixin = baseElement => {
+export const ReadOnlyPropertiesMixin = superclass => {
   /**
    * @type {Map<string, symbol>}
    * @private
    */
   const _readOnlyPropertyNamesMap = new Map();
 
-  return class ReadOnlyPropertiesClass extends baseElement {
+  return class ReadOnlyPropertiesClass extends superclass {
     /**
      * @inheritdoc
      * @param  {string} name property name
