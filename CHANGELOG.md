@@ -6,9 +6,89 @@
 * more semantic HTML for error output ([21443f5](https://github.com/bennypowers/stripe-elements/commit/21443f5836e851e308eb5d72a6fcbaf1376a5d1d))
 * unmount element before removing mountpoints when initializing ([8f2dd6f](https://github.com/bennypowers/stripe-elements/commit/8f2dd6f179e494fbff0e6c9f253fbb13f632682b))
 
-# Changelog
+## [2.2.3](https://github.com/bennypowers/stripe-elements/compare/v2.2.2...v2.2.3) (2020-01-27)
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### Bug Fixes
+
+* fix patch-package script ([e347aaa](https://github.com/bennypowers/stripe-elements/commit/e347aaa183cef7604f00e192dd3a9da05e41f272))
+
+
+
+## [2.2.2](https://github.com/bennypowers/stripe-elements/compare/v2.2.1...v2.2.2) (2020-01-27)
+
+
+### Bug Fixes
+
+* fix typescript typings ([f3cb81e](https://github.com/bennypowers/stripe-elements/commit/f3cb81ed864fc5f5548c9236b82d1d075c5357fc))
+
+
+
+## [2.2.1](https://github.com/bennypowers/stripe-elements/compare/v2.2.0...v2.2.1) (2020-01-25)
+
+
+### Bug Fixes
+
+* export ts typings ([487c04c](https://github.com/bennypowers/stripe-elements/commit/487c04c17d7bebf50b6b3f8e575de6a46b8e2349))
+
+
+
+# [2.2.0](https://github.com/bennypowers/stripe-elements/compare/v2.1.1...v2.2.0) (2020-01-25)
+
+
+### Bug Fixes
+
+* clear the element when calling `reset` ([3b8bc61](https://github.com/bennypowers/stripe-elements/commit/3b8bc61e56c9f10f46a423f5110981899b761c8d))
+* improve error message for empty card ([fa17b60](https://github.com/bennypowers/stripe-elements/commit/fa17b60874f42521895bb74b424314fbadfae36a))
+
+
+### Features
+
+* add `stripe` and `error` css shadow parts. ([46013a2](https://github.com/bennypowers/stripe-elements/commit/46013a239e8aee38411fe4fcb6f802955eebdfe0))
+* add stripe-payment-request element ([32cdd0d](https://github.com/bennypowers/stripe-elements/commit/32cdd0d54e1fef3e81c6c222ac1ab2cc1735d57b))
+* adds ready and focused propertie; blur and focus methods ([26f6e2a](https://github.com/bennypowers/stripe-elements/commit/26f6e2af6d083cfccb6face2372a1a74318b8696))
+* reflect error message to attr ([bf3df77](https://github.com/bennypowers/stripe-elements/commit/bf3df779ec1cd47d3402221b3079be77f5f96ee7))
+* **stripe-elements:** add `ready` readOnly notifying prop ([279d603](https://github.com/bennypowers/stripe-elements/commit/279d6032dc5958a70b958aace24cdd5c3f318fdc))
+* **stripe-elements:** adds `complete`, `empty`, & `invalid` properties ([b7c3f12](https://github.com/bennypowers/stripe-elements/commit/b7c3f12d7f833a49bc42b7a11b7255d28a706d00))
+
+
+
+## [2.1.1](https://github.com/bennypowers/stripe-elements/compare/v2.1.0...v2.1.1) (2020-01-21)
+
+
+### Bug Fixes
+
+* events bubble ([e68f25c](https://github.com/bennypowers/stripe-elements/commit/e68f25c495d67e7d01a88d2a595b16e2770ee4b7))
+* when `action` property is set auto-POSTs payment info to URL ([35f0502](https://github.com/bennypowers/stripe-elements/commit/35f0502f2546f6c7e3dbe66ae6941a744a661a4e))
+
+
+
+# [2.1.0](https://github.com/bennypowers/stripe-elements/compare/v2.0.2...v2.1.0) (2020-01-20)
+
+
+### Features
+
+* add createPaymentMethod method ([9639e10](https://github.com/bennypowers/stripe-elements/commit/9639e1095356f59a3d2680d2dae31e93b06452c3))
+* add submit method and generate attribute ([b866405](https://github.com/bennypowers/stripe-elements/commit/b866405000a819d9135a27a0d65f5dcdcbcb1a50))
+
+
+
+## [2.0.2](https://github.com/bennypowers/stripe-elements/compare/v2.0.1...v2.0.2) (2020-01-19)
+
+
+### Bug Fixes
+
+* fix DOM rebuilding for broken light slot template ([56b6a69](https://github.com/bennypowers/stripe-elements/commit/56b6a69c8d0966b93859b40b90a670db86e79130))
+
+
+
+## [2.0.1](https://github.com/bennypowers/stripe-elements/compare/v2.0.0...v2.0.1) (2020-01-06)
+
+
+### Bug Fixes
+
+* instantiating with a key no longer breaks tree walking ([0ab1a56](https://github.com/bennypowers/stripe-elements/commit/0ab1a5610c5f0bbf77abe71403d4a1fba349a7d3))
+
 
 ## [2.0.0](https://github.com/bennypowers/stripe-elements/compare/v1.1.2...v2.0.0) (2019-12-22)
 

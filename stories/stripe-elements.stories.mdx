@@ -18,28 +18,32 @@ import { $, $$, publishableKey, setKeys } from './storybook-helpers.js';
 
 <Meta title="Elements/Stripe Elements" />
 
-# Stripe Elements Web Component
+# `<stripe-elements>` Web Component
 
-The `<stripe-elements>` custom element is an easy way to use stripe.js in your web app.
-To get started, add the element to your page with the `publishable-key` attribute set to your
-[Stripe publishable key](https://dashboard.stripe.com/account/apikeys). You can also set the `publishableKey` DOM property using JavaScript
+The `<stripe-elements>` custom element is an easy way to use stripe.js in your web app,
+across [frameworks](/?path=/docs/framework-examples-angular--stripe-elements), or inside shadow roots.
+Add the element to your page with the `publishable-key` attribute set to your
+[Stripe publishable key](https://dashboard.stripe.com/account/apikeys).
+You can also set the `publishableKey` DOM property using JavaScript.
 
 ```html
 <stripe-elements publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"></stripe-elements>
 ```
 
-**Careful!** never add your **secret key** to an HTML page, only publish your **publishable key**.
+> **Careful!** never add your **secret key** to an HTML page, only publish your **publishable key**.
 
 Once you've set the `publishable-key` attribute (or the `publishableKey` DOM property), Stripe will create a Stripe Card Element on your page.
 
-Enter your publishable key here (use the test key, not the production key) to run the examples against your Stripe account. **Note**: This demo will store the publishable key in localstorage for your convenience.
+Enter your publishable key here (use the test key, not the production key) to run the examples against your Stripe account.
 
 <Story name="Enter a Publishable Key" height="80px">
   {html`
     <mwc-textfield id="publishable-key-input"
         outlined
-        value="${publishableKey}"
+        helperpersistent
         label="Publishable Key"
+        helper="NOTE: the input will store the publishable key in localstorage for your convenience."
+        value="${publishableKey}"
         @change="${setKeys('stripe-elements:not(#should-error)')}">
     </mwc-textfield>`
   }

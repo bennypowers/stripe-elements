@@ -286,7 +286,7 @@ See the demos for more comprehensive examples.
 | `billingDetails`    |                       |           | `stripe.BillingDetails`                      | {}        | billing_details object sent to create the payment representation. (optional) |
 | `buttonTheme`       | `button-theme`        |           | `'dark'\|'light'\|'light-outline'`           | "dark"    |                                                  |
 | `buttonType`        | `button-type`         |           | `'default'\|'book'\|'buy'\|'donate'`         | "default" |                                                  |
-| `canMakePayment`    | `can-make-payment`    | readonly  | `object`                                     | null      | Whether or not the device can make the payment request. |
+| `canMakePayment`    | `can-make-payment`    | readonly  | `object`                                     |           | Whether or not the device can make the payment request. |
 | `clientSecret`      | `client-secret`       |           | `string`                                     |           | The `client_secret` part of a Stripe `PaymentIntent` |
 | `country`           | `country`             |           | `string`                                     |           | The two-letter country code of your Stripe account (e.g., `US`) |
 | `currency`          | `currency`            |           | `string`                                     |           | Three character currency code (e.g., `usd`)      |
@@ -345,6 +345,7 @@ See the demos for more comprehensive examples.
 | `stripe-token`          | **DEPRECATED**. Will be removed in a future major version. Use `token` instead |
 | `success`               | When a payment succeeds                          |
 | `token`                 | The Token received from stripe.com               |
+| `unsupported`           | When the element detects that the user agent cannot make a payment |
 
 #### CSS Shadow Parts
 
