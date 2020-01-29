@@ -16,13 +16,7 @@ async function run() {
   addDecorator(withA11y);
 
   addParameters({
-    a11y: {
-      config: {},
-      options: {
-        checks: { 'color-contrast': { options: { noScroll: true } } },
-        restoreScroll: true
-      }
-    },
+    a11y: false,
     docs: {
       iframeHeight: '200px'
     }

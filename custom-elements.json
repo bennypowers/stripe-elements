@@ -1027,6 +1027,10 @@
       ],
       "events": [
         {
+          "name": "unsupported",
+          "description": "When the element detects that the user agent cannot make a payment"
+        },
+        {
           "name": "fail",
           "description": "When a payment request fails"
         },
