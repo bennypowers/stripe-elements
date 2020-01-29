@@ -106,9 +106,12 @@ class Element extends SynthEventTarget {
 
   mount(node) {
     render(html`<!-- Stripe mounts here -->`, node);
+    this.eventTarget.dispatchEvent(new CustomEvent('ready'));
   }
 
-  blur() { }
+  blur() {
+    this.eventTarget.dispatchEvent(new CustomEvent('blur'));
+  }
 
   clear() { }
 
@@ -117,7 +120,9 @@ class Element extends SynthEventTarget {
     delete this.eventTarget;
   }
 
-  focus() { }
+  focus() {
+    this.eventTarget.dispatchEvent(new CustomEvent('focus'));
+  }
 
   unmount() { }
 
@@ -157,20 +162,6 @@ class CardElement extends Element {
 }
 
 class PaymentRequestButtonElement extends Element {
-  on(type, handler) {
-    // let called;
-    // const wrappedHandler = (...args) => {
-    //   return (...args) => {
-    //     called = true;
-    //     return handler(...args);
-    //   };
-    // };
-    // setTimeout(() => {
-    //   if (!called) throw new Error(`should have called ${type}`);
-    // });
-    // TODO: handle timeouts?
-    super.on(type, handler);
-  }
 }
 
 class Elements {

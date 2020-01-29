@@ -493,11 +493,21 @@ describe('<stripe-elements>', function() {
       describe('when publishable key is changed', function publishableKeyReset() {
         let initialStripeMountId;
         beforeEach(function() { initialStripeMountId = element.stripeMountId; });
+        beforeEach(listenFor('ready'));
+        // DEPRECATED
+        beforeEach(listenFor('stripe-ready'));
         beforeEach(setProps({ publishableKey: 'foo' }));
         beforeEach(nextFrame);
         afterEach(function() { initialStripeMountId = undefined; });
         it('reinitializes stripe', function() { expect(element.stripe).to.be.ok.and.not.equal(initialStripe); });
         it('uses a new mount point id', function() { expect(element.stripeMountId).to.be.ok.and.not.equal(initialStripeMountId); });
+        // DEPRECATED
+        it('fires `stripe-ready` event', assertFired('stripe-ready'));
+        it('fires `ready` event', assertFired('ready'));
+        describe('after `ready` event', function() {
+          beforeEach(awaitEvent('ready'));
+          it('sets `stripeReady` property', assertProps({ stripeReady: true }));
+        });
       });
 
       describe('when publishable key is unset', function pkReset() {
@@ -561,18 +571,6 @@ describe('<stripe-elements>', function() {
             expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR);
             expect(element.source, 'source').to.be.null;
           });
-        });
-      });
-
-      describe('when stripe fires `ready` event', function cardReady() {
-        beforeEach(listenFor('ready'));
-        beforeEach(listenFor('stripe-ready-changed'));
-        beforeEach(synthCardEvent('ready'));
-        it('fires `ready` event', assertFired('ready'));
-        it('fires `stripe-ready-changed` event', assertEventDetail('stripe-ready-changed', { value: true }));
-        describe('after `ready` event', function() {
-          beforeEach(awaitEvent('ready'));
-          it('sets `stripeReady` property', assertProps({ stripeReady: true }));
         });
       });
 

@@ -63,6 +63,7 @@ const parseDataset = mapDataset(parseAmount);
  * @element stripe-payment-request
  * @extends StripeBase
  *
+ * @fires 'unsupported' - When the element detects that the user agent cannot make a payment
  * @fires 'fail' - When a payment request fails
  * @fires 'cancel' - When a payment request is cancelled
  * @fires 'shippingaddresschange' - When the user chooses a different shipping address
@@ -92,7 +93,8 @@ export class StripePaymentRequest extends StripeBase {
     attribute: 'can-make-payment',
     reflect: true,
     readOnly: true,
-  }) canMakePayment = null;
+    notify: true,
+  }) canMakePayment = undefined;
 
   /**
    * The two-letter country code of your Stripe account (e.g., `US`)
@@ -272,6 +274,7 @@ export class StripePaymentRequest extends StripeBase {
     const paymentRequest = this.stripe.paymentRequest(stripePaymentRequestOptions);
     const canMakePayment = await paymentRequest.canMakePayment();
     await this.set({ paymentRequest, canMakePayment });
+    if (!this.canMakePayment) this.fire('unsupported');
   }
 
   /**
