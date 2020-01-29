@@ -279,44 +279,44 @@ See the demos for more comprehensive examples.
 
 #### Properties
 
-| Property            | Attribute             | Modifiers | Type                                         | Default   | Description                                      |
-|---------------------|-----------------------|-----------|----------------------------------------------|-----------|--------------------------------------------------|
-| `action`            | `action`              |           | `string`                                     |           | If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),<br />the element will POST JSON data to this URL with an object containing<br />a key equal to the value of the `generate` property. |
-| `amount`            | `amount`              |           | `number`                                     |           | The amount in the currency's subunit (e.g. cents, yen, etc.) |
-| `billingDetails`    |                       |           | `stripe.BillingDetails`                      | {}        | billing_details object sent to create the payment representation. (optional) |
-| `buttonTheme`       | `button-theme`        |           | `'dark'\|'light'\|'light-outline'`           | "dark"    |                                                  |
-| `buttonType`        | `button-type`         |           | `'default'\|'book'\|'buy'\|'donate'`         | "default" |                                                  |
-| `canMakePayment`    | `can-make-payment`    | readonly  | `object`                                     |           | Whether or not the device can make the payment request. |
-| `clientSecret`      | `client-secret`       |           | `string`                                     |           | The `client_secret` part of a Stripe `PaymentIntent` |
-| `country`           | `country`             |           | `string`                                     |           | The two-letter country code of your Stripe account (e.g., `US`) |
-| `currency`          | `currency`            |           | `string`                                     |           | Three character currency code (e.g., `usd`)      |
-| `displayItems`      | `displayItems`        |           | `stripe.paymentRequest.DisplayItem[]`        |           | An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above. |
-| `element`           | `element`             | readonly  | `stripe.elements.Element`                    | null      | Stripe element instance                          |
-| `elements`          | `elements`            | readonly  | `stripe.elements.Elements`                   | null      | Stripe Elements instance                         |
-| `error`             | `error`               | readonly  | `Error\|stripe.Error`                        | null      | Stripe or validation error                       |
-| `focused`           | `focused`             | readonly  | `boolean`                                    | false     | If the element is focused.                       |
-| `generate`          | `generate`            |           | `'payment-method'\|'source'\|'token'`        | "source"  | Type of payment representation to generate.      |
-| `hasError`          | `has-error`           | readonly  | `boolean`                                    | false     | Whether the element has an error<br />**DEPRECATED**. Will be removed in a future version. Use `error` instead |
-| `label`             | `label`               |           | `string`                                     |           | A name that the browser shows the customer in the payment interface. |
-| `paymentIntent`     | `payment-intent`      | readonly  | `stripe.paymentIntents.PaymentIntent`        | null      | Stripe PaymentIntent                             |
-| `paymentMethod`     | `payment-method`      | readonly  | `stripe.paymentMethod.PaymentMethod`         | null      | Stripe PaymentMethod                             |
-| `paymentMethodData` |                       |           | `stripe.PaymentMethodData`                   | {}        | Data passed to stripe.createPaymentMethod. (optional) |
-| `paymentRequest`    | `payment-request`     |           | `stripe.paymentRequest.StripePaymentRequest` | null      | Stripe PaymentRequest                            |
-| `pending`           | `pending`             |           | `boolean`                                    | false     | If you might change the payment amount later (for example, after you have calcluated shipping costs), set this to true. Note that browsers treat this as a hint for how to display things, and not necessarily as something that will prevent submission. |
-| `publishableKey`    | `publishable-key`     |           | `string`                                     |           | Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX` |
-| `ready`             | `ready`               | readonly  | `boolean`                                    | false     | Whether the stripe element is ready to receive focus. |
-| `requestPayerEmail` | `request-payer-email` |           | `boolean`                                    |           | See the requestPayerName option.                 |
-| `requestPayerName`  | `request-payer-name`  |           | `boolean`                                    |           | By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.<br /><br />We highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available. |
-| `requestPayerPhone` | `request-payer-phone` |           | `boolean`                                    |           | See the requestPayerName option.                 |
-| `requestShipping`   | `request-shipping`    |           | `boolean`                                    |           | Collect shipping address by setting this option to true. The address appears in the PaymentResponse.<br />You must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback. |
-| `shippingOptions`   | `shippingOptions`     |           | `stripe.paymentRequest.ShippingOption[]`     |           | An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option. |
-| `showError`         | `show-error`          |           | `boolean`                                    | false     | Whether to display the error message             |
-| `source`            | `source`              | readonly  | `stripe.Source`                              | null      | Stripe Source                                    |
-| `sourceData`        |                       |           | `SourceData`                                 | {}        | Data passed to stripe.createSource. (optional)   |
-| `stripe`            | `stripe`              | readonly  | `stripe.Stripe`                              | null      | Stripe instance                                  |
-| `stripeReady`       | `stripe-ready`        |           | `boolean`                                    | false     | Whether the stripe element is ready to receive focus.<br />**DEPRECATED**. Will be removed in a future version. use `ready` instead. |
-| `token`             | `token`               | readonly  | `stripe.Token`                               | null      | Stripe Token                                     |
-| `tokenData`         |                       |           | `stripe.TokenOptions`                        | {}        | Data passed to stripe.createToken. (optional)    |
+| Property            | Attribute             | Modifiers | Type                                         | Default     | Description                                      |
+|---------------------|-----------------------|-----------|----------------------------------------------|-------------|--------------------------------------------------|
+| `action`            | `action`              |           | `string`                                     |             | If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),<br />the element will POST JSON data to this URL with an object containing<br />a key equal to the value of the `generate` property. |
+| `amount`            | `amount`              |           | `number`                                     |             | The amount in the currency's subunit (e.g. cents, yen, etc.) |
+| `billingDetails`    |                       |           | `stripe.BillingDetails`                      | {}          | billing_details object sent to create the payment representation. (optional) |
+| `buttonTheme`       | `button-theme`        |           | `'dark'\|'light'\|'light-outline'`           | "dark"      |                                                  |
+| `buttonType`        | `button-type`         |           | `'default'\|'book'\|'buy'\|'donate'`         | "default"   |                                                  |
+| `canMakePayment`    | `can-make-payment`    | readonly  | `object`                                     | "undefined" | Whether or not the device can make the payment request. |
+| `clientSecret`      | `client-secret`       |           | `string`                                     |             | The `client_secret` part of a Stripe `PaymentIntent` |
+| `country`           | `country`             |           | `string`                                     |             | The two-letter country code of your Stripe account (e.g., `US`) |
+| `currency`          | `currency`            |           | `string`                                     |             | Three character currency code (e.g., `usd`)      |
+| `displayItems`      | `displayItems`        |           | `stripe.paymentRequest.DisplayItem[]`        |             | An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above. |
+| `element`           | `element`             | readonly  | `stripe.elements.Element`                    | null        | Stripe element instance                          |
+| `elements`          | `elements`            | readonly  | `stripe.elements.Elements`                   | null        | Stripe Elements instance                         |
+| `error`             | `error`               | readonly  | `Error\|stripe.Error`                        | null        | Stripe or validation error                       |
+| `focused`           | `focused`             | readonly  | `boolean`                                    | false       | If the element is focused.                       |
+| `generate`          | `generate`            |           | `'payment-method'\|'source'\|'token'`        | "source"    | Type of payment representation to generate.      |
+| `hasError`          | `has-error`           | readonly  | `boolean`                                    | false       | Whether the element has an error<br />**DEPRECATED**. Will be removed in a future version. Use `error` instead |
+| `label`             | `label`               |           | `string`                                     |             | A name that the browser shows the customer in the payment interface. |
+| `paymentIntent`     | `payment-intent`      | readonly  | `stripe.paymentIntents.PaymentIntent`        | null        | Stripe PaymentIntent                             |
+| `paymentMethod`     | `payment-method`      | readonly  | `stripe.paymentMethod.PaymentMethod`         | null        | Stripe PaymentMethod                             |
+| `paymentMethodData` |                       |           | `stripe.PaymentMethodData`                   | {}          | Data passed to stripe.createPaymentMethod. (optional) |
+| `paymentRequest`    | `payment-request`     |           | `stripe.paymentRequest.StripePaymentRequest` | null        | Stripe PaymentRequest                            |
+| `pending`           | `pending`             |           | `boolean`                                    | false       | If you might change the payment amount later (for example, after you have calcluated shipping costs), set this to true. Note that browsers treat this as a hint for how to display things, and not necessarily as something that will prevent submission. |
+| `publishableKey`    | `publishable-key`     |           | `string`                                     |             | Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX` |
+| `ready`             | `ready`               | readonly  | `boolean`                                    | false       | Whether the stripe element is ready to receive focus. |
+| `requestPayerEmail` | `request-payer-email` |           | `boolean`                                    |             | See the requestPayerName option.                 |
+| `requestPayerName`  | `request-payer-name`  |           | `boolean`                                    |             | By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.<br /><br />We highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available. |
+| `requestPayerPhone` | `request-payer-phone` |           | `boolean`                                    |             | See the requestPayerName option.                 |
+| `requestShipping`   | `request-shipping`    |           | `boolean`                                    |             | Collect shipping address by setting this option to true. The address appears in the PaymentResponse.<br />You must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback. |
+| `shippingOptions`   | `shippingOptions`     |           | `stripe.paymentRequest.ShippingOption[]`     |             | An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option. |
+| `showError`         | `show-error`          |           | `boolean`                                    | false       | Whether to display the error message             |
+| `source`            | `source`              | readonly  | `stripe.Source`                              | null        | Stripe Source                                    |
+| `sourceData`        |                       |           | `SourceData`                                 | {}          | Data passed to stripe.createSource. (optional)   |
+| `stripe`            | `stripe`              | readonly  | `stripe.Stripe`                              | null        | Stripe instance                                  |
+| `stripeReady`       | `stripe-ready`        |           | `boolean`                                    | false       | Whether the stripe element is ready to receive focus.<br />**DEPRECATED**. Will be removed in a future version. use `ready` instead. |
+| `token`             | `token`               | readonly  | `stripe.Token`                               | null        | Stripe Token                                     |
+| `tokenData`         |                       |           | `stripe.TokenOptions`                        | {}          | Data passed to stripe.createToken. (optional)    |
 
 #### Methods
 

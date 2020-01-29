@@ -636,7 +636,8 @@
         {
           "name": "can-make-payment",
           "description": "Whether or not the device can make the payment request.",
-          "type": "object"
+          "type": "object",
+          "default": "\"undefined\""
         },
         {
           "name": "country",
@@ -809,7 +810,8 @@
           "name": "canMakePayment",
           "attribute": "can-make-payment",
           "description": "Whether or not the device can make the payment request.",
-          "type": "object"
+          "type": "object",
+          "default": "\"undefined\""
         },
         {
           "name": "country",

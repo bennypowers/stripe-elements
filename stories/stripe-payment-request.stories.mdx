@@ -40,12 +40,17 @@ Enter your publishable key here (use the test key, not the production key) to ru
   > </mwc-textfield>`
 }</Story>
 
-Unlike the `<stripe-elements>` element, `<stripe-payment-request>` requires that you preload it with
-information about the payment request as well as a stripe publishable key in order to render to the page.
+Unlike the `<stripe-elements>` element, `<stripe-payment-request>` has a number of up-front requirements.
+The first of those is browser support.
+Listen for the `unsupported` event to handle the case when the user agent cannot make the payment.
+Listen for the `ready` event to be sure that the browser is able to make payment.
 
-**Careful!** never add your **secret key** to an HTML page, only publish your **publishable key**.
+You also need to preload the element with information about the payment request in order for it to render to the page.
 
-For example, to display a payment request button to request a payment to a Canadian Stripe account for a purchase labelled "Double Double" that costs $1.25 Canadian, add this element to your page:
+> **Careful!** never add your **secret key** to an HTML page, only publish your **publishable key**.
+
+For example, to display a payment request button to request a payment to a Canadian Stripe account
+for a purchase labelled "Double Double" that costs $1.25 Canadian, add this element to your page:
 
 <Preview withSource="open">
   <Story name="Simple Payment Request">{

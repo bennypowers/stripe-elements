@@ -71,7 +71,7 @@ const DEFAULT_PROPS = Object.freeze({
   ...BASE_DEFAULT_PROPS,
   action: undefined,
   amount: undefined,
-  canMakePayment: null,
+  canMakePayment: undefined,
   country: undefined,
   currency: undefined,
   displayItems: undefined,
@@ -298,6 +298,20 @@ describe('<stripe-payment-request>', function() {
     });
   });
 
+  describe('when the user agent is unable to make a payment', function() {
+    describe('with mocked Stripe.js', function withMockedStripeJs() {
+      beforeEach(mockStripe);
+      beforeEach(setupNoProps);
+      afterEach(restoreStripe);
+
+      describe('when setting publishable key', function() {
+        beforeEach(listenFor('unsupported'));
+        beforeEach(setProps({ publishableKey: PUBLISHABLE_KEY }));
+        it('fires the `unsupported` event', assertFired('unsupported'));
+      });
+    });
+  });
+
   describe('when the user agent is able to make a payment', function() {
     beforeEach(mockCanMakePayment);
     afterEach(restoreCanMakePayment);
@@ -388,164 +402,205 @@ describe('<stripe-payment-request>', function() {
         });
       });
 
+      describe('and no publishable key', function() {
+        beforeEach(setupNoProps);
+        describe('when stripe mount point is removed from DOM', function() {
+          beforeEach(removeStripeMount);
+          describe('then publishable key is set', function() {
+            beforeEach(setProps({ publishableKey: PUBLISHABLE_KEY }));
+            beforeEach(nextFrame);
+            it('rebuilds its DOM', function() {
+              const { stripeMountId } = element;
+              expect(element).lightDom.to.equal(expectedLightDOM({ stripeMountId }));
+              expect(element.stripeMount, 'mount').to.be.ok;
+            });
 
-      describe('without CSS custom properties applied', function() {
-        describe('and no publishable key', function() {
-          beforeEach(setupNoProps);
-          describe('when stripe mount point is removed from DOM', function() {
-            beforeEach(removeStripeMount);
-            describe('then publishable key is set', function() {
-              beforeEach(setProps({ publishableKey: PUBLISHABLE_KEY }));
-              beforeEach(nextFrame);
-              it('rebuilds its DOM', function() {
-                const { stripeMountId } = element;
-                expect(element).lightDom.to.equal(expectedLightDOM({ stripeMountId }));
-                expect(element.stripeMount, 'mount').to.be.ok;
-              });
-
-              it('uses a new id', function() {
-                expect(element.stripeMount.id).to.not.equal(initialStripeMountId);
-              });
+            it('uses a new id', function() {
+              expect(element.stripeMount.id).to.not.equal(initialStripeMountId);
             });
           });
         });
+        describe('when setting publishable key', function() {
+          beforeEach(setProps({ publishableKey: PUBLISHABLE_KEY }));
+          beforeEach(listenFor('ready'));
+          it('fires the `ready` event', assertFired('ready'));
+        });
+      });
 
-        describe('and a valid publishable key', function() {
-          beforeEach(setupWithPublishableKey(PUBLISHABLE_KEY));
+      describe('and a valid publishable key', function() {
+        beforeEach(setupWithPublishableKey(PUBLISHABLE_KEY));
 
-          describe('with country and currency set', function() {
-            beforeEach(setProps({ country: 'CA', currency: 'cad' }));
+        describe('with country and currency set', function() {
+          beforeEach(setProps({ country: 'CA', currency: 'cad' }));
 
-            it('uses default element height value', function() {
-              expect(element.element.style.paymentRequestButton.height).to.equal('40px');
-            });
-
-            describe('with `generate` set to "source"', function() {
-              beforeEach(setProps({ generate: 'source' }));
-              it('initializes stripe instance', assertPropsOk(['stripe']));
-
-              it('initializes elements instance', assertPropsOk(['elements']));
-            });
-
-            describe('when publishable key is changed', function publishableKeyReset() {
-              let initialStripeMountId;
-              beforeEach(function() { initialStripeMountId = element.stripeMountId; });
-              beforeEach(setProps({ publishableKey: 'foo' }));
-              beforeEach(nextFrame);
-              afterEach(function() { initialStripeMountId = undefined; });
-              it('reinitializes stripe', function() { expect(element.stripe).to.be.ok.and.not.equal(initialStripe); });
-              it('uses a new mount point id', function() { expect(element.stripeMountId).to.be.ok.and.not.equal(initialStripeMountId); });
-            });
-
-            describe('when publishable key is unset', function pkReset() {
-              beforeEach(setProps({ publishableKey: undefined }));
-              beforeEach(nextFrame);
-              it('unsets the `stripe` property', assertProps({ stripe: null }));
-              it('unsets the `element` property', assertProps({ element: null }));
-              it('unsets the `elements` property', assertProps({ elements: null }));
-            });
-
-            it('sets the `canMakePayment` property', assertProps({ canMakePayment: { applePay: true } }, { deep: true }));
-
-            it('sets the `paymentRequest` property', assertPropsOk(['paymentRequest']));
-
-            describe('when the paymentRequest fires the `cancel` event', function() {
-              beforeEach(listenFor('cancel'));
-              beforeEach(synthPaymentRequestEvent('cancel'));
-              it('fires a `cancel` event', assertFired('cancel'));
-            });
-
-            describe('when the paymentRequest fires the `shippingaddresschange` event', function() {
-              beforeEach(listenFor('shippingaddresschange'));
-              beforeEach(synthPaymentRequestEvent('shippingaddresschange'));
-              it('fires a `shippingaddresschange` event', assertFired('shippingaddresschange'));
-            });
-
-            describe('when the paymentRequest fires the `shippingoptionchange` event', function() {
-              beforeEach(listenFor('shippingoptionchange'));
-              beforeEach(synthPaymentRequestEvent('shippingoptionchange'));
-              it('fires a `shippingoptionchange` event', assertFired('shippingoptionchange'));
-            });
-
-            describe('when the paymentRequest fires the `source` event', function() {
-              const complete = stub();
-              const source = SUCCESSFUL_SOURCE;
-              beforeEach(listenFor('success'));
-              beforeEach(synthPaymentRequestEvent('source', { source, complete }));
-              beforeEach(nextFrame);
-              afterEach(complete.resetBehavior.bind(complete));
-              it('fires a `success` event', assertFired('success'));
-              it('sets the `source` property', assertProps({ source }));
-              it('unsets the `error` property', assertProps({ error: null }));
-              it('unsets the `token` property', assertProps({ token: null }));
-              it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
-              it('calls the complete function', assertCalled(complete));
-            });
-
-            describe('when the paymentRequest fires a `source` event with an error', function() {
-              const complete = stub();
-              const error = CARD_DECLINED_ERROR;
-              beforeEach(listenFor('fail'));
-              beforeEach(synthPaymentRequestEvent('source', { error, complete }));
-              beforeEach(nextFrame);
-              afterEach(complete.resetBehavior.bind(complete));
-              it('fires a `fail` event', assertFired('fail'));
-              it('sets the `error` property', assertProps({ error }));
-              it('unsets the `token` property', assertProps({ token: null }));
-              it('unsets the `source` property', assertProps({ source: null }));
-              it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
-              it('calls the complete function', assertCalled(complete));
-            });
+          it('uses default element height value', function() {
+            expect(element.element.style.paymentRequestButton.height).to.equal('40px');
           });
 
-          describe('with `generate` set to "token"', function() {
-            beforeEach(setProps({ generate: 'token' }));
-            describe('when the paymentRequest fires the `token` event', function() {
-              const complete = stub();
-              const token = SUCCESSFUL_TOKEN;
-              beforeEach(listenFor('success'));
-              beforeEach(synthPaymentRequestEvent('token', { token, complete }));
-              beforeEach(nextFrame);
-              afterEach(complete.resetBehavior.bind(complete));
-              it('fires a `success` event', assertFired('success'));
-              it('sets the `token` property', assertProps({ token }));
-              it('unsets the `error` property', assertProps({ error: null }));
-              it('unsets the `source` property', assertProps({ source: null }));
-              it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
-              it('calls the complete function', assertCalled(complete));
-            });
+          describe('with `generate` set to "source"', function() {
+            beforeEach(setProps({ generate: 'source' }));
+            it('initializes stripe instance', assertPropsOk(['stripe']));
 
-            describe('when the paymentRequest fires a `token` event with an error', function() {
-              const complete = stub();
-              const error = CARD_DECLINED_ERROR;
-              beforeEach(listenFor('fail'));
-              beforeEach(synthPaymentRequestEvent('token', { error, complete }));
-              afterEach(complete.resetBehavior.bind(complete));
-              it('fires a `fail` event', assertFired('fail'));
-              it('sets the `error` property', assertProps({ error }));
-              it('unsets the `token` property', assertProps({ token: null }));
-              it('unsets the `source` property', assertProps({ source: null }));
-              it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
-              it('calls the complete function', assertCalled(complete));
-            });
+            it('initializes elements instance', assertPropsOk(['elements']));
           });
 
-          describe('with `generate` set to "payment-method"', function() {
-            beforeEach(setProps({ generate: 'payment-method' }));
+          describe('when publishable key is changed', function publishableKeyReset() {
+            let initialStripeMountId;
+            beforeEach(function() { initialStripeMountId = element.stripeMountId; });
+            beforeEach(setProps({ publishableKey: 'foo' }));
+            beforeEach(nextFrame);
+            afterEach(function() { initialStripeMountId = undefined; });
+            it('reinitializes stripe', function() { expect(element.stripe).to.be.ok.and.not.equal(initialStripe); });
+            it('uses a new mount point id', function() { expect(element.stripeMountId).to.be.ok.and.not.equal(initialStripeMountId); });
+          });
 
+          describe('when publishable key is unset', function pkReset() {
+            beforeEach(setProps({ publishableKey: undefined }));
+            beforeEach(nextFrame);
+            it('unsets the `stripe` property', assertProps({ stripe: null }));
+            it('unsets the `element` property', assertProps({ element: null }));
+            it('unsets the `elements` property', assertProps({ elements: null }));
+          });
+
+          it('sets the `canMakePayment` property', assertProps({ canMakePayment: { applePay: true } }, { deep: true }));
+
+          it('sets the `paymentRequest` property', assertPropsOk(['paymentRequest']));
+
+          describe('when the paymentRequest fires the `cancel` event', function() {
+            beforeEach(listenFor('cancel'));
+            beforeEach(synthPaymentRequestEvent('cancel'));
+            it('fires a `cancel` event', assertFired('cancel'));
+          });
+
+          describe('when the paymentRequest fires the `shippingaddresschange` event', function() {
+            beforeEach(listenFor('shippingaddresschange'));
+            beforeEach(synthPaymentRequestEvent('shippingaddresschange'));
+            it('fires a `shippingaddresschange` event', assertFired('shippingaddresschange'));
+          });
+
+          describe('when the paymentRequest fires the `shippingoptionchange` event', function() {
+            beforeEach(listenFor('shippingoptionchange'));
+            beforeEach(synthPaymentRequestEvent('shippingoptionchange'));
+            it('fires a `shippingoptionchange` event', assertFired('shippingoptionchange'));
+          });
+
+          describe('when the paymentRequest fires the `source` event', function() {
+            const complete = stub();
+            const source = SUCCESSFUL_SOURCE;
+            beforeEach(listenFor('success'));
+            beforeEach(synthPaymentRequestEvent('source', { source, complete }));
+            beforeEach(nextFrame);
+            afterEach(complete.resetBehavior.bind(complete));
+            it('fires a `success` event', assertFired('success'));
+            it('sets the `source` property', assertProps({ source }));
+            it('unsets the `error` property', assertProps({ error: null }));
+            it('unsets the `token` property', assertProps({ token: null }));
+            it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
+            it('calls the complete function', assertCalled(complete));
+          });
+
+          describe('when the paymentRequest fires a `source` event with an error', function() {
+            const complete = stub();
+            const error = CARD_DECLINED_ERROR;
+            beforeEach(listenFor('fail'));
+            beforeEach(synthPaymentRequestEvent('source', { error, complete }));
+            beforeEach(nextFrame);
+            afterEach(complete.resetBehavior.bind(complete));
+            it('fires a `fail` event', assertFired('fail'));
+            it('sets the `error` property', assertProps({ error }));
+            it('unsets the `token` property', assertProps({ token: null }));
+            it('unsets the `source` property', assertProps({ source: null }));
+            it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
+            it('calls the complete function', assertCalled(complete));
+          });
+        });
+
+        describe('with `generate` set to "token"', function() {
+          beforeEach(setProps({ generate: 'token' }));
+          describe('when the paymentRequest fires the `token` event', function() {
+            const complete = stub();
+            const token = SUCCESSFUL_TOKEN;
+            beforeEach(listenFor('success'));
+            beforeEach(synthPaymentRequestEvent('token', { token, complete }));
+            beforeEach(nextFrame);
+            afterEach(complete.resetBehavior.bind(complete));
+            it('fires a `success` event', assertFired('success'));
+            it('sets the `token` property', assertProps({ token }));
+            it('unsets the `error` property', assertProps({ error: null }));
+            it('unsets the `source` property', assertProps({ source: null }));
+            it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
+            it('calls the complete function', assertCalled(complete));
+          });
+
+          describe('when the paymentRequest fires a `token` event with an error', function() {
+            const complete = stub();
+            const error = CARD_DECLINED_ERROR;
+            beforeEach(listenFor('fail'));
+            beforeEach(synthPaymentRequestEvent('token', { error, complete }));
+            afterEach(complete.resetBehavior.bind(complete));
+            it('fires a `fail` event', assertFired('fail'));
+            it('sets the `error` property', assertProps({ error }));
+            it('unsets the `token` property', assertProps({ token: null }));
+            it('unsets the `source` property', assertProps({ source: null }));
+            it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
+            it('calls the complete function', assertCalled(complete));
+          });
+        });
+
+        describe('with `generate` set to "payment-method"', function() {
+          beforeEach(setProps({ generate: 'payment-method' }));
+
+          describe('when the paymentRequest fires the `paymentmethod` event', function() {
+            const complete = stub();
+            const paymentMethod = SUCCESSFUL_PAYMENT_METHOD;
+            beforeEach(listenFor('success'));
+            beforeEach(nextFrame);
+            beforeEach(synthPaymentRequestEvent('paymentmethod', { paymentMethod, complete }));
+            afterEach(complete.resetBehavior.bind(complete));
+            it('fires a `success` event', assertFired('success'));
+            it('sets the `paymentMethod` property', assertProps({ paymentMethod }));
+            it('unsets the `error` property', assertProps({ error: null }));
+            it('unsets the `source` property', assertProps({ source: null }));
+            it('unsets the `token` property', assertProps({ token: null }));
+            it('calls the complete function', assertCalled(complete));
+          });
+
+          describe('when the paymentRequest fires a `paymentmethod` event with an error', function() {
+            const complete = stub();
+            const error = CARD_DECLINED_ERROR;
+            beforeEach(listenFor('fail'));
+            beforeEach(synthPaymentRequestEvent('paymentmethod', { error, complete }));
+            beforeEach(nextFrame);
+            afterEach(complete.resetBehavior.bind(complete));
+            it('fires a `fail` event', assertFired('fail'));
+            it('sets the `error` property', assertProps({ error }));
+            it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
+            it('unsets the `source` property', assertProps({ source: null }));
+            it('unsets the `token` property', assertProps({ token: null }));
+            it('calls the complete function', assertCalled(complete));
+          });
+
+          describe('with `clientSecret` set', function() {
+            beforeEach(setProps({ clientSecret: CLIENT_SECRET }));
             describe('when the paymentRequest fires the `paymentmethod` event', function() {
               const complete = stub();
               const paymentMethod = SUCCESSFUL_PAYMENT_METHOD;
+              const paymentIntent = SUCCESSFUL_PAYMENT_INTENT;
               beforeEach(listenFor('success'));
-              beforeEach(nextFrame);
               beforeEach(synthPaymentRequestEvent('paymentmethod', { paymentMethod, complete }));
+              beforeEach(nextFrame);
               afterEach(complete.resetBehavior.bind(complete));
-              it('fires a `success` event', assertFired('success'));
               it('sets the `paymentMethod` property', assertProps({ paymentMethod }));
+              it('sets the `paymentIntent` property', assertProps({ paymentIntent }));
               it('unsets the `error` property', assertProps({ error: null }));
               it('unsets the `source` property', assertProps({ source: null }));
               it('unsets the `token` property', assertProps({ token: null }));
+              it('fires a `success` event', assertFired('success'));
               it('calls the complete function', assertCalled(complete));
+              describe('then calling reset()', function() {
+                beforeEach(reset);
+                it('unsets all the properties', assertProps({ paymentMethod: null, paymentIntent: null, error: null, source: null, token: null }));
+              });
             });
 
             describe('when the paymentRequest fires a `paymentmethod` event with an error', function() {
@@ -562,67 +617,28 @@ describe('<stripe-payment-request>', function() {
               it('unsets the `token` property', assertProps({ token: null }));
               it('calls the complete function', assertCalled(complete));
             });
+          });
 
-            describe('with `clientSecret` set', function() {
-              beforeEach(setProps({ clientSecret: CLIENT_SECRET }));
-              describe('when the paymentRequest fires the `paymentmethod` event', function() {
-                const complete = stub();
-                const paymentMethod = SUCCESSFUL_PAYMENT_METHOD;
-                const paymentIntent = SUCCESSFUL_PAYMENT_INTENT;
-                beforeEach(listenFor('success'));
-                beforeEach(synthPaymentRequestEvent('paymentmethod', { paymentMethod, complete }));
-                beforeEach(nextFrame);
-                afterEach(complete.resetBehavior.bind(complete));
-                it('sets the `paymentMethod` property', assertProps({ paymentMethod }));
-                it('sets the `paymentIntent` property', assertProps({ paymentIntent }));
-                it('unsets the `error` property', assertProps({ error: null }));
-                it('unsets the `source` property', assertProps({ source: null }));
-                it('unsets the `token` property', assertProps({ token: null }));
-                it('fires a `success` event', assertFired('success'));
-                it('calls the complete function', assertCalled(complete));
-                describe('then calling reset()', function() {
-                  beforeEach(reset);
-                  it('unsets all the properties', assertProps({ paymentMethod: null, paymentIntent: null, error: null, source: null, token: null }));
-                });
-              });
-
-              describe('when the paymentRequest fires a `paymentmethod` event with an error', function() {
-                const complete = stub();
-                const error = CARD_DECLINED_ERROR;
-                beforeEach(listenFor('fail'));
-                beforeEach(synthPaymentRequestEvent('paymentmethod', { error, complete }));
-                beforeEach(nextFrame);
-                afterEach(complete.resetBehavior.bind(complete));
-                it('fires a `fail` event', assertFired('fail'));
-                it('sets the `error` property', assertProps({ error }));
-                it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
-                it('unsets the `source` property', assertProps({ source: null }));
-                it('unsets the `token` property', assertProps({ token: null }));
-                it('calls the complete function', assertCalled(complete));
-              });
-            });
-
-            describe('when the card will be declined', function() {
-              const error = CARD_DECLINED_ERROR;
-              beforeEach(setProps({ clientSecret: CARD_CONFIRM_ERROR_SECRET }));
-              describe('when the paymentRequest fires the `paymentmethod` event', function() {
-                const complete = stub();
-                const paymentMethod = SUCCESSFUL_PAYMENT_METHOD;
-                beforeEach(listenFor('fail'));
-                beforeEach(synthPaymentRequestEvent('paymentmethod', { paymentMethod, complete }));
-                beforeEach(nextFrame);
-                afterEach(complete.resetBehavior.bind(complete));
-                it('sets the `error` property', assertProps({ error }));
-                it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
-                it('unsets the `paymentIntent` property', assertProps({ paymentIntent: null }));
-                it('unsets the `source` property', assertProps({ source: null }));
-                it('unsets the `token` property', assertProps({ token: null }));
-                it('fires a `fail` event', assertFired('fail'));
-                it('calls the complete function', assertCalled(complete));
-                describe('then calling reset()', function() {
-                  beforeEach(reset);
-                  it('unsets all the properties', assertProps({ paymentMethod: null, paymentIntent: null, error: null, source: null, token: null }));
-                });
+          describe('when the card will be declined', function() {
+            const error = CARD_DECLINED_ERROR;
+            beforeEach(setProps({ clientSecret: CARD_CONFIRM_ERROR_SECRET }));
+            describe('when the paymentRequest fires the `paymentmethod` event', function() {
+              const complete = stub();
+              const paymentMethod = SUCCESSFUL_PAYMENT_METHOD;
+              beforeEach(listenFor('fail'));
+              beforeEach(synthPaymentRequestEvent('paymentmethod', { paymentMethod, complete }));
+              beforeEach(nextFrame);
+              afterEach(complete.resetBehavior.bind(complete));
+              it('sets the `error` property', assertProps({ error }));
+              it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
+              it('unsets the `paymentIntent` property', assertProps({ paymentIntent: null }));
+              it('unsets the `source` property', assertProps({ source: null }));
+              it('unsets the `token` property', assertProps({ token: null }));
+              it('fires a `fail` event', assertFired('fail'));
+              it('calls the complete function', assertCalled(complete));
+              describe('then calling reset()', function() {
+                beforeEach(reset);
+                it('unsets all the properties', assertProps({ paymentMethod: null, paymentIntent: null, error: null, source: null, token: null }));
               });
             });
           });
