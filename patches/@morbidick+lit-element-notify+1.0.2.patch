@@ -1,21 +1,54 @@
+diff --git a/node_modules/@morbidick/lit-element-notify/index.d.ts b/node_modules/@morbidick/lit-element-notify/index.d.ts
+new file mode 100644
+index 0000000..3f72dbe
+--- /dev/null
++++ b/node_modules/@morbidick/lit-element-notify/index.d.ts
+@@ -0,0 +1 @@
++export { LitNotify } from './notify';
+diff --git a/node_modules/@morbidick/lit-element-notify/notify.d.ts b/node_modules/@morbidick/lit-element-notify/notify.d.ts
+new file mode 100644
+index 0000000..607f43e
+--- /dev/null
++++ b/node_modules/@morbidick/lit-element-notify/notify.d.ts
+@@ -0,0 +1,14 @@
++import { PropertyDeclaration, LitElement } from 'lit-element';
++
++type Constructor<T = LitElement> = new (...args: any[]) => T;
++
++interface AugmentedPropertyDeclaration extends PropertyDeclaration {
++  /** When true will notify. Pass a string to define the event name to fire. */
++  notify: string|Boolean
++}
++
++declare class NotifyingElement {
++  static createProperty(name: string, options: AugmentedPropertyDeclaration): void
++}
++
++export function LitNotify<T>(baseElement: Constructor<LitElement>): LitElement & NotifyingElement
 diff --git a/node_modules/@morbidick/lit-element-notify/notify.js b/node_modules/@morbidick/lit-element-notify/notify.js
-index b6790b2..4abb133 100644
+index b6790b2..b140799 100644
 --- a/node_modules/@morbidick/lit-element-notify/notify.js
 +++ b/node_modules/@morbidick/lit-element-notify/notify.js
-@@ -1,3 +1,4 @@
-+import { LitElement } from 'lit-element';
- /**
-  * Returns the event name for the given property.
-  */
-@@ -13,19 +14,26 @@ export function eventNameForProperty(name, options = {}) {
-     return `${name.toLowerCase()}-changed`;
- }
- 
+@@ -1,5 +1,15 @@
++/** @typedef {import('lit-element').PropertyDeclaration & { notify: string|Boolean }} AugmentedPropertyDeclaration */
++
 +/**
 + * @template TBase
 + * @typedef {new (...args: any[]) => import('lit-element').LitElement & TBase} Constructor
 + */
 +
+ /**
+  * Returns the event name for the given property.
++ * @param  {string}                       name    property name
++ * @param  {AugmentedPropertyDeclaration} options property declaration
++ * @return                                event name to fire
+  */
+ export function eventNameForProperty(name, options = {}) {
+     if (options.notify && typeof options.notify === 'string') {
+@@ -13,19 +23,21 @@ export function eventNameForProperty(name, options = {}) {
+     return `${name.toLowerCase()}-changed`;
+ }
+ 
 +// eslint-disable-next-line valid-jsdoc
  /**
   * Enables the nofity option for properties to fire change notification events
@@ -37,7 +70,7 @@ index b6790b2..4abb133 100644
              this._propertyEventMap = new Map();
          }
  
-@@ -50,8 +58,8 @@ export const LitNotify = (baseElement) => class extends baseElement {
+@@ -50,8 +62,8 @@ export const LitNotify = (baseElement) => class extends baseElement {
                      detail: {
                          value: this[eventProp],
                      },
