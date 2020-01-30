@@ -75,7 +75,7 @@ import {
   PUBLISHABLE_KEY,
   SHOULD_ERROR_KEY,
   SUCCESS_RESPONSES,
-} from '../test/mock-stripe';
+} from '../test/mock-stripe-js';
 import { elem, not } from './lib/predicates.js';
 
 const DEFAULT_PROPS = Object.freeze({

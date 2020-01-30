@@ -64,7 +64,7 @@ import {
   SUCCESSFUL_PAYMENT_METHOD,
   SUCCESSFUL_SOURCE,
   SUCCESSFUL_TOKEN,
-} from '../test/mock-stripe';
+} from '../test/mock-stripe-js';
 import { elem, not } from './lib/predicates';
 
 const DEFAULT_PROPS = Object.freeze({

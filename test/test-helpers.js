@@ -26,37 +26,6 @@ import { dash } from '../src/lib/strings';
 const getTemplate = (tagName, props = {}) =>
   html`<${tagName} ...="${spreadProps(props)}"></${tagName}>`;
 
-/* eslint-disable no-unused-vars */
-@customElement('primary-host') class PrimaryHost extends LitElement {
-  @property({ type: String }) tag;
-
-  get nestedElement() { return this.shadowRoot.querySelector(this.tag); }
-
-  render() {
-    return html`
-      <h1>Other Primary Host Content</h1>
-      ${getTemplate(unsafeStatic(this.tag), { publishableKey: PUBLISHABLE_KEY })}
-    `;
-  }
-}
-
-@customElement('secondary-host') class SecondaryHost extends LitElement {
-  @query('primary-host') primaryHost;
-
-  @property({ type: String }) tag;
-
-  render() { return html`<primary-host tag="${this.tag}"></primary-host>`; }
-}
-
-@customElement('tertiary-host') class TertiaryHost extends LitElement {
-  @query('secondary-host') secondaryHost;
-
-  @property({ type: String }) tag;
-
-  render() { return html`<secondary-host tag="${this.tag}"></secondary-host>`; }
-}
-/* eslint-enable no-unused-vars */
-
 /* CONSTANTS */
 export const NO_STRIPE_JS_ERROR =
   `requires Stripe.js to be loaded first.`;
@@ -535,3 +504,34 @@ export function synthStripeFormValues(inputs) {
     await element.updateComplete;
   };
 }
+
+/* eslint-disable no-unused-vars */
+@customElement('primary-host') class PrimaryHost extends LitElement {
+  @property({ type: String }) tag;
+
+  get nestedElement() { return this.shadowRoot.querySelector(this.tag); }
+
+  render() {
+    return html`
+      <h1>Other Primary Host Content</h1>
+      ${getTemplate(unsafeStatic(this.tag), { publishableKey: PUBLISHABLE_KEY })}
+    `;
+  }
+}
+
+@customElement('secondary-host') class SecondaryHost extends LitElement {
+  @query('primary-host') primaryHost;
+
+  @property({ type: String }) tag;
+
+  render() { return html`<primary-host tag="${this.tag}"></primary-host>`; }
+}
+
+@customElement('tertiary-host') class TertiaryHost extends LitElement {
+  @query('secondary-host') secondaryHost;
+
+  @property({ type: String }) tag;
+
+  render() { return html`<secondary-host tag="${this.tag}"></secondary-host>`; }
+}
+/* eslint-enable no-unused-vars */
