@@ -9,3 +9,7 @@ echo "    'stripe-payment-request': StripePaymentRequest;" >> index.d.ts
 echo "  }" >> index.d.ts
 echo "}" >> index.d.ts
 node scripts/privatize.js
+
+# lol
+sed -i "1s|^|import { LitElement } from 'lit-element';\n|" StripeBase.d.ts
+sed -i "s/export class StripeBase/export class StripeBase extends LitElement/" StripeBase.d.ts
