@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/bennypowers/stripe-elements/compare/v2.3.0...v2.3.1) (2020-02-08)
+
+
+### Bug Fixes
+
+* patch types to extend LitElement properly ([6b2e8cf](https://github.com/bennypowers/stripe-elements/commit/6b2e8cfa82b7ac0de4a2fed087afc20c4389d72b))
+
 # [2.3.0](https://github.com/bennypowers/stripe-elements/compare/v2.2.4...v2.3.0) (2020-01-29)
 
 
