@@ -9,7 +9,10 @@
     "moduleResolution": "node",
     "outDir": ".",
     "sourceMap": true,
-    "target": "ES2018"
+    "target": "ES2018",
+    "plugins": [
+      { "name": "typescript-lit-html-plugin" }
+    ]
   },
   "include": [
     "src/**/*"
