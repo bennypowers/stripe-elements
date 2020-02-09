@@ -75,19 +75,9 @@ run the examples against your Stripe account.
                   'output output';
               }
               stripe-elements { grid-area: stripe; }
-              stripe-payment-request { grid-area: stripe / submit; }
+              stripe-payment-request { grid-area: submit/stripe/stripe/submit; }
               mwc-button { grid-area: submit; }
-              json-viewer {
-                grid-area: output;
-                color: #212529;
-                padding: 0;
-                background: white;
-                --json-viewer-key-color: #d9480f;
-                --json-viewer-boolean-color: #0b7285;
-                --json-viewer-number-color: #087f5b;
-                --json-viewer-null-color: #c92a2a;
-                --json-viewer-string-color: #0b7285;
-              }
+              json-viewer { grid-area: output; }
               `;
             }
             constructor() {
