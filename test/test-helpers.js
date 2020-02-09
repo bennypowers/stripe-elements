@@ -179,7 +179,7 @@ export const mountLightDOM = ({ stripeMountId, tagName = element.constructor.is 
   `<div id="${stripeMountId}" class="${`${tagName.toLowerCase()}-mount`}"></div>`;
 
 export const expectedLightDOM = ({ stripeMountId, tagName }) =>
-  `<div slot="stripe-card">${mountLightDOM({ stripeMountId, tagName })}</div> `;
+  `<div slot="${tagName.toLowerCase()}-slot">${mountLightDOM({ stripeMountId, tagName })}</div> `;
 
 /* MOCKS, STUBS, AND SPIES */
 
