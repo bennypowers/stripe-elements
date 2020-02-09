@@ -55,18 +55,6 @@ const shared = css`
   ::slotted([publishable-key]) {
     grid-area: stripe;
   }
-
-  json-viewer {
-    color: #212529;
-    padding: 0;
-    background: white;
-
-    --json-viewer-key-color: #d9480f;
-    --json-viewer-boolean-color: #0b7285;
-    --json-viewer-number-color: #087f5b;
-    --json-viewer-null-color: #c92a2a;
-    --json-viewer-string-color: #0b7285;
-  }
 `;
 
 class DemoBase extends LitElement {
