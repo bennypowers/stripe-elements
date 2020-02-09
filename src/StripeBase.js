@@ -19,12 +19,12 @@ class StripeElementsError extends Error {
 }
 
 /* istanbul ignore next */
-const removeAllMounts = host =>
-  host.querySelectorAll('[slot="stripe-card"][name="stripe-card"]')
+const removeAllMounts = slotName => host =>
+  host.querySelectorAll(`[slot="${slotName}"][name="${slotName}"]`)
     .forEach(remove);
 
-const slotTemplate =
-  html`<slot slot="stripe-card" name="stripe-card"></slot>`;
+const slotTemplate = slotName =>
+  html`<slot slot="${slotName}" name="${slotName}"></slot>`;
 
 const mountPointTemplate = ({ stripeMountId, tagName }) =>
   html`<div id="${ifDefined(stripeMountId)}" class="${tagName.toLowerCase()}-mount"></div>`;
@@ -249,17 +249,24 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @type {string}
    * @protected
    */
-  stripeMountId = generateRandomMountElementId();
+  stripeMountId;
+
+  /**
+   * Name for breadcrumb slots. Derived from tagName
+   * @protected
+   * @type {string}
+   */
+  slotName;
 
   /* LIFECYCLE */
 
   /** @inheritdoc */
   render() {
-    const { error, showError } = this;
+    const { error, showError, slotName } = this;
     const errorMessage = error?.originalMessage || error?.message;
     return html`
       <div id="stripe" part="stripe">
-        <slot id="stripe-slot" name="stripe-card"></slot>
+        <slot id="stripe-slot" name="${slotName}"></slot>
       </div>
 
       <output id="error"
@@ -269,6 +276,11 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
         ${ifDefined(errorMessage)}
       </output>
     `;
+  }
+
+  constructor() {
+    super();
+    this.slotName = `${this.tagName.toLowerCase()}-slot`;
   }
 
   /** @inheritdoc */
@@ -383,7 +395,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @private
    */
   destroyMountPoints() {
-    this.shadowHosts.forEach(removeAllMounts);
+    this.shadowHosts.forEach(removeAllMounts(this.slotName));
     if (this.stripeMount) this.stripeMount.remove();
   }
 
@@ -417,7 +429,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
    * @private
    */
   initMountPoints() {
-    this.stripeMountId = generateRandomMountElementId();
+    this.stripeMountId = generateRandomMountElementId(this.tagName);
     if (window.ShadyDOM) appendTemplate(mountPointTemplate(this), this);
     else this.initShadowMountPoints();
   }
@@ -432,25 +444,25 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     this.shadowHosts = [this];
     while (host = host.getRootNode().host) this.shadowHosts.push(host); // eslint-disable-line prefer-destructuring, no-loops/no-loops
 
-    const { shadowHosts } = this;
+    const { shadowHosts, slotName } = this;
 
     // Prepare the shallowest breadcrumb slot at document level
     const hosts = [...shadowHosts];
     const root = hosts.pop();
-    if (!root.querySelector('[slot="stripe-card"]')) {
+    if (!root.querySelector(`[slot="${slotName}"]`)) {
       const div = document.createElement('div');
-      div.slot = 'stripe-card';
+      div.slot = slotName;
       root.appendChild(div);
     }
 
-    const container = root.querySelector('[slot="stripe-card"]');
+    const container = root.querySelector(`[slot="${slotName}"]`);
 
     // Render the form to the document, so that Stripe.js can mount
     appendTemplate(mountPointTemplate(this), container);
 
     // Append breadcrumb slots to each shadowroot in turn,
     // from the document down to the <stripe-elements> instance.
-    hosts.forEach(appendTemplate(slotTemplate));
+    hosts.forEach(appendTemplate(slotTemplate(slotName)));
   }
 
   /**

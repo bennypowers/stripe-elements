@@ -204,14 +204,15 @@ describe('<stripe-payment-request>', function() {
       });
 
       it('slots mount point in to its light DOM', function() {
-        expect(primaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, tagName: nestedElement.constructor.is }));
+        const { tagName } = nestedElement;
+        expect(primaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, tagName }));
       });
 
       it('does not break primary host\'s internal DOM', function() {
         expect(primaryHost).shadowDom.to.equal(`
           <h1>Other Primary Host Content</h1>
           <stripe-payment-request publishable-key="${PUBLISHABLE_KEY}">
-            <slot name="stripe-card" slot="stripe-card"></slot>
+            <slot name="stripe-payment-request-slot" slot="stripe-payment-request-slot"></slot>
           </stripe-payment-request>
         `);
       });
@@ -234,13 +235,14 @@ describe('<stripe-payment-request>', function() {
       });
 
       it('slots mount point in to the light DOM of the secondary shadow host', function() {
-        expect(secondaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, tagName: nestedElement.constructor.is }));
+        const { tagName } = nestedElement;
+        expect(secondaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, tagName }));
       });
 
       it('appends a slot to the shadow DOM of the secondary shadow host', function() {
         expect(secondaryHost).shadowDom.to.equal(`
           <primary-host tag="stripe-payment-request">
-            <slot name="stripe-card" slot="stripe-card"></slot>
+            <slot name="stripe-payment-request-slot" slot="stripe-payment-request-slot"></slot>
           </primary-host>
         `);
       });
@@ -248,7 +250,7 @@ describe('<stripe-payment-request>', function() {
       it('only creates one slot', function() {
         expect(document.getElementById(stripeMountId)).to.be.ok;
         expect(document.querySelectorAll(`#${stripeMountId}`).length).to.equal(1);
-        expect(document.querySelectorAll('[slot="stripe-card"]').length).to.equal(1);
+        expect(document.querySelectorAll('[slot="stripe-payment-request-slot"]').length).to.equal(1);
       });
     });
 
@@ -271,13 +273,14 @@ describe('<stripe-payment-request>', function() {
       });
 
       it('slots mount point in to the light DOM of the tertiary shadow host', function() {
-        expect(tertiaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, tagName: nestedElement.constructor.is }));
+        const { tagName } = nestedElement;
+        expect(tertiaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, tagName }));
       });
 
       it('appends a slot to the shadow DOM of the tertiary shadow host', function() {
         expect(tertiaryHost).shadowDom.to.equal(`
           <secondary-host tag="stripe-payment-request">
-            <slot name="stripe-card" slot="stripe-card"></slot>
+            <slot name="stripe-payment-request-slot" slot="stripe-payment-request-slot"></slot>
           </secondary-host>
         `);
       });
@@ -285,7 +288,7 @@ describe('<stripe-payment-request>', function() {
       it('appends a slot to the shadow DOM of the secondary shadow host', function() {
         expect(secondaryHost).shadowDom.to.equal(`
           <primary-host tag="stripe-payment-request">
-            <slot name="stripe-card" slot="stripe-card"></slot>
+            <slot name="stripe-payment-request-slot" slot="stripe-payment-request-slot"></slot>
           </primary-host>
         `);
       });
@@ -293,7 +296,7 @@ describe('<stripe-payment-request>', function() {
       it('only creates one slot', function() {
         expect(document.getElementById(stripeMountId)).to.be.ok;
         expect(document.querySelectorAll(`#${stripeMountId}`).length).to.equal(1);
-        expect(document.querySelectorAll('[slot="stripe-card"]').length).to.equal(1);
+        expect(document.querySelectorAll('[slot="stripe-payment-request-slot"]').length).to.equal(1);
       });
     });
   });
@@ -410,8 +413,8 @@ describe('<stripe-payment-request>', function() {
             beforeEach(setProps({ publishableKey: PUBLISHABLE_KEY }));
             beforeEach(nextFrame);
             it('rebuilds its DOM', function() {
-              const { stripeMountId } = element;
-              expect(element).lightDom.to.equal(expectedLightDOM({ stripeMountId }));
+              const { stripeMountId, tagName } = element;
+              expect(element).lightDom.to.equal(expectedLightDOM({ stripeMountId, tagName }));
               expect(element.stripeMount, 'mount').to.be.ok;
             });
 
