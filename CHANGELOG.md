@@ -1,3 +1,10 @@
+## [2.3.2](https://github.com/bennypowers/stripe-elements/compare/v2.3.1...v2.3.2) (2020-02-09)
+
+
+### Bug Fixes
+
+* shadow breadcrumbs use tag name ([6e21421](https://github.com/bennypowers/stripe-elements/commit/6e214215c02ddd4007a445d56189c2207326c743)), closes [#33](https://github.com/bennypowers/stripe-elements/issues/33)
+
 ## [2.3.1](https://github.com/bennypowers/stripe-elements/compare/v2.3.0...v2.3.1) (2020-02-08)
 
 
