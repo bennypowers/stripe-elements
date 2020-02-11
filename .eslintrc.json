@@ -1,15 +1,6 @@
 {
-  "extends": "@apollo-elements",
+  "extends": "@pwrs",
   "parser": "babel-eslint",
-  "plugins": [
-    "no-only-tests"
-  ],
-  "rules": {
-    "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
-    "operator-linebreak": ["error", "after", { "overrides": { "?": "after", ":": "before" } }],
-    "indent": ["error", 2, { "flatTernaryExpressions": true, "SwitchCase": 1 }],
-    "no-only-tests/no-only-tests": "error"
-  },
   "globals": {
     "ShadyCSS": true,
     "Stripe": true
