@@ -65,12 +65,14 @@ class PaymentForm extends LitElement {
 # `<stripe-payment-request>`
 
 <Story name="stripe-payment-request">
- {html`<codesandbox-button sandbox-id="8m7uk"></codesandbox-button>`}
+  {html`<codesandbox-button sandbox-id="8m7uk"></codesandbox-button>`}
 </Story>
 
 ```js
+import '@power-elements/json-viewer';
 import { LitElement, html } from 'lit-element';
-import { PUBLISHABLE_KEY } from './config.js';
+import { ifDefined } from 'lit-html/directives/if-defined';
+import { PUBLISHABLE_KEY } from './config';
 
 const displayItems = [
   { amount: '125', label: 'Double Double' },
