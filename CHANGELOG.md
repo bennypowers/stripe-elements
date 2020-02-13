@@ -1,3 +1,10 @@
+## [2.3.3](https://github.com/bennypowers/stripe-elements/compare/v2.3.2...v2.3.3) (2020-02-13)
+
+
+### Bug Fixes
+
+* unmount element when disconnected from the DOM ([1330f45](https://github.com/bennypowers/stripe-elements/commit/1330f45493ad7568aeb2f2759a60ef9857e831a7))
+
 ## [2.3.2](https://github.com/bennypowers/stripe-elements/compare/v2.3.1...v2.3.2) (2020-02-09)
 
 
