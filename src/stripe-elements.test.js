@@ -462,6 +462,18 @@ describe('<stripe-elements>', function() {
         expect(element.card).to.equal(element.element);
       });
 
+      describe('removing the element', function() {
+        let removed;
+        beforeEach(function() { removed = element; element.remove(); });
+        afterEach(function() { removed = undefined; });
+        it('unmounts the card', function() {
+          expect(removed).to.be.an.instanceof(HTMLElement);
+          expect(removed.isConnected).to.be.false;
+          expect(removed.stripeMount).to.not.be.ok;
+          expect(document.querySelector('[slot="stripe-elements-slot"]')).to.not.be.ok;
+        });
+      });
+
       describe('calling blur()', function() {
         beforeEach(spyStripeElementBlur);
         beforeEach(blur);
