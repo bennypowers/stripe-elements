@@ -297,6 +297,13 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     [...changed.keys()].forEach(this.representationChanged);
   }
 
+  /** @inheritdoc */
+  async disconnectedCallback() {
+    super.disconnectedCallback();
+    await this.unmount();
+    this.destroyMountPoints();
+  }
+
   /* PUBLIC API */
 
   /**
