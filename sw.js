@@ -27,19 +27,19 @@ self.addEventListener('message', (event) => {
 self.__precacheManifest = [
   {
     "url": "iframe.html",
-    "revision": "5c2035266c9ec5b61393d5e3dbad3bc6"
+    "revision": "2e69db816d31e1efca7adcfa49c03bdd"
   },
   {
     "url": "index.html",
     "revision": "efdf29fe428ee015b348135ce56025b9"
   },
   {
-    "url": "inline-entry.0-31f62873.js",
-    "revision": "816c096ae6a79390199d33bc741d307c"
+    "url": "inline-entry.0-261f884d.js",
+    "revision": "a329018f4515f4a472668a13ab5f58a2"
   },
   {
-    "url": "legacy/inline-entry.0-70851a82.js",
-    "revision": "cadba08049dbb7f1006f18c97d815ffd"
+    "url": "legacy/inline-entry.0-a378f5db.js",
+    "revision": "1425446642345a6bf5ae1b7a1e9f2843"
   },
   {
     "url": "legacy/lit-html-1abeb046.js",
