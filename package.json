@@ -23,6 +23,7 @@
     "site:build": "npm run storybook:build",
     "storybook": "start-storybook --docs --node-resolve --watch --open --babel",
     "storybook:build": "mv .babelrc bak && build-storybook && mv bak .babelrc",
+    "update": "npm-check -u",
     "watch": "rollup -cw"
   },
   "repository": {
@@ -87,6 +88,7 @@
     "karma-tap-reporter": "0.0.6",
     "karma-tape-reporter": "^1.0.3",
     "luhn-js": "^1.1.2",
+    "npm-check": "^5.9.0",
     "npm-run-all": "^4.1.5",
     "rollup": "^1.31.0",
     "rollup-plugin-babel": "^4.3.3",
