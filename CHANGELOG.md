@@ -1,3 +1,10 @@
+## [2.3.4](https://github.com/bennypowers/stripe-elements/compare/v2.3.3...v2.3.4) (2020-02-24)
+
+
+### Bug Fixes
+
+* some notifying props now fire changed events properly ([1046da6](https://github.com/bennypowers/stripe-elements/commit/1046da6076059a96508c55cba650b3f73c037598))
+
 ## [2.3.3](https://github.com/bennypowers/stripe-elements/compare/v2.3.2...v2.3.3) (2020-02-13)
 
 
