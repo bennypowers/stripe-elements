@@ -27,35 +27,35 @@ self.addEventListener('message', (event) => {
 self.__precacheManifest = [
   {
     "url": "iframe.html",
-    "revision": "2e69db816d31e1efca7adcfa49c03bdd"
+    "revision": "5d6a08230df2bc7974290695df5f3769"
   },
   {
     "url": "index.html",
     "revision": "efdf29fe428ee015b348135ce56025b9"
   },
   {
-    "url": "inline-entry.0-261f884d.js",
-    "revision": "a329018f4515f4a472668a13ab5f58a2"
+    "url": "inline-entry.0-a4584043.js",
+    "revision": "2ae77d28936ac95215ce76d2bb0393c0"
   },
   {
-    "url": "legacy/inline-entry.0-a378f5db.js",
-    "revision": "1425446642345a6bf5ae1b7a1e9f2843"
+    "url": "legacy/inline-entry.0-c946314e.js",
+    "revision": "44a7d96c205ac21dfbcf77915e41c76b"
   },
   {
-    "url": "legacy/lit-html-1abeb046.js",
-    "revision": "e634339c9aa38567a118f63da8635445"
+    "url": "legacy/lit-html-24a5182c.js",
+    "revision": "0bb424dff546000bfbb97d2f9f055ff7"
   },
   {
     "url": "legacy/manager-c120ccba.js",
     "revision": "21386c84d35be3c72bc999d0c55378af"
   },
   {
-    "url": "legacy/storybook-28dfd69d.js",
-    "revision": "0f2a42fd713de756a701407b81bad202"
-  },
-  {
     "url": "legacy/storybook-d172e98d.js",
     "revision": "1796a5792854b054c109aef9500810bc"
+  },
+  {
+    "url": "legacy/storybook-fd9288b5.js",
+    "revision": "8adca9c71a1f4726c3054a733c3d973f"
   },
   {
     "url": "lit-html-25c8d8c9.js",
