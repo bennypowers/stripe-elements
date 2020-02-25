@@ -1,3 +1,10 @@
+## [2.3.5](https://github.com/bennypowers/stripe-elements/compare/v2.3.4...v2.3.5) (2020-02-25)
+
+
+### Bug Fixes
+
+* update and unpatch notify mixin ([f346dd6](https://github.com/bennypowers/stripe-elements/commit/f346dd6dadce93f03e1dd1462e708f64ec4ec987))
+
 ## [2.3.4](https://github.com/bennypowers/stripe-elements/compare/v2.3.3...v2.3.4) (2020-02-24)
 
 
