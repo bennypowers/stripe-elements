@@ -27,43 +27,43 @@ self.addEventListener('message', (event) => {
 self.__precacheManifest = [
   {
     "url": "iframe.html",
-    "revision": "5d6a08230df2bc7974290695df5f3769"
+    "revision": "3fc750882bc920dc9781f05791ade0e8"
   },
   {
     "url": "index.html",
-    "revision": "efdf29fe428ee015b348135ce56025b9"
+    "revision": "e70d0cb92f0d5ab08da9b2f8f13d2522"
   },
   {
-    "url": "inline-entry.0-a4584043.js",
-    "revision": "2ae77d28936ac95215ce76d2bb0393c0"
+    "url": "inline-entry.0-54efff96.js",
+    "revision": "bd71506b90a5a9498f6e66764fdab564"
   },
   {
-    "url": "legacy/inline-entry.0-c946314e.js",
-    "revision": "44a7d96c205ac21dfbcf77915e41c76b"
+    "url": "legacy/inline-entry.0-87ac6d37.js",
+    "revision": "d573e1e91e17391031bfc756639b2d0b"
   },
   {
     "url": "legacy/lit-html-24a5182c.js",
     "revision": "0bb424dff546000bfbb97d2f9f055ff7"
   },
   {
-    "url": "legacy/manager-c120ccba.js",
-    "revision": "21386c84d35be3c72bc999d0c55378af"
+    "url": "legacy/manager-048dc424.js",
+    "revision": "4565329816e5847f7968f2913f7e8619"
   },
   {
-    "url": "legacy/storybook-d172e98d.js",
-    "revision": "1796a5792854b054c109aef9500810bc"
+    "url": "legacy/storybook-07b49cdd.js",
+    "revision": "6db6bcfbd5638131d198b362ed31be71"
   },
   {
-    "url": "legacy/storybook-fd9288b5.js",
-    "revision": "8adca9c71a1f4726c3054a733c3d973f"
+    "url": "legacy/storybook-b9a36b2f.js",
+    "revision": "e68b9ff4841dbe0806eb7ee81fe92c6b"
   },
   {
     "url": "lit-html-25c8d8c9.js",
     "revision": "97930922c6ab42f8d63a49cb1a32e9e3"
   },
   {
-    "url": "manager-e0ad63bf.js",
-    "revision": "b207f5aa7275928430724e15f5bb4491"
+    "url": "manager-129abf2a.js",
+    "revision": "d5dc4781fa2915dbccf0846b5d229629"
   },
   {
     "url": "polyfills/core-js.577a5602a7262d6256830802d4aaab43.js",
@@ -94,12 +94,12 @@ self.__precacheManifest = [
     "revision": "b1db7cb76380495a55ff4f65a9648f0e"
   },
   {
-    "url": "storybook-7a0db953.js",
-    "revision": "8ee41d61944e2eabc6c485ffd1f059d9"
+    "url": "storybook-35ea0fcf.js",
+    "revision": "2087ff1313fea3c39ce9d1a0bd6d59b9"
   },
   {
-    "url": "storybook-b7018926.js",
-    "revision": "a4dd4d1689bc8ab82c0bf8e17aab881e"
+    "url": "storybook-f518ab77.js",
+    "revision": "e973a0bea5613bb419c0aa28a5d9fa7b"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
