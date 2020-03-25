@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+    <title>StripePayment: stripe-payment Demo</title>
+    <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="/node_modules/@lrnwebcomponents/deduping-fix/deduping-fix.js"></script>
+    <script src="/node_modules/web-animations-js/web-animations-next-lite.min.js"></script>
+    <script type="module">
+      import '/node_modules/@polymer/iron-demo-helpers/demo-snippet.js';
+      import '../src/stripe-payment.js';
+      import { PUBLISHABLE_KEY } from "./config.js";
+      window.PUBLISHABLE_KEY = PUBLISHABLE_KEY;
+    </script>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic stripe-payment demo</h3>
+      <demo-snippet>
+        <template>
+          <stripe-payment id="payment"></stripe-payment>
+          <script src="https://js.stripe.com/v3/"></script>
+          <script defer="defer" async="async">
+            var payment = document.getElementById('payment');
+            // publishable key is imported from a config file
+            // and can be found in your Stripe account
+            payment.publishableKey = window.PUBLISHABLE_KEY;
+            payment.label = "Purchase";
+            payment.country = "US";
+            payment.currency = "usd";
+            payment.amount="100";
+            payment.debug = true;
+            payment.displayItems = [
+              { 
+                amount: 100,
+                label: "Unlimited futures"
+              },
+              { 
+                amount: 100,
+                label: "Other things"
+              }
+            ];
+            payment.shippingOptions = [
+              // The first shipping option in this list appears as the default
+              // option in the browser payment interface.
+              {
+                id: 'free-shipping',
+                label: 'Free slow shipping',
+                detail: 'Via email shortly after purchase',
+                amount: 0,
+              },
+              {
+                id: 'lots-to-ship',
+                label: 'Lots of ship',
+                detail: 'Things and stuff',
+                amount: 1000,
+              }
+            ];       
+          </script>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>
