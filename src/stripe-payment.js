@@ -2,19 +2,85 @@
  * `stripe-payment`
  * `Payment broker for stripe`
  *
- * @demo demo/index.html
- * @customElement `stripe-payment`
+ * @element `stripe-payment`
  */
 import { LitElement, html, css } from "lit-element/lit-element.js";
 import { ifDefined } from "lit-html/directives/if-defined.js";
 
 class StripePayment extends LitElement {
-  /**
-   * Convention
-   */
-  static get tag() {
-    return "stripe-payment";
-  }
+  static is = 'stripe-payment';
+  static properties = {
+    /**
+     * Publishing key from Stripe
+     * @type {String}
+     */
+    publishableKey: { type: String, attribute: "publishable-key" },
+    /**
+     * List of shipping options
+     * @type {Array}
+     */
+    shippingOptions: { type: Array },
+    /**
+     * List of items to display being purchased
+     * @type {Array}
+     */
+    displayItems: { type: Array },
+    /**
+     * dollar amount in cents
+     * @type {Number}
+     */
+    amount: { type: Number },
+    /**
+     * Label to list for the currency
+     * @type {String}
+     */
+    label: { type: String },
+    /**
+     * Country code
+     * @type {String}
+     */
+    country: { type: String },
+    /**
+     * Currency to accept payment in
+     * @type {String}
+     */
+    currency: { type: String },
+    /**
+     * Payment data coming back as response from Stripe API
+     * @type {Object}
+     * @readonly
+     */
+    paymentMethod: { type: Object },
+    /**
+     * Error data from response
+     * @type {Object}
+     * @readonly
+     */
+    error: { type: Object },
+    output: { type: Object },
+    /**
+     * If Stripe doesn't support the nicer payment request method
+     * @type {Boolean}
+     * @readonly
+     */
+    unsupported: { type: Boolean },
+    /**
+     * Disable submit button
+     * @type {Boolean}
+     * @readonly
+     */
+    submitDisabled: { type: Boolean },
+    /**
+     * Text to use on the payment button
+     * @type {String}
+     */
+    paymentText: { type: String, attribute: "payment-text" },
+    /**
+     * Debug mode for displaying error and response data when testing
+     * @type {Boolean}
+     */
+    debug: { type: Boolean }
+  };
   /**
    * LitElement render styles
    */
@@ -57,27 +123,7 @@ class StripePayment extends LitElement {
       `
     ];
   }
-  /**
-   * LitElement / popular convention
-   */
-  static get properties() {
-    return {
-      publishableKey: { type: String, attribute: "publishable-key" },
-      shippingOptions: { type: Array },
-      displayItems: { type: Array },
-      amount: { type: Number },
-      label: { type: String },
-      country: { type: String },
-      currency: { type: String },
-      paymentMethod: { type: Object },
-      error: { type: Object },
-      output: { type: Object },
-      unsupported: { type: Boolean },
-      submitDisabled: { type: Boolean },
-      paymentText: { type: String, attribute: "payment-text" },
-      debug: { type: Boolean }
-    };
-  }
+
   /**
    * HTMLElement
    */
