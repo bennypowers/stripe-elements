@@ -1,0 +1,30 @@
+<script>
+  document.addEventListener('DOMContentLoaded',function() {
+    'use strict';
+
+    const ATTR = 'allowpaymentrequest';
+
+    const mutationObserver = new MutationObserver(xs => xs.forEach(ifPaymentRequestIframeAddAttr));
+
+    mutationObserver.observe(document.getElementById('root'), {
+      childList: true,
+      attributes: true,
+      subtree: true,
+    })
+
+    function patchIframe(target) {
+      if (!target || target.getAttribute(ATTR) === 'true') return;
+      const { src } = target;
+      target.src = '';
+      target.setAttribute(ATTR, 'true')
+      target.src = src;
+    }
+
+    function ifPaymentRequestIframeAddAttr() {
+      const iframe = document.getElementById('storybook-preview-iframe')
+      if (iframe) patchIframe(iframe)
+    }
+
+    patchIframe(document.getElementById('storybook-preview-iframe'))
+  });
+</script>

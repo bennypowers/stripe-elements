@@ -1,5 +1,5 @@
 {
-  "extends": "@apollo-elements",
+  "extends": "@pwrs",
   "parser": "babel-eslint",
   "globals": {
     "ShadyCSS": true,

@@ -1,0 +1,6 @@
+#stripe {
+  box-sizing: border-box;
+  min-width: var(--stripe-payment-request-element-min-width, 300px);
+  padding: var(--stripe-payment-request-element-padding, 8px 12px);
+  background: var(--stripe-payment-request-element-background, white);
+}

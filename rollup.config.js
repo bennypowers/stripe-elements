@@ -1,21 +1,33 @@
-import resolve from 'rollup-plugin-node-resolve';
-// import litcss from 'rollup-plugin-lit-css';
+import commonjs from '@rollup/plugin-commonjs';
+import litcss from 'rollup-plugin-lit-css';
+import resolve from '@rollup/plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
+import pkg from './package.json';
+
+const deps = Object.keys(pkg.dependencies);
+const external = id =>
+  id !== '@morbidick/lit-element-notify' &&
+  id.startsWith('lit-html') ||
+  id.startsWith('@babel/runtime') ||
+  deps.includes(id);
 
 export default {
-  preserveModules: true,
-  input: 'src/stripe-elements.js',
-  external: id =>
-    id.includes('bound-decorator') ||
-    id.includes('lit-element') ||
-    id.includes('lit-html') ||
-    null,
+  input: [
+    'src/index.js',
+    'src/stripe-elements.js',
+    'src/stripe-payment-request.js',
+  ],
+  external,
   output: {
     dir: '.',
     format: 'es',
+    chunkFileNames: '[name].js',
+    sourcemap: true,
   },
   plugins: [
-    resolve({ browser: true, extensions: ['.js', '.css'] }),
-    babel({ babelrc: true }),
+    babel({ externalHelpers: true, runtimeHelpers: true, babelrc: true }),
+    litcss(),
+    commonjs(),
+    resolve(),
   ],
 };

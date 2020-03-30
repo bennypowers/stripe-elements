@@ -1,41 +1,33 @@
-const defaultSettings = require('@open-wc/testing-karma/default-settings.js');
-const merge = require('webpack-merge');
-const path = require('path');
-const { readFileSync } = require('fs');
-const babelrc = JSON.parse(readFileSync(path.resolve('./.babelrc'), 'utf-8'));
+/* eslint-disable valid-jsdoc */
+const { createDefaultConfig } = require('@open-wc/testing-karma');
+
+const merge = require('deepmerge');
+
+/**
+ * @param  {import('@types/karma').Config} config
+ * @return  {import('@types/karma').Config}
+ */
 module.exports = config => {
-  const newConf = merge(defaultSettings(config), {
-    browsers: ['FirefoxHeadless'],
-    customLaunchers: {
-      FirefoxHeadless: {
-        base: 'Firefox',
-        flags: ['-headless'],
+  config.set(merge(createDefaultConfig(config), {
+    ...config.autoWatch ? { mochaReporter: { output: 'autowatch' } } : {},
+    files: [
+      { pattern: config.grep ? config.grep : 'src/**/*.test.js', type: 'module' },
+      { pattern: config.grep ? config.grep : 'test/*.test.js', type: 'module' },
+    ],
+    esm: {
+      nodeResolve: true,
+      babel: true,
+    },
+    coverageIstanbulReporter: {
+      thresholds: {
+        global: {
+          statements: 100,
+          lines: 100,
+          branches: 100,
+          functions: 100,
+        },
       },
     },
-    files: config.grep ? [config.grep] : ['src/*.test.js'],
-    webpack: {
-      devtool: 'inline-source-map',
-      mode: 'development',
-      module: {
-        rules: [
-          {
-            test: /\.js$/,
-            loader: 'babel-loader',
-            options: babelrc,
-          },
-        ],
-      },
-    },
-  });
-
-  newConf.webpack.module.rules = newConf.webpack.module.rules
-    .filter(({ loader }) => !loader.includes('import-meta'));
-
-  newConf.webpack.module.rules
-    .find(({ loader }) => loader === 'istanbul-instrumenter-loader')
-    .exclude = /node_modules|bower_components|_virtual|test|\.(spec|test)\.js$/;
-
-  config.set(newConf);
-
+  }));
   return config;
 };
