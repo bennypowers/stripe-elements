@@ -1119,6 +1119,57 @@
           "description": "container for the stripe element"
         }
       ]
+    },
+    {
+      "name": "tag",
+      "path": "./src/stripe-payment.js",
+      "properties": [
+        {
+          "name": "submitDisabled",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "name": "debug",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "displayItems",
+          "type": "never[]",
+          "default": "[]"
+        },
+        {
+          "name": "shippingOptions",
+          "type": "never[]",
+          "default": "[]"
+        },
+        {
+          "name": "amount",
+          "type": "number",
+          "default": "0"
+        },
+        {
+          "name": "paymentText",
+          "type": "string",
+          "default": "\"Submit\""
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "default": "\"Purchase\""
+        },
+        {
+          "name": "country",
+          "type": "string",
+          "default": "\"US\""
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "default": "\"usd\""
+        }
+      ]
     }
   ]
 }

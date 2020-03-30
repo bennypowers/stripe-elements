@@ -362,3 +362,32 @@ See the demos for more comprehensive examples.
 | `--stripe-payment-request-element-min-width`  | min-width property of the container element. Default `300px` |
 | `--stripe-payment-request-element-padding`    | padding property of the container element. Default `8px 12px` |
 
+### tag
+
+#### Properties
+
+| Property          | Type      | Default    |
+|-------------------|-----------|------------|
+| `amount`          | `number`  | 0          |
+| `country`         | `string`  | "US"       |
+| `currency`        | `string`  | "usd"      |
+| `debug`           | `boolean` | false      |
+| `displayItems`    | `never[]` | []         |
+| `label`           | `string`  | "Purchase" |
+| `paymentText`     | `string`  | "Submit"   |
+| `shippingOptions` | `never[]` | []         |
+| `submitDisabled`  | `boolean` | true       |
+
+#### Methods
+
+| Method            | Type                                             |
+|-------------------|--------------------------------------------------|
+| `onChange`        | `({ target: { complete, hasError } }: { target: { complete: any; hasError: any; }; }): void` |
+| `onClick`         | `(): void`                                       |
+| `onError`         | `({ target: { error } }: { target: { error: any; }; }): void` |
+| `onFail`          | `(event: any): void`                             |
+| `onPaymentMethod` | `({ detail: paymentMethod }: { detail: any; }): void` |
+| `onReady`         | `(): void`                                       |
+| `onSuccess`       | `(event: any): void`                             |
+| `onUnsupported`   | `(): void`                                       |
+
