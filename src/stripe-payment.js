@@ -4,9 +4,10 @@
  *
  * @element `stripe-payment`
  */
-import { LitElement, html, css } from "lit-element/lit-element.js";
+import { LitElement, html } from "lit-element/lit-element.js";
 import { ifDefined } from "lit-html/directives/if-defined.js";
-
+import sharedStyles from './shared.css';
+import style from './stripe-payment.css';
 class StripePayment extends LitElement {
   static is = 'stripe-payment';
   static properties = {
@@ -81,48 +82,11 @@ class StripePayment extends LitElement {
      */
     debug: { type: Boolean }
   };
-  /**
-   * LitElement render styles
-   */
-  static get styles() {
-    return [
-      css`
-        [hidden] {
-          display: none !important;
-        }
-        :host {
-          font-family: "Nunito Sans", -apple-system, ".SFNSText-Regular",
-            "San Francisco", BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
-            Helvetica, Arial, sans-serif;
-          align-items: center;
-          display: grid;
-          grid-gap: 12px;
-          grid-template-areas:
-            "support support"
-            "stripe submit"
-            "output output";
-        }
-        stripe-payment-request {
-          grid-area: submit/stripe/stripe/submit;
-        }
-        stripe-elements {
-          grid-area: stripe;
-        }
-        mwc-button {
-          grid-area: submit;
-        }
-        json-viewer {
-          grid-area: output;
-        }
-
-        stripe-elements:not(:defined),
-        json-viewer:not(:defined),
-        mwc-button:not(:defined) {
-          display: none;
-        }
-      `
-    ];
-  }
+  
+  static styles = [
+    sharedStyles,
+    style,
+  ];
 
   /**
    * HTMLElement
