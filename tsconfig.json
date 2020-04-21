@@ -1,24 +1,16 @@
 {
+  "include": [ "src", "test" ],
+  "exclude": [ "node_modules" ],
   "compilerOptions": {
-    "allowJs": true,
     "declaration": true,
-    "emitDeclarationOnly": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "lib": [ "DOM", "ES2018" ],
+    "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
-    "outDir": ".",
+    "plugins": [ { "name": "typescript-lit-html-plugin" } ],
     "sourceMap": true,
-    "target": "ES2018",
-    "plugins": [
-      { "name": "typescript-lit-html-plugin" }
-    ]
+    "module": "ES2020",
+    "target": "ES2018"
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.test.js"
-  ]
+  "lib": [ "DOM", "ES2020", "ESNext", "DOM.Iterable" ]
 }

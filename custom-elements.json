@@ -3,7 +3,7 @@
   "tags": [
     {
       "name": "stripe-elements",
-      "path": "./src/StripeElements.js",
+      "path": "./src/stripe-elements.ts",
       "description": "[Stripe.js v3 Card Elements](https://stripe.com/docs/elements), but it's a Web Component!\nSupports Shadow DOM.\n\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--enter-a-stripe-publishable-key) 👀\n\n### 🧙‍♂️ Usage\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\n\n```html\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-elements.js\"></script>\n```\n\nAlternatively, load the module from the unpkg CDN\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-elements.js?module\"></script>\n```\n\nThen you can add the element to your page.\n\n```html\n<stripe-elements id=\"stripe\"\n     action=\"/payment\"\n     publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\n></stripe-elements>\n```\n\nSee the demos for more comprehensive examples.\n   - Using `<stripe-elements>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-html--stripe-elements).\n   - Using `<stripe-elements>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-litelement--stripe-elements).\n   - Using `<stripe-elements>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vue--stripe-elements).\n   - Using `<stripe-elements>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-angular--stripe-elements).\n   - Using `<stripe-elements>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-react--stripe-elements).\n   - Using `<stripe-elements>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-preact--stripe-elements).\n\n## Styling\n\nStripe v3's 'Stripe Elements' are not custom elements, but rather forms\nhosted by stripe and injected into your page via an iFrame. When we refer to the\n'Stripe Element' in this document, we are referring to the hosted Stripe form,\nnot the `<stripe-element>` custom element. But when I mention the 'element', I mean the custom element.\n\nWhen you apply CSS to the custom properties available, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame.\n\n- `base` styles are inherited by all other variants.\n- `complete` styles are applied when the Stripe Element has valid input.\n- `empty` styles are applied when the Stripe Element has no user input.\n- `invalid` styles are applied when the Stripe Element has invalid input.\n\nThere are 11 properties for each state that you can set which will be read into the Stripe Element iFrame:\n\n- `color`\n- `font-family`\n- `font-size`\n- `font-smoothing`\n- `font-variant`\n- `icon-color`\n- `line-height`\n- `letter-spacing`\n- `text-decoration`\n- `text-shadow`\n- `text-transform`",
       "attributes": [
         {
@@ -20,43 +20,43 @@
         },
         {
           "name": "icon-style",
-          "description": "Stripe icon style. 'solid' or 'default'.",
-          "type": "'solid'|'default'",
+          "description": "Stripe icon style.",
+          "type": "\"solid\" | \"default\" | undefined",
           "default": "\"default\""
         },
         {
           "name": "value",
-          "description": "Prefilled values for form. Example {postalCode: '90210'}",
-          "type": "object",
+          "description": "Prefilled values for form.",
+          "type": "string | { [objectKey: string]: string; } | undefined",
           "default": "{}"
         },
         {
           "name": "brand",
           "description": "The card brand detected by Stripe",
-          "type": "string"
+          "type": "brandType"
         },
         {
           "name": "complete",
           "description": "Whether the form is complete.",
-          "type": "boolean",
+          "type": "false",
           "default": "false"
         },
         {
           "name": "empty",
           "description": "If the form is empty.",
-          "type": "boolean",
+          "type": "true",
           "default": "true"
         },
         {
           "name": "invalid",
           "description": "Whether the form is invalid.",
-          "type": "boolean",
+          "type": "false",
           "default": "false"
         },
         {
           "name": "card",
           "description": "The Stripe card object.\n**DEPRECATED**. Will be removed in a future version. use `element` instead",
-          "type": "stripe.elements.Element",
+          "type": "Element",
           "deprecated": true
         },
         {
@@ -74,21 +74,6 @@
           "deprecated": true
         },
         {
-          "name": "payment-method",
-          "description": "Stripe PaymentMethod",
-          "type": "stripe.paymentMethod.PaymentMethod"
-        },
-        {
-          "name": "source",
-          "description": "Stripe Source",
-          "type": "stripe.Source"
-        },
-        {
-          "name": "token",
-          "description": "Stripe Token",
-          "type": "stripe.Token"
-        },
-        {
           "name": "action",
           "description": "If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),\nthe element will POST JSON data to this URL with an object containing\na key equal to the value of the `generate` property.",
           "type": "string"
@@ -101,7 +86,7 @@
         {
           "name": "generate",
           "description": "Type of payment representation to generate.",
-          "type": "'payment-method'|'source'|'token'",
+          "type": "PaymentRepresentation",
           "default": "\"source\""
         },
         {
@@ -116,48 +101,63 @@
           "default": "false"
         },
         {
+          "name": "payment-method",
+          "description": "Stripe PaymentMethod",
+          "type": "PaymentMethod"
+        },
+        {
+          "name": "source",
+          "description": "Stripe Source",
+          "type": "Source"
+        },
+        {
+          "name": "token",
+          "description": "Stripe Token",
+          "type": "Token"
+        },
+        {
           "name": "element",
           "description": "Stripe element instance",
-          "type": "stripe.elements.Element"
+          "type": "Element"
         },
         {
           "name": "elements",
           "description": "Stripe Elements instance",
-          "type": "stripe.elements.Elements"
+          "type": "Elements"
         },
         {
           "name": "error",
           "description": "Stripe or validation error",
-          "type": "Error|stripe.Error"
+          "type": "AmbiguousError"
         },
         {
           "name": "focused",
           "description": "If the element is focused.",
-          "type": "boolean",
+          "type": "false",
           "default": "false"
         },
         {
           "name": "ready",
           "description": "Whether the stripe element is ready to receive focus.",
-          "type": "boolean",
+          "type": "false",
           "default": "false"
         },
         {
           "name": "stripe",
           "description": "Stripe instance",
-          "type": "stripe.Stripe"
+          "type": "Stripe"
         },
         {
           "name": "has-error",
           "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
-          "type": "boolean",
+          "type": "false",
           "default": "false",
           "deprecated": true
         },
         {
           "name": "stripe-ready",
           "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
-          "type": "boolean",
+          "type": "false",
           "default": "false",
           "deprecated": true
         }
@@ -180,49 +180,49 @@
         {
           "name": "iconStyle",
           "attribute": "icon-style",
-          "description": "Stripe icon style. 'solid' or 'default'.",
-          "type": "'solid'|'default'",
+          "description": "Stripe icon style.",
+          "type": "\"solid\" | \"default\" | undefined",
           "default": "\"default\""
         },
         {
           "name": "value",
           "attribute": "value",
-          "description": "Prefilled values for form. Example {postalCode: '90210'}",
-          "type": "object",
+          "description": "Prefilled values for form.",
+          "type": "string | { [objectKey: string]: string; } | undefined",
           "default": "{}"
         },
         {
           "name": "brand",
           "attribute": "brand",
           "description": "The card brand detected by Stripe",
-          "type": "string"
+          "type": "brandType"
         },
         {
           "name": "complete",
           "attribute": "complete",
           "description": "Whether the form is complete.",
-          "type": "boolean",
+          "type": "false",
           "default": "false"
         },
         {
           "name": "empty",
           "attribute": "empty",
           "description": "If the form is empty.",
-          "type": "boolean",
+          "type": "true",
           "default": "true"
         },
         {
           "name": "invalid",
           "attribute": "invalid",
           "description": "Whether the form is invalid.",
-          "type": "boolean",
+          "type": "false",
           "default": "false"
         },
         {
           "name": "card",
           "attribute": "card",
           "description": "The Stripe card object.\n**DEPRECATED**. Will be removed in a future version. use `element` instead",
-          "type": "stripe.elements.Element",
+          "type": "Element",
           "deprecated": true
         },
         {
@@ -244,44 +244,22 @@
         {
           "name": "billingDetails",
           "description": "billing_details object sent to create the payment representation. (optional)",
-          "type": "stripe.BillingDetails",
-          "default": "{}"
+          "type": "BillingDetails"
         },
         {
           "name": "paymentMethodData",
           "description": "Data passed to stripe.createPaymentMethod. (optional)",
-          "type": "stripe.PaymentMethodData",
-          "default": "{}"
+          "type": "PaymentMethodData"
         },
         {
           "name": "sourceData",
           "description": "Data passed to stripe.createSource. (optional)",
-          "type": "SourceData",
-          "default": "{}"
+          "type": "SourceOptions"
         },
         {
           "name": "tokenData",
           "description": "Data passed to stripe.createToken. (optional)",
-          "type": "stripe.TokenOptions",
-          "default": "{}"
-        },
-        {
-          "name": "paymentMethod",
-          "attribute": "payment-method",
-          "description": "Stripe PaymentMethod",
-          "type": "stripe.paymentMethod.PaymentMethod"
-        },
-        {
-          "name": "source",
-          "attribute": "source",
-          "description": "Stripe Source",
-          "type": "stripe.Source"
-        },
-        {
-          "name": "token",
-          "attribute": "token",
-          "description": "Stripe Token",
-          "type": "stripe.Token"
+          "type": "TokenOptions"
         },
         {
           "name": "action",
@@ -299,7 +277,7 @@
           "name": "generate",
           "attribute": "generate",
           "description": "Type of payment representation to generate.",
-          "type": "'payment-method'|'source'|'token'",
+          "type": "PaymentRepresentation",
           "default": "\"source\""
         },
         {
@@ -316,48 +294,66 @@
           "default": "false"
         },
         {
+          "name": "paymentMethod",
+          "attribute": "payment-method",
+          "description": "Stripe PaymentMethod",
+          "type": "PaymentMethod"
+        },
+        {
+          "name": "source",
+          "attribute": "source",
+          "description": "Stripe Source",
+          "type": "Source"
+        },
+        {
+          "name": "token",
+          "attribute": "token",
+          "description": "Stripe Token",
+          "type": "Token"
+        },
+        {
           "name": "element",
           "attribute": "element",
           "description": "Stripe element instance",
-          "type": "stripe.elements.Element"
+          "type": "Element"
         },
         {
           "name": "elements",
           "attribute": "elements",
           "description": "Stripe Elements instance",
-          "type": "stripe.elements.Elements"
+          "type": "Elements"
         },
         {
           "name": "error",
           "attribute": "error",
           "description": "Stripe or validation error",
-          "type": "Error|stripe.Error"
+          "type": "AmbiguousError"
         },
         {
           "name": "focused",
           "attribute": "focused",
           "description": "If the element is focused.",
-          "type": "boolean",
+          "type": "false",
           "default": "false"
         },
         {
           "name": "ready",
           "attribute": "ready",
           "description": "Whether the stripe element is ready to receive focus.",
-          "type": "boolean",
+          "type": "false",
           "default": "false"
         },
         {
           "name": "stripe",
           "attribute": "stripe",
           "description": "Stripe instance",
-          "type": "stripe.Stripe"
+          "type": "Stripe"
         },
         {
           "name": "hasError",
           "attribute": "has-error",
           "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
-          "type": "boolean",
+          "type": "false",
           "default": "false",
           "deprecated": true
         },
@@ -365,9 +361,14 @@
           "name": "stripeReady",
           "attribute": "stripe-ready",
           "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
-          "type": "boolean",
+          "type": "false",
           "default": "false",
           "deprecated": true
+        },
+        {
+          "name": "stripeMountId",
+          "description": "Stripe.js mount point element id. Due to limitations in the Stripe.js library, this element must be connected to the document.",
+          "type": "string"
         }
       ],
       "events": [
@@ -423,19 +424,23 @@
       "cssProperties": [
         {
           "name": "--stripe-elements-border-radius",
-          "description": "border radius of the element container. Default `4px`"
+          "description": "border radius of the element container",
+          "default": "\"`4px`\""
         },
         {
           "name": "--stripe-elements-border",
-          "description": "border property of the element container. Default `1px solid transparent`"
+          "description": "border property of the element container",
+          "default": "\"`1px solid transparent`\""
         },
         {
           "name": "--stripe-elements-box-shadow",
-          "description": "box shadow for the element container. Default `0 1px 3px 0 #e6ebf1`"
+          "description": "box shadow for the element container",
+          "default": "\"`0 1px 3px 0 #e6ebf1`\""
         },
         {
           "name": "--stripe-elements-transition",
-          "description": "transition property for the element container. Default `box-shadow 150ms ease`"
+          "description": "transition property for the element container",
+          "default": "\"`box-shadow 150ms ease`\""
         },
         {
           "name": "--stripe-elements-base-color",
@@ -627,7 +632,7 @@
     },
     {
       "name": "stripe-payment-request",
-      "path": "./src/StripePaymentRequest.js",
+      "path": "./src/stripe-payment-request.ts",
       "description": "Custom element wrapper for Stripe.js v3 Payment Request Buttons.\n\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--enter-a-stripe-publishable-key) 👀\n\n### 🧙‍♂️ Usage\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\n\n```html\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-payment-request.js\"></script>\n```\n\nAlternatively, load the module from the unpkg CDN\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-payment-request.js?module\"></script>\n```\n\nThen you can add the element to your page.\n\n```html\n\n<stripe-payment-request id=\"payment-request\"\n     publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\n     generate=\"token\"\n     action=\"/charges\"\n     country=\"CA\"\n     currency=\"cad\"\n     amount=\"1000\"\n     label=\"Ten Bones\"\n     request-payer-name\n     request-payer-email\n     request-payer-phone\n></stripe-payment-request>\n```\n\nSee the demos for more comprehensive examples.\n   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vanilla--stripe-payment-request).\n   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-litelement--stripe-payment-request).\n   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vue--stripe-payment-request).\n   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-angular--stripe-payment-request).\n   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-react--stripe-payment-request).\n   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-preact--stripe-payment-request).",
       "attributes": [
         {
@@ -638,23 +643,22 @@
         {
           "name": "can-make-payment",
           "description": "Whether or not the device can make the payment request.",
-          "type": "object",
-          "default": "\"undefined\""
+          "type": "{ applePay?: boolean | undefined; } | null"
         },
         {
           "name": "country",
-          "description": "The two-letter country code of your Stripe account (e.g., `US`)",
-          "type": "string"
+          "description": "The two-letter country code of your Stripe account",
+          "type": "\"AF\" | \"AX\" | \"AL\" | \"DZ\" | \"AS\" | \"AD\" | \"AO\" | \"AI\" | \"AQ\" | \"AG\" | \"AR\" | \"AM\" | \"AW\" | \"AU\" | \"AT\" | \"AZ\" | \"BS\" | \"BH\" | \"BD\" | \"BB\" | \"BY\" | \"BE\" | \"BZ\" | \"BJ\" | \"BM\" | \"BT\" | \"BO\" | ... 217 more ... | \"ZW\""
         },
         {
           "name": "currency",
-          "description": "Three character currency code (e.g., `usd`)",
+          "description": "Three character currency code",
           "type": "string"
         },
         {
           "name": "displayItems",
           "description": "An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.",
-          "type": "stripe.paymentRequest.DisplayItem[]"
+          "type": "DisplayItem[]"
         },
         {
           "name": "label",
@@ -664,12 +668,12 @@
         {
           "name": "payment-intent",
           "description": "Stripe PaymentIntent",
-          "type": "stripe.paymentIntents.PaymentIntent"
+          "type": "PaymentIntent"
         },
         {
           "name": "payment-request",
           "description": "Stripe PaymentRequest",
-          "type": "stripe.paymentRequest.StripePaymentRequest"
+          "type": "StripePaymentRequest"
         },
         {
           "name": "pending",
@@ -700,32 +704,17 @@
         {
           "name": "shippingOptions",
           "description": "An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.",
-          "type": "stripe.paymentRequest.ShippingOption[]"
+          "type": "ShippingOption[]"
         },
         {
           "name": "button-type",
-          "type": "'default'|'book'|'buy'|'donate'",
+          "type": "\"default\" | \"donate\" | \"buy\" | undefined",
           "default": "\"default\""
         },
         {
           "name": "button-theme",
-          "type": "'dark'|'light'|'light-outline'",
+          "type": "\"dark\" | \"light\" | \"light-outline\"",
           "default": "\"dark\""
-        },
-        {
-          "name": "payment-method",
-          "description": "Stripe PaymentMethod",
-          "type": "stripe.paymentMethod.PaymentMethod"
-        },
-        {
-          "name": "source",
-          "description": "Stripe Source",
-          "type": "stripe.Source"
-        },
-        {
-          "name": "token",
-          "description": "Stripe Token",
-          "type": "stripe.Token"
         },
         {
           "name": "action",
@@ -740,7 +729,7 @@
         {
           "name": "generate",
           "description": "Type of payment representation to generate.",
-          "type": "'payment-method'|'source'|'token'",
+          "type": "PaymentRepresentation",
           "default": "\"source\""
         },
         {
@@ -755,48 +744,63 @@
           "default": "false"
         },
         {
+          "name": "payment-method",
+          "description": "Stripe PaymentMethod",
+          "type": "PaymentMethod"
+        },
+        {
+          "name": "source",
+          "description": "Stripe Source",
+          "type": "Source"
+        },
+        {
+          "name": "token",
+          "description": "Stripe Token",
+          "type": "Token"
+        },
+        {
           "name": "element",
           "description": "Stripe element instance",
-          "type": "stripe.elements.Element"
+          "type": "Element"
         },
         {
           "name": "elements",
           "description": "Stripe Elements instance",
-          "type": "stripe.elements.Elements"
+          "type": "Elements"
         },
         {
           "name": "error",
           "description": "Stripe or validation error",
-          "type": "Error|stripe.Error"
+          "type": "AmbiguousError"
         },
         {
           "name": "focused",
           "description": "If the element is focused.",
-          "type": "boolean",
+          "type": "false",
           "default": "false"
         },
         {
           "name": "ready",
           "description": "Whether the stripe element is ready to receive focus.",
-          "type": "boolean",
+          "type": "false",
           "default": "false"
         },
         {
           "name": "stripe",
           "description": "Stripe instance",
-          "type": "stripe.Stripe"
+          "type": "Stripe"
         },
         {
           "name": "has-error",
           "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
-          "type": "boolean",
+          "type": "false",
           "default": "false",
           "deprecated": true
         },
         {
           "name": "stripe-ready",
           "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
-          "type": "boolean",
+          "type": "false",
           "default": "false",
           "deprecated": true
         }
@@ -812,26 +816,25 @@
           "name": "canMakePayment",
           "attribute": "can-make-payment",
           "description": "Whether or not the device can make the payment request.",
-          "type": "object",
-          "default": "\"undefined\""
+          "type": "{ applePay?: boolean | undefined; } | null"
         },
         {
           "name": "country",
           "attribute": "country",
-          "description": "The two-letter country code of your Stripe account (e.g., `US`)",
-          "type": "string"
+          "description": "The two-letter country code of your Stripe account",
+          "type": "\"AF\" | \"AX\" | \"AL\" | \"DZ\" | \"AS\" | \"AD\" | \"AO\" | \"AI\" | \"AQ\" | \"AG\" | \"AR\" | \"AM\" | \"AW\" | \"AU\" | \"AT\" | \"AZ\" | \"BS\" | \"BH\" | \"BD\" | \"BB\" | \"BY\" | \"BE\" | \"BZ\" | \"BJ\" | \"BM\" | \"BT\" | \"BO\" | ... 217 more ... | \"ZW\""
         },
         {
           "name": "currency",
           "attribute": "currency",
-          "description": "Three character currency code (e.g., `usd`)",
+          "description": "Three character currency code",
           "type": "string"
         },
         {
           "name": "displayItems",
           "attribute": "displayItems",
           "description": "An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.",
-          "type": "stripe.paymentRequest.DisplayItem[]"
+          "type": "DisplayItem[]"
         },
         {
           "name": "label",
@@ -843,13 +846,13 @@
           "name": "paymentIntent",
           "attribute": "payment-intent",
           "description": "Stripe PaymentIntent",
-          "type": "stripe.paymentIntents.PaymentIntent"
+          "type": "PaymentIntent"
         },
         {
           "name": "paymentRequest",
           "attribute": "payment-request",
           "description": "Stripe PaymentRequest",
-          "type": "stripe.paymentRequest.StripePaymentRequest"
+          "type": "StripePaymentRequest"
         },
         {
           "name": "pending",
@@ -886,61 +889,39 @@
           "name": "shippingOptions",
           "attribute": "shippingOptions",
           "description": "An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.",
-          "type": "stripe.paymentRequest.ShippingOption[]"
+          "type": "ShippingOption[]"
         },
         {
           "name": "buttonType",
           "attribute": "button-type",
-          "type": "'default'|'book'|'buy'|'donate'",
+          "type": "\"default\" | \"donate\" | \"buy\" | undefined",
           "default": "\"default\""
         },
         {
           "name": "buttonTheme",
           "attribute": "button-theme",
-          "type": "'dark'|'light'|'light-outline'",
+          "type": "\"dark\" | \"light\" | \"light-outline\"",
           "default": "\"dark\""
         },
         {
           "name": "billingDetails",
           "description": "billing_details object sent to create the payment representation. (optional)",
-          "type": "stripe.BillingDetails",
-          "default": "{}"
+          "type": "BillingDetails"
         },
         {
           "name": "paymentMethodData",
           "description": "Data passed to stripe.createPaymentMethod. (optional)",
-          "type": "stripe.PaymentMethodData",
-          "default": "{}"
+          "type": "PaymentMethodData"
         },
         {
           "name": "sourceData",
           "description": "Data passed to stripe.createSource. (optional)",
-          "type": "SourceData",
-          "default": "{}"
+          "type": "SourceOptions"
         },
         {
           "name": "tokenData",
           "description": "Data passed to stripe.createToken. (optional)",
-          "type": "stripe.TokenOptions",
-          "default": "{}"
-        },
-        {
-          "name": "paymentMethod",
-          "attribute": "payment-method",
-          "description": "Stripe PaymentMethod",
-          "type": "stripe.paymentMethod.PaymentMethod"
-        },
-        {
-          "name": "source",
-          "attribute": "source",
-          "description": "Stripe Source",
-          "type": "stripe.Source"
-        },
-        {
-          "name": "token",
-          "attribute": "token",
-          "description": "Stripe Token",
-          "type": "stripe.Token"
+          "type": "TokenOptions"
         },
         {
           "name": "action",
@@ -958,7 +939,7 @@
           "name": "generate",
           "attribute": "generate",
           "description": "Type of payment representation to generate.",
-          "type": "'payment-method'|'source'|'token'",
+          "type": "PaymentRepresentation",
           "default": "\"source\""
         },
         {
@@ -975,48 +956,66 @@
           "default": "false"
         },
         {
+          "name": "paymentMethod",
+          "attribute": "payment-method",
+          "description": "Stripe PaymentMethod",
+          "type": "PaymentMethod"
+        },
+        {
+          "name": "source",
+          "attribute": "source",
+          "description": "Stripe Source",
+          "type": "Source"
+        },
+        {
+          "name": "token",
+          "attribute": "token",
+          "description": "Stripe Token",
+          "type": "Token"
+        },
+        {
           "name": "element",
           "attribute": "element",
           "description": "Stripe element instance",
-          "type": "stripe.elements.Element"
+          "type": "Element"
         },
         {
           "name": "elements",
           "attribute": "elements",
           "description": "Stripe Elements instance",
-          "type": "stripe.elements.Elements"
+          "type": "Elements"
         },
         {
           "name": "error",
           "attribute": "error",
           "description": "Stripe or validation error",
-          "type": "Error|stripe.Error"
+          "type": "AmbiguousError"
         },
         {
           "name": "focused",
           "attribute": "focused",
           "description": "If the element is focused.",
-          "type": "boolean",
+          "type": "false",
           "default": "false"
         },
         {
           "name": "ready",
           "attribute": "ready",
           "description": "Whether the stripe element is ready to receive focus.",
-          "type": "boolean",
+          "type": "false",
           "default": "false"
         },
         {
           "name": "stripe",
           "attribute": "stripe",
           "description": "Stripe instance",
-          "type": "stripe.Stripe"
+          "type": "Stripe"
         },
         {
           "name": "hasError",
           "attribute": "has-error",
           "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
-          "type": "boolean",
+          "type": "false",
           "default": "false",
           "deprecated": true
         },
@@ -1024,9 +1023,14 @@
           "name": "stripeReady",
           "attribute": "stripe-ready",
           "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
-          "type": "boolean",
+          "type": "false",
           "default": "false",
           "deprecated": true
+        },
+        {
+          "name": "stripeMountId",
+          "description": "Stripe.js mount point element id. Due to limitations in the Stripe.js library, this element must be connected to the document.",
+          "type": "string"
         }
       ],
       "events": [
@@ -1098,15 +1102,960 @@
       "cssProperties": [
         {
           "name": "--stripe-payment-request-element-min-width",
-          "description": "min-width property of the container element. Default `300px`"
+          "description": "min-width property of the container element",
+          "default": "\"`300px`\""
         },
         {
           "name": "--stripe-payment-request-element-padding",
-          "description": "padding property of the container element. Default `8px 12px`"
+          "description": "padding property of the container element",
+          "default": "\"`8px 12px`\""
         },
         {
           "name": "--stripe-payment-request-element-background",
-          "description": "background property of the container element. Default `white`"
+          "description": "background property of the container element",
+          "default": "\"`white`\""
+        }
+      ],
+      "cssParts": [
+        {
+          "name": "error",
+          "description": "container for the error message"
+        },
+        {
+          "name": "stripe",
+          "description": "container for the stripe element"
+        }
+      ]
+    },
+    {
+      "name": "stripe-elements",
+      "path": "./src/stripe-elements.d.ts",
+      "description": "[Stripe.js v3 Card Elements](https://stripe.com/docs/elements), but it's a Web Component!\nSupports Shadow DOM.\n\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--enter-a-stripe-publishable-key) 👀\n\n### 🧙‍♂️ Usage\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\n\n```html\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-elements.js\"></script>\n```\n\nAlternatively, load the module from the unpkg CDN\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-elements.js?module\"></script>\n```\n\nThen you can add the element to your page.\n\n```html\n<stripe-elements id=\"stripe\"\n     action=\"/payment\"\n     publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\n></stripe-elements>\n```\n\nSee the demos for more comprehensive examples.\n   - Using `<stripe-elements>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-html--stripe-elements).\n   - Using `<stripe-elements>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-litelement--stripe-elements).\n   - Using `<stripe-elements>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vue--stripe-elements).\n   - Using `<stripe-elements>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-angular--stripe-elements).\n   - Using `<stripe-elements>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-react--stripe-elements).\n   - Using `<stripe-elements>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-preact--stripe-elements).\n\n## Styling\n\nStripe v3's 'Stripe Elements' are not custom elements, but rather forms\nhosted by stripe and injected into your page via an iFrame. When we refer to the\n'Stripe Element' in this document, we are referring to the hosted Stripe form,\nnot the `<stripe-element>` custom element. But when I mention the 'element', I mean the custom element.\n\nWhen you apply CSS to the custom properties available, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame.\n\n- `base` styles are inherited by all other variants.\n- `complete` styles are applied when the Stripe Element has valid input.\n- `empty` styles are applied when the Stripe Element has no user input.\n- `invalid` styles are applied when the Stripe Element has invalid input.\n\nThere are 11 properties for each state that you can set which will be read into the Stripe Element iFrame:\n\n- `color`\n- `font-family`\n- `font-size`\n- `font-smoothing`\n- `font-variant`\n- `icon-color`\n- `line-height`\n- `letter-spacing`\n- `text-decoration`\n- `text-shadow`\n- `text-transform`",
+      "attributes": [
+        {
+          "name": "action",
+          "description": "If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),\nthe element will POST JSON data to this URL with an object containing\na key equal to the value of the `generate` property.",
+          "type": "string"
+        },
+        {
+          "name": "client-secret",
+          "description": "The `client_secret` part of a Stripe `PaymentIntent`",
+          "type": "string"
+        },
+        {
+          "name": "generate",
+          "description": "Type of payment representation to generate.",
+          "type": "PaymentRepresentation",
+          "default": "\"source\""
+        },
+        {
+          "name": "publishable-key",
+          "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
+          "type": "string"
+        },
+        {
+          "name": "show-error",
+          "description": "Whether to display the error message",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "payment-method",
+          "description": "Stripe PaymentMethod",
+          "type": "PaymentMethod"
+        },
+        {
+          "name": "source",
+          "description": "Stripe Source",
+          "type": "Source"
+        },
+        {
+          "name": "token",
+          "description": "Stripe Token",
+          "type": "Token"
+        },
+        {
+          "name": "element",
+          "description": "Stripe element instance",
+          "type": "Element"
+        },
+        {
+          "name": "elements",
+          "description": "Stripe Elements instance",
+          "type": "Elements"
+        },
+        {
+          "name": "error",
+          "description": "Stripe or validation error",
+          "type": "AmbiguousError"
+        },
+        {
+          "name": "focused",
+          "description": "If the element is focused.",
+          "type": "false",
+          "default": "false"
+        },
+        {
+          "name": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "false",
+          "default": "false"
+        },
+        {
+          "name": "stripe",
+          "description": "Stripe instance",
+          "type": "Stripe"
+        },
+        {
+          "name": "has-error",
+          "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
+          "type": "false",
+          "default": "false",
+          "deprecated": true
+        },
+        {
+          "name": "stripe-ready",
+          "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
+          "type": "false",
+          "default": "false",
+          "deprecated": true
+        }
+      ],
+      "properties": [
+        {
+          "name": "hideIcon",
+          "description": "Whether to hide icons in the Stripe form.",
+          "type": "boolean"
+        },
+        {
+          "name": "hidePostalCode",
+          "description": "Whether or not to hide the postal code field.\nUseful when you gather shipping info elsewhere.",
+          "type": "boolean"
+        },
+        {
+          "name": "iconStyle",
+          "description": "Stripe icon style.",
+          "type": "\"solid\" | \"default\" | undefined"
+        },
+        {
+          "name": "value",
+          "description": "Prefilled values for form.",
+          "type": "string | { [objectKey: string]: string; } | undefined"
+        },
+        {
+          "name": "brand",
+          "description": "The card brand detected by Stripe",
+          "type": "brandType"
+        },
+        {
+          "name": "complete",
+          "description": "Whether the form is complete.",
+          "type": "false",
+          "default": "false"
+        },
+        {
+          "name": "empty",
+          "description": "If the form is empty.",
+          "type": "true",
+          "default": "true"
+        },
+        {
+          "name": "invalid",
+          "description": "Whether the form is invalid.",
+          "type": "false",
+          "default": "false"
+        },
+        {
+          "name": "card",
+          "description": "The Stripe card object.\n**DEPRECATED**. Will be removed in a future version. use `element` instead",
+          "type": "Element",
+          "deprecated": true
+        },
+        {
+          "name": "isEmpty",
+          "description": "Whether the form is empty.\n**DEPRECATED**. Will be removed in a future version. use `empty` instead",
+          "type": "boolean",
+          "deprecated": true
+        },
+        {
+          "name": "isComplete",
+          "description": "Whether the form is complete.\n**DEPRECATED**. Will be removed in a future version. use `complete` instead",
+          "type": "boolean",
+          "deprecated": true
+        },
+        {
+          "name": "billingDetails",
+          "description": "billing_details object sent to create the payment representation. (optional)",
+          "type": "BillingDetails"
+        },
+        {
+          "name": "paymentMethodData",
+          "description": "Data passed to stripe.createPaymentMethod. (optional)",
+          "type": "PaymentMethodData"
+        },
+        {
+          "name": "sourceData",
+          "description": "Data passed to stripe.createSource. (optional)",
+          "type": "SourceOptions"
+        },
+        {
+          "name": "tokenData",
+          "description": "Data passed to stripe.createToken. (optional)",
+          "type": "TokenOptions"
+        },
+        {
+          "name": "action",
+          "attribute": "action",
+          "description": "If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),\nthe element will POST JSON data to this URL with an object containing\na key equal to the value of the `generate` property.",
+          "type": "string"
+        },
+        {
+          "name": "clientSecret",
+          "attribute": "client-secret",
+          "description": "The `client_secret` part of a Stripe `PaymentIntent`",
+          "type": "string"
+        },
+        {
+          "name": "generate",
+          "attribute": "generate",
+          "description": "Type of payment representation to generate.",
+          "type": "PaymentRepresentation",
+          "default": "\"source\""
+        },
+        {
+          "name": "publishableKey",
+          "attribute": "publishable-key",
+          "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
+          "type": "string"
+        },
+        {
+          "name": "showError",
+          "attribute": "show-error",
+          "description": "Whether to display the error message",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "paymentMethod",
+          "attribute": "payment-method",
+          "description": "Stripe PaymentMethod",
+          "type": "PaymentMethod"
+        },
+        {
+          "name": "source",
+          "attribute": "source",
+          "description": "Stripe Source",
+          "type": "Source"
+        },
+        {
+          "name": "token",
+          "attribute": "token",
+          "description": "Stripe Token",
+          "type": "Token"
+        },
+        {
+          "name": "element",
+          "attribute": "element",
+          "description": "Stripe element instance",
+          "type": "Element"
+        },
+        {
+          "name": "elements",
+          "attribute": "elements",
+          "description": "Stripe Elements instance",
+          "type": "Elements"
+        },
+        {
+          "name": "error",
+          "attribute": "error",
+          "description": "Stripe or validation error",
+          "type": "AmbiguousError"
+        },
+        {
+          "name": "focused",
+          "attribute": "focused",
+          "description": "If the element is focused.",
+          "type": "false",
+          "default": "false"
+        },
+        {
+          "name": "ready",
+          "attribute": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "false",
+          "default": "false"
+        },
+        {
+          "name": "stripe",
+          "attribute": "stripe",
+          "description": "Stripe instance",
+          "type": "Stripe"
+        },
+        {
+          "name": "hasError",
+          "attribute": "has-error",
+          "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
+          "type": "false",
+          "default": "false",
+          "deprecated": true
+        },
+        {
+          "name": "stripeReady",
+          "attribute": "stripe-ready",
+          "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
+          "type": "false",
+          "default": "false",
+          "deprecated": true
+        },
+        {
+          "name": "stripeMountId",
+          "description": "Stripe.js mount point element id. Due to limitations in the Stripe.js library, this element must be connected to the document.",
+          "type": "string"
+        }
+      ],
+      "events": [
+        {
+          "name": "change",
+          "description": "Stripe Element change event"
+        },
+        {
+          "name": "error",
+          "description": "The validation error, or the error returned from stripe.com"
+        },
+        {
+          "name": "payment-method",
+          "description": "The PaymentMethod received from stripe.com"
+        },
+        {
+          "name": "source",
+          "description": "The Source received from stripe.com"
+        },
+        {
+          "name": "token",
+          "description": "The Token received from stripe.com"
+        },
+        {
+          "name": "success",
+          "description": "When a payment succeeds"
+        },
+        {
+          "name": "ready",
+          "description": "Stripe has been initialized and mounted"
+        },
+        {
+          "name": "stripe-ready",
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `ready` instead"
+        },
+        {
+          "name": "stripe-error",
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `error` instead"
+        },
+        {
+          "name": "stripe-payment-method",
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `payment-method` instead"
+        },
+        {
+          "name": "stripe-source",
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `source` instead"
+        },
+        {
+          "name": "stripe-token",
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `token` instead"
+        }
+      ],
+      "cssProperties": [
+        {
+          "name": "--stripe-elements-border-radius",
+          "description": "border radius of the element container",
+          "default": "\"`4px`\""
+        },
+        {
+          "name": "--stripe-elements-border",
+          "description": "border property of the element container",
+          "default": "\"`1px solid transparent`\""
+        },
+        {
+          "name": "--stripe-elements-box-shadow",
+          "description": "box shadow for the element container",
+          "default": "\"`0 1px 3px 0 #e6ebf1`\""
+        },
+        {
+          "name": "--stripe-elements-transition",
+          "description": "transition property for the element container",
+          "default": "\"`box-shadow 150ms ease`\""
+        },
+        {
+          "name": "--stripe-elements-base-color",
+          "description": "`color` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-font-family",
+          "description": "`font-family` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-font-size",
+          "description": "`font-size` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-font-smoothing",
+          "description": "`font-smoothing` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-font-variant",
+          "description": "`font-variant` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-icon-color",
+          "description": "`icon-color` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-line-height",
+          "description": "`line-height` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-letter-spacing",
+          "description": "`letter-spacing` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-text-decoration",
+          "description": "`text-decoration` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-text-shadow",
+          "description": "`text-shadow` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-base-text-transform",
+          "description": "`text-transform` property for the element in its base state"
+        },
+        {
+          "name": "--stripe-elements-complete-color",
+          "description": "`color` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-font-family",
+          "description": "`font-family` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-font-size",
+          "description": "`font-size` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-font-smoothing",
+          "description": "`font-smoothing` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-font-variant",
+          "description": "`font-variant` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-icon-color",
+          "description": "`icon-color` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-line-height",
+          "description": "`line-height` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-letter-spacing",
+          "description": "`letter-spacing` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-text-decoration",
+          "description": "`text-decoration` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-text-shadow",
+          "description": "`text-shadow` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-complete-text-transform",
+          "description": "`text-transform` property for the element in its complete state"
+        },
+        {
+          "name": "--stripe-elements-empty-color",
+          "description": "`color` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-font-family",
+          "description": "`font-family` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-font-size",
+          "description": "`font-size` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-font-smoothing",
+          "description": "`font-smoothing` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-font-variant",
+          "description": "`font-variant` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-icon-color",
+          "description": "`icon-color` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-line-height",
+          "description": "`line-height` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-letter-spacing",
+          "description": "`letter-spacing` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-text-decoration",
+          "description": "`text-decoration` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-text-shadow",
+          "description": "`text-shadow` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-empty-text-transform",
+          "description": "`text-transform` property for the element in its empty state"
+        },
+        {
+          "name": "--stripe-elements-invalid-color",
+          "description": "`color` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-font-family",
+          "description": "`font-family` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-font-size",
+          "description": "`font-size` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-font-smoothing",
+          "description": "`font-smoothing` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-font-variant",
+          "description": "`font-variant` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-icon-color",
+          "description": "`icon-color` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-line-height",
+          "description": "`line-height` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-letter-spacing",
+          "description": "`letter-spacing` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-text-decoration",
+          "description": "`text-decoration` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-text-shadow",
+          "description": "`text-shadow` property for the element in its invalid state"
+        },
+        {
+          "name": "--stripe-elements-invalid-text-transform",
+          "description": "`text-transform` property for the element in its invalid state"
+        }
+      ],
+      "cssParts": [
+        {
+          "name": "error",
+          "description": "container for the error message"
+        },
+        {
+          "name": "stripe",
+          "description": "container for the stripe element"
+        }
+      ]
+    },
+    {
+      "name": "stripe-payment-request",
+      "path": "./src/stripe-payment-request.d.ts",
+      "description": "Custom element wrapper for Stripe.js v3 Payment Request Buttons.\n\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--enter-a-stripe-publishable-key) 👀\n\n### 🧙‍♂️ Usage\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\n\n```html\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-payment-request.js\"></script>\n```\n\nAlternatively, load the module from the unpkg CDN\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-payment-request.js?module\"></script>\n```\n\nThen you can add the element to your page.\n\n```html\n\n<stripe-payment-request id=\"payment-request\"\n     publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\n     generate=\"token\"\n     action=\"/charges\"\n     country=\"CA\"\n     currency=\"cad\"\n     amount=\"1000\"\n     label=\"Ten Bones\"\n     request-payer-name\n     request-payer-email\n     request-payer-phone\n></stripe-payment-request>\n```\n\nSee the demos for more comprehensive examples.\n   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vanilla--stripe-payment-request).\n   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-litelement--stripe-payment-request).\n   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vue--stripe-payment-request).\n   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-angular--stripe-payment-request).\n   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-react--stripe-payment-request).\n   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-preact--stripe-payment-request).",
+      "attributes": [
+        {
+          "name": "action",
+          "description": "If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),\nthe element will POST JSON data to this URL with an object containing\na key equal to the value of the `generate` property.",
+          "type": "string"
+        },
+        {
+          "name": "client-secret",
+          "description": "The `client_secret` part of a Stripe `PaymentIntent`",
+          "type": "string"
+        },
+        {
+          "name": "generate",
+          "description": "Type of payment representation to generate.",
+          "type": "PaymentRepresentation",
+          "default": "\"source\""
+        },
+        {
+          "name": "publishable-key",
+          "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
+          "type": "string"
+        },
+        {
+          "name": "show-error",
+          "description": "Whether to display the error message",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "payment-method",
+          "description": "Stripe PaymentMethod",
+          "type": "PaymentMethod"
+        },
+        {
+          "name": "source",
+          "description": "Stripe Source",
+          "type": "Source"
+        },
+        {
+          "name": "token",
+          "description": "Stripe Token",
+          "type": "Token"
+        },
+        {
+          "name": "element",
+          "description": "Stripe element instance",
+          "type": "Element"
+        },
+        {
+          "name": "elements",
+          "description": "Stripe Elements instance",
+          "type": "Elements"
+        },
+        {
+          "name": "error",
+          "description": "Stripe or validation error",
+          "type": "AmbiguousError"
+        },
+        {
+          "name": "focused",
+          "description": "If the element is focused.",
+          "type": "false",
+          "default": "false"
+        },
+        {
+          "name": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "false",
+          "default": "false"
+        },
+        {
+          "name": "stripe",
+          "description": "Stripe instance",
+          "type": "Stripe"
+        },
+        {
+          "name": "has-error",
+          "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
+          "type": "false",
+          "default": "false",
+          "deprecated": true
+        },
+        {
+          "name": "stripe-ready",
+          "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
+          "type": "false",
+          "default": "false",
+          "deprecated": true
+        }
+      ],
+      "properties": [
+        {
+          "name": "amount",
+          "description": "The amount in the currency's subunit (e.g. cents, yen, etc.)",
+          "type": "number"
+        },
+        {
+          "name": "canMakePayment",
+          "description": "Whether or not the device can make the payment request.",
+          "type": "{ applePay?: boolean | undefined; } | null"
+        },
+        {
+          "name": "country",
+          "description": "The two-letter country code of your Stripe account",
+          "type": "\"AF\" | \"AX\" | \"AL\" | \"DZ\" | \"AS\" | \"AD\" | \"AO\" | \"AI\" | \"AQ\" | \"AG\" | \"AR\" | \"AM\" | \"AW\" | \"AU\" | \"AT\" | \"AZ\" | \"BS\" | \"BH\" | \"BD\" | \"BB\" | \"BY\" | \"BE\" | \"BZ\" | \"BJ\" | \"BM\" | \"BT\" | \"BO\" | ... 217 more ... | \"ZW\""
+        },
+        {
+          "name": "currency",
+          "description": "Three character currency code",
+          "type": "string"
+        },
+        {
+          "name": "displayItems",
+          "description": "An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.",
+          "type": "DisplayItem[]"
+        },
+        {
+          "name": "label",
+          "description": "A name that the browser shows the customer in the payment interface.",
+          "type": "string"
+        },
+        {
+          "name": "paymentIntent",
+          "description": "Stripe PaymentIntent",
+          "type": "PaymentIntent"
+        },
+        {
+          "name": "paymentRequest",
+          "description": "Stripe PaymentRequest",
+          "type": "StripePaymentRequest"
+        },
+        {
+          "name": "pending",
+          "description": "If you might change the payment amount later (for example, after you have calcluated shipping costs), set this to true. Note that browsers treat this as a hint for how to display things, and not necessarily as something that will prevent submission.",
+          "type": "boolean"
+        },
+        {
+          "name": "requestPayerEmail",
+          "description": "See the requestPayerName option.",
+          "type": "boolean"
+        },
+        {
+          "name": "requestPayerName",
+          "description": "By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.\n\nWe highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available.",
+          "type": "boolean"
+        },
+        {
+          "name": "requestPayerPhone",
+          "description": "See the requestPayerName option.",
+          "type": "boolean"
+        },
+        {
+          "name": "requestShipping",
+          "description": "Collect shipping address by setting this option to true. The address appears in the PaymentResponse.\nYou must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback.",
+          "type": "boolean"
+        },
+        {
+          "name": "shippingOptions",
+          "description": "An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.",
+          "type": "ShippingOption[]"
+        },
+        {
+          "name": "buttonType",
+          "type": "\"default\" | \"donate\" | \"buy\" | undefined"
+        },
+        {
+          "name": "buttonTheme",
+          "type": "\"dark\" | \"light\" | \"light-outline\""
+        },
+        {
+          "name": "billingDetails",
+          "description": "billing_details object sent to create the payment representation. (optional)",
+          "type": "BillingDetails"
+        },
+        {
+          "name": "paymentMethodData",
+          "description": "Data passed to stripe.createPaymentMethod. (optional)",
+          "type": "PaymentMethodData"
+        },
+        {
+          "name": "sourceData",
+          "description": "Data passed to stripe.createSource. (optional)",
+          "type": "SourceOptions"
+        },
+        {
+          "name": "tokenData",
+          "description": "Data passed to stripe.createToken. (optional)",
+          "type": "TokenOptions"
+        },
+        {
+          "name": "action",
+          "attribute": "action",
+          "description": "If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),\nthe element will POST JSON data to this URL with an object containing\na key equal to the value of the `generate` property.",
+          "type": "string"
+        },
+        {
+          "name": "clientSecret",
+          "attribute": "client-secret",
+          "description": "The `client_secret` part of a Stripe `PaymentIntent`",
+          "type": "string"
+        },
+        {
+          "name": "generate",
+          "attribute": "generate",
+          "description": "Type of payment representation to generate.",
+          "type": "PaymentRepresentation",
+          "default": "\"source\""
+        },
+        {
+          "name": "publishableKey",
+          "attribute": "publishable-key",
+          "description": "Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`",
+          "type": "string"
+        },
+        {
+          "name": "showError",
+          "attribute": "show-error",
+          "description": "Whether to display the error message",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "paymentMethod",
+          "attribute": "payment-method",
+          "description": "Stripe PaymentMethod",
+          "type": "PaymentMethod"
+        },
+        {
+          "name": "source",
+          "attribute": "source",
+          "description": "Stripe Source",
+          "type": "Source"
+        },
+        {
+          "name": "token",
+          "attribute": "token",
+          "description": "Stripe Token",
+          "type": "Token"
+        },
+        {
+          "name": "element",
+          "attribute": "element",
+          "description": "Stripe element instance",
+          "type": "Element"
+        },
+        {
+          "name": "elements",
+          "attribute": "elements",
+          "description": "Stripe Elements instance",
+          "type": "Elements"
+        },
+        {
+          "name": "error",
+          "attribute": "error",
+          "description": "Stripe or validation error",
+          "type": "AmbiguousError"
+        },
+        {
+          "name": "focused",
+          "attribute": "focused",
+          "description": "If the element is focused.",
+          "type": "false",
+          "default": "false"
+        },
+        {
+          "name": "ready",
+          "attribute": "ready",
+          "description": "Whether the stripe element is ready to receive focus.",
+          "type": "false",
+          "default": "false"
+        },
+        {
+          "name": "stripe",
+          "attribute": "stripe",
+          "description": "Stripe instance",
+          "type": "Stripe"
+        },
+        {
+          "name": "hasError",
+          "attribute": "has-error",
+          "description": "Whether the element has an error\n**DEPRECATED**. Will be removed in a future version. Use `error` instead",
+          "type": "false",
+          "default": "false",
+          "deprecated": true
+        },
+        {
+          "name": "stripeReady",
+          "attribute": "stripe-ready",
+          "description": "Whether the stripe element is ready to receive focus.\n**DEPRECATED**. Will be removed in a future version. use `ready` instead.",
+          "type": "false",
+          "default": "false",
+          "deprecated": true
+        },
+        {
+          "name": "stripeMountId",
+          "description": "Stripe.js mount point element id. Due to limitations in the Stripe.js library, this element must be connected to the document.",
+          "type": "string"
+        }
+      ],
+      "events": [
+        {
+          "name": "unsupported",
+          "description": "When the element detects that the user agent cannot make a payment"
+        },
+        {
+          "name": "fail",
+          "description": "When a payment request fails"
+        },
+        {
+          "name": "cancel",
+          "description": "When a payment request is cancelled"
+        },
+        {
+          "name": "shippingaddresschange",
+          "description": "When the user chooses a different shipping address"
+        },
+        {
+          "name": "shippingoptionchange",
+          "description": "When the user chooses a different shipping option"
+        },
+        {
+          "name": "error",
+          "description": "The validation error, or the error returned from stripe.com"
+        },
+        {
+          "name": "payment-method",
+          "description": "The PaymentMethod received from stripe.com"
+        },
+        {
+          "name": "source",
+          "description": "The Source received from stripe.com"
+        },
+        {
+          "name": "token",
+          "description": "The Token received from stripe.com"
+        },
+        {
+          "name": "success",
+          "description": "When a payment succeeds"
+        },
+        {
+          "name": "ready",
+          "description": "Stripe has been initialized and mounted"
+        },
+        {
+          "name": "stripe-ready",
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `ready` instead"
+        },
+        {
+          "name": "stripe-error",
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `error` instead"
+        },
+        {
+          "name": "stripe-payment-method",
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `payment-method` instead"
+        },
+        {
+          "name": "stripe-source",
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `source` instead"
+        },
+        {
+          "name": "stripe-token",
+          "description": "**DEPRECATED**. Will be removed in a future major version. Use `token` instead"
+        }
+      ],
+      "cssProperties": [
+        {
+          "name": "--stripe-payment-request-element-min-width",
+          "description": "min-width property of the container element",
+          "default": "\"`300px`\""
+        },
+        {
+          "name": "--stripe-payment-request-element-padding",
+          "description": "padding property of the container element",
+          "default": "\"`8px 12px`\""
+        },
+        {
+          "name": "--stripe-payment-request-element-background",
+          "description": "background property of the container element",
+          "default": "\"`white`\""
         }
       ],
       "cssParts": [

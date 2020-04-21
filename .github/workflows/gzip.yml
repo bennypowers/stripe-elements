@@ -1,0 +1,17 @@
+name: GZIPed Size
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Calculate GZIPed Size
+        uses: preactjs/compressed-size-action@v1
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          pattern: './*.js'

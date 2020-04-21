@@ -2,15 +2,14 @@ import { render, html } from 'lit-html';
 import luhn from 'luhn-js';
 import creditCardType from 'credit-card-type';
 
-const assign = target => ([k, v]) => target[k] = v;
+const assign = (target: object) => ([k, v]: [string, unknown]): unknown => target[k] = v;
 
-export const PUBLISHABLE_KEY = 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX';
-
-export const SHOULD_ERROR_KEY = 'SHOULD_ERROR_KEY';
-
-export const TOKEN_ERROR_KEY = 'TOKEN_ERROR_KEY';
-
-export const INCOMPLETE_CARD_KEY = 'INCOMPLETE_CARD_KEY';
+export const enum Keys {
+  PUBLISHABLE_KEY = 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX',
+  SHOULD_ERROR_KEY = 'SHOULD_ERROR_KEY',
+  TOKEN_ERROR_KEY = 'TOKEN_ERROR_KEY',
+  INCOMPLETE_CARD_KEY = 'INCOMPLETE_CARD_KEY',
+}
 
 export const CLIENT_SECRET = 'CLIENT_SECRET';
 
@@ -39,7 +38,7 @@ export const INCOMPLETE_CARD_ERROR = Object.freeze({
 export const CARD_DECLINED_ERROR = Object.freeze({
   type: 'card_error',
   code: 'card_declined',
-  decline_code: 'generic_decline',
+  decline_code: 'generic_decline', // eslint-disable-line @typescript-eslint/camelcase
   message: 'The card has been declined.',
 });
 
@@ -51,86 +50,93 @@ const CARD_ERRORS = {
 
 const userAgentCreditCards = [];
 
-class SynthEventTarget {
-  eventTarget = new EventTarget();
-
+class SynthEventTarget extends EventTarget {
   listeners = [];
 
-  synthEvent(type, params) {
+  error: Error;
+
+  synthEvent(type: string, params: any): void {
     const error = this.error ?? params?.error;
     const props = { ...params, error };
     const event = new CustomEvent(type);
     Object.entries(props).forEach(assign(event));
-    this.eventTarget.dispatchEvent(event);
+    this.dispatchEvent(event);
   }
 
-  addEventListener(type, handler) {
+  addEventListener(type: string, handler: EventListenerOrEventListenerObject): void {
     this.listeners.push([type, handler]);
-    return this.eventTarget.addEventListener(type, handler);
+    return super.addEventListener(type, handler);
   }
 
-  on(type, handler) {
+  on(type: string, handler: EventListenerOrEventListenerObject): void {
     this.addEventListener(type, handler);
   }
 }
 
 class PaymentRequest extends SynthEventTarget {
-  constructor(options) {
-    super(options);
-    Object.entries(options).forEach(([name, value]) => {
-      this[name] = value;
-    });
+  constructor(options: any) {
+    super();
+    Object.entries(options).forEach(assign(this));
   }
 
-  async canMakePayment() {
+  async canMakePayment(): Promise<{ applePay: boolean }> {
     return userAgentCreditCards.length ? { applePay: true } : null;
   }
 }
 
 class Element extends SynthEventTarget {
+  type: string
+
   constructor(type, options) {
-    super(type, options);
+    super();
     this.type = type;
-    Object.entries(options).forEach(([name, value]) => {
-      this[name] = value;
-    });
+    Object.entries(options).forEach(assign(this));
   }
 
-  setState(props) {
-    Object.entries(props).forEach(([name, value]) => {
-      this[name] = value;
-    });
+  setState(props): void {
+    Object.entries(props).forEach(assign(this));
   }
 
   // Stripe Card APIs
 
-  mount(node) {
+  mount(node): void {
     render(html`<!-- Stripe mounts here -->`, node);
-    this.eventTarget.dispatchEvent(new CustomEvent('ready'));
+    this.dispatchEvent(new CustomEvent('ready'));
   }
 
-  blur() {
-    this.eventTarget.dispatchEvent(new CustomEvent('blur'));
+  blur(): void {
+    this.dispatchEvent(new CustomEvent('blur'));
   }
 
-  clear() { }
+  clear(): void { null; }
 
-  destroy() {
-    this.listeners.forEach(listener => this.eventTarget.removeEventListener(...listener));
-    delete this.eventTarget;
+  destroy(): void {
+    this.listeners.forEach((listener: [string, EventListenerOrEventListenerObject]) => this.removeEventListener(...listener));
   }
 
-  focus() {
-    this.eventTarget.dispatchEvent(new CustomEvent('focus'));
+  focus(): void {
+    this.dispatchEvent(new CustomEvent('focus'));
   }
 
-  unmount() { }
+  unmount(): void { null; }
 
-  update() { }
+  update(): void { null; }
 }
 
 class CardElement extends Element {
-  get error() {
+  cardNumber: string;
+
+  complete: boolean;
+
+  empty: boolean;
+
+  type: string;
+
+  options: any;
+
+  brand: string;
+
+  get error(): Error {
     const { cardNumber, complete, empty } = this;
     const cardError = CARD_ERRORS[cardNumber?.toString()];
     const stateError = (!complete || empty) ? INCOMPLETE_CARD_ERROR : undefined;
@@ -139,9 +145,11 @@ class CardElement extends Element {
 
   constructor(type, options) {
     super(type, options);
+    this.type = type;
+    this.options = options;
   }
 
-  setState({ cardNumber, mm, yy, cvc, zip }) {
+  setState({ cardNumber, mm, yy, cvc, zip }): void {
     super.setState({ cardNumber, mm, yy, cvc, zip });
 
     [{ type: this.brand }] = creditCardType(this.cardNumber);
@@ -165,13 +173,17 @@ class PaymentRequestButtonElement extends Element {
 }
 
 class Elements {
+  locale: string;
+
+  fonts: any;
+
   constructor({ locale, fonts }) {
     this.locale = locale;
     this.fonts = fonts;
     return this;
   }
 
-  create(type, { style } = {}) {
+  create(type: string, { style = undefined } = {}): CardElement|PaymentRequestButtonElement {
     switch (type) {
       case 'card': return new CardElement(type, { style });
       case 'paymentRequestButton': return new PaymentRequestButtonElement(type, { style });
@@ -180,25 +192,31 @@ class Elements {
 }
 
 export class Stripe {
-  constructor(key, opts) {
+  key: string;
+
+  opts: any;
+
+  keyError: Error;
+
+  constructor(key: Keys, opts: any) {
     this.key = key;
     this.opts = opts;
     this.keyError =
-      key === SHOULD_ERROR_KEY ? new Error(SHOULD_ERROR_KEY)
-      : key === TOKEN_ERROR_KEY ? new Error(TOKEN_ERROR_KEY)
+      key === Keys.SHOULD_ERROR_KEY ? new Error(Keys.SHOULD_ERROR_KEY)
+      : key === Keys.TOKEN_ERROR_KEY ? new Error(Keys.TOKEN_ERROR_KEY)
       : undefined;
     return this;
   }
 
-  elements({ fonts, locale } = {}) {
+  elements({ fonts = undefined, locale = undefined } = {}): Elements {
     return new Elements({ fonts, locale });
   }
 
-  paymentRequest(options) {
+  paymentRequest(options: any): PaymentRequest {
     return new PaymentRequest(options);
   }
 
-  async confirmCardPayment(clientSecret, data, options) {
+  async confirmCardPayment(clientSecret: string) {
     // console.log('Stripe#confirmCardPayment start', { clientSecret, data, options });
     const error =
       this.keyError ? this.keyError
