@@ -1,7 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs';
 import litcss from 'rollup-plugin-lit-css';
 import resolve from '@rollup/plugin-node-resolve';
-import babel from 'rollup-plugin-babel';
 import pkg from './package.json';
 
 const deps = Object.keys(pkg.dependencies);
@@ -25,9 +24,8 @@ export default {
     sourcemap: true,
   },
   plugins: [
-    babel({ externalHelpers: true, runtimeHelpers: true, babelrc: true }),
+    resolve({ extensions: ['.js', '.css', '.html'], dedupe: id => id.includes('lit') }),
     litcss(),
     commonjs(),
-    resolve(),
   ],
 };

@@ -9,15 +9,18 @@
 
 cc-test-reporter
 
-/StripeBase.js
-/StripeElements.js
-/StripePaymentRequest.js
-/stripe-elements.js
-/stripe-payment-request.js
-/shared.js
-/*.d.ts
-/*.js.map
-/index.js
+src/*.js
+src/*.js.map
+src/*.d.ts
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts
+*.js
+*.js.map
+*.d.ts
+!src/global.d.ts
+!karma.conf.js
+!rollup.config.js
 /lib
 
 bower_components/

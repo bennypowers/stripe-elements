@@ -1,7 +1,7 @@
 /* istanbul ignore file */
-import '../stripe-payment-request.js';
+import '../src/stripe-payment-request';
 
-import { expect, fixture, nextFrame } from '@open-wc/testing';
+import { expect, fixture, nextFrame, aTimeout } from '@open-wc/testing';
 import { stub } from 'sinon';
 
 import {
@@ -59,22 +59,23 @@ import {
   CARD_CONFIRM_ERROR_SECRET,
   CARD_DECLINED_ERROR,
   CLIENT_SECRET,
-  PUBLISHABLE_KEY,
+  Keys,
   SUCCESSFUL_PAYMENT_INTENT,
   SUCCESSFUL_PAYMENT_METHOD,
   SUCCESSFUL_SOURCE,
   SUCCESSFUL_TOKEN,
 } from '../test/mock-stripe';
-import { elem, not } from './lib/predicates';
+import { elem, not } from '../src/lib/predicates';
+import { isStripeShippingOption } from '../src/stripe-payment-request';
 
 const DEFAULT_PROPS = Object.freeze({
   ...BASE_DEFAULT_PROPS,
   action: undefined,
   amount: undefined,
-  canMakePayment: undefined,
+  canMakePayment: null,
   country: undefined,
   currency: undefined,
-  displayItems: undefined,
+  displayItems: [],
   label: undefined,
   paymentRequest: null,
   pending: false,
@@ -82,7 +83,7 @@ const DEFAULT_PROPS = Object.freeze({
   requestPayerName: undefined,
   requestPayerPhone: undefined,
   requestShipping: undefined,
-  shippingOptions: undefined,
+  shippingOptions: [],
   buttonType: 'default',
   buttonTheme: 'dark',
 });
@@ -96,6 +97,17 @@ const READ_ONLY_PROPS = Object.freeze([
 const NOTIFYING_PROPS = Object.freeze([
   ...BASE_NOTIFYING_PROPS,
 ]);
+
+describe('isStripeShippingOption', function() {
+  it('approves a shipping option', async function() {
+    const el = await fixture('<stripe-shipping-option></stripe-shipping-option');
+    expect(isStripeShippingOption(el)).to.be.true;
+  });
+  it('rejects a non-shipping option', async function() {
+    const el = await fixture('<stripe-display-item></stripe-display-item');
+    expect(isStripeShippingOption(el)).to.be.false;
+  });
+});
 
 describe('<stripe-payment-request>', function() {
   beforeEach(spyConsoleWarn);
@@ -131,22 +143,28 @@ describe('<stripe-payment-request>', function() {
     const template = `
       <stripe-payment-request>
         <stripe-display-item data-amount="125" data-label="Double Double"> </stripe-display-item>
-        <stripe-display-item data-amount="199" data-label="Box of 10 Timbits"> </stripe-display-item>
+        <stripe-display-item data-amount="199" data-label="Box of 10 Timbits" data-pending="true"> </stripe-display-item>
+        <stripe-display-item data-amount="325" data-label="Everything Bagel with Butter" data-pending="false"> </stripe-display-item>
       </stripe-payment-request>
     `;
 
     const displayItems = [
       { amount: 125, label: 'Double Double' },
-      { amount: 199, label: 'Box of 10 Timbits' },
+      { amount: 199, label: 'Box of 10 Timbits', pending: true },
+      { amount: 325, label: 'Everything Bagel with Butter', pending: false },
     ];
 
     beforeEach(setupWithTemplate(template));
-    it('gets the `displayItems` property based on DOM children', assertProps({ displayItems }, { deep: true }));
+    it('gets the `displayItems` property based on DOM children', assertProps({
+      displayItems,
+    }, { deep: true }));
 
     describe('and `displayItems` property set', function() {
       const displayItemsProperty = [{ amount: 125, label: 'Double Double' }];
       beforeEach(setProps({ displayItems: displayItemsProperty }));
-      it('gets the `displayItems` property based on DOM property', assertProps({ displayItems: displayItemsProperty }, { deep: true }));
+      it('gets the `displayItems` property based on DOM property', assertProps({
+        displayItems: displayItemsProperty,
+      }, { deep: true }));
     });
   });
 
@@ -211,7 +229,7 @@ describe('<stripe-payment-request>', function() {
       it('does not break primary host\'s internal DOM', function() {
         expect(primaryHost).shadowDom.to.equal(`
           <h1>Other Primary Host Content</h1>
-          <stripe-payment-request publishable-key="${PUBLISHABLE_KEY}">
+          <stripe-payment-request publishable-key="${Keys.PUBLISHABLE_KEY}">
             <slot name="stripe-payment-request-slot" slot="stripe-payment-request-slot"></slot>
           </stripe-payment-request>
         `);
@@ -309,7 +327,7 @@ describe('<stripe-payment-request>', function() {
 
       describe('when setting publishable key', function() {
         beforeEach(listenFor('unsupported'));
-        beforeEach(setProps({ publishableKey: PUBLISHABLE_KEY }));
+        beforeEach(setProps({ publishableKey: Keys.PUBLISHABLE_KEY }));
         it('fires the `unsupported` event', assertFired('unsupported'));
       });
     });
@@ -321,9 +339,11 @@ describe('<stripe-payment-request>', function() {
     describe('without Stripe.js', function withoutStripe() {
       beforeEach(restoreStripe);
       describe('with a valid publishable key', function apiKey() {
-        beforeEach(setupWithPublishableKey(PUBLISHABLE_KEY));
+        beforeEach(setupWithPublishableKey(Keys.PUBLISHABLE_KEY));
 
         it('logs a warning', async function logsWarning() {
+          // eslint-disable-next-line
+          // @ts-ignore
           expect(console.warn).to.have.been.calledWith(`<${element.constructor.is}>: ${NO_STRIPE_JS_ERROR}`);
         });
 
@@ -346,7 +366,7 @@ describe('<stripe-payment-request>', function() {
         afterEach(removeHeightStyleTag);
 
         describe('and a valid publishable key', function publishableKeyReset() {
-          beforeEach(setupWithPublishableKey(PUBLISHABLE_KEY));
+          beforeEach(setupWithPublishableKey(Keys.PUBLISHABLE_KEY));
           beforeEach(nextFrame);
           describe('with a mocked ShadyCSS shim', function() {
             beforeEach(mockShadyCSS);
@@ -410,28 +430,32 @@ describe('<stripe-payment-request>', function() {
         describe('when stripe mount point is removed from DOM', function() {
           beforeEach(removeStripeMount);
           describe('then publishable key is set', function() {
-            beforeEach(setProps({ publishableKey: PUBLISHABLE_KEY }));
+            beforeEach(setProps({ publishableKey: Keys.PUBLISHABLE_KEY }));
             beforeEach(nextFrame);
             it('rebuilds its DOM', function() {
               const { stripeMountId, tagName } = element;
               expect(element).lightDom.to.equal(expectedLightDOM({ stripeMountId, tagName }));
+              // eslint-disable-next-line
+              // @ts-ignore
               expect(element.stripeMount, 'mount').to.be.ok;
             });
 
             it('uses a new id', function() {
+              // eslint-disable-next-line
+              // @ts-ignore
               expect(element.stripeMount.id).to.not.equal(initialStripeMountId);
             });
           });
         });
         describe('when setting publishable key', function() {
-          beforeEach(setProps({ publishableKey: PUBLISHABLE_KEY }));
+          beforeEach(setProps({ publishableKey: Keys.PUBLISHABLE_KEY }));
           beforeEach(listenFor('ready'));
           it('fires the `ready` event', assertFired('ready'));
         });
       });
 
       describe('and a valid publishable key', function() {
-        beforeEach(setupWithPublishableKey(PUBLISHABLE_KEY));
+        beforeEach(setupWithPublishableKey(Keys.PUBLISHABLE_KEY));
 
         describe('with country and currency set', function() {
           beforeEach(setProps({ country: 'CA', currency: 'cad' }));
@@ -445,77 +469,86 @@ describe('<stripe-payment-request>', function() {
             it('initializes stripe instance', assertPropsOk(['stripe']));
 
             it('initializes elements instance', assertPropsOk(['elements']));
+
+            describe('when the paymentRequest fires the `source` event', function() {
+              const complete = stub();
+              const source = SUCCESSFUL_SOURCE;
+              beforeEach(listenFor('success'));
+              beforeEach(synthPaymentRequestEvent('source', { source, complete }));
+              beforeEach(nextFrame);
+              beforeEach(nextFrame);
+              beforeEach(nextFrame);
+              beforeEach(nextFrame);
+              beforeEach(nextFrame);
+              beforeEach(nextFrame);
+              afterEach(complete.resetBehavior.bind(complete));
+              it('fires a `success` event', assertFired('success'));
+              it('sets the `source` property', assertProps({ source }));
+              it('unsets the `error` property', assertProps({ error: null }));
+              it('unsets the `token` property', assertProps({ token: null }));
+              it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
+              it('calls the complete function', assertCalled(complete));
+            });
+
+            describe('when the paymentRequest fires a `source` event with an error', function() {
+              const complete = stub();
+              const error = CARD_DECLINED_ERROR;
+              beforeEach(listenFor('fail'));
+              beforeEach(synthPaymentRequestEvent('source', { error, complete }));
+              beforeEach(nextFrame);
+              afterEach(complete.resetBehavior.bind(complete));
+              it('fires a `fail` event', assertFired('fail'));
+              it('sets the `error` property', assertProps({ error }));
+              it('unsets the `token` property', assertProps({ token: null }));
+              it('unsets the `source` property', assertProps({ source: null }));
+              it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
+              it('calls the complete function', assertCalled(complete));
+            });
           });
+        });
 
-          describe('when publishable key is changed', function publishableKeyReset() {
-            let initialStripeMountId;
-            beforeEach(function() { initialStripeMountId = element.stripeMountId; });
-            beforeEach(setProps({ publishableKey: 'foo' }));
-            beforeEach(nextFrame);
-            afterEach(function() { initialStripeMountId = undefined; });
-            it('reinitializes stripe', function() { expect(element.stripe).to.be.ok.and.not.equal(initialStripe); });
-            it('uses a new mount point id', function() { expect(element.stripeMountId).to.be.ok.and.not.equal(initialStripeMountId); });
-          });
+        describe('when publishable key is changed', function publishableKeyReset() {
+          let initialStripeMountId;
+          beforeEach(function() { initialStripeMountId = element.stripeMountId; });
+          beforeEach(setProps({ publishableKey: 'foo' }));
+          beforeEach(nextFrame);
+          afterEach(function() { initialStripeMountId = undefined; });
+          it('reinitializes stripe', function() { expect(element.stripe).to.be.ok.and.not.equal(initialStripe); });
+          it('uses a new mount point id', function() { expect(element.stripeMountId).to.be.ok.and.not.equal(initialStripeMountId); });
+        });
 
-          describe('when publishable key is unset', function pkReset() {
-            beforeEach(setProps({ publishableKey: undefined }));
-            beforeEach(nextFrame);
-            it('unsets the `stripe` property', assertProps({ stripe: null }));
-            it('unsets the `element` property', assertProps({ element: null }));
-            it('unsets the `elements` property', assertProps({ elements: null }));
-          });
+        describe('when publishable key is unset', function pkReset() {
+          beforeEach(setProps({ publishableKey: undefined }));
+          beforeEach(nextFrame);
+          it('unsets the `stripe` property', assertProps({ stripe: null }));
+          it('unsets the `element` property', assertProps({ element: null }));
+          it('unsets the `elements` property', assertProps({ elements: null }));
+        });
 
-          it('sets the `canMakePayment` property', assertProps({ canMakePayment: { applePay: true } }, { deep: true }));
-
+        // TODO: should fire `ready`
+        describe('after some time', function() {
+          beforeEach(() => aTimeout(200));
+          const canMakePayment = { applePay: true };
           it('sets the `paymentRequest` property', assertPropsOk(['paymentRequest']));
+          it('sets the `canMakePayment` property', assertProps({ canMakePayment }, { deep: true }));
+        });
 
-          describe('when the paymentRequest fires the `cancel` event', function() {
-            beforeEach(listenFor('cancel'));
-            beforeEach(synthPaymentRequestEvent('cancel'));
-            it('fires a `cancel` event', assertFired('cancel'));
-          });
+        describe('when the paymentRequest fires the `cancel` event', function() {
+          beforeEach(listenFor('cancel'));
+          beforeEach(synthPaymentRequestEvent('cancel'));
+          it('fires a `cancel` event', assertFired('cancel'));
+        });
 
-          describe('when the paymentRequest fires the `shippingaddresschange` event', function() {
-            beforeEach(listenFor('shippingaddresschange'));
-            beforeEach(synthPaymentRequestEvent('shippingaddresschange'));
-            it('fires a `shippingaddresschange` event', assertFired('shippingaddresschange'));
-          });
+        describe('when the paymentRequest fires the `shippingaddresschange` event', function() {
+          beforeEach(listenFor('shippingaddresschange'));
+          beforeEach(synthPaymentRequestEvent('shippingaddresschange'));
+          it('fires a `shippingaddresschange` event', assertFired('shippingaddresschange'));
+        });
 
-          describe('when the paymentRequest fires the `shippingoptionchange` event', function() {
-            beforeEach(listenFor('shippingoptionchange'));
-            beforeEach(synthPaymentRequestEvent('shippingoptionchange'));
-            it('fires a `shippingoptionchange` event', assertFired('shippingoptionchange'));
-          });
-
-          describe('when the paymentRequest fires the `source` event', function() {
-            const complete = stub();
-            const source = SUCCESSFUL_SOURCE;
-            beforeEach(listenFor('success'));
-            beforeEach(synthPaymentRequestEvent('source', { source, complete }));
-            beforeEach(nextFrame);
-            afterEach(complete.resetBehavior.bind(complete));
-            it('fires a `success` event', assertFired('success'));
-            it('sets the `source` property', assertProps({ source }));
-            it('unsets the `error` property', assertProps({ error: null }));
-            it('unsets the `token` property', assertProps({ token: null }));
-            it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
-            it('calls the complete function', assertCalled(complete));
-          });
-
-          describe('when the paymentRequest fires a `source` event with an error', function() {
-            const complete = stub();
-            const error = CARD_DECLINED_ERROR;
-            beforeEach(listenFor('fail'));
-            beforeEach(synthPaymentRequestEvent('source', { error, complete }));
-            beforeEach(nextFrame);
-            afterEach(complete.resetBehavior.bind(complete));
-            it('fires a `fail` event', assertFired('fail'));
-            it('sets the `error` property', assertProps({ error }));
-            it('unsets the `token` property', assertProps({ token: null }));
-            it('unsets the `source` property', assertProps({ source: null }));
-            it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
-            it('calls the complete function', assertCalled(complete));
-          });
+        describe('when the paymentRequest fires the `shippingoptionchange` event', function() {
+          beforeEach(listenFor('shippingoptionchange'));
+          beforeEach(synthPaymentRequestEvent('shippingoptionchange'));
+          it('fires a `shippingoptionchange` event', assertFired('shippingoptionchange'));
         });
 
         describe('with `generate` set to "token"', function() {

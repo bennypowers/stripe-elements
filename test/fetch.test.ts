@@ -1,5 +1,5 @@
 import { expect } from '@open-wc/testing';
-import { throwBadResponse } from '../src/lib/fetch.js';
+import { throwBadResponse } from '../src/lib/fetch';
 
 describe('throwBadResponse', function() {
   it('throws the statusText of a bad response', async function() {

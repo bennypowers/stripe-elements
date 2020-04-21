@@ -1,13 +1,19 @@
-import { LitNotify } from '@morbidick/lit-element-notify';
-import { property } from 'lit-element';
+import { PropertyValues, property, customElement } from 'lit-element';
 
-import bound from 'bound-decorator';
+import bound from 'bind-decorator';
 
-import { StripeBase } from './StripeBase';
+import { StripeBase, StripePaymentResponse } from './StripeBase';
 import { dash } from './lib/strings';
 import { stripeMethod } from './lib/stripe-method-decorator';
 import sharedStyles from './shared.css';
 import style from './stripe-elements.css';
+
+interface StripeStyleInit {
+   base?: stripe.elements.Style;
+   complete?: stripe.elements.Style;
+   empty?: stripe.elements.Style;
+   invalid?: stripe.elements.Style;
+}
 
 const allowedStyles = [
   'color',
@@ -87,10 +93,10 @@ const allowedStyles = [
  * - `text-shadow`
  * - `text-transform`
  *
- * @cssprop [--stripe-elements-border-radius] - border radius of the element container. Default `4px`
- * @cssprop [--stripe-elements-border] - border property of the element container. Default `1px solid transparent`
- * @cssprop [--stripe-elements-box-shadow] - box shadow for the element container. Default `0 1px 3px 0 #e6ebf1`
- * @cssprop [--stripe-elements-transition] - transition property for the element container. Default `box-shadow 150ms ease`
+ * @cssprop [--stripe-elements-border-radius=`4px`] - border radius of the element container
+ * @cssprop [--stripe-elements-border=`1px solid transparent`] - border property of the element container
+ * @cssprop [--stripe-elements-box-shadow=`0 1px 3px 0 #e6ebf1`] - box shadow for the element container
+ * @cssprop [--stripe-elements-transition=`box-shadow 150ms ease`] - transition property for the element container
  *
  * @cssprop [--stripe-elements-base-color] - `color` property for the element in its base state
  * @cssprop [--stripe-elements-base-font-family] - `font-family` property for the element in its base state
@@ -145,12 +151,13 @@ const allowedStyles = [
  *
  * @fires 'change' - Stripe Element change event
  */
-export class StripeElements extends LitNotify(StripeBase) {
-  static is = 'stripe-elements';
+@customElement('stripe-elements')
+export class StripeElements extends StripeBase {
+  static readonly is = 'stripe-elements';
 
-  static elementType = 'card';
+  static readonly elementType = 'card';
 
-  static styles = [
+  static readonly styles = [
     sharedStyles,
     style,
   ];
@@ -159,88 +166,77 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * Whether to hide icons in the Stripe form.
-   * @type {boolean}
    */
-  @property({ type: Boolean, attribute: 'hide-icon' }) hideIcon = false;
+  @property({ type: Boolean, attribute: 'hide-icon' })
+  hideIcon = false;
 
   /**
    * Whether or not to hide the postal code field.
    * Useful when you gather shipping info elsewhere.
-   * @type {boolean}
    */
-  @property({ type: Boolean, attribute: 'hide-postal-code' }) hidePostalCode = false;
+  @property({ type: Boolean, attribute: 'hide-postal-code' })
+  hidePostalCode = false;
 
   /**
-   * Stripe icon style. 'solid' or 'default'.
-   * @type {'solid'|'default'}
+   * Stripe icon style.
    */
-  @property({ type: String, attribute: 'icon-style' }) iconStyle = 'default';
+  @property({ type: String, attribute: 'icon-style' })
+  iconStyle: stripe.elements.ElementsOptions['iconStyle'] = 'default';
 
   /**
-   * Prefilled values for form. Example {postalCode: '90210'}
-   * @type {object}
+   * Prefilled values for form.
+   * @example { postalCode: '90210' }
    */
-  @property({ type: Object }) value = {};
+  @property({ type: Object })
+  value: stripe.elements.ElementsOptions['value'] = {};
 
   /* READ ONLY PROPERTIES */
 
   /**
    * The card brand detected by Stripe
-   * @type {string}
-   * @readonly
    */
-  @property({ type: String, notify: true, readOnly: true }) brand = null;
+  @property({ type: String, notify: true, readOnly: true })
+  readonly brand: stripe.brandType = null;
 
   /**
    * Whether the form is complete.
-   * @type {boolean}
-   * @readonly
    */
-  @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) complete = false;
+  @property({ type: Boolean, reflect: true, notify: true, readOnly: true })
+  readonly complete = false;
 
   /**
    * If the form is empty.
-   * @type {boolean}
-   * @readonly
    */
-  @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) empty = true;
+  @property({ type: Boolean, reflect: true, notify: true, readOnly: true })
+  readonly empty = true;
 
   /**
    * Whether the form is invalid.
-   * @type {boolean}
-   * @readonly
    */
-  @property({ type: Boolean, reflect: true, notify: true, readOnly: true }) invalid = false;
+  @property({ type: Boolean, reflect: true, notify: true, readOnly: true })
+  readonly invalid = false;
 
   // DEPRECATED
 
   /**
    * The Stripe card object.
    * **DEPRECATED**. Will be removed in a future version. use `element` instead
-   * @type {stripe.elements.Element}
-   * @readonly
    * @deprecated
    */
-  @property({ type: Object, notify: true, readOnly: true }) card = null;
+  @property({ type: Object, notify: true, readOnly: true })
+  readonly card: stripe.elements.Element = null;
 
   /**
    * Whether the form is empty.
    * **DEPRECATED**. Will be removed in a future version. use `empty` instead
-   * @type {boolean}
    * @deprecated
    */
-  @property({
-    type: Boolean,
-    attribute: 'is-empty',
-    reflect: true,
-    notify: true,
-    readOnly: true,
-  }) isEmpty = true;
+  @property({ type: Boolean, attribute: 'is-empty', reflect: true, notify: true, readOnly: true })
+  isEmpty = true;
 
   /**
    * Whether the form is complete.
    * **DEPRECATED**. Will be removed in a future version. use `complete` instead
-   * @type {boolean}
    * @deprecated
    */
   @property({
@@ -249,71 +245,71 @@ export class StripeElements extends LitNotify(StripeBase) {
     reflect: true,
     notify: true,
     readOnly: true,
-  }) isComplete = false;
+  })
+  isComplete = false;
 
-  updated(changed) {
+  protected updated(changed: PropertyValues): void {
     super.updated(changed);
     // DEPRECATED
-    if (changed.has('element') && !this.element) this.set({ card: null });
+    if (changed.has('element') && !this.element) this.setReadOnlyProperties({ card: null });
   }
 
   /* PUBLIC API */
 
   /**
    * Submit payment information to generate a paymentMethod
-   * @param {stripe.PaymentMethodData} [paymentMethodData={}]
-   * @resolves {stripe.PaymentMethodResponse}
    */
-  @stripeMethod async createPaymentMethod(paymentMethodData = this.getPaymentMethodData()) {
+  @stripeMethod public async createPaymentMethod(
+    paymentMethodData: stripe.PaymentMethodData = this.getPaymentMethodData()
+  ): Promise<stripe.PaymentMethodResponse> {
     return this.stripe.createPaymentMethod(paymentMethodData);
   }
 
   /**
    * Submit payment information to generate a source
-   * @param {{ owner: stripe.OwnerInfo }} [sourceData={}]
-   * @resolves {stripe.SourceResponse}
    */
-  @stripeMethod async createSource(sourceData = this.sourceData) {
+  @stripeMethod public async createSource(
+    sourceData: stripe.SourceOptions = this.sourceData
+  ): Promise<stripe.SourceResponse> {
     return this.stripe.createSource(this.element, sourceData);
   }
 
   /**
    * Submit payment information to generate a token
-   * @param {TokenData} [tokenData=this.tokenData]
-   * @resolves {stripe.TokenResponse}
    */
-  @stripeMethod async createToken(tokenData = this.tokenData) {
+  @stripeMethod public async createToken(
+    tokenData: stripe.TokenOptions = this.tokenData
+  ): Promise<stripe.TokenResponse> {
     return this.stripe.createToken(this.element, tokenData);
   }
 
   /**
    * Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid.
-   * @return {boolean} true if the Stripe form is potentially valid
    */
-  isPotentiallyValid() {
+  public isPotentiallyValid(): boolean {
     return (!this.complete && !this.empty && !this.error) || this.validate();
   }
 
   /**
    * Resets the Stripe card.
    */
-  reset() {
+  public reset(): void {
     super.reset();
+    /* istanbul ignore next */
     this.element?.clear();
   }
 
   /**
    * Generates a payment representation of the type specified by `generate`.
-   * @resolves {PaymentResponse}
    */
-  async submit() {
+  public async submit(): Promise<StripePaymentResponse> {
     switch (this.generate) {
       case 'payment-method': return this.createPaymentMethod();
       case 'source': return this.createSource();
       case 'token': return this.createToken();
       default: {
         const error = this.createError(`cannot generate ${this.generate}`);
-        await this.set({ error });
+        await this.setReadOnlyProperties({ error });
         throw error;
       }
     }
@@ -321,12 +317,12 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * Checks if the Stripe form is valid.
-   * @return {boolean} true if the Stripe form is valid
    */
-  validate() {
+  public validate(): boolean {
     const { complete, empty, error } = this;
     const isValid = !error && complete && !empty;
-    if (empty && !error) this.set({ error: this.createError('Your card number is empty.') });
+    if (empty && !error)
+      this.setReadOnlyProperties({ error: this.createError('Your card number is empty.') });
     return isValid;
   }
 
@@ -334,15 +330,12 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * Generates PaymentMethodData from the element.
-   * @param  {stripe.PaymentMethodData} data data, minus card property
-   * @return {stripe.PaymentMethodData} data with card property
-   * @private
    */
-  getPaymentMethodData() {
+  private getPaymentMethodData(): stripe.PaymentMethodData {
     const type = 'card';
     const { billingDetails, element: card, paymentMethodData } = this;
     return ({
-      billing_details: billingDetails,
+      billing_details: billingDetails, // eslint-disable-line @typescript-eslint/camelcase
       ...paymentMethodData,
       type,
       card,
@@ -351,13 +344,17 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * Returns a Stripe-friendly style object computed from CSS custom properties
-   * @return {StripeStyleInit} Stripe Style initialization object.
-   * @private
    */
-  getStripeElementsStyles() {
+  private getStripeElementsStyles(): StripeStyleInit {
     const computedStyle = window.ShadyCSS ? undefined : getComputedStyle(this);
-    const getStyle = prop => this.getCSSCustomPropertyValue(prop, computedStyle) || undefined;
-    const styleReducer = ({ base = {}, complete = {}, empty = {}, invalid = {} }, camelCase) => ({
+    const getStyle = (prop: string): string =>
+      this.getCSSCustomPropertyValue(prop, computedStyle) || undefined;
+    const styleReducer = ({
+      base = {},
+      complete = {},
+      empty = {},
+      invalid = {},
+    }: StripeStyleInit, camelCase: string): StripeStyleInit => ({
       base: { ...base, [camelCase]: getStyle(`--stripe-elements-base-${dash(camelCase)}`) },
       complete: { ...complete, [camelCase]: getStyle(`--stripe-elements-complete-${dash(camelCase)}`) },
       empty: { ...empty, [camelCase]: getStyle(`--stripe-elements-empty-${dash(camelCase)}`) },
@@ -366,20 +363,23 @@ export class StripeElements extends LitNotify(StripeBase) {
     return allowedStyles.reduce(styleReducer, {});
   }
 
-  /**
-   * @private
-   */
-  async initElement() {
+  protected async initElement(): Promise<void> {
     if (!this.stripe) return;
     const { hidePostalCode, hideIcon, iconStyle, value } = this;
     const style = this.getStripeElementsStyles();
-    const options = { hideIcon, hidePostalCode, iconStyle, style, value };
+    const options: stripe.elements.ElementsOptions = {
+      hideIcon,
+      hidePostalCode,
+      iconStyle,
+      style,
+      value,
+    };
 
     const element = this.elements.create('card', options);
 
     element.addEventListener('change', this.onChange);
 
-    await this.set({
+    await this.setReadOnlyProperties({
       element,
       // DEPRECATED
       card: element,
@@ -388,18 +388,11 @@ export class StripeElements extends LitNotify(StripeBase) {
 
   /**
    * Updates the element's state.
-   * @param  {stripe.elements.ElementChangeResponse}         event
-   * @param  {boolean}       event.empty     true if value is empty
-   * @param  {boolean}       event.complete  true if value is well-formed and potentially complete.
-   * @param  {string}        event.brand     brand of the card being entered e.g. 'visa' or 'amex'
-   * @param  {stripe.Error}  event.error     The current validation error, if any.
-   * @param  {String|Object} event.value     Value of the form. Only non-sensitive information e.g. postalCode is present.
-   * @private
    */
-  @bound async onChange(event) {
+  @bound private async onChange(event: stripe.elements.ElementChangeResponse): Promise<void> {
     const { brand, complete, empty, error = null } = event;
     const invalid = error || (!empty && !complete);
-    await this.set({
+    await this.setReadOnlyProperties({
       brand,
       complete,
       empty,
@@ -415,5 +408,3 @@ export class StripeElements extends LitNotify(StripeBase) {
     this.fire('stripe-change', event);
   }
 }
-
-/** @typedef {{ base?: stripe.elements.Style, complete?: stripe.elements.Style, empty?: stripe.elements.Style, invalid?: stripe.elements.Style}} StripeStyleInit */

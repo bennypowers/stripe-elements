@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit-element';
 
-import { camel } from '../src/lib/strings';
+import { camel } from '../lib/strings';
 
 export const $ = x => document.querySelector(x);
 export const $$ = x => [...document.querySelectorAll(x)];
