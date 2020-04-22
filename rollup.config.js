@@ -2,6 +2,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import litcss from 'rollup-plugin-lit-css';
 import resolve from '@rollup/plugin-node-resolve';
 import pkg from './package.json';
+import copy from 'rollup-plugin-copy';
 
 const deps = Object.keys(pkg.dependencies);
 const external = id =>
@@ -25,6 +26,7 @@ export default {
   },
   plugins: [
     resolve({ extensions: ['.js', '.css', '.html'], dedupe: id => id.includes('lit') }),
+    copy({ targets: [{ src: 'src/*.d.ts', dest: '.' }] }),
     litcss(),
     commonjs(),
   ],

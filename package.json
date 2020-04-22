@@ -99,6 +99,7 @@
     "query-selector-shadow-dom": "^0.4.6",
     "rollup": "^2.7.1",
     "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-lit-css": "^2.0.3",
     "sinon": "^9.0.2",
     "sinon-chai": "^3.5.0",
