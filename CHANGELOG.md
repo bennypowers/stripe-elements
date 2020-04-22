@@ -1,3 +1,10 @@
+## [2.3.7](https://github.com/bennypowers/stripe-elements/compare/v2.3.6...v2.3.7) (2020-04-22)
+
+
+### Bug Fixes
+
+* publish typescript declarations ([4ad010a](https://github.com/bennypowers/stripe-elements/commit/4ad010a27bcba8e4dd311ba3a8ca446fa920e8ff))
+
 ## [2.3.6](https://github.com/bennypowers/stripe-elements/compare/v2.3.5...v2.3.6) (2020-04-22)
 
 
