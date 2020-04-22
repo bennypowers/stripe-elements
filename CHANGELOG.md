@@ -1,3 +1,10 @@
+## [2.3.6](https://github.com/bennypowers/stripe-elements/compare/v2.3.5...v2.3.6) (2020-04-22)
+
+
+### Bug Fixes
+
+* migrate to typescript ([1b63924](https://github.com/bennypowers/stripe-elements/commit/1b6392418739a065984e431689dccb632b816819))
+
 ## [2.3.5](https://github.com/bennypowers/stripe-elements/compare/v2.3.4...v2.3.5) (2020-02-25)
 
 
