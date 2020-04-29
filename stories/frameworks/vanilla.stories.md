@@ -1,18 +1,25 @@
+```js script
 import '@power-elements/codesandbox-button';
 
-import { html, Meta, Story } from '@open-wc/demoing-storybook';
+import { html } from '@open-wc/demoing-storybook';
 
-<Meta
-  title="Framework Examples/Vanilla"
-  parameters={{ options: { selectedPanel: 'storybookjs/docs/panel' } }}
-/>
+export default {
+  title: 'Framework Examples/Vanilla',
+  parameters: {
+    options: {
+      selectedPanel: 'storybookjs/docs/panel'
+    }
+  }
+}
+```
 
 # `<stripe-elements>`
 
-<Story name="stripe-elements">
- {html`<codesandbox-button sandbox-id="y4h9n"> </codesandbox-button>`}
-</Story>
-
+```js story
+export const VanillaStripeElements = () => html`
+  <codesandbox-button sandbox-id="y4h9n"></codesandbox-button>
+`
+```
 
 ```html
 <script type="module" src="https://unpkg.com/@power-elements/stripe-elements?module"></script>
@@ -60,9 +67,11 @@ import { html, Meta, Story } from '@open-wc/demoing-storybook';
 
 # `<stripe-payment-request>`
 
-<Story name="stripe-payment-request">
- {html`<codesandbox-button sandbox-id="5h7uy"> </codesandbox-button>`}
-</Story>
+```js story
+export const VanillaStripePaymentRequest = () => html`
+ <codesandbox-button sandbox-id="5h7uy"></codesandbox-button>
+`
+```
 
 ```html
 <stripe-payment-request

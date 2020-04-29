@@ -1,17 +1,25 @@
+```js script
 import '@power-elements/codesandbox-button';
 
-import { html, Meta, Story } from '@open-wc/demoing-storybook';
+import { html } from '@open-wc/demoing-storybook';
 
-<Meta
-  title="Framework Examples/Preact"
-  parameters={{ options: { selectedPanel: 'storybookjs/docs/panel' } }}
-/>
+export default {
+  title: 'Framework Examples/Preact',
+  parameters: {
+    options: {
+      selectedPanel: 'storybookjs/docs/panel'
+    }
+  }
+}
+```
 
 # `<stripe-elements>`
 
-<Story name="stripe-elements">
-  {html`<codesandbox-button sandbox-id="mqskb"> </codesandbox-button>`}
-</Story>
+```js story
+export const PreactStripeElements = () => html`
+  <codesandbox-button sandbox-id="mqskb"> </codesandbox-button>
+`
+```
 
 ```jsx
 import { loadScripts } from "./loadScripts";
@@ -63,9 +71,11 @@ if (typeof window !== "undefined") {
 
 # `<stripe-payment-request>`
 
-<Story name="stripe-payment-request">
-  {html`<codesandbox-button sandbox-id="6og3s"> </codesandbox-button>`}
-</Story>
+```js story
+export const PreactStripePaymentRequest = () => html`
+  <codesandbox-button sandbox-id="6og3s"> </codesandbox-button>
+`
+```
 
 ```jsx
 import { loadScripts } from "./loadScripts";

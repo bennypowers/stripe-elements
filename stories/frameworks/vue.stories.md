@@ -1,18 +1,25 @@
+```js script
 import '@power-elements/codesandbox-button';
 
-import { html, Meta, Story } from '@open-wc/demoing-storybook';
+import { html } from '@open-wc/demoing-storybook';
 
-<Meta
-  title="Framework Examples/Vue"
-  parameters={{ options: { selectedPanel: 'storybookjs/docs/panel' } }}
-/>
+export default {
+  title: 'Framework Examples/Vue',
+  parameters: {
+    options: {
+      selectedPanel: 'storybookjs/docs/panel'
+    }
+  }
+}
+```
 
 # `<stripe-elements>`
 
-<Story name="stripe-elements">
-  {html`<codesandbox-button sandbox-id="06ulb" module="/src/Payment.vue"> </codesandbox-button>`}
-</Story>
-
+```js story
+export const VueStripeElements = () => html`
+  <codesandbox-button sandbox-id="06ulb" module="/src/Payment.vue"></codesandbox-button>
+`
+```
 
 ```html
 <template>
@@ -69,9 +76,11 @@ export default {
 
 # `<stripe-payment-request>`
 
-<Story name="stripe-payment-request">
-  {html`<codesandbox-button sandbox-id="23edw" module="/src/Payment.vue"> </codesandbox-button>`}
-</Story>
+```js story
+export const VueStripePaymentRequest = () => html`
+  <codesandbox-button sandbox-id="23edw" module="/src/Payment.vue"></codesandbox-button>
+`
+```
 
 
 ```html

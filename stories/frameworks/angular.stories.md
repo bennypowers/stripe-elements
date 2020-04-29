@@ -1,18 +1,28 @@
+```js script
 import '@power-elements/codesandbox-button';
 
-import { html, Meta, Story } from '@open-wc/demoing-storybook';
+import { html } from '@open-wc/demoing-storybook';
 
-<Meta
-  title="Framework Examples/Angular"
-  parameters={{ options: { selectedPanel: 'storybookjs/docs/panel' } }}
-/>
+export default {
+  title: 'Framework Examples/Angular',
+  parameters: {
+    options: {
+      selectedPanel: 'storybookjs/docs/panel'
+      }
+  }
+}
+```
 
 # `<stripe-elements>`
 
-<Story name="stripe-elements">
-  {html`<codesandbox-button sandbox-id="0mgh4" module="/src/app/app.component.ts"> </codesandbox-button>`}
-</Story>
-
+```js story
+export const AngularStripeElements = () => html`
+  <codesandbox-button
+      sandbox-id="0mgh4"
+      module="/src/app/app.component.ts"
+  ></codesandbox-button>
+`;
+```
 
 ```ts
 import { Component } from "@angular/core";
@@ -48,10 +58,14 @@ export class AppComponent {
 
 # `<stripe-payment-request>`
 
-<Story name="stripe-payment-request">
-  {html`<codesandbox-button sandbox-id="97z2t" module="/src/app/app.component.ts"> </codesandbox-button>`}
-</Story>
-
+```js story
+export const AngularStripePaymentRequest = () => html`
+  <codesandbox-button
+      sandbox-id="97z2t"
+      module="/src/app/app.component.ts"
+  ></codesandbox-button>
+`;
+```
 
 ```ts
 import { Component } from "@angular/core";

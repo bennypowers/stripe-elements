@@ -1,18 +1,25 @@
+```js script
 import '@power-elements/codesandbox-button';
 
-import { html, Meta, Story } from '@open-wc/demoing-storybook';
+import { html } from '@open-wc/demoing-storybook';
 
-<Meta
-  title="Framework Examples/React"
-  parameters={{ options: { selectedPanel: 'storybookjs/docs/panel' } }}
-/>
+export default {
+  title: 'Framework Examples/React',
+  parameters: {
+    options: {
+      selectedPanel: 'storybookjs/docs/panel'
+    }
+  }
+}
+```
 
 # `<stripe-elements>`
 
-<Story name="stripe-elements">
-  {html`<codesandbox-button sandbox-id="23zw8"> </codesandbox-button>`}
-</Story>
-
+```js story
+export const ReactStripeElements = () => html`
+  <codesandbox-button sandbox-id="23zw8"></codesandbox-button>
+`
+```
 
 ```jsx
 import React, { useState, useRef, useEffect } from "react";
@@ -67,9 +74,11 @@ ReactDOM.render(<App />, document.getElementById("root"));
 
 # `<stripe-payment-request>`
 
-<Story name="stripe-payment-request">
-  {html`<codesandbox-button sandbox-id="0kktv"> </codesandbox-button>`}
-</Story>
+```js story
+export const ReactStripePaymentRequest = () => html`
+  <codesandbox-button sandbox-id="0kktv"></codesandbox-button>
+`
+```
 
 
 ```jsx
