@@ -9,7 +9,6 @@ module.exports = config => {
       ],
 
       esm: {
-        babel: true,
         nodeResolve: true,
         fileExtensions: ['.js', '.css'],
         responseTransformers: [

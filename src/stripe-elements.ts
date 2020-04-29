@@ -2,7 +2,7 @@ import { PropertyValues, property, customElement } from 'lit-element';
 
 import bound from 'bind-decorator';
 
-import { StripeBase, StripePaymentResponse } from './StripeBase';
+import { StripeBase, StripePaymentResponse, SlotName } from './StripeBase';
 import { dash } from './lib/strings';
 import { stripeMethod } from './lib/stripe-method-decorator';
 import sharedStyles from './shared.css';
@@ -161,6 +161,8 @@ export class StripeElements extends StripeBase {
     sharedStyles,
     style,
   ];
+
+  protected get slotName(): SlotName { return SlotName['stripe-elements']; }
 
   /* PUBLIC FIELDS */
 

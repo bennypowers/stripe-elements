@@ -3,7 +3,7 @@ import { customElement, property, PropertyValues } from 'lit-element';
 
 import bound from 'bind-decorator';
 
-import { StripeBase } from './StripeBase';
+import { StripeBase, SlotName } from './StripeBase';
 import { throwResponseError } from './lib/stripe';
 import sharedStyles from './shared.css';
 import style from './stripe-payment-request.css';
@@ -167,6 +167,8 @@ export class StripePaymentRequest extends StripeBase {
     sharedStyles,
     style,
   ];
+
+  protected get slotName(): SlotName { return SlotName['stripe-payment-request']; }
 
   /**
    * The amount in the currency's subunit (e.g. cents, yen, etc.)

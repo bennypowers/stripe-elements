@@ -462,6 +462,7 @@ There are 11 properties for each state that you can set which will be read into 
 | `publishableKey`    | `publishable-key` |           | `string`                                         |          | Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX` |
 | `ready`             | `ready`           | readonly  | `false`                                          | false    | Whether the stripe element is ready to receive focus. |
 | `showError`         | `show-error`      |           | `boolean`                                        | false    | Whether to display the error message             |
+| `slotName`          |                   |           | `SlotName`                                       |          | Name for breadcrumb slots. Derived from tagName  |
 | `source`            | `source`          | readonly  | `Source`                                         | null     | Stripe Source                                    |
 | `sourceData`        |                   |           | `SourceOptions`                                  |          | Data passed to stripe.createSource. (optional)   |
 | `stripe`            | `stripe`          | readonly  | `Stripe`                                         | null     | Stripe instance                                  |
@@ -644,6 +645,7 @@ See the demos for more comprehensive examples.
 | `requestShipping`   |                   |           | `boolean`                                        |          | Collect shipping address by setting this option to true. The address appears in the PaymentResponse.<br />You must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback. |
 | `shippingOptions`   |                   |           | `ShippingOption[]`                               |          | An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option. |
 | `showError`         | `show-error`      |           | `boolean`                                        | false    | Whether to display the error message             |
+| `slotName`          |                   |           | `SlotName`                                       |          | Name for breadcrumb slots. Derived from tagName  |
 | `source`            | `source`          | readonly  | `Source`                                         | null     | Stripe Source                                    |
 | `sourceData`        |                   |           | `SourceOptions`                                  |          | Data passed to stripe.createSource. (optional)   |
 | `stripe`            | `stripe`          | readonly  | `Stripe`                                         | null     | Stripe instance                                  |

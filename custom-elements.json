@@ -1411,6 +1411,11 @@
           "name": "stripeMountId",
           "description": "Stripe.js mount point element id. Due to limitations in the Stripe.js library, this element must be connected to the document.",
           "type": "string"
+        },
+        {
+          "name": "slotName",
+          "description": "Name for breadcrumb slots. Derived from tagName",
+          "type": "SlotName"
         }
       ],
       "events": [
@@ -1973,6 +1978,11 @@
           "name": "stripeMountId",
           "description": "Stripe.js mount point element id. Due to limitations in the Stripe.js library, this element must be connected to the document.",
           "type": "string"
+        },
+        {
+          "name": "slotName",
+          "description": "Name for breadcrumb slots. Derived from tagName",
+          "type": "SlotName"
         }
       ],
       "events": [

@@ -12,7 +12,11 @@ import { dash, generateRandomMountElementId } from './lib/strings';
 import { isRepresentation } from './lib/predicates';
 import { throwBadResponse } from './lib/fetch';
 
-export type SlotName = 'stripe-elements-slot'|'stripe-payment-request-slot';
+export const enum SlotName {
+  'stripe-elements' = 'stripe-elements-slot',
+  'stripe-payment-request' = 'stripe-payment-request-slot',
+}
+
 export type PaymentRepresentation = 'payment-method'|'source'|'token'
 
 export type StripePaymentResponse =
@@ -258,7 +262,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /**
    * Name for breadcrumb slots. Derived from tagName
    */
-  protected slotName: 'stripe-elements-slot' | 'stripe-payment-request-slot';
+  protected slotName: SlotName;
 
   /* LIFECYCLE */
 
@@ -278,16 +282,6 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
         ${ifDefined(errorMessage)}
       </output>
     `;
-  }
-
-  constructor() {
-    super();
-    const slotName =
-        this.tagName === 'STRIPE-ELEMENTS' ? 'stripe-elements-slot'
-      : this.tagName === 'STRIPE-PAYMENT-REQUEST' ? 'stripe-payment-request-slot'
-      /* istanbul ignore next */
-      : null;
-    this.slotName = slotName;
   }
 
   /** @inheritdoc */
