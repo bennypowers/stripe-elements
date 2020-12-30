@@ -168,6 +168,7 @@ export class StripePaymentRequest extends StripeBase {
     style,
   ];
 
+  // @ts-expect-error: hopefully ts will allow this soon
   protected get slotName(): SlotName { return SlotName['stripe-payment-request']; }
 
   /**
@@ -309,6 +310,7 @@ export class StripePaymentRequest extends StripeBase {
   protected updated(changed: PropertyValues): void {
     super.updated(changed);
     if (changed.has('generate')) this.initPaymentRequestListeners();
+    if (changed.has('amount')) this.updatePaymentRequest();
   }
 
   /* PRIVATE API */
@@ -325,8 +327,8 @@ export class StripePaymentRequest extends StripeBase {
       requestPayerEmail,
       requestPayerName,
       requestPayerPhone,
-      label,
-      amount,
+      label = '',
+      amount = 0,
     } = this;
     const total = { label, amount };
     return {
@@ -382,6 +384,8 @@ export class StripePaymentRequest extends StripeBase {
    */
   private async initPaymentRequestListeners(): Promise<void> {
     if (!this.canMakePayment) return;
+    // @ts-expect-error: the types are incomplete in @types/stripe.js
+    this.paymentRequest.on('click', this.updatePaymentRequest);
     this.paymentRequest.on('cancel', this.onCancel);
     this.paymentRequest.on('shippingaddresschange', this.onShippingaddresschange);
     this.paymentRequest.on('shippingoptionchange', this.onShippingoptionchange);
@@ -390,6 +394,16 @@ export class StripePaymentRequest extends StripeBase {
       case 'source': this.paymentRequest.on('source', this.onPaymentResponse); break;
       case 'token': this.paymentRequest.on('token', this.onPaymentResponse); break;
     }
+  }
+
+  /**
+   * Updates the PaymentRequests's values
+   */
+  private async updatePaymentRequest() {
+    if (!this.paymentRequest) return;
+    const { currency, total, displayItems, shippingOptions } =
+      this.getStripePaymentRequestOptions();
+    this.paymentRequest.update({ currency, total, displayItems, shippingOptions });
   }
 
   /**
@@ -440,7 +454,7 @@ export class StripePaymentRequest extends StripeBase {
   @bound private async confirmPaymentIntent(
     paymentResponse: StripePaymentRequestResponse
   ): Promise<void> {
-    const confirmCardData = { payment_method: this.paymentMethod.id }; // eslint-disable-line @typescript-eslint/camelcase
+    const confirmCardData = { payment_method: this.paymentMethod.id };
     const { error = null, paymentIntent = null } =
       await this.confirmCardPayment(confirmCardData, { handleActions: false })
         .then(({ error: confirmationError }) => this.complete(paymentResponse, confirmationError)) // throws if first confirm errors

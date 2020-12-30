@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-types, no-invalid-this, @typescript-eslint/no-explicit-any */
+
 function wrap(f) {
   return (_target: Object, _property: string, descriptor: TypedPropertyDescriptor<any>) => {
     const original = descriptor.value;

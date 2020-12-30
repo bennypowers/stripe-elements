@@ -262,7 +262,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
   /**
    * Name for breadcrumb slots. Derived from tagName
    */
-  protected slotName: SlotName;
+  declare protected slotName: SlotName;
 
   /* LIFECYCLE */
 
@@ -449,7 +449,7 @@ export class StripeBase extends ReadOnlyPropertiesMixin(LitNotify(LitElement)) {
     // trace each shadow boundary between us and the document
     let host = this as Element;
     this.shadowHosts = [this];
-    while (host = (host.getRootNode() as ShadowRoot).host) // eslint-disable-line no-loops/no-loops, prefer-destructuring
+    while (host = (host.getRootNode() as ShadowRoot).host) // eslint-disable-line easy-loops/easy-loops, no-cond-assign, prefer-destructuring
       this.shadowHosts.push(host);
 
     const { shadowHosts, slotName } = this;

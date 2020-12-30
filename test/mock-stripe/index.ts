@@ -4,7 +4,7 @@ import creditCardType from 'credit-card-type';
 
 const assign = (target: object) => ([k, v]: [string, unknown]): unknown => target[k] = v;
 
-export const enum Keys {
+export enum Keys {
   PUBLISHABLE_KEY = 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX',
   SHOULD_ERROR_KEY = 'SHOULD_ERROR_KEY',
   TOKEN_ERROR_KEY = 'TOKEN_ERROR_KEY',
@@ -74,14 +74,18 @@ class SynthEventTarget extends EventTarget {
 }
 
 class PaymentRequest extends SynthEventTarget {
+  declare total: { amount: number, label: string };
+
   constructor(options: any) {
     super();
-    Object.entries(options).forEach(assign(this));
+    this.update(options);
   }
 
   async canMakePayment(): Promise<{ applePay: boolean }> {
     return userAgentCreditCards.length ? { applePay: true } : null;
   }
+
+  update(options): void { Object.entries(options).forEach(assign(this)); }
 }
 
 class Element extends SynthEventTarget {
@@ -111,7 +115,8 @@ class Element extends SynthEventTarget {
   clear(): void { null; }
 
   destroy(): void {
-    this.listeners.forEach((listener: [string, EventListenerOrEventListenerObject]) => this.removeEventListener(...listener));
+    this.listeners.forEach((listener: [string, EventListenerOrEventListenerObject]) =>
+      this.removeEventListener(...listener));
   }
 
   focus(): void {
@@ -120,7 +125,7 @@ class Element extends SynthEventTarget {
 
   unmount(): void { null; }
 
-  update(): void { null; }
+  update(options): void { this.setState(options); }
 }
 
 class CardElement extends Element {
@@ -136,6 +141,7 @@ class CardElement extends Element {
 
   brand: string;
 
+  // @ts-expect-error: whatever
   get error(): Error {
     const { cardNumber, complete, empty } = this;
     const cardError = CARD_ERRORS[cardNumber?.toString()];

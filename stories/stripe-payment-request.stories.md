@@ -141,6 +141,33 @@ el.shippingOptions = [
 ]
 ```
 
+If you update the element's `amount` or `label` properties, it will update the payment requestUpdate
+
+```js preview-story
+export const UpdatingPaymentRequestOptions = () => html`
+  <payment-request-demo>
+    <stripe-payment-request
+        publishable-key="${publishableKey}"
+        generate="payment-method"
+        request-payer-name
+        request-payer-email
+        request-payer-phone
+        country="CA"
+        currency="cad">
+    </stripe-payment-request>
+    <mwc-textfield label="Amount (CAD)" type="number" @input="${event => {
+      const spr = event.target.parentElement.querySelector("stripe-payment-request");
+      spr.amount = parseFloat(event.target.value) * 100;
+    }}"></mwc-textfield>
+    <mwc-textfield label="Label" @input="${event => {
+      const spr = event.target.parentElement.querySelector("stripe-payment-request");
+      spr.label = event.target.value;
+    }}"></mwc-textfield>
+  </payment-request-demo>
+`;
+UpdatingPaymentRequestOptions.withSource = 'open';
+```
+
 ## PaymentIntents
 
 Stripe provides a PaymentIntent API which is both more secure and more compatible with EU regulations.

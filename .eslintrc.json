@@ -4,10 +4,16 @@
     "ShadyCSS": true,
     "Stripe": true
   },
-  "overrides": [{
-    "files": "**/*.test.ts",
-    "rules": {
-      "max-len": 0
+  "overrides": [
+    {
+      "files": "**/*.test.ts",
+      "rules": {
+        "max-len": 0
+      }
+    },
+    {
+      "files": "**/*.ts",
+      "rules": { "@typescript-eslint/explicit-module-boundary-types": "off" }
     }
-  }]
+  ]
 }

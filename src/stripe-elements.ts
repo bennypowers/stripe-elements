@@ -162,6 +162,7 @@ export class StripeElements extends StripeBase {
     style,
   ];
 
+  // @ts-expect-error: hopefully ts will allow this soon
   protected get slotName(): SlotName { return SlotName['stripe-elements']; }
 
   /* PUBLIC FIELDS */

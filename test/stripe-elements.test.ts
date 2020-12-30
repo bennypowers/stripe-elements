@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 import '../src/stripe-elements';
+import { StripeElements } from '../src/stripe-elements';
 
 import { expect, fixture, oneEvent, nextFrame } from '@open-wc/testing';
 import { match } from 'sinon';
@@ -327,7 +328,7 @@ describe('<stripe-elements>', function() {
 
       it('throws an error when creating payment method', async function() {
         try {
-          await element.createPaymentMethod();
+          await (element as StripeElements).createPaymentMethod();
           expect.fail('Resolved source promise without Stripe.js');
         } catch (err) {
           // eslint-disable-next-line
@@ -338,7 +339,7 @@ describe('<stripe-elements>', function() {
 
       it('throws an error when creating token', async function() {
         try {
-          await element.createToken();
+          await (element as StripeElements).createToken();
           expect.fail('Resolved token promise without Stripe.js');
         } catch (err) {
           expect(err.message).to.equal(`<${element.tagName.toLowerCase()}>: ${NO_STRIPE_CREATE_TOKEN_ERROR}`);
@@ -347,7 +348,7 @@ describe('<stripe-elements>', function() {
 
       it('throws an error when creating source', async function() {
         try {
-          await element.createSource();
+          await (element as StripeElements).createSource();
           expect.fail('Resolved source promise without Stripe.js');
         } catch (err) {
           // eslint-disable-next-line
@@ -358,7 +359,7 @@ describe('<stripe-elements>', function() {
 
       it('throws an error when calling submit', async function() {
         try {
-          await element.submit();
+          await (element as StripeElements).submit();
           expect.fail('Resolved submit promise without Stripe.js');
         } catch (err) {
           // eslint-disable-next-line
@@ -489,7 +490,7 @@ describe('<stripe-elements>', function() {
         describe('calling validate()', function() {
           beforeEach(validate);
           it('returns true', function validating() {
-            expect(element.validate()).to.be.true;
+            expect((element as StripeElements).validate()).to.be.true;
           });
 
           it('unsets the `error` property', assertProps({ error: null }));
@@ -510,9 +511,9 @@ describe('<stripe-elements>', function() {
       });
 
       it('mounts a card into the target', async function cardInit() {
-        expect(element.card).to.be.ok;
+        expect((element as StripeElements).card).to.be.ok;
         expect(element.element).to.be.ok;
-        expect(element.card).to.equal(element.element);
+        expect((element as StripeElements).card).to.equal(element.element);
       });
 
       describe('removing the element', function() {
@@ -592,7 +593,7 @@ describe('<stripe-elements>', function() {
         });
 
         it('unsets card', function() {
-          expect(element.card).to.be.null;
+          expect((element as StripeElements).card).to.be.null;
         });
       });
 
@@ -600,7 +601,7 @@ describe('<stripe-elements>', function() {
         beforeEach(validate);
 
         it('returns false', function() {
-          expect(element.validate()).to.be.false;
+          expect((element as StripeElements).validate()).to.be.false;
         });
 
         it('sets the `error` property', assertElementErrorMessage(EMPTY_CC_ERROR));
@@ -608,7 +609,7 @@ describe('<stripe-elements>', function() {
 
       describe('calling isPotentiallyValid()', function() {
         it('returns false', function callingIsPotentiallyValidWithoutCard() {
-          expect(element.isPotentiallyValid()).to.be.false;
+          expect((element as StripeElements).isPotentiallyValid()).to.be.false;
         });
 
         it('does not set the `error` property', function() {
@@ -636,7 +637,7 @@ describe('<stripe-elements>', function() {
 
       describe('calling submit()', function() {
         it('sets the `error` property', function() {
-          element.submit().then(() => expect.fail('Response Received'), function() {
+          (element as StripeElements).submit().then(() => expect.fail('Response Received'), function() {
             expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR);
             expect(element.source, 'source').to.be.null;
           });
@@ -700,14 +701,14 @@ describe('<stripe-elements>', function() {
           describe('calling validate()', function() {
             beforeEach(validate);
             it('returns false', function() {
-              expect(element.validate()).to.be.false;
+              expect((element as StripeElements).validate()).to.be.false;
             });
           });
 
 
           describe('calling isPotentiallyValid()', function() {
             it('returns false', function() {
-              expect(element.isPotentiallyValid()).to.be.false;
+              expect((element as StripeElements).isPotentiallyValid()).to.be.false;
             });
           });
         });
@@ -725,13 +726,13 @@ describe('<stripe-elements>', function() {
 
           describe('calling validate()', function() {
             it('returns false', function() {
-              expect(element.validate()).to.be.false;
+              expect((element as StripeElements).validate()).to.be.false;
             });
           });
 
           describe('calling isPotentiallyValid()', function() {
             it('returns false', function() {
-              expect(element.isPotentiallyValid()).to.be.false;
+              expect((element as StripeElements).isPotentiallyValid()).to.be.false;
             });
           });
         });
@@ -749,20 +750,20 @@ describe('<stripe-elements>', function() {
 
           describe('calling validate()', function() {
             it('returns false', function() {
-              expect(element.validate()).to.be.false;
+              expect((element as StripeElements).validate()).to.be.false;
             });
           });
 
           describe('calling isPotentiallyValid()', function() {
             it('returns false', function() {
-              expect(element.isPotentiallyValid()).to.be.false;
+              expect((element as StripeElements).isPotentiallyValid()).to.be.false;
             });
           });
         });
 
         describe('calling submit()', function() {
           it('sets the `error` property', function() {
-            element.submit().then(() => expect.fail('Response received'), function() {
+            (element as StripeElements).submit().then(() => expect.fail('Response received'), function() {
               expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR);
               expect(element.source, 'source').to.be.null;
             });
@@ -781,7 +782,7 @@ describe('<stripe-elements>', function() {
 
         describe('calling createPaymentMethod()', function() {
           it('resolves with the payment method', function() {
-            return element.createPaymentMethod()
+            return (element as StripeElements).createPaymentMethod()
               .then(result => expect(result.paymentMethod).to.equal(SUCCESS_RESPONSES.paymentMethod));
           });
 
@@ -795,13 +796,13 @@ describe('<stripe-elements>', function() {
               beforeEach(validate);
               it('unsets the `error` property', assertProps({ error: null }));
               it('returns true', function() {
-                expect(element.validate()).to.be.true;
+                expect((element as StripeElements).validate()).to.be.true;
               });
             });
 
             describe('calling isPotentiallyValid()', function() {
               it('returns true', function() {
-                expect(element.isPotentiallyValid()).to.be.true;
+                expect((element as StripeElements).isPotentiallyValid()).to.be.true;
               });
             });
           });
@@ -809,7 +810,7 @@ describe('<stripe-elements>', function() {
 
         describe('calling createSource()', function() {
           it('resolves with the source', function() {
-            return element.createSource()
+            return (element as StripeElements).createSource()
               .then(result => expect(result.source).to.equal(SUCCESS_RESPONSES.source));
           });
 
@@ -824,13 +825,13 @@ describe('<stripe-elements>', function() {
               beforeEach(validate);
               it('unsets the `error` property', assertProps({ error: null }));
               it('returns true', function() {
-                expect(element.validate()).to.be.true;
+                expect((element as StripeElements).validate()).to.be.true;
               });
             });
 
             describe('calling isPotentiallyValid()', function() {
               it('returns true', function() {
-                expect(element.isPotentiallyValid()).to.be.true;
+                expect((element as StripeElements).isPotentiallyValid()).to.be.true;
               });
             });
           });
@@ -838,7 +839,7 @@ describe('<stripe-elements>', function() {
 
         describe('calling createToken()', function() {
           it('resolves with the token', function() {
-            return element.createToken()
+            return (element as StripeElements).createToken()
               .then(result => expect(result.token).to.equal(SUCCESS_RESPONSES.token));
           });
 
@@ -853,13 +854,13 @@ describe('<stripe-elements>', function() {
               beforeEach(validate);
               it('unsets the `error` property', assertProps({ error: null }));
               it('returns true', function() {
-                expect(element.validate()).to.be.true;
+                expect((element as StripeElements).validate()).to.be.true;
               });
             });
 
             describe('calling isPotentiallyValid()', function() {
               it('returns true', function() {
-                expect(element.isPotentiallyValid()).to.be.true;
+                expect((element as StripeElements).isPotentiallyValid()).to.be.true;
               });
             });
           });
@@ -867,7 +868,7 @@ describe('<stripe-elements>', function() {
 
         describe('and generate unset', function() {
           it('calling submit() resolves with the source', function() {
-            return element.submit()
+            return (element as StripeElements).submit()
               .then(result => expect((result as stripe.SourceResponse).source).to.equal(SUCCESS_RESPONSES.source));
           });
 
@@ -882,12 +883,12 @@ describe('<stripe-elements>', function() {
               describe('calling validate()', function() {
                 beforeEach(validate);
                 it('unsets the `error` property', assertProps({ error: null }));
-                it('returns true', function() { expect(element.validate()).to.be.true; });
+                it('returns true', function() { expect((element as StripeElements).validate()).to.be.true; });
               });
 
               describe('calling isPotentiallyValid()', function() {
                 it('returns true', function() {
-                  expect(element.isPotentiallyValid()).to.be.true;
+                  expect((element as StripeElements).isPotentiallyValid()).to.be.true;
                 });
               });
             });
@@ -898,7 +899,7 @@ describe('<stripe-elements>', function() {
           beforeEach(setProps({ generate: 'source' }));
           describe('calling submit()', function() {
             it('resolves with the source', function() {
-              return element.submit()
+              return (element as StripeElements).submit()
                 .then(result => expect((result as stripe.SourceResponse).source).to.equal(SUCCESS_RESPONSES.source));
             });
 
@@ -912,12 +913,12 @@ describe('<stripe-elements>', function() {
               describe('calling validate()', function() {
                 beforeEach(validate);
                 it('unsets the `error` property', assertProps({ error: null }));
-                it('returns true', function() { expect(element.validate()).to.be.true; });
+                it('returns true', function() { expect((element as StripeElements).validate()).to.be.true; });
               });
 
               describe('calling isPotentiallyValid()', function() {
                 it('returns true', function() {
-                  expect(element.isPotentiallyValid()).to.be.true;
+                  expect((element as StripeElements).isPotentiallyValid()).to.be.true;
                 });
               });
             });
@@ -928,7 +929,7 @@ describe('<stripe-elements>', function() {
           beforeEach(setProps({ generate: 'token' }));
           describe('calling submit()', function() {
             it('resolves with the token', function() {
-              return element.submit()
+              return (element as StripeElements).submit()
                 .then(result => expect((result as stripe.TokenResponse).token).to.equal(SUCCESS_RESPONSES.token));
             });
 
@@ -942,12 +943,12 @@ describe('<stripe-elements>', function() {
               describe('calling validate()', function() {
                 beforeEach(validate);
                 it('unsets the `error` property', assertProps({ error: null }));
-                it('returns true', function() { expect(element.validate()).to.be.true; });
+                it('returns true', function() { expect((element as StripeElements).validate()).to.be.true; });
               });
 
               describe('calling isPotentiallyValid()', function() {
                 it('returns true', function() {
-                  expect(element.isPotentiallyValid()).to.be.true;
+                  expect((element as StripeElements).isPotentiallyValid()).to.be.true;
                 });
               });
             });
@@ -958,7 +959,7 @@ describe('<stripe-elements>', function() {
           beforeEach(setProps({ generate: 'payment-method' }));
           describe('calling submit()', function() {
             it('resolves with the payment method', function() {
-              return element.submit()
+              return (element as StripeElements).submit()
                 .then(result => expect((result as stripe.PaymentMethodResponse).paymentMethod).to.equal(SUCCESS_RESPONSES.paymentMethod));
             });
 
@@ -977,7 +978,7 @@ describe('<stripe-elements>', function() {
               describe('calling validate()', function() {
                 beforeEach(validate);
                 it('returns true', function() {
-                  expect(element.validate()).to.be.true;
+                  expect((element as StripeElements).validate()).to.be.true;
                 });
 
                 it('does not set `error`', function() {
@@ -987,7 +988,7 @@ describe('<stripe-elements>', function() {
 
               describe('calling isPotentiallyValid()', function() {
                 it('returns true', function() {
-                  expect(element.isPotentiallyValid()).to.be.true;
+                  expect((element as StripeElements).isPotentiallyValid()).to.be.true;
                 });
               });
             });
@@ -998,13 +999,13 @@ describe('<stripe-elements>', function() {
           beforeEach(setProps({ generate: 'something-silly' }));
           describe('calling submit()', function() {
             it('rejects', function() {
-              return element.submit().then(() => expect.fail('Response received'), function(err) {
+              return (element as StripeElements).submit().then(() => expect.fail('Response received'), function(err) {
                 expect(err.message).to.equal('<stripe-elements>: cannot generate something-silly');
               });
             });
 
             it('does not POST anything', async function() {
-              await element.submit().catch(noop);
+              await (element as StripeElements).submit().catch(noop);
               expect(fetchStub).to.not.have.been.called;
             });
 
@@ -1016,7 +1017,7 @@ describe('<stripe-elements>', function() {
               describe('calling validate()', function() {
                 beforeEach(validate);
                 it('returns false', function() {
-                  expect(element.validate()).to.be.false;
+                  expect((element as StripeElements).validate()).to.be.false;
                 });
               });
             });
@@ -1066,7 +1067,7 @@ describe('<stripe-elements>', function() {
 
         describe('calling createPaymentMethod()', function() {
           it('rejects with the Stripe error', async function() {
-            return element.createPaymentMethod()
+            return (element as StripeElements).createPaymentMethod()
               .then(
                 () => expect.fail('createPaymentMethod Resolved'),
                 e => expect(e).to.equal(CARD_DECLINED_ERROR)
@@ -1081,7 +1082,7 @@ describe('<stripe-elements>', function() {
             describe('calling validate()', function() {
               beforeEach(validate);
               it('returns false', function() {
-                expect(element.validate()).to.be.false;
+                expect((element as StripeElements).validate()).to.be.false;
               });
 
               it('retains the `error` property', async function validating() {
@@ -1093,7 +1094,7 @@ describe('<stripe-elements>', function() {
 
         describe('calling createSource()', function() {
           it('rejects with the Stripe error', async function() {
-            return element.createSource()
+            return (element as StripeElements).createSource()
               .then(
                 () => expect.fail('createSource Resolved'),
                 er => expect(er).to.equal(CARD_DECLINED_ERROR)
@@ -1108,7 +1109,7 @@ describe('<stripe-elements>', function() {
             describe('calling validate()', function() {
               beforeEach(validate);
               it('returns false', function() {
-                expect(element.validate()).to.be.false;
+                expect((element as StripeElements).validate()).to.be.false;
               });
 
               it('retains the `error` property', assertProps({ error: CARD_DECLINED_ERROR }));
@@ -1118,7 +1119,7 @@ describe('<stripe-elements>', function() {
 
         describe('calling createToken()', function() {
           it('rejects with the Stripe error', async function() {
-            return element.createToken()
+            return (element as StripeElements).createToken()
               .then(
                 () => expect.fail('createToken Resolved'),
                 e => expect(e).to.equal(CARD_DECLINED_ERROR)
@@ -1133,7 +1134,7 @@ describe('<stripe-elements>', function() {
             describe('calling validate()', function() {
               beforeEach(validate);
               it('returns false', function() {
-                expect(element.validate()).to.be.false;
+                expect((element as StripeElements).validate()).to.be.false;
               });
 
               it('retains the `error` property', async function validating() {

@@ -66,7 +66,7 @@ import {
   SUCCESSFUL_TOKEN,
 } from '../test/mock-stripe';
 import { elem, not } from '../src/lib/predicates';
-import { isStripeShippingOption } from '../src/stripe-payment-request';
+import { isStripeShippingOption, StripePaymentRequest } from '../src/stripe-payment-request';
 
 const DEFAULT_PROPS = Object.freeze({
   ...BASE_DEFAULT_PROPS,
@@ -531,6 +531,21 @@ describe('<stripe-payment-request>', function() {
           const canMakePayment = { applePay: true };
           it('sets the `paymentRequest` property', assertPropsOk(['paymentRequest']));
           it('sets the `canMakePayment` property', assertProps({ canMakePayment }, { deep: true }));
+
+          describe('setting `amount`', function() {
+            beforeEach(setProps({ amount: 10 }));
+            it('sets the amount on the paymentRequest', function() {
+              // @ts-expect-error: checking my own mocks
+              expect((element as StripePaymentRequest).paymentRequest.total.amount).to.equal(10);
+            });
+            describe('then setting a different `amount`', function() {
+              beforeEach(setProps({ amount: 20 }));
+              it('sets the new amount on the paymentRequest', function() {
+                // @ts-expect-error: checking my own mocks
+                expect((element as StripePaymentRequest).paymentRequest.total.amount).to.equal(20);
+              });
+            });
+          });
         });
 
         describe('when the paymentRequest fires the `cancel` event', function() {
