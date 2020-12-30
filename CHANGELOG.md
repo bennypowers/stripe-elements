@@ -1,3 +1,10 @@
+## [2.3.8](https://github.com/bennypowers/stripe-elements/compare/v2.3.7...v2.3.8) (2020-12-30)
+
+
+### Bug Fixes
+
+* update payment request amount ([0c55cf7](https://github.com/bennypowers/stripe-elements/commit/0c55cf790471cdb3581c53223ecbe79008cbfb06))
+
 ## [2.3.7](https://github.com/bennypowers/stripe-elements/compare/v2.3.6...v2.3.7) (2020-04-22)
 
 
