@@ -1,6 +1,7 @@
 // @ts-check
 import { esbuildPlugin } from '@web/dev-server-esbuild';
 import { fromRollup } from '@web/dev-server-rollup';
+import { storybookPlugin } from '@web/dev-server-storybook';
 
 import _litcss from 'rollup-plugin-lit-css';
 
@@ -13,29 +14,15 @@ const config = {
     extensions: ['.mjs', '.js', '.ts', '.css', '.graphql'],
   },
 
-  files: [
-    'test/**/*.test.ts',
-  ],
-
   mimeTypes: {
     '**/*.json': 'js',
     '**/src/*.css': 'js',
   },
 
-  coverageConfig: {
-    thresholds: {
-      global: {
-        statements: 100,
-        lines: 100,
-        branches: 100,
-        functions: 100,
-      },
-    },
-  },
-
   plugins: [
     litcss(),
     esbuildPlugin({ ts: true }),
+    storybookPlugin({ type: 'web-components' }),
   ],
 };
 

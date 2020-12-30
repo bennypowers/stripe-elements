@@ -1,5 +1,5 @@
-import type { StripeElements } from '../src/stripe-elements';
-import type { StripePaymentRequest } from '../src/stripe-payment-request';
+import { StripeElements } from '../src/stripe-elements';
+import { StripePaymentRequest } from '../src/stripe-payment-request';
 import type { ShadyDOM, ShadyCSS } from '@webcomponents/webcomponentsjs';
 
 import 'chai-things';
@@ -194,7 +194,7 @@ export const ALL_BLUE_STYLES =
 
 export let fetchStub: sinon.SinonStub;
 
-export let element: StripeElements&StripePaymentRequest;
+export let element: StripeElements|StripePaymentRequest;
 export let initialStripeMountId: string;
 export let initialStripe: stripe.Stripe;
 export const events = new Map();
@@ -320,7 +320,7 @@ export function restoreStripe(): void {
 }
 
 export function spyCardClear(): void {
-  if (element?.card?.clear) spy(element.card, 'clear');
+  if (element instanceof StripeElements && element?.card?.clear) spy(element.card, 'clear');
 }
 
 export function spyStripeElementBlur(): void {
@@ -549,9 +549,11 @@ export async function focusStripeElement(): Promise<void> {
 }
 
 export async function submit(): Promise<void> {
-  const submitPromise = element.submit();
-  // don't await result if we need to set up a listener
-  if (!this?.currentTest?.title.startsWith('fires')) await submitPromise;
+  if (element instanceof StripeElements) {
+    const submitPromise = element.submit();
+    // don't await result if we need to set up a listener
+    if (!this?.currentTest?.title.startsWith('fires')) await submitPromise;
+  }
 }
 
 export async function reset(): Promise<void> {
@@ -561,25 +563,29 @@ export async function reset(): Promise<void> {
 }
 
 export async function createPaymentMethod(): Promise<void> {
-  element.createPaymentMethod();
+  if (element instanceof StripeElements)
+    element.createPaymentMethod();
   // don't await result if we need to set up a listener
   if (!this?.currentTest?.title.startsWith('fires')) await nextFrame();
 }
 
 export async function createSource(): Promise<void> {
-  element.createSource();
+  if (element instanceof StripeElements)
+    element.createSource();
   // don't await result if we need to set up a listener
   if (!this?.currentTest?.title.startsWith('fires')) await nextFrame();
 }
 
 export async function createToken(): Promise<void> {
-  element.createToken();
+  if (element instanceof StripeElements)
+    element.createToken();
   // don't await result if we need to set up a listener
   if (!this?.currentTest?.title.startsWith('fires')) await nextFrame();
 }
 
 export async function validate(): Promise<void> {
-  element.validate();
+  if (element instanceof StripeElements)
+    element.validate();
   await element.updateComplete;
 }
 
@@ -600,14 +606,17 @@ export function synthCardEvent(...args) {
 
 export function synthPaymentRequestEvent(...args) {
   return function(): void {
-    element.paymentRequest.synthEvent(...args);
+    if (element instanceof StripePaymentRequest)
+      element.paymentRequest.synthEvent(...args);
   };
 }
 
 export function synthStripeFormValues(inputs) {
   return async function(): Promise<void> {
-    element?.card?.setState(inputs);
-    await oneEvent(element, 'stripe-change');
-    await element.updateComplete;
+    if (element instanceof StripeElements) {
+      element?.card?.setState(inputs);
+      await oneEvent(element, 'stripe-change');
+      await element.updateComplete;
+    }
   };
 }

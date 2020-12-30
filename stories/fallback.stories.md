@@ -1,7 +1,7 @@
 ```js script
 import '@power-elements/codesandbox-button';
-import '../stripe-elements';
 import '@power-elements/json-viewer';
+import '../index.js';
 
 import { ifDefined } from 'lit-html/directives/if-defined';
 
