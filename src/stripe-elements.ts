@@ -157,13 +157,9 @@ export class StripeElements extends StripeBase {
 
   static readonly elementType = 'card';
 
-  static readonly styles = [
-    sharedStyles,
-    style,
-  ];
+  static readonly styles = [sharedStyles, style];
 
-  // @ts-expect-error: hopefully ts will allow this soon
-  protected get slotName(): SlotName { return SlotName['stripe-elements']; }
+  protected readonly slotName: SlotName = SlotName['stripe-elements'];
 
   /* PUBLIC FIELDS */
 

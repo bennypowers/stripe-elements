@@ -8,7 +8,6 @@ const deps = Object.keys(pkg.dependencies);
 const external = id =>
   id !== '@morbidick/lit-element-notify' &&
   id.startsWith('lit-html') ||
-  id.startsWith('@babel/runtime') ||
   deps.includes(id);
 
 export default {
@@ -26,7 +25,10 @@ export default {
   },
   plugins: [
     resolve({ extensions: ['.js', '.css', '.html'], dedupe: id => id.includes('lit') }),
-    copy({ targets: [{ src: 'src/*.d.ts', dest: '.' }] }),
+    copy({ targets: [
+      { src: 'src/*.d.ts', dest: '.' },
+      { src: 'src/lib/countries.d.ts', dest: './lib' },
+    ] }),
     litcss(),
     commonjs(),
   ],

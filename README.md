@@ -143,18 +143,20 @@ There are 11 properties for each state that you can set which will be read into 
 
 #### Methods
 
-| Method                  | Type                                             | Description                                      |
-|-------------------------|--------------------------------------------------|--------------------------------------------------|
-| `blur`                  | `(): void`                                       | Blurs the element.                               |
-| `createPaymentMethod`   | `(paymentMethodData?: PaymentMethodData \| undefined): Promise<PaymentMethodResponse>` | Submit payment information to generate a paymentMethod |
-| `createSource`          | `(sourceData?: SourceOptions \| undefined): Promise<SourceResponse>` | Submit payment information to generate a source  |
-| `createToken`           | `(tokenData?: TokenOptions \| undefined): Promise<TokenResponse>` | Submit payment information to generate a token   |
-| `focus`                 | `(): void`                                       | Focuses the element.                             |
-| `isPotentiallyValid`    | `(): boolean`                                    | Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid. |
-| `reset`                 | `(): void`                                       | Resets the Stripe card.                          |
-| `setReadOnlyProperties` | `(props: { [s: string]: unknown; }): Promise<void>` | Set read-only properties                         |
-| `submit`                | `(): Promise<StripePaymentResponse>`             | Generates a payment representation of the type specified by `generate`. |
-| `validate`              | `(): boolean`                                    | Checks if the Stripe form is valid.              |
+| Method                | Type                                             | Description                                      |
+|-----------------------|--------------------------------------------------|--------------------------------------------------|
+| `blur`                | `(): void`                                       | Blurs the element.                               |
+| `catch`               | `<TResult = never>(onrejected?: ((reason: any): TResult \| PromiseLike<TResult>) \| null \| undefined) => Promise<TResult \| T>` | Attaches a callback for only the rejection of the Promise.<br /><br />**onrejected**: The callback to execute when the Promise is rejected. |
+| `createPaymentMethod` | `(paymentMethodData?: PaymentMethodData \| undefined): Promise<PaymentMethodResponse>` | Submit payment information to generate a paymentMethod |
+| `createSource`        | `(sourceData?: SourceOptions \| undefined): Promise<SourceResponse>` | Submit payment information to generate a source  |
+| `createToken`         | `(tokenData?: TokenOptions \| undefined): Promise<TokenResponse>` | Submit payment information to generate a token   |
+| `finally`             | `(onfinally?: ((): void) \| null \| undefined) => Promise<T>` | Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The<br />resolved value cannot be modified from the callback.<br /><br />**onfinally**: The callback to execute when the Promise is settled (fulfilled or rejected). |
+| `focus`               | `(): void`                                       | Focuses the element.                             |
+| `isPotentiallyValid`  | `(): boolean`                                    | Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid. |
+| `reset`               | `(): void`                                       | Resets the Stripe card.                          |
+| `submit`              | `(): Promise<StripePaymentResponse>`             | Generates a payment representation of the type specified by `generate`. |
+| `then`                | `<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T): TResult1 \| PromiseLike<TResult1>) \| null \| undefined, onrejected?: ((reason: any) => TResult2 \| PromiseLike<TResult2>) \| null \| undefined) => Promise<...>` | Attaches callbacks for the resolution and/or rejection of the Promise.<br /><br />**onfulfilled**: The callback to execute when the Promise is resolved.<br />**onrejected**: The callback to execute when the Promise is rejected. |
+| `validate`            | `(): boolean`                                    | Checks if the Stripe form is valid.              |
 
 #### Events
 
@@ -338,18 +340,20 @@ There are 11 properties for each state that you can set which will be read into 
 
 #### Methods
 
-| Method                  | Type                                             | Description                                      |
-|-------------------------|--------------------------------------------------|--------------------------------------------------|
-| `blur`                  | `(): void`                                       | Blurs the element.                               |
-| `createPaymentMethod`   | `(paymentMethodData?: PaymentMethodData): Promise<PaymentMethodResponse>` | Submit payment information to generate a paymentMethod |
-| `createSource`          | `(sourceData?: SourceOptions): Promise<SourceResponse>` | Submit payment information to generate a source  |
-| `createToken`           | `(tokenData?: TokenOptions): Promise<TokenResponse>` | Submit payment information to generate a token   |
-| `focus`                 | `(): void`                                       | Focuses the element.                             |
-| `isPotentiallyValid`    | `(): boolean`                                    | Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid. |
-| `reset`                 | `(): void`                                       | Resets the Stripe card.                          |
-| `setReadOnlyProperties` | `(props: { [s: string]: unknown; }): Promise<void>` | Set read-only properties                         |
-| `submit`                | `(): Promise<StripePaymentResponse>`             | Generates a payment representation of the type specified by `generate`. |
-| `validate`              | `(): boolean`                                    | Checks if the Stripe form is valid.              |
+| Method                | Type                                             | Description                                      |
+|-----------------------|--------------------------------------------------|--------------------------------------------------|
+| `blur`                | `(): void`                                       | Blurs the element.                               |
+| `catch`               | `<TResult = never>(onrejected?: ((reason: any): TResult \| PromiseLike<TResult>) \| null \| undefined) => Promise<TResult \| T>` | Attaches a callback for only the rejection of the Promise.<br /><br />**onrejected**: The callback to execute when the Promise is rejected. |
+| `createPaymentMethod` | `(paymentMethodData?: PaymentMethodData): Promise<PaymentMethodResponse>` | Submit payment information to generate a paymentMethod |
+| `createSource`        | `(sourceData?: SourceOptions): Promise<SourceResponse>` | Submit payment information to generate a source  |
+| `createToken`         | `(tokenData?: TokenOptions): Promise<TokenResponse>` | Submit payment information to generate a token   |
+| `finally`             | `(onfinally?: ((): void) \| null \| undefined) => Promise<T>` | Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The<br />resolved value cannot be modified from the callback.<br /><br />**onfinally**: The callback to execute when the Promise is settled (fulfilled or rejected). |
+| `focus`               | `(): void`                                       | Focuses the element.                             |
+| `isPotentiallyValid`  | `(): boolean`                                    | Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid. |
+| `reset`               | `(): void`                                       | Resets the Stripe card.                          |
+| `submit`              | `(): Promise<StripePaymentResponse>`             | Generates a payment representation of the type specified by `generate`. |
+| `then`                | `<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T): TResult1 \| PromiseLike<TResult1>) \| null \| undefined, onrejected?: ((reason: any) => TResult2 \| PromiseLike<TResult2>) \| null \| undefined) => Promise<...>` | Attaches callbacks for the resolution and/or rejection of the Promise.<br /><br />**onfulfilled**: The callback to execute when the Promise is resolved.<br />**onrejected**: The callback to execute when the Promise is rejected. |
+| `validate`            | `(): boolean`                                    | Checks if the Stripe form is valid.              |
 
 #### Events
 
@@ -518,12 +522,14 @@ See the demos for more comprehensive examples.
 
 #### Methods
 
-| Method                  | Type                                             | Description                           |
-|-------------------------|--------------------------------------------------|---------------------------------------|
-| `blur`                  | `(): void`                                       | Blurs the element.                    |
-| `focus`                 | `(): void`                                       | Focuses the element.                  |
-| `reset`                 | `(): void`                                       | Resets and clears the stripe element. |
-| `setReadOnlyProperties` | `(props: { [s: string]: unknown; }): Promise<void>` | Set read-only properties              |
+| Method    | Type                                             | Description                                      |
+|-----------|--------------------------------------------------|--------------------------------------------------|
+| `blur`    | `(): void`                                       | Blurs the element.                               |
+| `catch`   | `<TResult = never>(onrejected?: ((reason: any): TResult \| PromiseLike<TResult>) \| null \| undefined) => Promise<TResult \| T>` | Attaches a callback for only the rejection of the Promise.<br /><br />**onrejected**: The callback to execute when the Promise is rejected. |
+| `finally` | `(onfinally?: ((): void) \| null \| undefined) => Promise<T>` | Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The<br />resolved value cannot be modified from the callback.<br /><br />**onfinally**: The callback to execute when the Promise is settled (fulfilled or rejected). |
+| `focus`   | `(): void`                                       | Focuses the element.                             |
+| `reset`   | `(): void`                                       | Resets and clears the stripe element.            |
+| `then`    | `<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T): TResult1 \| PromiseLike<TResult1>) \| null \| undefined, onrejected?: ((reason: any) => TResult2 \| PromiseLike<TResult2>) \| null \| undefined) => Promise<...>` | Attaches callbacks for the resolution and/or rejection of the Promise.<br /><br />**onfulfilled**: The callback to execute when the Promise is resolved.<br />**onrejected**: The callback to execute when the Promise is rejected. |
 
 #### Events
 
@@ -651,12 +657,14 @@ See the demos for more comprehensive examples.
 
 #### Methods
 
-| Method                  | Type                                             | Description                           |
-|-------------------------|--------------------------------------------------|---------------------------------------|
-| `blur`                  | `(): void`                                       | Blurs the element.                    |
-| `focus`                 | `(): void`                                       | Focuses the element.                  |
-| `reset`                 | `(): void`                                       | Resets and clears the stripe element. |
-| `setReadOnlyProperties` | `(props: { [s: string]: unknown; }): Promise<void>` | Set read-only properties              |
+| Method    | Type                                             | Description                                      |
+|-----------|--------------------------------------------------|--------------------------------------------------|
+| `blur`    | `(): void`                                       | Blurs the element.                               |
+| `catch`   | `<TResult = never>(onrejected?: ((reason: any): TResult \| PromiseLike<TResult>) \| null \| undefined) => Promise<TResult \| T>` | Attaches a callback for only the rejection of the Promise.<br /><br />**onrejected**: The callback to execute when the Promise is rejected. |
+| `finally` | `(onfinally?: ((): void) \| null \| undefined) => Promise<T>` | Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The<br />resolved value cannot be modified from the callback.<br /><br />**onfinally**: The callback to execute when the Promise is settled (fulfilled or rejected). |
+| `focus`   | `(): void`                                       | Focuses the element.                             |
+| `reset`   | `(): void`                                       | Resets and clears the stripe element.            |
+| `then`    | `<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T): TResult1 \| PromiseLike<TResult1>) \| null \| undefined, onrejected?: ((reason: any) => TResult2 \| PromiseLike<TResult2>) \| null \| undefined) => Promise<...>` | Attaches callbacks for the resolution and/or rejection of the Promise.<br /><br />**onfulfilled**: The callback to execute when the Promise is resolved.<br />**onrejected**: The callback to execute when the Promise is rejected. |
 
 #### Events
 

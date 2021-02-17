@@ -2,9 +2,11 @@
 import { esbuildPlugin } from '@web/dev-server-esbuild';
 import { fromRollup } from '@web/dev-server-rollup';
 
+import _commonjs from '@rollup/plugin-commonjs';
 import _litcss from 'rollup-plugin-lit-css';
 
 const litcss = fromRollup(_litcss);
+const commonjs = fromRollup(_commonjs);
 
 /** @type {import('@web/test-runner').TestRunnerConfig} */
 const config = {
@@ -34,6 +36,10 @@ const config = {
   },
 
   plugins: [
+    commonjs({ include: [
+      '**/bind-decorator/**/*.js',
+      '**/credit-card-type/**/*.js',
+    ] }),
     litcss(),
     esbuildPlugin({ ts: true }),
   ],

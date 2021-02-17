@@ -163,13 +163,9 @@ type CanMakePaymentType =
 export class StripePaymentRequest extends StripeBase {
   static readonly is = 'stripe-payment-request';
 
-  static readonly styles = [
-    sharedStyles,
-    style,
-  ];
+  static readonly styles = [sharedStyles, style];
 
-  // @ts-expect-error: hopefully ts will allow this soon
-  protected get slotName(): SlotName { return SlotName['stripe-payment-request']; }
+  protected readonly slotName: SlotName = SlotName['stripe-payment-request'];
 
   /**
    * The amount in the currency's subunit (e.g. cents, yen, etc.)

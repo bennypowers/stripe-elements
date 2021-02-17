@@ -393,12 +393,9 @@ describe('<stripe-elements>', function() {
           describe('and a valid card', function() {
             beforeEach(synthStripeFormValues(formValues));
             it('passes CSS custom property values to stripe', function() {
-              // eslint-disable-next-line
-              // @ts-ignore
-              const allValues = Object.values(element.card.style).flatMap(Object.values);
-              // eslint-disable-next-line
-              // @ts-ignore
-              expect(allValues).to.all.equal('blue');
+              const { style } = (element as StripeElements).card;
+              for (const value of Object.values(style).flatMap(Object.values))
+                expect(value).to.equal('blue');
             });
           });
         });
@@ -411,12 +408,9 @@ describe('<stripe-elements>', function() {
           // eslint-disable-next-line
             beforeEach(synthStripeFormValues({ cardNumber: '4242424242424242', mm: '01', yy: '40', cvc: '000' }));
             it('passes CSS custom property values to stripe', function() {
-              // eslint-disable-next-line
-              // @ts-ignore
-              const allValues = Object.values(element.card.style).flatMap(Object.values);
-              // eslint-disable-next-line
-              // @ts-ignore
-              expect(allValues).to.all.equal('blue');
+              const { style } = (element as StripeElements).card;
+              for (const value of Object.values(style).flatMap(Object.values))
+                expect(value).to.equal('blue');
             });
           });
         });

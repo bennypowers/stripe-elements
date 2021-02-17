@@ -1,9 +1,7 @@
+import '@open-wc/testing';
 import { StripeElements } from '../src/stripe-elements';
 import { StripePaymentRequest } from '../src/stripe-payment-request';
 import type { ShadyDOM, ShadyCSS } from '@webcomponents/webcomponentsjs';
-
-import 'chai-things';
-import 'sinon-chai';
 
 import { LitElement, customElement, property, TemplateResult } from 'lit-element';
 import { spreadProps } from '@open-wc/lit-helpers';
