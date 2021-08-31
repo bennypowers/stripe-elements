@@ -361,6 +361,21 @@ describe('<stripe-payment-request>', function() {
       beforeEach(mockStripe);
       afterEach(restoreStripe);
 
+      describe.only('with request-shipping attr', function() {
+        const template = `
+          <stripe-payment-request request-shipping></stripe-payment-request>
+        `;
+
+        beforeEach(setupWithTemplate(template));
+        describe('and a valid publishable key', function() {
+          beforeEach(setProps({ publishableKey: Keys.PUBLISHABLE_KEY }));
+          beforeEach(nextFrame);
+          it('initializes stripe with requestShipping option', function() {
+            expect(element.stripe.paymentRequest).to.have.been.calledWithMatch({ requestShipping: true });
+          });
+        });
+      });
+
       describe('and CSS custom properties applied', function() {
         beforeEach(appendHeightStyleTag);
         afterEach(removeHeightStyleTag);
