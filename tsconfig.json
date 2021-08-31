@@ -9,7 +9,7 @@
     "moduleResolution": "node",
     "plugins": [ { "name": "typescript-lit-html-plugin" } ],
     "sourceMap": true,
-    "module": "ES2020",
+    "module": "ESNext",
     "target": "ES2018"
   },
   "lib": [ "DOM", "ES2020", "ESNext", "DOM.Iterable" ]

@@ -1,16 +1,18 @@
 import type { ShadyDOM, ShadyCSS } from '@webcomponents/webcomponentsjs';
-import { LitElement, property, html, TemplateResult, PropertyValues } from 'lit-element';
+import type { TemplateResult, PropertyValues } from 'lit';
+import { LitElement, html } from 'lit';
+import { property } from 'lit/decorators.js';
 import { LitNotify } from '@morbidick/lit-element-notify';
 
-import { ifDefined } from 'lit-html/directives/if-defined';
+import { ifDefined } from 'lit/directives/if-defined.js';
 
-import bound from 'bind-decorator';
+import { bound } from './lib/bound.js';
 
 import { ReadOnlyPropertiesMixin } from '@open-wc/lit-helpers';
-import { appendTemplate, remove } from './lib/dom';
-import { dash, generateRandomMountElementId } from './lib/strings';
-import { isRepresentation } from './lib/predicates';
-import { throwBadResponse } from './lib/fetch';
+import { appendTemplate, remove } from './lib/dom.js';
+import { dash, generateRandomMountElementId } from './lib/strings.js';
+import { isRepresentation } from './lib/predicates.js';
+import { throwBadResponse } from './lib/fetch.js';
 
 export const enum SlotName {
   'stripe-elements' = 'stripe-elements-slot',

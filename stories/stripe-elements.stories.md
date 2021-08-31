@@ -1,5 +1,6 @@
 ```js script
-import { html, withKnobs, withWebComponentsKnobs } from '@open-wc/demoing-storybook';
+import { LitElement, html } from 'lit-element' ;
+import { ifDefined } from 'lit-html/directives/if-defined.js';
 
 import '../stripe-elements.js';
 
@@ -7,12 +8,12 @@ import '@material/mwc-button';
 import '@material/mwc-textfield';
 import '@power-elements/json-viewer';
 
-import { $, $$, publishableKey, setKeys } from './storybook-helpers.js';
-
 export default {
   title: 'Elements/Stripe Elements',
-  decorators: [withKnobs, withWebComponentsKnobs],
   component: 'stripe-elements',
+  args: {
+    publishableKey: 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX'
+  }
 }
 ```
 
@@ -24,50 +25,32 @@ Add the element to your page with the `publishable-key` attribute set to your
 [Stripe publishable key](https://dashboard.stripe.com/account/apikeys).
 You can also set the `publishableKey` DOM property using JavaScript.
 
-```html
-<stripe-elements publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"></stripe-elements>
-```
-
 > **Careful!** never add your **secret key** to an HTML page, only publish your **publishable key**.
 
 Once you've set the `publishable-key` attribute (or the `publishableKey` DOM property), Stripe will create a Stripe Card Element on your page.
 
-Enter your publishable key here (use the test key, not the production key) to run the examples against your Stripe account.
-
-```js story
-export const EnterAPublishableKey = () => html`
-  <mwc-textfield id="publishable-key-input"
-      outlined
-      helperpersistent
-      label="Publishable Key"
-      helper="NOTE: the input will store the publishable key in localstorage for your convenience."
-      value="${publishableKey}"
-      @change="${setKeys('stripe-elements:not(#should-error)')}">
-  </mwc-textfield>
-`;
-EnterAPublishableKey.height = '800px';
-EnterAPublishableKey.story = {
-  height: '800px'
-};
-```
+> 👉 Set your publishable key in this demo by adding `&args=publishable-key:pk_test_xxxxx` to the URL 👈
 
 ## Create a PaymentMethod
 
 ```js preview-story
-export const GenerateAPaymentMethod = () => html`
-  <elements-demo label="Generate PaymentMethod">
-    <stripe-elements generate="payment-method" publishable-key="${publishableKey}"> </stripe-elements>
-  </elements-demo>
-`;
+export const GenerateAPaymentMethod = ({ publishableKey }, { hooks }) => {
+  return html`
+    <elements-demo label="Generate PaymentMethod">
+      <stripe-elements generate="payment-method" publishable-key="${ifDefined(publishableKey)}"> </stripe-elements>
+    </elements-demo>
+  `;
+}
 GenerateAPaymentMethod.height = '220px';
+
 ```
 
 ## Create a Source
 
 ```js preview-story
-export const GenerateASource = () => html`
+export const GenerateASource = ({ publishableKey }) => html`
   <elements-demo label="Generate Source">
-    <stripe-elements generate="source" publishable-key="${publishableKey}"> </stripe-elements>
+    <stripe-elements generate="source" publishable-key="${ifDefined(publishableKey)}"> </stripe-elements>
   </elements-demo>
 `;
 GenerateASource.height = '220px';
@@ -79,9 +62,9 @@ Once you're set your publishable key and Stripe has instantiated (listen for the
 you may generate a token from the filled-out form by calling the `createToken()` method.
 
 ```js preview-story
-export const GenerateAToken = () => html`
+export const GenerateAToken = ({ publishableKey }) => html`
   <elements-demo label="Generate Token">
-    <stripe-elements generate="token" publishable-key="${publishableKey}"> </stripe-elements>
+    <stripe-elements generate="token" publishable-key="${ifDefined(publishableKey)}"> </stripe-elements>
   </elements-demo>
 `;
 GenerateAToken.height = '220px';
@@ -93,10 +76,10 @@ GenerateAToken.height = '220px';
 This is useful for simple validation in cases where you don't need to build your own validation UI.
 
 ```js preview-story
-export const Validation = () => html`
+export const Validation = ({ publishableKey }) => html`
   <elements-demo>
     <stripe-elements publishable-key="should-error-use-bad-key" show-error> </stripe-elements>
-    <mwc-button slot="actions" outlined @click="${event => event.target.parentElement.querySelector('stripe-elements').validate()}">Validate</mwc-button>
+    mwc-button slot="actions" outlined @click="${event => event.target.parentElement.querySelector('stripe-elements').validate()}"Validate</mwc-button>
   </elements-demo>
 `;
 Validation.height = '120px';
@@ -145,7 +128,7 @@ stripe-elements::part(error) {
 ```
 
 ```js preview-story
-export const CustomValidation = () => {
+export const CustomValidation = ({ publishableKey }) => {
   const onClickValidate = event =>
     event.target.parentElement.querySelector('stripe-elements')
       .validate()
@@ -181,7 +164,7 @@ export const CustomValidation = () => {
     </style>
 
     <article id="states">
-      <stripe-elements show-error publishable-key="${publishableKey}"></stripe-elements>
+      <stripe-elements show-error publishable-key="${ifDefined(publishableKey)}"></stripe-elements>
       <mwc-button outlined @click="${onClickValidate}">Validate</mwc-button>
     </article>
   `;
@@ -196,7 +179,7 @@ For simple integrations, you can automatically post the source or token to your 
 **NOTE**: For this demo, we've overridden `window.fetch` to return a mocked response with the text body "A-OK!".
 
 ```js preview-story
-export const AutomaticallyPostingThePaymentInfo = () => {
+export const AutomaticallyPostingThePaymentInfo = ({ publishableKey }) => {
   const originalFetch =
     window.fetch;
 
@@ -220,7 +203,7 @@ export const AutomaticallyPostingThePaymentInfo = () => {
   return html`
     <article id="auto-post">
       <stripe-elements
-          publishable-key="${publishableKey}"
+          publishable-key="${ifDefined(publishableKey)}"
           generate="token"
           action="/my-endpoint"
           @success="${onSuccess}"

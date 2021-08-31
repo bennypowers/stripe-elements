@@ -1,26 +1,15 @@
-import {
-  addParameters,
-  addDecorator,
-  setCustomElements,
-  withA11y
-} from '@open-wc/demoing-storybook';
+import { setCustomElements } from '@web/storybook-prebuilt/web-components.js';
+import cem from '../custom-elements.json';
 
-const handleAsJson = r => r.json();
+setCustomElements(cem);
 
-async function run() {
-
-  await fetch(new URL('../custom-elements.json', import.meta.url))
-    .then(handleAsJson)
-    .then(setCustomElements);
-
-  addDecorator(withA11y);
-
-  addParameters({
-    a11y: false,
-    docs: {
-      iframeHeight: '200px'
-    }
-  });
-}
-
-run();
+export const parameters = {
+  controls: { expanded: true },
+  docs: {
+    inlineStories: true,
+    source: {
+      type: 'dynamic',
+      language: 'html',
+    },
+  },
+};

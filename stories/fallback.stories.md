@@ -5,9 +5,7 @@ import '../index.js';
 
 import { ifDefined } from 'lit-html/directives/if-defined';
 
-import { LitElement, css } from 'lit-element';
-
-import { html } from '@open-wc/demoing-storybook';
+import { LitElement, html, css } from 'lit-element';
 
 import { $, $$, publishableKey, setKeys } from './storybook-helpers.js';
 
@@ -17,6 +15,10 @@ export default {
     options: {
       selectedPanel: 'storybookjs/docs/panel'
     }
+  },
+  args: {
+    publishableKey: 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX',
+    clientSecret: 'seti_XXXXXXXXXXXXXXXXXXXXXXXX_secret_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
   }
 }
 ```
@@ -36,25 +38,12 @@ We recommend that you don't set `publishable-key` on `<stripe-elements>` until
 key will kick off the element's initialization, even if payment request is
 supported.
 
-Enter your publishable key here (use the test key, not the production key) to
-run the examples against your Stripe account.
+> 👉 Set your publishable key in this demo by adding `&args=publishableKey:pk_test_xxxxx` to the URL 👈
 
-```js story
-export const EnterAPublishableKey = () => html`
-  <mwc-textfield id="publishable-key-input"
-      outlined
-      helperpersistent
-      label="Publishable Key"
-      helper="NOTE: the input will store the publishable key in localstorage for your convenience."
-      value="${publishableKey}"
-      @change="${setKeys('fallback-form')}">
-  </mwc-textfield>
-`;
-EnterAPublishableKey.height = '80px';
-```
+> 👉 Likewise, set your client secret with `&args=clientSecret:seti_XXXXXXXXXXXXXXXXXXXXXXXX_secret_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX` 👈
 
 ```js preview-story
-export const FallingBackToStripeElementsWhenPaymentRequestIsNotSupported = () => {
+export const FallingBackToStripeElementsWhenPaymentRequestIsNotSupported = ({ publishableKey, clientSecret }) => {
   class PaymentForm extends LitElement {
     static get properties() {
       return {

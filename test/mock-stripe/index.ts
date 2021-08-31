@@ -1,4 +1,4 @@
-import { render, html } from 'lit-html';
+import { render, html } from 'lit';
 import luhn from 'luhn-js';
 import creditCardType from 'credit-card-type';
 import { spy } from 'sinon';

@@ -1,6 +1,6 @@
 import { curry } from '@typed/curry';
-import { render } from 'lit-html';
-import type { TemplateResult } from 'lit-element';
+import { render } from 'lit';
+import type { TemplateResult } from 'lit';
 
 /**
  * Remove an element from the DOM

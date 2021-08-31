@@ -1,6 +1,5 @@
 ```js script
-import { html, withKnobs, withWebComponentsKnobs } from '@open-wc/demoing-storybook';
-
+import { html } from 'lit-html' ;
 import { ifDefined } from 'lit-html/directives/if-defined';
 
 import '../stripe-payment-request.js';
@@ -8,12 +7,13 @@ import '../stripe-payment-request.js';
 import '@power-elements/json-viewer';
 import '@material/mwc-textfield';
 
-import { $$, publishableKey, setClientSecrets, setKeys } from './storybook-helpers.js';
-
 export default {
   title: 'Elements/Stripe Payment Request',
-  decorators: [withKnobs, withWebComponentsKnobs],
-  component: 'stripe-payment-request'
+  component: 'stripe-payment-request',
+  args: {
+    publishableKey: 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX',
+    clientSecret: 'seti_XXXXXXXXXXXXXXXXXXXXXXXX_secret_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+  }
 }
 ```
 
@@ -25,21 +25,9 @@ Add the element to your page with the `publishable-key` attribute set to your
 [Stripe publishable key](https://dashboard.stripe.com/account/apikeys).
 You can also set the `publishableKey` DOM property using JavaScript.
 
-Enter your publishable key here (use the test key, not the production key) to run the examples against your Stripe account.
+> 👉 Set your publishable key in this demo by adding `&args=publishableKey:pk_test_xxxxx` to the URL 👈
 
-```js story
-export const EnterAPublishableKey = () => html`
-  <mwc-textfield
-    outlined
-    helperpersistent
-    label="Publishable Key"
-    helper="NOTE: the input will store the publishable key in localstorage for your convenience."
-    value="${publishableKey}"
-    @change="${setKeys('stripe-payment-request')}"
-  ></mwc-textfield>
-`;
-EnterAPublishableKey.height = '80px';
-```
+> 👉 Likewise, set your client secret with `&args=clientSecret:seti_XXXXXXXXXXXXXXXXXXXXXXXX_secret_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX` 👈
 
 Unlike the `<stripe-elements>` element, `<stripe-payment-request>` has a number of up-front requirements.
 The first of those is browser support.
@@ -54,40 +42,31 @@ For example, to display a payment request button to request a payment to a Canad
 for a purchase labelled "Double Double" that costs $1.25 Canadian, add this element to your page:
 
 ```js preview-story
-export const SimplePaymentRequest = () => html`
-  <payment-request-demo>
-    <stripe-payment-request
-        publishable-key="${publishableKey}"
-        generate="source"
-        amount="125"
-        label="Double Double"
-        country="CA"
-        currency="cad">
-    </stripe-payment-request>
-  </payment-request-demo>
-`;
-
-SimplePaymentRequest.story = {
-  withSource: 'open',
-  source: 'open',
-  parameters: {
-    withSource: 'open',
-    source: 'open',
-  },
-  options: {
-    withSource: 'open',
-    source: 'open',
-  }
-};
+export const SimplePaymentRequest = ({ publishableKey, clientSecret }) => {
+  console.log({ publishableKey, clientSecret });
+  return  html`
+    <payment-request-demo>
+      <stripe-payment-request
+          publishable-key="${ifDefined(publishableKey)}"
+          client-secret="${ifDefined(clientSecret)}"
+          generate="source"
+          amount="125"
+          label="Double Double"
+          country="CA"
+          currency="cad">
+      </stripe-payment-request>
+    </payment-request-demo>
+  `;
+}
 ```
 
 You can also display multiple line-items with the `<stripe-payment-item>` element:
 
 ```js preview-story
-export const PaymentRequestWithDisplayItems = () => html`
+export const PaymentRequestWithDisplayItems = ({ publishableKey }) => html`
   <payment-request-demo>
     <stripe-payment-request
-        publishable-key="${publishableKey}"
+        publishable-key="${ifDefined(publishableKey)}"
         generate="token"
         amount="326"
         label="Double Double"
@@ -103,10 +82,10 @@ export const PaymentRequestWithDisplayItems = () => html`
 To add multiple shipping options, you can use the `<stripe-shipping-option>` element:
 
 ```js preview-story
-export const PaymentRequestWithDisplayItemsAndShippingOptions = () => html`
+export const PaymentRequestWithDisplayItemsAndShippingOptions = ({ publishableKey }) => html`
   <payment-request-demo>
     <stripe-payment-request
-        publishable-key="${publishableKey}"
+        publishable-key="${ifDefined(publishableKey)}"
         generate="payment-method"
         request-payer-name
         request-payer-email
@@ -144,10 +123,10 @@ el.shippingOptions = [
 If you update the element's `amount` or `label` properties, it will update the payment requestUpdate
 
 ```js preview-story
-export const UpdatingPaymentRequestOptions = () => html`
+export const UpdatingPaymentRequestOptions = ({ publishableKey }) => html`
   <payment-request-demo>
     <stripe-payment-request
-        publishable-key="${publishableKey}"
+        publishable-key="${ifDefined(publishableKey)}"
         generate="payment-method"
         request-payer-name
         request-payer-email
@@ -183,13 +162,11 @@ stripe payment_intents create --amount=326 --currency=cad | jq -r '.client_secre
 Enter your client secret to run the examples.
 
 ```js story
-const onChange = setClientSecrets('.uses-client-secret stripe-payment-request')
-export const EnterAClientSecret = () => {
+export const EnterAClientSecret = ({ publishableKey, clientSecret }) => {
   return html`
   <mwc-textfield id="client-secret-input"
       outlined
       label="Client Secret"
-      @change="${onChange}"
   ></mwc-textfield>
   `;
 };
@@ -197,10 +174,10 @@ EnterAClientSecret.height = '80px';
 ```
 
 ```js preview-story
-export const PaymentRequestWithPaymentIntent = () => html`
+export const PaymentRequestWithPaymentIntent = ({ publishableKey }) => html`
   <payment-request-demo class="uses-client-secret">
     <stripe-payment-request
-        publishable-key="${publishableKey}"
+        publishable-key="${ifDefined(publishableKey)}"
         generate="payment-method"
         client-secret="pi_XXXXXXXXXXXXXXXXXXXXXXXX_secret_XXXXXXXXXXXXXXXXXXXXXXXXX"
         request-payer-name
