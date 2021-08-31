@@ -1,4 +1,5 @@
 import type { PropertyValues } from 'lit';
+import type * as _ from '@webcomponents/webcomponentsjs';
 import { property, customElement } from 'lit/decorators.js';
 
 import { bound } from './lib/bound.js';
