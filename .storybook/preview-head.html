@@ -12,7 +12,7 @@
 
   #key { width: 100%; }
 
-  [label="Publishable Key"] {
+  [data-arg] {
     width: 100%;
   }
 
@@ -23,5 +23,17 @@
     display: grid;
     grid-gap: 12px;
     grid-template-areas: 'stripe button';
+  }
+
+  .cardholder-inputs {
+    align-items: center;
+    display: grid;
+    grid-gap: 12px;
+  }
+
+  @media (min-width: 800px) {
+    .cardholder-inputs {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 </style>
