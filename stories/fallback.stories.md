@@ -6,8 +6,7 @@ import '../index.js';
 import { ifDefined } from 'lit-html/directives/if-defined';
 
 import { LitElement, html, css } from 'lit-element';
-
-import { $, $$, publishableKey, setKeys } from './storybook-helpers.js';
+import { publishableKey, clientSecret } from './storybook-helpers.js';
 
 export default {
   title: 'Fallback to Stripe Elements',
@@ -17,8 +16,11 @@ export default {
     }
   },
   args: {
-    publishableKey: 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX',
-    clientSecret: 'seti_XXXXXXXXXXXXXXXXXXXXXXXX_secret_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    publishableKey,
+    clientSecret,
+    cardholderName: 'Mr. Man',
+    cardholderEmail: 'mr@man.email',
+    cardholderPhone: '555 555 5555',
   }
 }
 ```
@@ -38,9 +40,8 @@ We recommend that you don't set `publishable-key` on `<stripe-elements>` until
 key will kick off the element's initialization, even if payment request is
 supported.
 
-> 👉 Set your publishable key in this demo by adding `&args=publishableKey:pk_test_xxxxx` to the URL 👈
-
-> 👉 Likewise, set your client secret with `&args=clientSecret:seti_XXXXXXXXXXXXXXXXXXXXXXXX_secret_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX` 👈
+<mwc-textfield data-arg="publishableKey" label="Publishable Key" value={publishableKey}></mwc-textfield>
+<mwc-textfield data-arg="clientSecret" label="Client Secret" value={clientSecret}></mwc-textfield>
 
 ```js preview-story
 export const FallingBackToStripeElementsWhenPaymentRequestIsNotSupported = ({ publishableKey, clientSecret }) => {

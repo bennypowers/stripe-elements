@@ -1,20 +1,21 @@
 ```js script
 import { LitElement, html } from 'lit-element' ;
 import { ifDefined } from 'lit-html/directives/if-defined.js';
+import { cardholderDecorator, publishableKey } from './storybook-helpers.js';
 
 import '../stripe-elements.js';
-
-import '@material/mwc-button';
-import '@material/mwc-textfield';
-import '@power-elements/json-viewer';
 
 export default {
   title: 'Elements/Stripe Elements',
   component: 'stripe-elements',
   args: {
-    publishableKey: 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX'
-  }
+    publishableKey,
+    cardholderName: 'Mr. Man',
+    cardholderEmail: 'mr@man.email',
+    cardholderPhone: '555 555 5555',
+  },
 }
+
 ```
 
 # `<stripe-elements>` Web Component
@@ -25,35 +26,46 @@ Add the element to your page with the `publishable-key` attribute set to your
 [Stripe publishable key](https://dashboard.stripe.com/account/apikeys).
 You can also set the `publishableKey` DOM property using JavaScript.
 
+<mwc-textfield data-arg="publishableKey" label="Publishable Key" value={publishableKey}></mwc-textfield>
+
 > **Careful!** never add your **secret key** to an HTML page, only publish your **publishable key**.
 
 Once you've set the `publishable-key` attribute (or the `publishableKey` DOM property), Stripe will create a Stripe Card Element on your page.
 
-> 👉 Set your publishable key in this demo by adding `&args=publishable-key:pk_test_xxxxx` to the URL 👈
+<ArgsTable of="stripe-elements"/>
 
 ## Create a PaymentMethod
 
 ```js preview-story
-export const GenerateAPaymentMethod = ({ publishableKey }, { hooks }) => {
+export const GenerateAPaymentMethod = args => {
   return html`
-    <elements-demo label="Generate PaymentMethod">
-      <stripe-elements generate="payment-method" publishable-key="${ifDefined(publishableKey)}"> </stripe-elements>
-    </elements-demo>
+    <stripe-elements
+        generate="payment-method"
+        publishable-key="${ifDefined(args.publishableKey)}"
+    ></stripe-elements>
   `;
 }
 GenerateAPaymentMethod.height = '220px';
-
+GenerateAPaymentMethod.decorators = [cardholderDecorator];
+GenerateAPaymentMethod.args = {
+  label: 'Generate PaymentMethod',
+};
 ```
 
 ## Create a Source
 
 ```js preview-story
-export const GenerateASource = ({ publishableKey }) => html`
-  <elements-demo label="Generate Source">
-    <stripe-elements generate="source" publishable-key="${ifDefined(publishableKey)}"> </stripe-elements>
-  </elements-demo>
+export const GenerateASource = args => html`
+  <stripe-elements
+      generate="source"
+      publishable-key="${ifDefined(args.publishableKey)}"
+  ></stripe-elements>
 `;
 GenerateASource.height = '220px';
+GenerateASource.decorators = [cardholderDecorator];
+GenerateASource.args = {
+  label: 'Generate a Source',
+}
 ```
 
 ## Create a Token
@@ -62,12 +74,14 @@ Once you're set your publishable key and Stripe has instantiated (listen for the
 you may generate a token from the filled-out form by calling the `createToken()` method.
 
 ```js preview-story
-export const GenerateAToken = ({ publishableKey }) => html`
-  <elements-demo label="Generate Token">
-    <stripe-elements generate="token" publishable-key="${ifDefined(publishableKey)}"> </stripe-elements>
-  </elements-demo>
+export const GenerateAToken = args => html`
+  <stripe-elements generate="token" publishable-key="${ifDefined(args.publishableKey)}"> </stripe-elements>
 `;
 GenerateAToken.height = '220px';
+GenerateAToken.decorators = [cardholderDecorator];
+GenerateAToken.args = {
+  label: 'Generate a Token'
+}
 ```
 
 ## Validation and Styling
@@ -76,11 +90,9 @@ GenerateAToken.height = '220px';
 This is useful for simple validation in cases where you don't need to build your own validation UI.
 
 ```js preview-story
-export const Validation = ({ publishableKey }) => html`
-  <elements-demo>
-    <stripe-elements publishable-key="should-error-use-bad-key" show-error> </stripe-elements>
-    mwc-button slot="actions" outlined @click="${event => event.target.parentElement.querySelector('stripe-elements').validate()}"Validate</mwc-button>
-  </elements-demo>
+export const Validation = args => html`
+  <stripe-elements publishable-key="should-error-use-bad-key" show-error> </stripe-elements>
+  <mwc-button slot="actions" outlined @click="${event => event.target.parentElement.querySelector('stripe-elements').validate()}">Validate</mwc-button>
 `;
 Validation.height = '120px';
 ```

@@ -86,6 +86,7 @@
     "@babel/preset-env": "^7.15.0",
     "@custom-elements-manifest/analyzer": "^0.4.17",
     "@material/mwc-button": "^0.22.1",
+    "@material/mwc-dialog": "^0.22.1",
     "@material/mwc-textfield": "^0.22.1",
     "@open-wc/lit-helpers": "^0.3.12",
     "@open-wc/testing": "^2.5.33",
