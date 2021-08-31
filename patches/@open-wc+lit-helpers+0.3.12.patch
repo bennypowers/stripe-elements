@@ -1,0 +1,25 @@
+diff --git a/node_modules/@open-wc/lit-helpers/src/read-only-properties-mixin.d.ts b/node_modules/@open-wc/lit-helpers/src/read-only-properties-mixin.d.ts
+index b6aba38..41bda1c 100644
+--- a/node_modules/@open-wc/lit-helpers/src/read-only-properties-mixin.d.ts
++++ b/node_modules/@open-wc/lit-helpers/src/read-only-properties-mixin.d.ts
+@@ -1,10 +1,8 @@
+-// when we update to typescript 3.8
+-// import type { LitElement } from "lit-element";
+-import { LitElement } from "lit-element";
++import type { ReactiveElement } from 'lit';
+ 
+ declare type Constructor<T = {}> = new (...args: any[]) => T;
+ 
+-declare module 'lit-element/lib/updating-element' {
++declare module '@lit/reactive-element/reactive-element' {
+   interface PropertyDeclaration {
+     readOnly?: boolean;
+   }
+@@ -22,6 +20,6 @@ export interface ReadOnlyClass {
+ /**
+  * Enables the nofity option for properties to fire change notification events
+  */
+-export declare function ReadOnlyPropertiesMixin<T extends Constructor<LitElement>>(superclass: T): T & Constructor<ReadOnlyClass>;
++export declare function ReadOnlyPropertiesMixin<T extends Constructor<ReactiveElement>>(superclass: T): T & Constructor<ReadOnlyClass>;
+ 
+ export {};

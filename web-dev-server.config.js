@@ -1,14 +1,16 @@
 // @ts-check
+import { storybookPlugin } from '@web/dev-server-storybook';
 import { esbuildPlugin } from '@web/dev-server-esbuild';
 import { fromRollup } from '@web/dev-server-rollup';
-import { storybookPlugin } from '@web/dev-server-storybook';
+import _json from '@rollup/plugin-json';
 
 import _litcss from 'rollup-plugin-lit-css';
 
 const litcss = fromRollup(_litcss);
+const json = fromRollup(_json);
 
-/** @type {import('@web/test-runner').TestRunnerConfig} */
-const config = {
+
+export default /** @type {import('@web/test-runner').TestRunnerConfig} */ {
   nodeResolve: {
     exportConditions: ['default', 'esbuild', 'import'],
     extensions: ['.mjs', '.js', '.ts', '.css', '.graphql'],
@@ -20,10 +22,9 @@ const config = {
   },
 
   plugins: [
+    json(),
     litcss(),
     esbuildPlugin({ ts: true }),
     storybookPlugin({ type: 'web-components' }),
   ],
 };
-
-export default config;

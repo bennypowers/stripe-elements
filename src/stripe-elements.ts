@@ -1,10 +1,11 @@
-import { PropertyValues, property, customElement } from 'lit-element';
+import type { PropertyValues } from 'lit';
+import { property, customElement } from 'lit/decorators.js';
 
-import bound from 'bind-decorator';
+import { bound } from './lib/bound.js';
 
-import { StripeBase, StripePaymentResponse, SlotName } from './StripeBase';
-import { dash } from './lib/strings';
-import { stripeMethod } from './lib/stripe-method-decorator';
+import { StripeBase, StripePaymentResponse, SlotName } from './StripeBase.js';
+import { dash } from './lib/strings.js';
+import { stripeMethod } from './lib/stripe-method-decorator.js';
 import sharedStyles from './shared.css';
 import style from './stripe-elements.css';
 

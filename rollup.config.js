@@ -4,12 +4,10 @@ import resolve from '@rollup/plugin-node-resolve';
 import pkg from './package.json';
 import copy from 'rollup-plugin-copy';
 
-const deps = Object.keys(pkg.dependencies);
-const external = id =>
-  id !== '@morbidick/lit-element-notify' &&
-  id.startsWith('lit-html') ||
-  id.startsWith('@babel/runtime') ||
-  deps.includes(id);
+// TODO: remove after https://github.com/morbidick/lit-element-notify/issues/30
+const d = { ...pkg.dependencies };
+delete d['@morbidick/lit-element-notify'];
+const deps = Object.keys(d);
 
 export default {
   input: [
@@ -17,7 +15,7 @@ export default {
     'src/stripe-elements.js',
     'src/stripe-payment-request.js',
   ],
-  external,
+  external: id => deps.some(dep => id.startsWith(dep)),
   output: {
     dir: '.',
     format: 'es',

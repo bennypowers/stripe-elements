@@ -1,10 +1,11 @@
-import type { CountryCode } from './lib/countries';
-import { customElement, property, PropertyValues } from 'lit-element';
+import type { CountryCode } from './lib/countries.js';
+import type { PropertyValues } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-import bound from 'bind-decorator';
+import { bound } from './lib/bound.js';
 
-import { StripeBase, SlotName } from './StripeBase';
-import { throwResponseError } from './lib/stripe';
+import { StripeBase, SlotName } from './StripeBase.js';
+import { throwResponseError } from './lib/stripe.js';
 import sharedStyles from './shared.css';
 import style from './stripe-payment-request.css';
 

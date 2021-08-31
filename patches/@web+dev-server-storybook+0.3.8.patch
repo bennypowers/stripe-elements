@@ -1,0 +1,38 @@
+diff --git a/node_modules/@web/dev-server-storybook/dist/shared/config/readStorybookConfig.js b/node_modules/@web/dev-server-storybook/dist/shared/config/readStorybookConfig.js
+index 26a5356..560c487 100644
+--- a/node_modules/@web/dev-server-storybook/dist/shared/config/readStorybookConfig.js
++++ b/node_modules/@web/dev-server-storybook/dist/shared/config/readStorybookConfig.js
+@@ -33,6 +33,7 @@ function readStorybookConfig(pluginConfig) {
+         ? path_1.default.resolve(pluginConfig.configDir)
+         : defaultConfigDir;
+     const mainJsPath = path_1.default.join(configDir, 'main.js');
++    const mainCjsPath = path_1.default.join(configDir, 'main.cjs');
+     const managerJsPath = path_1.default.join(configDir, 'manager.js');
+     const previewJsPath = path_1.default.join(configDir, 'preview.js');
+     const managerHeadPath = path_1.default.join(configDir, 'manager-head.html');
+@@ -41,8 +42,10 @@ function readStorybookConfig(pluginConfig) {
+     let managerHead = undefined;
+     let previewHead = undefined;
+     let previewBody = undefined;
+-    if (!fs_1.default.existsSync(mainJsPath)) {
+-        throw utils_1.createError(`Could not find any storybook configuration at ${mainJsPath}. You can change the storybook config directory using the configDir option.`);
++
++    const mainPath = fs_1.default.existsSync(mainJsPath) ? mainJsPath : fs_1.default.existsSync(mainCjsPath) ? mainCjsPath : false;
++    if (!mainPath) {
++        throw utils_1.createError(`Could not find any storybook configuration at ${mainJsPath} or ${mainCjsPath}. You can change the storybook config directory using the configDir option.`);
+     }
+     if (fs_1.default.existsSync(managerHeadPath)) {
+         managerHead = fs_1.default.readFileSync(managerHeadPath, 'utf-8');
+@@ -53,10 +56,10 @@ function readStorybookConfig(pluginConfig) {
+     if (fs_1.default.existsSync(previewBodyPath)) {
+         previewBody = fs_1.default.readFileSync(previewBodyPath, 'utf-8');
+     }
+-    const mainJs = validateMainJs(require(mainJsPath));
++    const mainJs = validateMainJs(require(mainPath));
+     return {
+         mainJs,
+-        mainJsPath,
++        mainJsPath: mainPath,
+         managerJsPath,
+         previewJsPath,
+         managerHead,

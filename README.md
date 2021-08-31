@@ -1,696 +1,291 @@
-# Stripe Elements Web Components
+## `./stripe-elements.js`:
 
-🛡⚛️🔰 **Any** Framework - **One** Stripe Integration. 💰💵💸
+### class: `StripeElements`, `stripe-elements`
 
-[![Published on npm](https://img.shields.io/npm/v/@power-elements/stripe-elements.svg)](https://www.npmjs.com/package/@power-elements/stripe-elements)
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/bennypowers/stripe-elements)
-[![made with open-wc](https://img.shields.io/badge/made%20with-open--wc-%23217ff9)](https://open-wc.org)
-[![Maintainability](https://api.codeclimate.com/v1/badges/b2205a301b0a8bb82d51/maintainability)](https://codeclimate.com/github/bennypowers/stripe-elements/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/b2205a301b0a8bb82d51/test_coverage)](https://codeclimate.com/github/bennypowers/stripe-elements/test_coverage)
-[![Release](https://github.com/bennypowers/stripe-elements/workflows/Release/badge.svg)](https://github.com/bennypowers/stripe-elements/actions?query=workflow%3ARelease)
-[![Contact me on Codementor](https://cdn.codementor.io/badges/contact_me_github.svg)](https://www.codementor.io/bennyp?utm_source=github&utm_medium=button&utm_term=bennyp&utm_campaign=github)
+#### Superclass
 
-👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--enter-a-stripe-publishable-key) 👀
+| Name         | Module             | Package |
+| ------------ | ------------------ | ------- |
+| `StripeBase` | /src/StripeBase.js |         |
 
-## 🚚 Installation
+#### Static Fields
 
-You should make sure to load stripe.js on your app's index.html, as per Stripe's recommendation, before loading `<stripe-elements>`. If `window.Stripe` is not available when you load up the component, it will fail with a reasonably-polite console warning.
+| Name          | Privacy | Type     | Default             | Description | Inherited From |
+| ------------- | ------- | -------- | ------------------- | ----------- | -------------- |
+| `is`          |         | `string` | `'stripe-elements'` |             |                |
+| `elementType` |         | `string` | `'card'`            |             |                |
 
-```html
-<script src="https://js.stripe.com/v3/"></script>
-```
+#### Fields
 
-```
-npm i -S @power-elements/stripe-elements
-```
-
-To pre-build, use [Snowpack](https://snowpack.dev) to build the modules to your app's `web_modules` directory. See below for usage examples.
-
-```
-npx snowpack
-```
-
----
-
-`<stripe-elements>` is a community project.
-
----
-
-
-## Elements
-### stripe-elements
-
-[Stripe.js v3 Card Elements](https://stripe.com/docs/elements), but it's a Web Component!
-Supports Shadow DOM.
-
-👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--enter-a-stripe-publishable-key) 👀
-
-### 🧙‍♂️ Usage
-If you prebuilt with Snowpack, load the module from your `web_modules` directory
-
-```html
-<script type="module" src="/web_modules/@power-elements/stripe-elements/stripe-elements.js"></script>
-```
-
-Alternatively, load the module from the unpkg CDN
-```html
-<script type="module" src="https://unpkg.com/@power-elements/stripe-elements/stripe-elements.js?module"></script>
-```
-
-Then you can add the element to your page.
-
-```html
-<stripe-elements id="stripe"
-     action="/payment"
-     publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"
-></stripe-elements>
-```
-
-See the demos for more comprehensive examples.
-   - Using `<stripe-elements>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-html--stripe-elements).
-   - Using `<stripe-elements>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-litelement--stripe-elements).
-   - Using `<stripe-elements>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vue--stripe-elements).
-   - Using `<stripe-elements>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-angular--stripe-elements).
-   - Using `<stripe-elements>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-react--stripe-elements).
-   - Using `<stripe-elements>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-preact--stripe-elements).
-
-## Styling
-
-Stripe v3's 'Stripe Elements' are not custom elements, but rather forms
-hosted by stripe and injected into your page via an iFrame. When we refer to the
-'Stripe Element' in this document, we are referring to the hosted Stripe form,
-not the `<stripe-element>` custom element. But when I mention the 'element', I mean the custom element.
-
-When you apply CSS to the custom properties available, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame.
-
-- `base` styles are inherited by all other variants.
-- `complete` styles are applied when the Stripe Element has valid input.
-- `empty` styles are applied when the Stripe Element has no user input.
-- `invalid` styles are applied when the Stripe Element has invalid input.
-
-There are 11 properties for each state that you can set which will be read into the Stripe Element iFrame:
-
-- `color`
-- `font-family`
-- `font-size`
-- `font-smoothing`
-- `font-variant`
-- `icon-color`
-- `line-height`
-- `letter-spacing`
-- `text-decoration`
-- `text-shadow`
-- `text-transform`
-
-**Mixins:** ReadOnlyPropertiesMixin, LitNotify
-
-#### Properties
-
-| Property            | Attribute         | Modifiers | Type                                             | Default  | Description                                      |
-|---------------------|-------------------|-----------|--------------------------------------------------|----------|--------------------------------------------------|
-| `action`            | `action`          |           | `string`                                         |          | If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),<br />the element will POST JSON data to this URL with an object containing<br />a key equal to the value of the `generate` property. |
-| `billingDetails`    |                   |           | `BillingDetails`                                 |          | billing_details object sent to create the payment representation. (optional) |
-| `brand`             |                   | readonly  | `brandType`                                      |          | The card brand detected by Stripe                |
-| `card`              |                   | readonly  | `Element`                                        |          | The Stripe card object.<br />**DEPRECATED**. Will be removed in a future version. use `element` instead |
-| `clientSecret`      | `client-secret`   |           | `string`                                         |          | The `client_secret` part of a Stripe `PaymentIntent` |
-| `complete`          |                   | readonly  | `false`                                          | false    | Whether the form is complete.                    |
-| `element`           | `element`         | readonly  | `Element`                                        | null     | Stripe element instance                          |
-| `elements`          | `elements`        | readonly  | `Elements`                                       | null     | Stripe Elements instance                         |
-| `empty`             |                   | readonly  | `true`                                           | true     | If the form is empty.                            |
-| `error`             | `error`           | readonly  | `AmbiguousError`                                 | null     | Stripe or validation error                       |
-| `focused`           | `focused`         | readonly  | `false`                                          | false    | If the element is focused.                       |
-| `generate`          | `generate`        |           | `PaymentRepresentation`                          | "source" | Type of payment representation to generate.      |
-| `hasError`          | `has-error`       | readonly  | `false`                                          | false    | Whether the element has an error<br />**DEPRECATED**. Will be removed in a future version. Use `error` instead |
-| `hideIcon`          |                   |           | `boolean`                                        |          | Whether to hide icons in the Stripe form.        |
-| `hidePostalCode`    |                   |           | `boolean`                                        |          | Whether or not to hide the postal code field.<br />Useful when you gather shipping info elsewhere. |
-| `iconStyle`         |                   |           | `"solid" \| "default" \| undefined`              |          | Stripe icon style.                               |
-| `invalid`           |                   | readonly  | `false`                                          | false    | Whether the form is invalid.                     |
-| `isComplete`        |                   |           | `boolean`                                        |          | Whether the form is complete.<br />**DEPRECATED**. Will be removed in a future version. use `complete` instead |
-| `isEmpty`           |                   |           | `boolean`                                        |          | Whether the form is empty.<br />**DEPRECATED**. Will be removed in a future version. use `empty` instead |
-| `paymentMethod`     | `payment-method`  | readonly  | `PaymentMethod`                                  | null     | Stripe PaymentMethod                             |
-| `paymentMethodData` |                   |           | `PaymentMethodData`                              |          | Data passed to stripe.createPaymentMethod. (optional) |
-| `publishableKey`    | `publishable-key` |           | `string`                                         |          | Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX` |
-| `ready`             | `ready`           | readonly  | `false`                                          | false    | Whether the stripe element is ready to receive focus. |
-| `showError`         | `show-error`      |           | `boolean`                                        | false    | Whether to display the error message             |
-| `source`            | `source`          | readonly  | `Source`                                         | null     | Stripe Source                                    |
-| `sourceData`        |                   |           | `SourceOptions`                                  |          | Data passed to stripe.createSource. (optional)   |
-| `stripe`            | `stripe`          | readonly  | `Stripe`                                         | null     | Stripe instance                                  |
-| `stripeMountId`     |                   |           | `string`                                         |          | Stripe.js mount point element id. Due to limitations in the Stripe.js library, this element must be connected to the document. |
-| `stripeReady`       | `stripe-ready`    | readonly  | `false`                                          | false    | Whether the stripe element is ready to receive focus.<br />**DEPRECATED**. Will be removed in a future version. use `ready` instead. |
-| `token`             | `token`           | readonly  | `Token`                                          | null     | Stripe Token                                     |
-| `tokenData`         |                   |           | `TokenOptions`                                   |          | Data passed to stripe.createToken. (optional)    |
-| `value`             |                   |           | `string \| { [objectKey: string]: string; } \| undefined` |          | Prefilled values for form.                       |
+| Name             | Privacy | Type                                           | Default     | Description                                                                                                         | Inherited From |
+| ---------------- | ------- | ---------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `hideIcon`       |         | `boolean`                                      | `false`     | Whether to hide icons in the Stripe form.                                                                           |                |
+| `hidePostalCode` |         | `boolean`                                      | `false`     | Whether or not to hide the postal code field.&#xA;Useful when you gather shipping info elsewhere.                   |                |
+| `iconStyle`      |         | `stripe.elements.ElementsOptions['iconStyle']` | `'default'` | Stripe icon style.                                                                                                  |                |
+| `value`          |         | `stripe.elements.ElementsOptions['value']`     | `{}`        | Prefilled values for form.                                                                                          |                |
+| `brand`          |         | `stripe.brandType`                             | `null`      | The card brand detected by Stripe                                                                                   |                |
+| `complete`       |         | `boolean`                                      | `false`     | Whether the form is complete.                                                                                       |                |
+| `empty`          |         | `boolean`                                      | `true`      | If the form is empty.                                                                                               |                |
+| `invalid`        |         | `boolean`                                      | `false`     | Whether the form is invalid.                                                                                        |                |
+| `card`           |         | `stripe.elements.Element`                      | `null`      | The Stripe card object.&#xA;\*\*DEPRECATED\*\*. Will be removed in a future version. use \`element\` instead        |                |
+| `isEmpty`        |         | `boolean`                                      | `true`      | Whether the form is empty.&#xA;\*\*DEPRECATED\*\*. Will be removed in a future version. use \`empty\` instead       |                |
+| `isComplete`     |         | `boolean`                                      | `false`     | Whether the form is complete.&#xA;\*\*DEPRECATED\*\*. Will be removed in a future version. use \`complete\` instead |                |
 
 #### Methods
 
-| Method                  | Type                                             | Description                                      |
-|-------------------------|--------------------------------------------------|--------------------------------------------------|
-| `blur`                  | `(): void`                                       | Blurs the element.                               |
-| `createPaymentMethod`   | `(paymentMethodData?: PaymentMethodData \| undefined): Promise<PaymentMethodResponse>` | Submit payment information to generate a paymentMethod |
-| `createSource`          | `(sourceData?: SourceOptions \| undefined): Promise<SourceResponse>` | Submit payment information to generate a source  |
-| `createToken`           | `(tokenData?: TokenOptions \| undefined): Promise<TokenResponse>` | Submit payment information to generate a token   |
-| `focus`                 | `(): void`                                       | Focuses the element.                             |
-| `isPotentiallyValid`    | `(): boolean`                                    | Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid. |
-| `reset`                 | `(): void`                                       | Resets the Stripe card.                          |
-| `setReadOnlyProperties` | `(props: { [s: string]: unknown; }): Promise<void>` | Set read-only properties                         |
-| `submit`                | `(): Promise<StripePaymentResponse>`             | Generates a payment representation of the type specified by `generate`. |
-| `validate`              | `(): boolean`                                    | Checks if the Stripe form is valid.              |
+| Name                  | Privacy | Description                                                                                                                                                         | Parameters                                    | Return                                  | Inherited From |
+| --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- | --------------------------------------- | -------------- |
+| `createPaymentMethod` | public  | Submit payment information to generate a paymentMethod                                                                                                              | `paymentMethodData: stripe.PaymentMethodData` | `Promise<stripe.PaymentMethodResponse>` |                |
+| `createSource`        | public  | Submit payment information to generate a source                                                                                                                     | `sourceData: stripe.SourceOptions`            | `Promise<stripe.SourceResponse>`        |                |
+| `createToken`         | public  | Submit payment information to generate a token                                                                                                                      | `tokenData: stripe.TokenOptions`              | `Promise<stripe.TokenResponse>`         |                |
+| `isPotentiallyValid`  | public  | Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid. |                                               | `boolean`                               |                |
+| `reset`               | public  | Resets the Stripe card.                                                                                                                                             |                                               | `void`                                  |                |
+| `submit`              | public  | Generates a payment representation of the type specified by \`generate\`.                                                                                           |                                               | `Promise<StripePaymentResponse>`        |                |
+| `validate`            | public  | Checks if the Stripe form is valid.                                                                                                                                 |                                               | `boolean`                               |                |
 
 #### Events
 
-| Event                   | Description                                      |
-|-------------------------|--------------------------------------------------|
-| `change`                | Stripe Element change event                      |
-| `error`                 | The validation error, or the error returned from stripe.com |
-| `payment-method`        | The PaymentMethod received from stripe.com       |
-| `ready`                 | Stripe has been initialized and mounted          |
-| `source`                | The Source received from stripe.com              |
-| `stripe-error`          | **DEPRECATED**. Will be removed in a future major version. Use `error` instead |
-| `stripe-payment-method` | **DEPRECATED**. Will be removed in a future major version. Use `payment-method` instead |
-| `stripe-ready`          | **DEPRECATED**. Will be removed in a future major version. Use `ready` instead |
-| `stripe-source`         | **DEPRECATED**. Will be removed in a future major version. Use `source` instead |
-| `stripe-token`          | **DEPRECATED**. Will be removed in a future major version. Use `token` instead |
-| `success`               | When a payment succeeds                          |
-| `token`                 | The Token received from stripe.com               |
+| Name       | Type | Description                 | Inherited From |
+| ---------- | ---- | --------------------------- | -------------- |
+| `'change'` |      | Stripe Element change event |                |
 
-#### CSS Shadow Parts
+#### Attributes
 
-| Part     | Description                      |
-|----------|----------------------------------|
-| `error`  | container for the error message  |
-| `stripe` | container for the stripe element |
+| Name               | Field          | Inherited From |
+| ------------------ | -------------- | -------------- |
+| `hide-icon`        | hideIcon       |                |
+| `hide-postal-code` | hidePostalCode |                |
+| `icon-style`       | iconStyle      |                |
+| `value`            | value          |                |
+| `brand`            | brand          |                |
+| `complete`         | complete       |                |
+| `empty`            | empty          |                |
+| `invalid`          | invalid        |                |
+| `card`             | card           |                |
+| `is-empty`         | isEmpty        |                |
+| `is-complete`      | isComplete     |                |
 
-#### CSS Custom Properties
+#### CSS Properties
 
-| Property                                     | Default                 | Description                                      |
-|----------------------------------------------|-------------------------|--------------------------------------------------|
-| `--stripe-elements-base-color`               |                         | `color` property for the element in its base state |
-| `--stripe-elements-base-font-family`         |                         | `font-family` property for the element in its base state |
-| `--stripe-elements-base-font-size`           |                         | `font-size` property for the element in its base state |
-| `--stripe-elements-base-font-smoothing`      |                         | `font-smoothing` property for the element in its base state |
-| `--stripe-elements-base-font-variant`        |                         | `font-variant` property for the element in its base state |
-| `--stripe-elements-base-icon-color`          |                         | `icon-color` property for the element in its base state |
-| `--stripe-elements-base-letter-spacing`      |                         | `letter-spacing` property for the element in its base state |
-| `--stripe-elements-base-line-height`         |                         | `line-height` property for the element in its base state |
-| `--stripe-elements-base-text-decoration`     |                         | `text-decoration` property for the element in its base state |
-| `--stripe-elements-base-text-shadow`         |                         | `text-shadow` property for the element in its base state |
-| `--stripe-elements-base-text-transform`      |                         | `text-transform` property for the element in its base state |
-| `--stripe-elements-border`                   | "1px solid transparent" | border property of the element container         |
-| `--stripe-elements-border-radius`            | "4px"                   | border radius of the element container           |
-| `--stripe-elements-box-shadow`               | "0 1px 3px 0 #e6ebf1"   | box shadow for the element container             |
-| `--stripe-elements-complete-color`           |                         | `color` property for the element in its complete state |
-| `--stripe-elements-complete-font-family`     |                         | `font-family` property for the element in its complete state |
-| `--stripe-elements-complete-font-size`       |                         | `font-size` property for the element in its complete state |
-| `--stripe-elements-complete-font-smoothing`  |                         | `font-smoothing` property for the element in its complete state |
-| `--stripe-elements-complete-font-variant`    |                         | `font-variant` property for the element in its complete state |
-| `--stripe-elements-complete-icon-color`      |                         | `icon-color` property for the element in its complete state |
-| `--stripe-elements-complete-letter-spacing`  |                         | `letter-spacing` property for the element in its complete state |
-| `--stripe-elements-complete-line-height`     |                         | `line-height` property for the element in its complete state |
-| `--stripe-elements-complete-text-decoration` |                         | `text-decoration` property for the element in its complete state |
-| `--stripe-elements-complete-text-shadow`     |                         | `text-shadow` property for the element in its complete state |
-| `--stripe-elements-complete-text-transform`  |                         | `text-transform` property for the element in its complete state |
-| `--stripe-elements-empty-color`              |                         | `color` property for the element in its empty state |
-| `--stripe-elements-empty-font-family`        |                         | `font-family` property for the element in its empty state |
-| `--stripe-elements-empty-font-size`          |                         | `font-size` property for the element in its empty state |
-| `--stripe-elements-empty-font-smoothing`     |                         | `font-smoothing` property for the element in its empty state |
-| `--stripe-elements-empty-font-variant`       |                         | `font-variant` property for the element in its empty state |
-| `--stripe-elements-empty-icon-color`         |                         | `icon-color` property for the element in its empty state |
-| `--stripe-elements-empty-letter-spacing`     |                         | `letter-spacing` property for the element in its empty state |
-| `--stripe-elements-empty-line-height`        |                         | `line-height` property for the element in its empty state |
-| `--stripe-elements-empty-text-decoration`    |                         | `text-decoration` property for the element in its empty state |
-| `--stripe-elements-empty-text-shadow`        |                         | `text-shadow` property for the element in its empty state |
-| `--stripe-elements-empty-text-transform`     |                         | `text-transform` property for the element in its empty state |
-| `--stripe-elements-invalid-color`            |                         | `color` property for the element in its invalid state |
-| `--stripe-elements-invalid-font-family`      |                         | `font-family` property for the element in its invalid state |
-| `--stripe-elements-invalid-font-size`        |                         | `font-size` property for the element in its invalid state |
-| `--stripe-elements-invalid-font-smoothing`   |                         | `font-smoothing` property for the element in its invalid state |
-| `--stripe-elements-invalid-font-variant`     |                         | `font-variant` property for the element in its invalid state |
-| `--stripe-elements-invalid-icon-color`       |                         | `icon-color` property for the element in its invalid state |
-| `--stripe-elements-invalid-letter-spacing`   |                         | `letter-spacing` property for the element in its invalid state |
-| `--stripe-elements-invalid-line-height`      |                         | `line-height` property for the element in its invalid state |
-| `--stripe-elements-invalid-text-decoration`  |                         | `text-decoration` property for the element in its invalid state |
-| `--stripe-elements-invalid-text-shadow`      |                         | `text-shadow` property for the element in its invalid state |
-| `--stripe-elements-invalid-text-transform`   |                         | `text-transform` property for the element in its invalid state |
-| `--stripe-elements-transition`               | "box-shadow 150ms ease" | transition property for the element container    |
+| Name                                         | Default                       | Description                                                        |
+| -------------------------------------------- | ----------------------------- | ------------------------------------------------------------------ |
+| `--stripe-elements-border-radius`            | `` `4px` ``                   | border radius of the element container                             |
+| `--stripe-elements-border`                   | `` `1px solid transparent` `` | border property of the element container                           |
+| `--stripe-elements-box-shadow`               | `` `0 1px 3px 0 #e6ebf1` ``   | box shadow for the element container                               |
+| `--stripe-elements-transition`               | `` `box-shadow 150ms ease` `` | transition property for the element container                      |
+| `--stripe-elements-base-color`               |                               | \`color\` property for the element in its base state               |
+| `--stripe-elements-base-font-family`         |                               | \`font-family\` property for the element in its base state         |
+| `--stripe-elements-base-font-size`           |                               | \`font-size\` property for the element in its base state           |
+| `--stripe-elements-base-font-smoothing`      |                               | \`font-smoothing\` property for the element in its base state      |
+| `--stripe-elements-base-font-variant`        |                               | \`font-variant\` property for the element in its base state        |
+| `--stripe-elements-base-icon-color`          |                               | \`icon-color\` property for the element in its base state          |
+| `--stripe-elements-base-line-height`         |                               | \`line-height\` property for the element in its base state         |
+| `--stripe-elements-base-letter-spacing`      |                               | \`letter-spacing\` property for the element in its base state      |
+| `--stripe-elements-base-text-decoration`     |                               | \`text-decoration\` property for the element in its base state     |
+| `--stripe-elements-base-text-shadow`         |                               | \`text-shadow\` property for the element in its base state         |
+| `--stripe-elements-base-text-transform`      |                               | \`text-transform\` property for the element in its base state      |
+| `--stripe-elements-complete-color`           |                               | \`color\` property for the element in its complete state           |
+| `--stripe-elements-complete-font-family`     |                               | \`font-family\` property for the element in its complete state     |
+| `--stripe-elements-complete-font-size`       |                               | \`font-size\` property for the element in its complete state       |
+| `--stripe-elements-complete-font-smoothing`  |                               | \`font-smoothing\` property for the element in its complete state  |
+| `--stripe-elements-complete-font-variant`    |                               | \`font-variant\` property for the element in its complete state    |
+| `--stripe-elements-complete-icon-color`      |                               | \`icon-color\` property for the element in its complete state      |
+| `--stripe-elements-complete-line-height`     |                               | \`line-height\` property for the element in its complete state     |
+| `--stripe-elements-complete-letter-spacing`  |                               | \`letter-spacing\` property for the element in its complete state  |
+| `--stripe-elements-complete-text-decoration` |                               | \`text-decoration\` property for the element in its complete state |
+| `--stripe-elements-complete-text-shadow`     |                               | \`text-shadow\` property for the element in its complete state     |
+| `--stripe-elements-complete-text-transform`  |                               | \`text-transform\` property for the element in its complete state  |
+| `--stripe-elements-empty-color`              |                               | \`color\` property for the element in its empty state              |
+| `--stripe-elements-empty-font-family`        |                               | \`font-family\` property for the element in its empty state        |
+| `--stripe-elements-empty-font-size`          |                               | \`font-size\` property for the element in its empty state          |
+| `--stripe-elements-empty-font-smoothing`     |                               | \`font-smoothing\` property for the element in its empty state     |
+| `--stripe-elements-empty-font-variant`       |                               | \`font-variant\` property for the element in its empty state       |
+| `--stripe-elements-empty-icon-color`         |                               | \`icon-color\` property for the element in its empty state         |
+| `--stripe-elements-empty-line-height`        |                               | \`line-height\` property for the element in its empty state        |
+| `--stripe-elements-empty-letter-spacing`     |                               | \`letter-spacing\` property for the element in its empty state     |
+| `--stripe-elements-empty-text-decoration`    |                               | \`text-decoration\` property for the element in its empty state    |
+| `--stripe-elements-empty-text-shadow`        |                               | \`text-shadow\` property for the element in its empty state        |
+| `--stripe-elements-empty-text-transform`     |                               | \`text-transform\` property for the element in its empty state     |
+| `--stripe-elements-invalid-color`            |                               | \`color\` property for the element in its invalid state            |
+| `--stripe-elements-invalid-font-family`      |                               | \`font-family\` property for the element in its invalid state      |
+| `--stripe-elements-invalid-font-size`        |                               | \`font-size\` property for the element in its invalid state        |
+| `--stripe-elements-invalid-font-smoothing`   |                               | \`font-smoothing\` property for the element in its invalid state   |
+| `--stripe-elements-invalid-font-variant`     |                               | \`font-variant\` property for the element in its invalid state     |
+| `--stripe-elements-invalid-icon-color`       |                               | \`icon-color\` property for the element in its invalid state       |
+| `--stripe-elements-invalid-line-height`      |                               | \`line-height\` property for the element in its invalid state      |
+| `--stripe-elements-invalid-letter-spacing`   |                               | \`letter-spacing\` property for the element in its invalid state   |
+| `--stripe-elements-invalid-text-decoration`  |                               | \`text-decoration\` property for the element in its invalid state  |
+| `--stripe-elements-invalid-text-shadow`      |                               | \`text-shadow\` property for the element in its invalid state      |
+| `--stripe-elements-invalid-text-transform`   |                               | \`text-transform\` property for the element in its invalid state   |
 
-### stripe-elements
+<details><summary>Private API</summary>
 
-[Stripe.js v3 Card Elements](https://stripe.com/docs/elements), but it's a Web Component!
-Supports Shadow DOM.
+#### Fields
 
-👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-elements--enter-a-stripe-publishable-key) 👀
-
-### 🧙‍♂️ Usage
-If you prebuilt with Snowpack, load the module from your `web_modules` directory
-
-```html
-<script type="module" src="/web_modules/@power-elements/stripe-elements/stripe-elements.js"></script>
-```
-
-Alternatively, load the module from the unpkg CDN
-```html
-<script type="module" src="https://unpkg.com/@power-elements/stripe-elements/stripe-elements.js?module"></script>
-```
-
-Then you can add the element to your page.
-
-```html
-<stripe-elements id="stripe"
-     action="/payment"
-     publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"
-></stripe-elements>
-```
-
-See the demos for more comprehensive examples.
-   - Using `<stripe-elements>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-html--stripe-elements).
-   - Using `<stripe-elements>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-litelement--stripe-elements).
-   - Using `<stripe-elements>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vue--stripe-elements).
-   - Using `<stripe-elements>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-angular--stripe-elements).
-   - Using `<stripe-elements>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-react--stripe-elements).
-   - Using `<stripe-elements>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-preact--stripe-elements).
-
-## Styling
-
-Stripe v3's 'Stripe Elements' are not custom elements, but rather forms
-hosted by stripe and injected into your page via an iFrame. When we refer to the
-'Stripe Element' in this document, we are referring to the hosted Stripe form,
-not the `<stripe-element>` custom element. But when I mention the 'element', I mean the custom element.
-
-When you apply CSS to the custom properties available, they're parsed and sent to Stripe, who should apply them to the Stripe Element they return in the iFrame.
-
-- `base` styles are inherited by all other variants.
-- `complete` styles are applied when the Stripe Element has valid input.
-- `empty` styles are applied when the Stripe Element has no user input.
-- `invalid` styles are applied when the Stripe Element has invalid input.
-
-There are 11 properties for each state that you can set which will be read into the Stripe Element iFrame:
-
-- `color`
-- `font-family`
-- `font-size`
-- `font-smoothing`
-- `font-variant`
-- `icon-color`
-- `line-height`
-- `letter-spacing`
-- `text-decoration`
-- `text-shadow`
-- `text-transform`
-
-**Mixins:** ReadOnlyPropertiesMixin, LitNotify
-
-#### Properties
-
-| Property            | Attribute          | Modifiers | Type                                             | Default   | Description                                      |
-|---------------------|--------------------|-----------|--------------------------------------------------|-----------|--------------------------------------------------|
-| `action`            | `action`           |           | `string`                                         |           | If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),<br />the element will POST JSON data to this URL with an object containing<br />a key equal to the value of the `generate` property. |
-| `billingDetails`    |                    |           | `BillingDetails`                                 |           | billing_details object sent to create the payment representation. (optional) |
-| `brand`             | `brand`            | readonly  | `brandType`                                      | null      | The card brand detected by Stripe                |
-| `card`              | `card`             | readonly  | `Element`                                        | null      | The Stripe card object.<br />**DEPRECATED**. Will be removed in a future version. use `element` instead |
-| `clientSecret`      | `client-secret`    |           | `string`                                         |           | The `client_secret` part of a Stripe `PaymentIntent` |
-| `complete`          | `complete`         | readonly  | `false`                                          | false     | Whether the form is complete.                    |
-| `element`           | `element`          | readonly  | `Element`                                        | null      | Stripe element instance                          |
-| `elements`          | `elements`         | readonly  | `Elements`                                       | null      | Stripe Elements instance                         |
-| `empty`             | `empty`            | readonly  | `true`                                           | true      | If the form is empty.                            |
-| `error`             | `error`            | readonly  | `AmbiguousError`                                 | null      | Stripe or validation error                       |
-| `focused`           | `focused`          | readonly  | `false`                                          | false     | If the element is focused.                       |
-| `generate`          | `generate`         |           | `PaymentRepresentation`                          | "source"  | Type of payment representation to generate.      |
-| `hasError`          | `has-error`        | readonly  | `false`                                          | false     | Whether the element has an error<br />**DEPRECATED**. Will be removed in a future version. Use `error` instead |
-| `hideIcon`          | `hide-icon`        |           | `boolean`                                        | false     | Whether to hide icons in the Stripe form.        |
-| `hidePostalCode`    | `hide-postal-code` |           | `boolean`                                        | false     | Whether or not to hide the postal code field.<br />Useful when you gather shipping info elsewhere. |
-| `iconStyle`         | `icon-style`       |           | `"solid" \| "default" \| undefined`              | "default" | Stripe icon style.                               |
-| `invalid`           | `invalid`          | readonly  | `false`                                          | false     | Whether the form is invalid.                     |
-| `isComplete`        | `is-complete`      |           | `boolean`                                        | false     | Whether the form is complete.<br />**DEPRECATED**. Will be removed in a future version. use `complete` instead |
-| `isEmpty`           | `is-empty`         |           | `boolean`                                        | true      | Whether the form is empty.<br />**DEPRECATED**. Will be removed in a future version. use `empty` instead |
-| `paymentMethod`     | `payment-method`   | readonly  | `PaymentMethod`                                  | null      | Stripe PaymentMethod                             |
-| `paymentMethodData` |                    |           | `PaymentMethodData`                              |           | Data passed to stripe.createPaymentMethod. (optional) |
-| `publishableKey`    | `publishable-key`  |           | `string`                                         |           | Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX` |
-| `ready`             | `ready`            | readonly  | `false`                                          | false     | Whether the stripe element is ready to receive focus. |
-| `showError`         | `show-error`       |           | `boolean`                                        | false     | Whether to display the error message             |
-| `source`            | `source`           | readonly  | `Source`                                         | null      | Stripe Source                                    |
-| `sourceData`        |                    |           | `SourceOptions`                                  |           | Data passed to stripe.createSource. (optional)   |
-| `stripe`            | `stripe`           | readonly  | `Stripe`                                         | null      | Stripe instance                                  |
-| `stripeMountId`     |                    |           | `string`                                         |           | Stripe.js mount point element id. Due to limitations in the Stripe.js library, this element must be connected to the document. |
-| `stripeReady`       | `stripe-ready`     | readonly  | `false`                                          | false     | Whether the stripe element is ready to receive focus.<br />**DEPRECATED**. Will be removed in a future version. use `ready` instead. |
-| `token`             | `token`            | readonly  | `Token`                                          | null      | Stripe Token                                     |
-| `tokenData`         |                    |           | `TokenOptions`                                   |           | Data passed to stripe.createToken. (optional)    |
-| `value`             | `value`            |           | `string \| { [objectKey: string]: string; } \| undefined` | {}        | Prefilled values for form.                       |
+| Name       | Privacy   | Type       | Default | Description | Inherited From |
+| ---------- | --------- | ---------- | ------- | ----------- | -------------- |
+| `slotName` | protected | `SlotName` |         |             |                |
 
 #### Methods
 
-| Method                  | Type                                             | Description                                      |
-|-------------------------|--------------------------------------------------|--------------------------------------------------|
-| `blur`                  | `(): void`                                       | Blurs the element.                               |
-| `createPaymentMethod`   | `(paymentMethodData?: PaymentMethodData): Promise<PaymentMethodResponse>` | Submit payment information to generate a paymentMethod |
-| `createSource`          | `(sourceData?: SourceOptions): Promise<SourceResponse>` | Submit payment information to generate a source  |
-| `createToken`           | `(tokenData?: TokenOptions): Promise<TokenResponse>` | Submit payment information to generate a token   |
-| `focus`                 | `(): void`                                       | Focuses the element.                             |
-| `isPotentiallyValid`    | `(): boolean`                                    | Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid. |
-| `reset`                 | `(): void`                                       | Resets the Stripe card.                          |
-| `setReadOnlyProperties` | `(props: { [s: string]: unknown; }): Promise<void>` | Set read-only properties                         |
-| `submit`                | `(): Promise<StripePaymentResponse>`             | Generates a payment representation of the type specified by `generate`. |
-| `validate`              | `(): boolean`                                    | Checks if the Stripe form is valid.              |
+| Name                      | Privacy   | Description                                                                | Parameters                                     | Return                     | Inherited From |
+| ------------------------- | --------- | -------------------------------------------------------------------------- | ---------------------------------------------- | -------------------------- | -------------- |
+| `getPaymentMethodData`    | private   | Generates PaymentMethodData from the element.                              |                                                | `stripe.PaymentMethodData` |                |
+| `getStripeElementsStyles` | private   | Returns a Stripe-friendly style object computed from CSS custom properties |                                                | `StripeStyleInit`          |                |
+| `initElement`             | protected |                                                                            |                                                | `Promise<void>`            |                |
+| `onChange`                | private   | Updates the element's state.                                               | `event: stripe.elements.ElementChangeResponse` | `Promise<void>`            |                |
 
-#### Events
+</details>
 
-| Event                   | Description                                      |
-|-------------------------|--------------------------------------------------|
-| `change`                | Stripe Element change event                      |
-| `error`                 | The validation error, or the error returned from stripe.com |
-| `payment-method`        | The PaymentMethod received from stripe.com       |
-| `ready`                 | Stripe has been initialized and mounted          |
-| `source`                | The Source received from stripe.com              |
-| `stripe-error`          | **DEPRECATED**. Will be removed in a future major version. Use `error` instead |
-| `stripe-payment-method` | **DEPRECATED**. Will be removed in a future major version. Use `payment-method` instead |
-| `stripe-ready`          | **DEPRECATED**. Will be removed in a future major version. Use `ready` instead |
-| `stripe-source`         | **DEPRECATED**. Will be removed in a future major version. Use `source` instead |
-| `stripe-token`          | **DEPRECATED**. Will be removed in a future major version. Use `token` instead |
-| `success`               | When a payment succeeds                          |
-| `token`                 | The Token received from stripe.com               |
+<hr/>
 
-#### CSS Shadow Parts
+### Exports
 
-| Part     | Description                      |
-|----------|----------------------------------|
-| `error`  | container for the error message  |
-| `stripe` | container for the stripe element |
+| Kind                        | Name              | Declaration    | Module               | Package |
+| --------------------------- | ----------------- | -------------- | -------------------- | ------- |
+| `js`                        | `StripeElements`  | StripeElements | ./stripe-elements.js |         |
+| `custom-element-definition` | `stripe-elements` | StripeElements | ./stripe-elements.js |         |
 
-#### CSS Custom Properties
+## `./stripe-payment-request.js`:
 
-| Property                                     | Default                 | Description                                      |
-|----------------------------------------------|-------------------------|--------------------------------------------------|
-| `--stripe-elements-base-color`               |                         | `color` property for the element in its base state |
-| `--stripe-elements-base-font-family`         |                         | `font-family` property for the element in its base state |
-| `--stripe-elements-base-font-size`           |                         | `font-size` property for the element in its base state |
-| `--stripe-elements-base-font-smoothing`      |                         | `font-smoothing` property for the element in its base state |
-| `--stripe-elements-base-font-variant`        |                         | `font-variant` property for the element in its base state |
-| `--stripe-elements-base-icon-color`          |                         | `icon-color` property for the element in its base state |
-| `--stripe-elements-base-letter-spacing`      |                         | `letter-spacing` property for the element in its base state |
-| `--stripe-elements-base-line-height`         |                         | `line-height` property for the element in its base state |
-| `--stripe-elements-base-text-decoration`     |                         | `text-decoration` property for the element in its base state |
-| `--stripe-elements-base-text-shadow`         |                         | `text-shadow` property for the element in its base state |
-| `--stripe-elements-base-text-transform`      |                         | `text-transform` property for the element in its base state |
-| `--stripe-elements-border`                   | "1px solid transparent" | border property of the element container         |
-| `--stripe-elements-border-radius`            | "4px"                   | border radius of the element container           |
-| `--stripe-elements-box-shadow`               | "0 1px 3px 0 #e6ebf1"   | box shadow for the element container             |
-| `--stripe-elements-complete-color`           |                         | `color` property for the element in its complete state |
-| `--stripe-elements-complete-font-family`     |                         | `font-family` property for the element in its complete state |
-| `--stripe-elements-complete-font-size`       |                         | `font-size` property for the element in its complete state |
-| `--stripe-elements-complete-font-smoothing`  |                         | `font-smoothing` property for the element in its complete state |
-| `--stripe-elements-complete-font-variant`    |                         | `font-variant` property for the element in its complete state |
-| `--stripe-elements-complete-icon-color`      |                         | `icon-color` property for the element in its complete state |
-| `--stripe-elements-complete-letter-spacing`  |                         | `letter-spacing` property for the element in its complete state |
-| `--stripe-elements-complete-line-height`     |                         | `line-height` property for the element in its complete state |
-| `--stripe-elements-complete-text-decoration` |                         | `text-decoration` property for the element in its complete state |
-| `--stripe-elements-complete-text-shadow`     |                         | `text-shadow` property for the element in its complete state |
-| `--stripe-elements-complete-text-transform`  |                         | `text-transform` property for the element in its complete state |
-| `--stripe-elements-empty-color`              |                         | `color` property for the element in its empty state |
-| `--stripe-elements-empty-font-family`        |                         | `font-family` property for the element in its empty state |
-| `--stripe-elements-empty-font-size`          |                         | `font-size` property for the element in its empty state |
-| `--stripe-elements-empty-font-smoothing`     |                         | `font-smoothing` property for the element in its empty state |
-| `--stripe-elements-empty-font-variant`       |                         | `font-variant` property for the element in its empty state |
-| `--stripe-elements-empty-icon-color`         |                         | `icon-color` property for the element in its empty state |
-| `--stripe-elements-empty-letter-spacing`     |                         | `letter-spacing` property for the element in its empty state |
-| `--stripe-elements-empty-line-height`        |                         | `line-height` property for the element in its empty state |
-| `--stripe-elements-empty-text-decoration`    |                         | `text-decoration` property for the element in its empty state |
-| `--stripe-elements-empty-text-shadow`        |                         | `text-shadow` property for the element in its empty state |
-| `--stripe-elements-empty-text-transform`     |                         | `text-transform` property for the element in its empty state |
-| `--stripe-elements-invalid-color`            |                         | `color` property for the element in its invalid state |
-| `--stripe-elements-invalid-font-family`      |                         | `font-family` property for the element in its invalid state |
-| `--stripe-elements-invalid-font-size`        |                         | `font-size` property for the element in its invalid state |
-| `--stripe-elements-invalid-font-smoothing`   |                         | `font-smoothing` property for the element in its invalid state |
-| `--stripe-elements-invalid-font-variant`     |                         | `font-variant` property for the element in its invalid state |
-| `--stripe-elements-invalid-icon-color`       |                         | `icon-color` property for the element in its invalid state |
-| `--stripe-elements-invalid-letter-spacing`   |                         | `letter-spacing` property for the element in its invalid state |
-| `--stripe-elements-invalid-line-height`      |                         | `line-height` property for the element in its invalid state |
-| `--stripe-elements-invalid-text-decoration`  |                         | `text-decoration` property for the element in its invalid state |
-| `--stripe-elements-invalid-text-shadow`      |                         | `text-shadow` property for the element in its invalid state |
-| `--stripe-elements-invalid-text-transform`   |                         | `text-transform` property for the element in its invalid state |
-| `--stripe-elements-transition`               | "box-shadow 150ms ease" | transition property for the element container    |
+### class: `StripePaymentRequest`, `stripe-payment-request`
 
-### stripe-payment-request
+#### Superclass
 
-Custom element wrapper for Stripe.js v3 Payment Request Buttons.
+| Name         | Module             | Package |
+| ------------ | ------------------ | ------- |
+| `StripeBase` | /src/StripeBase.js |         |
 
-👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--enter-a-stripe-publishable-key) 👀
+#### Static Fields
 
-### 🧙‍♂️ Usage
-If you prebuilt with Snowpack, load the module from your `web_modules` directory
+| Name | Privacy | Type     | Default                    | Description | Inherited From |
+| ---- | ------- | -------- | -------------------------- | ----------- | -------------- |
+| `is` |         | `string` | `'stripe-payment-request'` |             |                |
 
-```html
-<script type="module" src="/web_modules/@power-elements/stripe-elements/stripe-payment-request.js"></script>
-```
+#### Fields
 
-Alternatively, load the module from the unpkg CDN
-```html
-<script type="module" src="https://unpkg.com/@power-elements/stripe-elements/stripe-payment-request.js?module"></script>
-```
-
-Then you can add the element to your page.
-
-```html
-
-<stripe-payment-request id="payment-request"
-     publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"
-     generate="token"
-     action="/charges"
-     country="CA"
-     currency="cad"
-     amount="1000"
-     label="Ten Bones"
-     request-payer-name
-     request-payer-email
-     request-payer-phone
-></stripe-payment-request>
-```
-
-See the demos for more comprehensive examples.
-   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vanilla--stripe-payment-request).
-   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-litelement--stripe-payment-request).
-   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vue--stripe-payment-request).
-   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-angular--stripe-payment-request).
-   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-react--stripe-payment-request).
-   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-preact--stripe-payment-request).
-
-**Mixins:** ReadOnlyPropertiesMixin, LitNotify
-
-#### Properties
-
-| Property            | Attribute         | Modifiers | Type                                             | Default  | Description                                      |
-|---------------------|-------------------|-----------|--------------------------------------------------|----------|--------------------------------------------------|
-| `action`            | `action`          |           | `string`                                         |          | If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),<br />the element will POST JSON data to this URL with an object containing<br />a key equal to the value of the `generate` property. |
-| `amount`            |                   |           | `number`                                         |          | The amount in the currency's subunit (e.g. cents, yen, etc.) |
-| `billingDetails`    |                   |           | `BillingDetails`                                 |          | billing_details object sent to create the payment representation. (optional) |
-| `buttonTheme`       |                   |           | `"dark" \| "light" \| "light-outline"`           |          |                                                  |
-| `buttonType`        |                   |           | `"default" \| "donate" \| "buy" \| undefined`    |          |                                                  |
-| `canMakePayment`    |                   | readonly  | `{ applePay?: boolean \| undefined; } \| null`   |          | Whether or not the device can make the payment request. |
-| `clientSecret`      | `client-secret`   |           | `string`                                         |          | The `client_secret` part of a Stripe `PaymentIntent` |
-| `country`           |                   |           | `"AF" \| "AX" \| "AL" \| "DZ" \| "AS" \| "AD" \| "AO" \| "AI" \| "AQ" \| "AG" \| "AR" \| "AM" \| "AW" \| "AU" \| "AT" \| "AZ" \| "BS" \| "BH" \| "BD" \| "BB" \| "BY" \| "BE" \| "BZ" \| "BJ" \| "BM" \| "BT" \| "BO" \| ... 217 more ... \| "ZW"` |          | The two-letter country code of your Stripe account |
-| `currency`          |                   |           | `string`                                         |          | Three character currency code                    |
-| `displayItems`      |                   |           | `DisplayItem[]`                                  |          | An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above. |
-| `element`           | `element`         | readonly  | `Element`                                        | null     | Stripe element instance                          |
-| `elements`          | `elements`        | readonly  | `Elements`                                       | null     | Stripe Elements instance                         |
-| `error`             | `error`           | readonly  | `AmbiguousError`                                 | null     | Stripe or validation error                       |
-| `focused`           | `focused`         | readonly  | `false`                                          | false    | If the element is focused.                       |
-| `generate`          | `generate`        |           | `PaymentRepresentation`                          | "source" | Type of payment representation to generate.      |
-| `hasError`          | `has-error`       | readonly  | `false`                                          | false    | Whether the element has an error<br />**DEPRECATED**. Will be removed in a future version. Use `error` instead |
-| `label`             |                   |           | `string`                                         |          | A name that the browser shows the customer in the payment interface. |
-| `paymentIntent`     |                   | readonly  | `PaymentIntent`                                  |          | Stripe PaymentIntent                             |
-| `paymentMethod`     | `payment-method`  | readonly  | `PaymentMethod`                                  | null     | Stripe PaymentMethod                             |
-| `paymentMethodData` |                   |           | `PaymentMethodData`                              |          | Data passed to stripe.createPaymentMethod. (optional) |
-| `paymentRequest`    |                   | readonly  | `StripePaymentRequest`                           |          | Stripe PaymentRequest                            |
-| `pending`           |                   |           | `boolean`                                        |          | If you might change the payment amount later (for example, after you have calcluated shipping costs), set this to true. Note that browsers treat this as a hint for how to display things, and not necessarily as something that will prevent submission. |
-| `publishableKey`    | `publishable-key` |           | `string`                                         |          | Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX` |
-| `ready`             | `ready`           | readonly  | `false`                                          | false    | Whether the stripe element is ready to receive focus. |
-| `requestPayerEmail` |                   |           | `boolean`                                        |          | See the requestPayerName option.                 |
-| `requestPayerName`  |                   |           | `boolean`                                        |          | By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.<br /><br />We highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available. |
-| `requestPayerPhone` |                   |           | `boolean`                                        |          | See the requestPayerName option.                 |
-| `requestShipping`   |                   |           | `boolean`                                        |          | Collect shipping address by setting this option to true. The address appears in the PaymentResponse.<br />You must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback. |
-| `shippingOptions`   |                   |           | `ShippingOption[]`                               |          | An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option. |
-| `showError`         | `show-error`      |           | `boolean`                                        | false    | Whether to display the error message             |
-| `source`            | `source`          | readonly  | `Source`                                         | null     | Stripe Source                                    |
-| `sourceData`        |                   |           | `SourceOptions`                                  |          | Data passed to stripe.createSource. (optional)   |
-| `stripe`            | `stripe`          | readonly  | `Stripe`                                         | null     | Stripe instance                                  |
-| `stripeMountId`     |                   |           | `string`                                         |          | Stripe.js mount point element id. Due to limitations in the Stripe.js library, this element must be connected to the document. |
-| `stripeReady`       | `stripe-ready`    | readonly  | `false`                                          | false    | Whether the stripe element is ready to receive focus.<br />**DEPRECATED**. Will be removed in a future version. use `ready` instead. |
-| `token`             | `token`           | readonly  | `Token`                                          | null     | Stripe Token                                     |
-| `tokenData`         |                   |           | `TokenOptions`                                   |          | Data passed to stripe.createToken. (optional)    |
+| Name                | Privacy | Type                                         | Default     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Inherited From |
+| ------------------- | ------- | -------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
+| `amount`            |         | `number`                                     |             | The amount in the currency's subunit (e.g. cents, yen, etc.)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |                |
+| `canMakePayment`    |         | `CanMakePaymentType`                         | `null`      | Whether or not the device can make the payment request.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |                |
+| `country`           |         | `CountryCode`                                |             | The two-letter country code of your Stripe account                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |                |
+| `currency`          |         | `StripePaymentRequestOptions['currency']`    |             | Three character currency code                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |                |
+| `displayItems`      |         | `DisplayItem[]`                              |             | An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.                                                                                                                                                                                                                                                                                                                                                                             |                |
+| `label`             |         | `string`                                     |             | A name that the browser shows the customer in the payment interface.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                |
+| `paymentIntent`     |         | `PaymentIntent`                              | `null`      | Stripe PaymentIntent                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                |
+| `paymentRequest`    |         | `stripe.paymentRequest.StripePaymentRequest` | `null`      | Stripe PaymentRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |                |
+| `pending`           |         | `boolean`                                    | `false`     | If you might change the payment amount later (for example, after you have calcluated shipping costs), set this to true. Note that browsers treat this as a hint for how to display things, and not necessarily as something that will prevent submission.                                                                                                                                                                                                                                                                                                                            |                |
+| `requestPayerEmail` |         | `boolean`                                    |             | See the requestPayerName option.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |                |
+| `requestPayerName`  |         | `boolean`                                    |             | By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.&#xA;&#xA;We highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available. |                |
+| `requestPayerPhone` |         | `boolean`                                    |             | See the requestPayerName option.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |                |
+| `requestShipping`   |         | `boolean`                                    |             | Collect shipping address by setting this option to true. The address appears in the PaymentResponse.&#xA;You must also supply a valid \[ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback.                                                                                                                                                                                                                                           |                |
+| `shippingOptions`   |         | `ShippingOption[]`                           |             | An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                |
+| `buttonType`        |         | `PaymentRequestButtonStyleOptions['type']`   | `'default'` |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |                |
+| `buttonTheme`       |         | `PaymentRequestButtonStyleOptions['theme']`  | `'dark'`    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |                |
 
 #### Methods
 
-| Method                  | Type                                             | Description                           |
-|-------------------------|--------------------------------------------------|---------------------------------------|
-| `blur`                  | `(): void`                                       | Blurs the element.                    |
-| `focus`                 | `(): void`                                       | Focuses the element.                  |
-| `reset`                 | `(): void`                                       | Resets and clears the stripe element. |
-| `setReadOnlyProperties` | `(props: { [s: string]: unknown; }): Promise<void>` | Set read-only properties              |
+| Name    | Privacy | Description | Parameters | Return | Inherited From |
+| ------- | ------- | ----------- | ---------- | ------ | -------------- |
+| `reset` | public  |             |            | `void` |                |
 
 #### Events
 
-| Event                   | Description                                      |
-|-------------------------|--------------------------------------------------|
-| `cancel`                | When a payment request is cancelled              |
-| `error`                 | The validation error, or the error returned from stripe.com |
-| `fail`                  | When a payment request fails                     |
-| `payment-method`        | The PaymentMethod received from stripe.com       |
-| `ready`                 | Stripe has been initialized and mounted          |
-| `shippingaddresschange` | When the user chooses a different shipping address |
-| `shippingoptionchange`  | When the user chooses a different shipping option |
-| `source`                | The Source received from stripe.com              |
-| `stripe-error`          | **DEPRECATED**. Will be removed in a future major version. Use `error` instead |
-| `stripe-payment-method` | **DEPRECATED**. Will be removed in a future major version. Use `payment-method` instead |
-| `stripe-ready`          | **DEPRECATED**. Will be removed in a future major version. Use `ready` instead |
-| `stripe-source`         | **DEPRECATED**. Will be removed in a future major version. Use `source` instead |
-| `stripe-token`          | **DEPRECATED**. Will be removed in a future major version. Use `token` instead |
-| `success`               | When a payment succeeds                          |
-| `token`                 | The Token received from stripe.com               |
-| `unsupported`           | When the element detects that the user agent cannot make a payment |
+| Name                      | Type | Description                                                        | Inherited From |
+| ------------------------- | ---- | ------------------------------------------------------------------ | -------------- |
+| `'unsupported'`           |      | When the element detects that the user agent cannot make a payment |                |
+| `'fail'`                  |      | When a payment request fails                                       |                |
+| `'cancel'`                |      | When a payment request is cancelled                                |                |
+| `'shippingaddresschange'` |      | When the user chooses a different shipping address                 |                |
+| `'shippingoptionchange'`  |      | When the user chooses a different shipping option                  |                |
 
-#### CSS Shadow Parts
+#### Attributes
 
-| Part     | Description                      |
-|----------|----------------------------------|
-| `error`  | container for the error message  |
-| `stripe` | container for the stripe element |
+| Name                  | Field             | Inherited From |
+| --------------------- | ----------------- | -------------- |
+| `amount`              | amount            |                |
+| `can-make-payment`    | canMakePayment    |                |
+| `country`             | country           |                |
+| `currency`            | currency          |                |
+| `displayItems`        | displayItems      |                |
+| `label`               | label             |                |
+| `payment-intent`      | paymentIntent     |                |
+| `payment-request`     | paymentRequest    |                |
+| `pending`             | pending           |                |
+| `request-payer-email` | requestPayerEmail |                |
+| `request-payer-name`  | requestPayerName  |                |
+| `request-payer-phone` | requestPayerPhone |                |
+| `request-shipping`    | requestShipping   |                |
+| `shippingOptions`     | shippingOptions   |                |
+| `button-type`         | buttonType        |                |
+| `button-theme`        | buttonTheme       |                |
 
-#### CSS Custom Properties
+#### CSS Properties
 
-| Property                                      | Default    | Description                                  |
-|-----------------------------------------------|------------|----------------------------------------------|
-| `--stripe-payment-request-element-background` | "white"    | background property of the container element |
-| `--stripe-payment-request-element-min-width`  | "300px"    | min-width property of the container element  |
-| `--stripe-payment-request-element-padding`    | "8px 12px" | padding property of the container element    |
+| Name                                          | Default          | Description                                  |
+| --------------------------------------------- | ---------------- | -------------------------------------------- |
+| `--stripe-payment-request-element-min-width`  | `` `300px` ``    | min-width property of the container element  |
+| `--stripe-payment-request-element-padding`    | `` `8px 12px` `` | padding property of the container element    |
+| `--stripe-payment-request-element-background` | `` `white` ``    | background property of the container element |
 
-### stripe-payment-request
+<details><summary>Private API</summary>
 
-Custom element wrapper for Stripe.js v3 Payment Request Buttons.
+#### Fields
 
-👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--enter-a-stripe-publishable-key) 👀
-
-### 🧙‍♂️ Usage
-If you prebuilt with Snowpack, load the module from your `web_modules` directory
-
-```html
-<script type="module" src="/web_modules/@power-elements/stripe-elements/stripe-payment-request.js"></script>
-```
-
-Alternatively, load the module from the unpkg CDN
-```html
-<script type="module" src="https://unpkg.com/@power-elements/stripe-elements/stripe-payment-request.js?module"></script>
-```
-
-Then you can add the element to your page.
-
-```html
-
-<stripe-payment-request id="payment-request"
-     publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"
-     generate="token"
-     action="/charges"
-     country="CA"
-     currency="cad"
-     amount="1000"
-     label="Ten Bones"
-     request-payer-name
-     request-payer-email
-     request-payer-phone
-></stripe-payment-request>
-```
-
-See the demos for more comprehensive examples.
-   - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vanilla--stripe-payment-request).
-   - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-litelement--stripe-payment-request).
-   - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vue--stripe-payment-request).
-   - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-angular--stripe-payment-request).
-   - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-react--stripe-payment-request).
-   - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-preact--stripe-payment-request).
-
-**Mixins:** ReadOnlyPropertiesMixin, LitNotify
-
-#### Properties
-
-| Property            | Attribute             | Modifiers | Type                                             | Default   | Description                                      |
-|---------------------|-----------------------|-----------|--------------------------------------------------|-----------|--------------------------------------------------|
-| `action`            | `action`              |           | `string`                                         |           | If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),<br />the element will POST JSON data to this URL with an object containing<br />a key equal to the value of the `generate` property. |
-| `amount`            | `amount`              |           | `number`                                         |           | The amount in the currency's subunit (e.g. cents, yen, etc.) |
-| `billingDetails`    |                       |           | `BillingDetails`                                 |           | billing_details object sent to create the payment representation. (optional) |
-| `buttonTheme`       | `button-theme`        |           | `"dark" \| "light" \| "light-outline"`           | "dark"    |                                                  |
-| `buttonType`        | `button-type`         |           | `"default" \| "donate" \| "buy" \| undefined`    | "default" |                                                  |
-| `canMakePayment`    | `can-make-payment`    | readonly  | `{ applePay?: boolean \| undefined; } \| null`   | null      | Whether or not the device can make the payment request. |
-| `clientSecret`      | `client-secret`       |           | `string`                                         |           | The `client_secret` part of a Stripe `PaymentIntent` |
-| `country`           | `country`             |           | `"AF" \| "AX" \| "AL" \| "DZ" \| "AS" \| "AD" \| "AO" \| "AI" \| "AQ" \| "AG" \| "AR" \| "AM" \| "AW" \| "AU" \| "AT" \| "AZ" \| "BS" \| "BH" \| "BD" \| "BB" \| "BY" \| "BE" \| "BZ" \| "BJ" \| "BM" \| "BT" \| "BO" \| ... 217 more ... \| "ZW"` |           | The two-letter country code of your Stripe account |
-| `currency`          | `currency`            |           | `string`                                         |           | Three character currency code                    |
-| `displayItems`      | `displayItems`        |           | `DisplayItem[]`                                  |           | An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above. |
-| `element`           | `element`             | readonly  | `Element`                                        | null      | Stripe element instance                          |
-| `elements`          | `elements`            | readonly  | `Elements`                                       | null      | Stripe Elements instance                         |
-| `error`             | `error`               | readonly  | `AmbiguousError`                                 | null      | Stripe or validation error                       |
-| `focused`           | `focused`             | readonly  | `false`                                          | false     | If the element is focused.                       |
-| `generate`          | `generate`            |           | `PaymentRepresentation`                          | "source"  | Type of payment representation to generate.      |
-| `hasError`          | `has-error`           | readonly  | `false`                                          | false     | Whether the element has an error<br />**DEPRECATED**. Will be removed in a future version. Use `error` instead |
-| `label`             | `label`               |           | `string`                                         |           | A name that the browser shows the customer in the payment interface. |
-| `paymentIntent`     | `payment-intent`      | readonly  | `PaymentIntent`                                  | null      | Stripe PaymentIntent                             |
-| `paymentMethod`     | `payment-method`      | readonly  | `PaymentMethod`                                  | null      | Stripe PaymentMethod                             |
-| `paymentMethodData` |                       |           | `PaymentMethodData`                              |           | Data passed to stripe.createPaymentMethod. (optional) |
-| `paymentRequest`    | `payment-request`     | readonly  | `StripePaymentRequest`                           | null      | Stripe PaymentRequest                            |
-| `pending`           | `pending`             |           | `boolean`                                        | false     | If you might change the payment amount later (for example, after you have calcluated shipping costs), set this to true. Note that browsers treat this as a hint for how to display things, and not necessarily as something that will prevent submission. |
-| `publishableKey`    | `publishable-key`     |           | `string`                                         |           | Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX` |
-| `ready`             | `ready`               | readonly  | `false`                                          | false     | Whether the stripe element is ready to receive focus. |
-| `requestPayerEmail` | `request-payer-email` |           | `boolean`                                        |           | See the requestPayerName option.                 |
-| `requestPayerName`  | `request-payer-name`  |           | `boolean`                                        |           | By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.<br /><br />We highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available. |
-| `requestPayerPhone` | `request-payer-phone` |           | `boolean`                                        |           | See the requestPayerName option.                 |
-| `requestShipping`   | `request-shipping`    |           | `boolean`                                        |           | Collect shipping address by setting this option to true. The address appears in the PaymentResponse.<br />You must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback. |
-| `shippingOptions`   | `shippingOptions`     |           | `ShippingOption[]`                               |           | An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option. |
-| `showError`         | `show-error`          |           | `boolean`                                        | false     | Whether to display the error message             |
-| `source`            | `source`              | readonly  | `Source`                                         | null      | Stripe Source                                    |
-| `sourceData`        |                       |           | `SourceOptions`                                  |           | Data passed to stripe.createSource. (optional)   |
-| `stripe`            | `stripe`              | readonly  | `Stripe`                                         | null      | Stripe instance                                  |
-| `stripeMountId`     |                       |           | `string`                                         |           | Stripe.js mount point element id. Due to limitations in the Stripe.js library, this element must be connected to the document. |
-| `stripeReady`       | `stripe-ready`        | readonly  | `false`                                          | false     | Whether the stripe element is ready to receive focus.<br />**DEPRECATED**. Will be removed in a future version. use `ready` instead. |
-| `token`             | `token`               | readonly  | `Token`                                          | null      | Stripe Token                                     |
-| `tokenData`         |                       |           | `TokenOptions`                                   |           | Data passed to stripe.createToken. (optional)    |
+| Name               | Privacy   | Type               | Default | Description | Inherited From |
+| ------------------ | --------- | ------------------ | ------- | ----------- | -------------- |
+| `slotName`         | protected | `SlotName`         |         |             |                |
+| `#displayItems`    | private   | `DisplayItem[]`    |         |             |                |
+| `#shippingOptions` | private   | `ShippingOption[]` |         |             |                |
 
 #### Methods
 
-| Method                  | Type                                             | Description                           |
-|-------------------------|--------------------------------------------------|---------------------------------------|
-| `blur`                  | `(): void`                                       | Blurs the element.                    |
-| `focus`                 | `(): void`                                       | Focuses the element.                  |
-| `reset`                 | `(): void`                                       | Resets and clears the stripe element. |
-| `setReadOnlyProperties` | `(props: { [s: string]: unknown; }): Promise<void>` | Set read-only properties              |
+| Name                             | Privacy   | Description                                                    | Parameters                                                                       | Return                                                                        | Inherited From |
+| -------------------------------- | --------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | -------------- |
+| `getStripePaymentRequestOptions` | private   | Creates a StripePaymentRequestOptions object.                  |                                                                                  | `StripePaymentRequestOptions`                                                 |                |
+| `initElement`                    | protected | Initializes the PaymentRequest Object.                         |                                                                                  | `Promise<void>`                                                               |                |
+| `initPaymentRequest`             | private   | Initialized the \`PaymentRequest\` object.                     |                                                                                  | `Promise<void>`                                                               |                |
+| `initPaymentRequestButton`       | private   | Creates Stripe Payment Request Element.                        |                                                                                  | `Promise<void>`                                                               |                |
+| `initPaymentRequestListeners`    | private   | Attaches listeners to the \`PaymentRequest\` object.           |                                                                                  | `Promise<void>`                                                               |                |
+| `updatePaymentRequest`           | private   | Updates the PaymentRequests's values                           |                                                                                  |                                                                               |                |
+| `onCancel`                       | private   | Handle a \`cancel\` event                                      |                                                                                  | `void`                                                                        |                |
+| `complete`                       | private   | Completes the PaymentRequest.                                  | `paymentResponse: StripePaymentRequestResponse, confirmationError: stripe.Error` | `Promise<StripePaymentRequestResponse \| { error: stripe.Error \| null }>`    |                |
+| `onPaymentResponse`              | private   | Handle a paymentResponse from Stripe                           | `paymentResponse: StripePaymentRequestResponse`                                  | `Promise<void>`                                                               |                |
+| `confirmPaymentIntent`           | private   | When a PaymentIntent client secret is set, confirm the payment | `paymentResponse: StripePaymentRequestResponse`                                  | `Promise<void>`                                                               |                |
+| `confirmCardPayment`             | private   | Stripe confirmCardPayment method                               | `data: stripe.ConfirmCardPaymentData, options: stripe.ConfirmCardPaymentOptions` | `Promise<PaymentIntentResponse>`                                              |                |
+| `onShippingaddresschange`        | private   |                                                                | `originalEvent: ShippingAddressChangeEvent`                                      | `void`                                                                        |                |
+| `onShippingoptionchange`         | private   |                                                                | `originalEvent: ShippingOptionChangeEvent`                                       | `void`                                                                        |                |
+| `parseDatasets`                  | private   | Parses an element's dataset number props from string to number | `selector: 'stripe-shipping-option'`                                             | `ShippingOption[]`                                                            |                |
+| `parseDatasets`                  | private   |                                                                | `selector: 'stripe-display-item'`                                                | `DisplayItem[]`                                                               |                |
+| `parseDatasets`                  | private   |                                                                | `selector: 'stripe-display-item'\|'stripe-shipping-option'`                      | `(stripe.paymentRequest.DisplayItem\|stripe.paymentRequest.ShippingOption)[]` |                |
 
-#### Events
+</details>
 
-| Event                   | Description                                      |
-|-------------------------|--------------------------------------------------|
-| `cancel`                | When a payment request is cancelled              |
-| `error`                 | The validation error, or the error returned from stripe.com |
-| `fail`                  | When a payment request fails                     |
-| `payment-method`        | The PaymentMethod received from stripe.com       |
-| `ready`                 | Stripe has been initialized and mounted          |
-| `shippingaddresschange` | When the user chooses a different shipping address |
-| `shippingoptionchange`  | When the user chooses a different shipping option |
-| `source`                | The Source received from stripe.com              |
-| `stripe-error`          | **DEPRECATED**. Will be removed in a future major version. Use `error` instead |
-| `stripe-payment-method` | **DEPRECATED**. Will be removed in a future major version. Use `payment-method` instead |
-| `stripe-ready`          | **DEPRECATED**. Will be removed in a future major version. Use `ready` instead |
-| `stripe-source`         | **DEPRECATED**. Will be removed in a future major version. Use `source` instead |
-| `stripe-token`          | **DEPRECATED**. Will be removed in a future major version. Use `token` instead |
-| `success`               | When a payment succeeds                          |
-| `token`                 | The Token received from stripe.com               |
-| `unsupported`           | When the element detects that the user agent cannot make a payment |
+<hr/>
 
-#### CSS Shadow Parts
+### Functions
 
-| Part     | Description                      |
-|----------|----------------------------------|
-| `error`  | container for the error message  |
-| `stripe` | container for the stripe element |
+| Name                     | Description | Parameters    | Return                       |
+| ------------------------ | ----------- | ------------- | ---------------------------- |
+| `isStripeDisplayItem`    |             | `el: Element` | `el is StripeDisplayItem`    |
+| `isStripeShippingOption` |             | `el: Element` | `el is StripeShippingOption` |
 
-#### CSS Custom Properties
+<hr/>
 
-| Property                                      | Default    | Description                                  |
-|-----------------------------------------------|------------|----------------------------------------------|
-| `--stripe-payment-request-element-background` | "white"    | background property of the container element |
-| `--stripe-payment-request-element-min-width`  | "300px"    | min-width property of the container element  |
-| `--stripe-payment-request-element-padding`    | "8px 12px" | padding property of the container element    |
+### Exports
 
+| Kind                        | Name                     | Declaration            | Module                      | Package |
+| --------------------------- | ------------------------ | ---------------------- | --------------------------- | ------- |
+| `js`                        | `isStripeDisplayItem`    | isStripeDisplayItem    | ./stripe-payment-request.js |         |
+| `js`                        | `isStripeShippingOption` | isStripeShippingOption | ./stripe-payment-request.js |         |
+| `js`                        | `StripePaymentRequest`   | StripePaymentRequest   | ./stripe-payment-request.js |         |
+| `custom-element-definition` | `stripe-payment-request` | StripePaymentRequest   | ./stripe-payment-request.js |         |
+
+## `./index.js`:
+
+### Exports
+
+| Kind | Name                   | Declaration          | Module                      | Package |
+| ---- | ---------------------- | -------------------- | --------------------------- | ------- |
+| `js` | `StripeElements`       | StripeElements       | ./stripe-elements.js        |         |
+| `js` | `StripePaymentRequest` | StripePaymentRequest | ./stripe-payment-request.js |         |

@@ -19,8 +19,7 @@ src/**/*.d.ts
 *.js.map
 *.d.ts
 !src/global.d.ts
-!karma.conf.js
-!rollup.config.js
+!*.config.js
 /lib
 
 bower_components/

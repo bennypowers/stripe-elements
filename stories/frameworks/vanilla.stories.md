@@ -1,7 +1,6 @@
 ```js script
+import { html } from 'lit-html' ;
 import '@power-elements/codesandbox-button';
-
-import { html } from '@open-wc/demoing-storybook';
 
 export default {
   title: 'Framework Examples/Vanilla',
