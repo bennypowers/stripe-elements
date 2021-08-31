@@ -1,3 +1,11 @@
+## [2.3.9](https://github.com/bennypowers/stripe-elements/compare/v2.3.8...v2.3.9) (2021-08-31)
+
+
+### Bug Fixes
+
+* don't import types from wc polyfill ([8a8f192](https://github.com/bennypowers/stripe-elements/commit/8a8f19215efd17fe20e765ea9e4bbfa41993b05c))
+* provide request shipping option ([6f99772](https://github.com/bennypowers/stripe-elements/commit/6f997720194857597fe506634998323af232bd3d))
+
 ## [2.3.8](https://github.com/bennypowers/stripe-elements/compare/v2.3.7...v2.3.8) (2020-12-30)
 
 
