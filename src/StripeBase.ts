@@ -1,5 +1,5 @@
-import type { ShadyDOM, ShadyCSS } from '@webcomponents/webcomponentsjs';
 import type { TemplateResult, PropertyValues } from 'lit';
+import type * as _ from '@webcomponents/webcomponentsjs';
 import { LitElement, html } from 'lit';
 import { property } from 'lit/decorators.js';
 import { LitNotify } from '@morbidick/lit-element-notify';

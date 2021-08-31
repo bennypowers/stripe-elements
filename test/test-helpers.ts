@@ -1,6 +1,6 @@
 import { StripeElements } from '../src/stripe-elements';
 import { StripePaymentRequest } from '../src/stripe-payment-request';
-import type { ShadyDOM, ShadyCSS } from '@webcomponents/webcomponentsjs';
+import type * as _ from '@webcomponents/webcomponentsjs';
 
 import 'chai-things';
 import 'sinon-chai';
@@ -29,11 +29,6 @@ import { dash } from '../src/lib/strings';
 import { StripeBase } from '../src/StripeBase';
 
 declare global {
-  interface Window {
-    ShadyCSS: ShadyCSS;
-    ShadyDOM: ShadyDOM;
-  }
-
   interface Node {
     getRootNode(options?: GetRootNodeOptions): Node|ShadowRoot;
   }
@@ -283,10 +278,12 @@ export function restoreCanMakePayment(): void {
 }
 
 export function mockShadyCSS(): void {
+  // @ts-expect-error: just mocks
   window.ShadyCSS = new MockShadyCSS();
 }
 
 export function restoreShadyCSS(): void {
+  // @ts-expect-error: just mocks
   window.ShadyCSS.restore();
   window.ShadyCSS = undefined;
 }
@@ -296,10 +293,12 @@ export function spyGetComputedStyleValue(): void {
 }
 
 export function restoreGetComputedStyleValue(): void {
+  // @ts-expect-error: just mocks
   window.ShadyCSS?.getComputedStyleValue?.restore();
 }
 
 export function mockShadyDOM(): void {
+  // @ts-expect-error: just mocks
   window.ShadyDOM = new (class MockShadyDOM { })();
 }
 
