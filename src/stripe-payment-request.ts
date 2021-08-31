@@ -324,6 +324,7 @@ export class StripePaymentRequest extends StripeBase {
       currency,
       displayItems,
       shippingOptions,
+      requestShipping,
       requestPayerEmail,
       requestPayerName,
       requestPayerPhone,
@@ -338,6 +339,7 @@ export class StripePaymentRequest extends StripeBase {
       requestPayerEmail,
       requestPayerName,
       requestPayerPhone,
+      requestShipping,
       shippingOptions,
       total,
     };
