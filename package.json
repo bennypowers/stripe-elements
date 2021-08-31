@@ -103,7 +103,7 @@
     "@types/sinon": "^10.0.2",
     "@web/dev-server-esbuild": "^0.2.10",
     "@web/dev-server-storybook": "^0.3.8",
-    "@web/storybook-prebuilt": "^0.1.26-alpha.0",
+    "@web/storybook-prebuilt": "^0.1.26-alpha.1",
     "@web/test-runner": "^0.11.7",
     "babel-eslint": "^10.1.0",
     "babel-plugin-const-enum": "^1.1.0",
