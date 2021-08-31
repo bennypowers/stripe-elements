@@ -1,6 +1,7 @@
 import { render, html } from 'lit-html';
 import luhn from 'luhn-js';
 import creditCardType from 'credit-card-type';
+import { spy } from 'sinon';
 
 const assign = (target: object) => ([k, v]: [string, unknown]): unknown => target[k] = v;
 
@@ -208,9 +209,12 @@ export class Stripe {
     this.key = key;
     this.opts = opts;
     this.keyError =
-      key === Keys.SHOULD_ERROR_KEY ? new Error(Keys.SHOULD_ERROR_KEY)
+        key === Keys.SHOULD_ERROR_KEY ? new Error(Keys.SHOULD_ERROR_KEY)
       : key === Keys.TOKEN_ERROR_KEY ? new Error(Keys.TOKEN_ERROR_KEY)
       : undefined;
+
+    spy(this, 'paymentRequest');
+
     return this;
   }
 
