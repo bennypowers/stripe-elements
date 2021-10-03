@@ -1,6 +1,6 @@
 {
   "name": "@power-elements/stripe-elements",
-  "version": "2.3.11",
+  "version": "2.3.12",
   "description": "Web Component wrapper for stripe elements",
   "type": "module",
   "main": "index.js",

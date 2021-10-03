@@ -1,3 +1,10 @@
+## [2.3.12](https://github.com/bennypowers/stripe-elements/compare/v2.3.11...v2.3.12) (2021-10-03)
+
+
+### Bug Fixes
+
+* package lib for npm ([a22db41](https://github.com/bennypowers/stripe-elements/commit/a22db4119891a9b440c1743c96c167537aa60c4d))
+
 ## [2.3.11](https://github.com/bennypowers/stripe-elements/compare/v2.3.10...v2.3.11) (2021-10-03)
 
 
