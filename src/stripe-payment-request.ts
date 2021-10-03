@@ -169,8 +169,7 @@ export class StripePaymentRequest extends StripeBase {
     style,
   ];
 
-  // @ts-expect-error: hopefully ts will allow this soon
-  protected get slotName(): SlotName { return SlotName['stripe-payment-request']; }
+  @slot protected slotName: SlotName;
 
   /**
    * The amount in the currency's subunit (e.g. cents, yen, etc.)
@@ -505,4 +504,14 @@ export class StripePaymentRequest extends StripeBase {
       : elements.map(mapDataset)
     );
   }
+}
+
+/**
+ * Allows narrowing class field type
+ * @see https://dev.to/bennypowers/narrowing-the-type-of-class-accessors-bi8
+ */
+function slot(proto: StripePaymentRequest, key: string) {
+  Object.defineProperty(proto, key, {
+    get() { return SlotName['stripe-payment-request']; },
+  });
 }
