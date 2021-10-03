@@ -53,6 +53,7 @@
     "*.d.ts",
     "*.js",
     "*.js.map",
+    "lib/*",
     "custom-elements.json",
     "CHANGELOG.md",
     "README.md"
