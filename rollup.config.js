@@ -24,7 +24,7 @@ export default {
   },
   plugins: [
     resolve({ extensions: ['.js', '.css', '.html'], dedupe: id => id.includes('lit') }),
-    copy({ targets: [{ src: 'src/*.d.ts', dest: '.' }] }),
+    copy({ targets: [{ src: 'src/*.d.ts', dest: '.' }, { src: 'src/lib/*.d.ts', dest: './lib' }] }),
     litcss(),
     commonjs(),
   ],
