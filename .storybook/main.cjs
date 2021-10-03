@@ -3,8 +3,8 @@ const json = require('@rollup/plugin-json');
 module.exports = {
   // Globs of all the stories in your project
   stories: [
-    '../stories/*.stories.{js,md}',
-    '../stories/frameworks/*.stories.{js,md}'
+    '../stories/*.stories.{ts,js,md}',
+    '../stories/frameworks/*.stories.{ts,js,md}'
   ],
 
   rollupConfig(config) {

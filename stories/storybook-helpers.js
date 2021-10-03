@@ -22,10 +22,10 @@ const display = ctx => {
 };
 
 const diag = html`
-  <mwc-dialog>
-    <json-viewer></json-viewer>
-    <mwc-button slot="primaryAction" dialogAction="cancel">OK</mwc-button>
-  </mwc-dialog>
+<mwc-dialog>
+  <json-viewer></json-viewer>
+  <mwc-button slot="primaryAction" dialogAction="cancel">OK</mwc-button>
+</mwc-dialog>
 `;
 
 const onSubmit = tagName => async e => {
@@ -54,12 +54,12 @@ export const CardholderInputs = ({
   cardholderPhone,
 }, { parameters }) => {
   return html`
-    <div class="cardholder-inputs">
-      <mwc-textfield outlined label="Cardholder Name" data-owner-prop="name" value="${ifDefined(cardholderName)}"></mwc-textfield>
-      <mwc-textfield outlined label="Cardholder Email" data-owner-prop="email" value="${ifDefined(cardholderEmail)}"></mwc-textfield>
-      <mwc-textfield outlined label="Cardholder Phone" data-owner-prop="phone" value="${ifDefined(cardholderPhone)}"></mwc-textfield>
-      <mwc-button outlined @click="${onSubmit(parameters.component)}" label="${label}"></mwc-button>
-    </div>
+<div class="cardholder-inputs">
+  <mwc-textfield outlined label="Cardholder Name" data-owner-prop="name" value="${ifDefined(cardholderName)}"></mwc-textfield>
+  <mwc-textfield outlined label="Cardholder Email" data-owner-prop="email" value="${ifDefined(cardholderEmail)}"></mwc-textfield>
+  <mwc-textfield outlined label="Cardholder Phone" data-owner-prop="phone" value="${ifDefined(cardholderPhone)}"></mwc-textfield>
+  <mwc-button outlined @click="${onSubmit(parameters.component)}" label="${label}"></mwc-button>
+</div>
   `;
 };
 

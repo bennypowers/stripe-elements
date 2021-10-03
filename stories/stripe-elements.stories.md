@@ -32,8 +32,6 @@ You can also set the `publishableKey` DOM property using JavaScript.
 
 Once you've set the `publishable-key` attribute (or the `publishableKey` DOM property), Stripe will create a Stripe Card Element on your page.
 
-<ArgsTable of="stripe-elements"/>
-
 ## Create a PaymentMethod
 
 ```js preview-story
@@ -46,11 +44,14 @@ export const GenerateAPaymentMethod = args => {
   `;
 }
 GenerateAPaymentMethod.height = '220px';
+GenerateAPaymentMethod.withSource = 'open';
 GenerateAPaymentMethod.decorators = [cardholderDecorator];
 GenerateAPaymentMethod.args = {
   label: 'Generate PaymentMethod',
 };
 ```
+
+<ArgsTable story="GenerateAPaymentMethod" />
 
 ## Create a Source
 
