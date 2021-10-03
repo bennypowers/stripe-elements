@@ -1,3 +1,10 @@
+## [2.3.11](https://github.com/bennypowers/stripe-elements/compare/v2.3.10...v2.3.11) (2021-10-03)
+
+
+### Bug Fixes
+
+* package types when building ([f3c8d2c](https://github.com/bennypowers/stripe-elements/commit/f3c8d2ce8e0624064841d58ac9f33c8ed18937c8))
+
 ## [2.3.10](https://github.com/bennypowers/stripe-elements/compare/v2.3.9...v2.3.10) (2021-10-03)
 
 
