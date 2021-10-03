@@ -164,8 +164,7 @@ export class StripeElements extends StripeBase {
     style,
   ];
 
-  // @ts-expect-error: hopefully ts will allow this soon
-  protected get slotName(): SlotName { return SlotName['stripe-elements']; }
+  @slot protected slotName: SlotName;
 
   /* PUBLIC FIELDS */
 
@@ -340,7 +339,7 @@ export class StripeElements extends StripeBase {
     const type = 'card';
     const { billingDetails, element: card, paymentMethodData } = this;
     return ({
-      billing_details: billingDetails, // eslint-disable-line @typescript-eslint/camelcase
+      billing_details: billingDetails,
       ...paymentMethodData,
       type,
       card,
@@ -412,4 +411,14 @@ export class StripeElements extends StripeBase {
     // DEPRECATED
     this.fire('stripe-change', event);
   }
+}
+
+/**
+ * Allows narrowing class field type
+ * @see https://dev.to/bennypowers/narrowing-the-type-of-class-accessors-bi8
+ */
+function slot(proto: StripeElements, key: string) {
+  Object.defineProperty(proto, key, {
+    get() { return SlotName['stripe-elements']; },
+  });
 }

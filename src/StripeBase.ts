@@ -1,5 +1,4 @@
 import type { TemplateResult, PropertyValues } from 'lit';
-import type * as _ from '@webcomponents/webcomponentsjs';
 import { LitElement, html } from 'lit';
 import { property } from 'lit/decorators.js';
 import { LitNotify } from '@morbidick/lit-element-notify';
@@ -32,11 +31,6 @@ type AmbiguousError =
   Error|stripe.Error|StripeElementsError;
 
 declare global {
-  interface Window {
-    ShadyCSS: ShadyCSS;
-    ShadyDOM: ShadyDOM;
-  }
-
   interface Node {
     getRootNode(options?: GetRootNodeOptions): Node|ShadowRoot;
   }
