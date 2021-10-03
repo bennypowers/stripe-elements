@@ -1,3 +1,10 @@
+## [2.3.10](https://github.com/bennypowers/stripe-elements/compare/v2.3.9...v2.3.10) (2021-10-03)
+
+
+### Bug Fixes
+
+* typescript types ([475a2ac](https://github.com/bennypowers/stripe-elements/commit/475a2acf34686f8daa894f7b43f84e846294db0a))
+
 ## [2.3.9](https://github.com/bennypowers/stripe-elements/compare/v2.3.8...v2.3.9) (2021-08-31)
 
 
