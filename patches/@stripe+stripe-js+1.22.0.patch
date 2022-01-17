@@ -1,0 +1,7 @@
+diff --git a/node_modules/@stripe/stripe-js/pure.js b/node_modules/@stripe/stripe-js/pure.js
+index 8c390fc..a4c1336 100644
+--- a/node_modules/@stripe/stripe-js/pure.js
++++ b/node_modules/@stripe/stripe-js/pure.js
+@@ -1 +1 @@
+-module.exports = require('./dist/pure.js');
++export * from './dist/pure.esm.js';
