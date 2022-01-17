@@ -1,24 +1,13 @@
-```js script
-import { html } from 'lit' ;
-import '@power-elements/codesandbox-button';
+---
+layout: layout-framework.njk
+framework: react
+tags:
+  - framework
+---
 
-export default {
-  title: 'Framework Examples/React',
-  parameters: {
-    options: {
-      selectedPanel: 'storybookjs/docs/panel'
-    }
-  }
-}
-```
+## `<stripe-elements>`
 
-# `<stripe-elements>`
-
-```js story
-export const ReactStripeElements = () => html`
-  <codesandbox-button sandbox-id="23zw8"></codesandbox-button>
-`
-```
+{% sandbox "23zw8" %}
 
 ```jsx
 import React, { useState, useRef, useEffect } from "react";
@@ -71,14 +60,9 @@ function App() {
 ReactDOM.render(<App />, document.getElementById("root"));
 ```
 
-# `<stripe-payment-request>`
+## `<stripe-payment-request>`
 
-```js story
-export const ReactStripePaymentRequest = () => html`
-  <codesandbox-button sandbox-id="0kktv"></codesandbox-button>
-`
-```
-
+{% sandbox "0kktv" %}
 
 ```jsx
 import React, { useState, useRef, useEffect } from "react";

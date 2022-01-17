@@ -1,0 +1,25 @@
+---
+tags:
+  - frame
+---
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Stripe Elements</title>
+
+    <link rel="preconnect" href="https://ga.jspm.io"/>
+
+    <link rel="stylesheet" href="/frames.css">
+
+    <script async src="https://ga.jspm.io/npm:es-module-shims@0.12.8/dist/es-module-shims.min.js" crossorigin="anonymous"></script>
+
+    <script type="importmap">{{ importMap | dump | safe }}</script>
+
+    <script type="module" src="/frame.js"></script>
+  </head>
+  <body>
+    {{ (content or 'hi') | safe }}
+  </body>
+</html>

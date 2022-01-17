@@ -121,6 +121,7 @@
 | `getPaymentMethodData`    | private   | Generates PaymentMethodData from the element.                              |                                                | `stripe.PaymentMethodData` |                |
 | `getStripeElementsStyles` | private   | Returns a Stripe-friendly style object computed from CSS custom properties |                                                | `StripeStyleInit`          |                |
 | `initElement`             | protected |                                                                            |                                                | `Promise<void>`            |                |
+| `createElement`           | private   |                                                                            | `options: stripe.elements.ElementsOptions`     |                            |                |
 | `onChange`                | private   | Updates the element's state.                                               | `event: stripe.elements.ElementChangeResponse` | `Promise<void>`            |                |
 
 </details>

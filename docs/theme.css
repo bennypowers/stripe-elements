@@ -1,0 +1,73 @@
+@import 'https://ga.jspm.io/npm:open-props@1.1.3/open-props.min.css';
+
+:root {
+  --background: var(--gray-0);
+  --background-2: var(--gray-2);
+  --text: black;
+  --link: var(--blue-9);
+  --link-visited: var(--pink-9);
+  --link-hover: var(--red-7);
+
+  --success: var(--green-9);
+  --warning: var(--orange-9);
+  --error: var(--red-9);
+
+  --theme-primary: var(--link);
+
+  /* stripe-elements */
+  --stripe-elements-element-background: var(--background-2);
+  --stripe-payment-request-element-background: var(--background-2);
+  --stripe-shadow-color: var(--gray-0);
+  --stripe-elements-box-shadow: 0 1px 3px 0 var(--stripe-shadow-color);
+
+  /* stripe */
+  --stripe-elements-base-color: var(--text);
+  --stripe-elements-base-placeholder-color: var(--text);
+  --stripe-elements-complete-color: var(--green-2);
+  --stripe-elements-empty-color: var(--text);
+  --stripe-elements-invalid-color: var(--red-5);
+
+  /* material */
+  --mdc-theme-primary: var(--theme-primary);
+  --mdc-text-field-ink-color: var(--text);
+  --mdc-text-field-label-ink-color: var(--text);
+  --mdc-text-field-outlined-idle-border-color: var(--text);
+  --mdc-text-field-outlined-hover-border-color: var(--link-hover);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--gray-9);
+    --background-2: var(--gray-7);
+    --text: var(--gray-0);
+    --link: var(--blue-2);
+    --link-visited: var(--pink-1);
+    --link-hover: var(--red-2);
+    --stripe-shadow-color: var(--gray-8);
+
+    --success: var(--green-3);
+    --warning: var(--orange-3);
+    --error: var(--red-3);
+
+
+    --stripe-elements-base-icon-color: var(--text);
+  }
+}
+
+:root {
+  font-family: 'Fira Code';
+  background: var(--background);
+  color: var(--text);
+}
+
+a {
+  color: var(--link);
+}
+
+a:visited {
+  color: var(--link-visited);
+}
+
+a:hover {
+  color: var(--link-hover);
+}

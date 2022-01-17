@@ -1,0 +1,22 @@
+---
+layout: layout-frame.njk
+---
+<stripe-elements generate="token" action="/my-endpoint"></stripe-elements>
+
+<mwc-button class="generate" outlined>Submit and POST</mwc-button>
+
+<output></output>
+
+<script type="module">
+  import '@material/mwc-button';
+
+  const originalFetch = window.fetch;
+
+  window.fetch =
+    (url, ...args) =>
+        url !== '/my-endpoint' ? originalFetch(url, ...args)
+      : Promise.resolve(new Response('A-OK!'));
+
+  $('mwc-button').addEventListener('click', event => $('stripe-elements').submit());
+  $('stripe-elements').addEventListener('success', ({ detail }) => detail.text().then(x => $('output').textContent = x));
+</script>

@@ -448,6 +448,19 @@
             },
             {
               "kind": "method",
+              "name": "createElement",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "options",
+                  "type": {
+                    "text": "stripe.elements.ElementsOptions"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
               "name": "onChange",
               "privacy": "private",
               "return": {
