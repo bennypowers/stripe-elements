@@ -1,9 +1,12 @@
+bower_components/
+node_modules/
 .DS_store
 
 *.tgz
 /dist
 /storybook-static
 /_virtual
+/_site
 /_tmp
 /coverage
 
@@ -22,5 +25,6 @@ src/**/*.d.ts
 !*.config.js
 /lib
 
-bower_components/
-node_modules/
+!/scripts/build.js
+!/docs/main.js
+!/docs/frame.js
