@@ -3,7 +3,10 @@
   "exclude": [ "node_modules" ],
   "compilerOptions": {
     "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": ".",
     "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
