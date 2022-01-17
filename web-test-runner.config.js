@@ -9,8 +9,8 @@ const litcss = fromRollup(_litcss);
 /** @type {import('@web/test-runner').TestRunnerConfig} */
 const config = {
   nodeResolve: {
-    exportConditions: ['default', 'esbuild', 'import'],
-    extensions: ['.mjs', '.js', '.ts', '.css', '.graphql'],
+    exportConditions: ['esbuild', 'default', 'import'],
+    extensions: ['.ts', '.mjs', '.js', '.css', '.graphql'],
   },
 
   files: [

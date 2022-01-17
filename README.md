@@ -17,19 +17,16 @@
 
 #### Fields
 
-| Name             | Privacy | Type                                           | Default     | Description                                                                                                         | Inherited From |
-| ---------------- | ------- | ---------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- | -------------- |
-| `hideIcon`       |         | `boolean`                                      | `false`     | Whether to hide icons in the Stripe form.                                                                           |                |
-| `hidePostalCode` |         | `boolean`                                      | `false`     | Whether or not to hide the postal code field.&#xA;Useful when you gather shipping info elsewhere.                   |                |
-| `iconStyle`      |         | `stripe.elements.ElementsOptions['iconStyle']` | `'default'` | Stripe icon style.                                                                                                  |                |
-| `value`          |         | `stripe.elements.ElementsOptions['value']`     | `{}`        | Prefilled values for form.                                                                                          |                |
-| `brand`          |         | `stripe.brandType`                             | `null`      | The card brand detected by Stripe                                                                                   |                |
-| `complete`       |         | `boolean`                                      | `false`     | Whether the form is complete.                                                                                       |                |
-| `empty`          |         | `boolean`                                      | `true`      | If the form is empty.                                                                                               |                |
-| `invalid`        |         | `boolean`                                      | `false`     | Whether the form is invalid.                                                                                        |                |
-| `card`           |         | `stripe.elements.Element`                      | `null`      | The Stripe card object.&#xA;\*\*DEPRECATED\*\*. Will be removed in a future version. use \`element\` instead        |                |
-| `isEmpty`        |         | `boolean`                                      | `true`      | Whether the form is empty.&#xA;\*\*DEPRECATED\*\*. Will be removed in a future version. use \`empty\` instead       |                |
-| `isComplete`     |         | `boolean`                                      | `false`     | Whether the form is complete.&#xA;\*\*DEPRECATED\*\*. Will be removed in a future version. use \`complete\` instead |                |
+| Name             | Privacy | Type                                           | Default     | Description                                                                                       | Inherited From |
+| ---------------- | ------- | ---------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------- | -------------- |
+| `hideIcon`       |         | `boolean`                                      | `false`     | Whether to hide icons in the Stripe form.                                                         |                |
+| `hidePostalCode` |         | `boolean`                                      | `false`     | Whether or not to hide the postal code field.&#xA;Useful when you gather shipping info elsewhere. |                |
+| `iconStyle`      |         | `stripe.elements.ElementsOptions['iconStyle']` | `'default'` | Stripe icon style.                                                                                |                |
+| `value`          |         | `stripe.elements.ElementsOptions['value']`     | `{}`        | Prefilled values for form.                                                                        |                |
+| `brand`          |         | `stripe.brandType`                             | `null`      | The card brand detected by Stripe                                                                 |                |
+| `complete`       |         | `boolean`                                      | `false`     | Whether the form is complete.                                                                     |                |
+| `empty`          |         | `boolean`                                      | `true`      | If the form is empty.                                                                             |                |
+| `invalid`        |         | `boolean`                                      | `false`     | Whether the form is invalid.                                                                      |                |
 
 #### Methods
 
@@ -61,9 +58,6 @@
 | `complete`         | complete       |                |
 | `empty`            | empty          |                |
 | `invalid`          | invalid        |                |
-| `card`             | card           |                |
-| `is-empty`         | isEmpty        |                |
-| `is-complete`      | isComplete     |                |
 
 #### CSS Properties
 
@@ -119,12 +113,6 @@
 | `--stripe-elements-invalid-text-transform`   |                               | \`text-transform\` property for the element in its invalid state   |
 
 <details><summary>Private API</summary>
-
-#### Fields
-
-| Name       | Privacy   | Type       | Default | Description | Inherited From |
-| ---------- | --------- | ---------- | ------- | ----------- | -------------- |
-| `slotName` | protected | `SlotName` |         |             |                |
 
 #### Methods
 
@@ -232,11 +220,10 @@
 
 #### Fields
 
-| Name               | Privacy   | Type               | Default | Description | Inherited From |
-| ------------------ | --------- | ------------------ | ------- | ----------- | -------------- |
-| `slotName`         | protected | `SlotName`         |         |             |                |
-| `#displayItems`    | private   | `DisplayItem[]`    |         |             |                |
-| `#shippingOptions` | private   | `ShippingOption[]` |         |             |                |
+| Name               | Privacy | Type               | Default | Description | Inherited From |
+| ------------------ | ------- | ------------------ | ------- | ----------- | -------------- |
+| `#displayItems`    | private | `DisplayItem[]`    |         |             |                |
+| `#shippingOptions` | private | `ShippingOption[]` |         |             |                |
 
 #### Methods
 

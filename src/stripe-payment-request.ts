@@ -1,20 +1,16 @@
+import type * as Stripe from '@stripe/stripe-js';
 import type { CountryCode } from './lib/countries.js';
 import type { PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 import { bound } from './lib/bound.js';
 
-import { StripeBase, SlotName } from './StripeBase.js';
+import { StripeBase } from './StripeBase.js';
 import { throwResponseError } from './lib/stripe.js';
 import sharedStyles from './shared.css';
 import style from './stripe-payment-request.css';
-
-type DisplayItem = stripe.paymentRequest.DisplayItem;
-type ShippingOption = stripe.paymentRequest.ShippingOption;
-type StripePaymentRequestOptions = stripe.paymentRequest.StripePaymentRequestOptions;
-type PaymentIntent = stripe.paymentIntents.PaymentIntent;
-type PaymentRequestButtonStyleOptions = stripe.elements.PaymentRequestButtonStyleOptions;
-type PaymentIntentResponse = stripe.PaymentIntentResponse
+import { readonly } from './lib/read-only.js';
+import { notify } from './lib/notify.js';
 
 interface StripeDisplayItem extends HTMLElement {
   dataset: {
@@ -23,6 +19,40 @@ interface StripeDisplayItem extends HTMLElement {
     pending?: string;
   };
 }
+
+interface StripeShippingOption extends HTMLElement {
+  dataset: {
+    id: string;
+    label: string;
+    detail?: string;
+    amount: string;
+  };
+}
+
+type StripePaymentRequestButtonType =
+  Stripe.StripePaymentRequestButtonElementOptions['style']['paymentRequestButton']['type'];
+
+type StripePaymentRequestButtonTheme =
+  Stripe.StripePaymentRequestButtonElementOptions['style']['paymentRequestButton']['theme'];
+
+type StripePaymentRequestEvent =
+  | Stripe.PaymentRequestPaymentMethodEvent
+  | Stripe.PaymentRequestSourceEvent
+  | Stripe.PaymentRequestTokenEvent;
+
+type StripePaymentRequestResponse =
+  | Stripe.SourceResult
+  | Stripe.TokenResult
+  | Stripe.PaymentMethodResult
+
+type PaymentResponseOrError =
+  | Stripe.StripeError
+  | Stripe.PaymentIntentResult
+  | Stripe.TokenResult
+  | Stripe.SourceResult
+
+export type PaymentResponseHandler =
+  (x: PaymentResponseOrError) => PaymentResponseOrError
 
 export const enum Events {
   success = 'success',
@@ -36,20 +66,11 @@ export function isStripeDisplayItem(el: Element): el is StripeDisplayItem {
 
 function datasetToStripeDisplayItem(
   { dataset: { amount, label, pending } }: StripeDisplayItem
-): stripe.paymentRequest.DisplayItem {
+): Stripe.PaymentRequestItem {
   return {
     label,
     amount: parseInt(amount),
     ...pending !== undefined && { pending: pending === 'true' ? true : false },
-  };
-}
-
-interface StripeShippingOption extends HTMLElement {
-  dataset: {
-    id: string;
-    label: string;
-    detail?: string;
-    amount: string;
   };
 }
 
@@ -58,51 +79,23 @@ export function isStripeShippingOption(el: Element): el is StripeShippingOption 
 }
 
 function datasetToStripeShippingOption(
-  { dataset: { amount, ...rest } }: StripeShippingOption
-): stripe.paymentRequest.ShippingOption {
+  { dataset: { amount, detail, ...rest } }: StripeShippingOption
+): Stripe.PaymentRequestShippingOption {
   return {
     amount: parseInt(amount),
+    detail,
     ...rest,
   };
 }
 
 function mapDataset(
   el: StripeDisplayItem|StripeShippingOption
-): stripe.paymentRequest.DisplayItem|stripe.paymentRequest.ShippingOption {
+): Stripe.PaymentRequestItem|Stripe.PaymentRequestShippingOption {
   return (
       isStripeDisplayItem(el) ? datasetToStripeDisplayItem(el)
     : datasetToStripeShippingOption(el)
   );
 }
-
-type Await<T> = T extends Promise<infer U> ? U : T;
-
-type StripePaymentRequestResponse =
-    stripe.paymentRequest.StripeSourcePaymentResponse
-  | stripe.paymentRequest.StripeTokenPaymentResponse
-  | stripe.paymentRequest.StripePaymentMethodPaymentResponse
-
-type PaymentResponseOrError =
-    stripe.Error
-  | stripe.PaymentIntentResponse
-  | stripe.TokenResponse
-  | stripe.SourceResponse
-
-export type PaymentResponseHandler =
-  (x: PaymentResponseOrError) => PaymentResponseOrError
-
-interface ShippingAddressChangeEvent {
-  updateWith: (options: stripe.paymentRequest.UpdateDetails) => void;
-  shippingAddress: stripe.paymentRequest.ShippingAddress;
-}
-
-interface ShippingOptionChangeEvent {
-  updateWith: (options: stripe.paymentRequest.UpdateDetails) => void;
-  shippingOption: ShippingOption;
-}
-
-type CanMakePaymentType =
-  Await<ReturnType<stripe.paymentRequest.StripePaymentRequest['canMakePayment']>>
 
 /**
  * Custom element wrapper for Stripe.js v3 Payment Request Buttons.
@@ -169,8 +162,6 @@ export class StripePaymentRequest extends StripeBase {
     style,
   ];
 
-  @slot protected slotName: SlotName;
-
   /**
    * The amount in the currency's subunit (e.g. cents, yen, etc.)
    */
@@ -181,14 +172,10 @@ export class StripePaymentRequest extends StripeBase {
    * Whether or not the device can make the payment request.
    * @readonly
    */
-  @property({
-    type: Boolean,
-    attribute: 'can-make-payment',
-    reflect: true,
-    readOnly: true,
-    notify: true,
-  })
-  readonly canMakePayment: CanMakePaymentType = null;
+  @notify
+  @readonly
+  @property({ type: Boolean, attribute: 'can-make-payment', reflect: true })
+  readonly canMakePayment: Stripe.CanMakePaymentResult = null;
 
   /**
    * The two-letter country code of your Stripe account
@@ -202,15 +189,15 @@ export class StripePaymentRequest extends StripeBase {
    * @example usd
    */
   @property({ type: String })
-  currency: StripePaymentRequestOptions['currency'];
+  currency: Stripe.PaymentRequestOptions['currency'];
 
-  #displayItems: DisplayItem[];
+  #displayItems: Stripe.PaymentRequestItem[];
 
   /**
-   * An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.
+   * An array of PaymentRequestItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.
    */
   @property({ type: Array })
-  get displayItems(): DisplayItem[] {
+  get displayItems(): Stripe.PaymentRequestItem[] {
     const value = this.#displayItems;
     return (
         Array.isArray(value) ? value
@@ -233,14 +220,17 @@ export class StripePaymentRequest extends StripeBase {
   /**
    * Stripe PaymentIntent
    */
-  @property({ type: Object, notify: true, readOnly: true, attribute: 'payment-intent' })
-  readonly paymentIntent: PaymentIntent = null;
+  @notify
+  @readonly
+  @property({ type: Object, attribute: 'payment-intent' })
+  readonly paymentIntent: Stripe.PaymentIntent = null;
 
   /**
    * Stripe PaymentRequest
    */
-  @property({ type: Object, attribute: 'payment-request', readOnly: true })
-  readonly paymentRequest: stripe.paymentRequest.StripePaymentRequest = null;
+  @readonly
+  @property({ type: Object, attribute: 'payment-request' })
+  readonly paymentRequest: Stripe.PaymentRequest = null;
 
   /**
    * If you might change the payment amount later (for example, after you have calcluated shipping costs), set this to true. Note that browsers treat this as a hint for how to display things, and not necessarily as something that will prevent submission.
@@ -275,12 +265,12 @@ export class StripePaymentRequest extends StripeBase {
   @property({ type: Boolean, attribute: 'request-shipping' })
   requestShipping: boolean;
 
-  #shippingOptions: ShippingOption[]
+  #shippingOptions: Stripe.PaymentRequestShippingOption[]
 
   /**
-   * An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.
+   * An array of PaymentRequestShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.
    */
-  @property({ type: Array }) get shippingOptions(): ShippingOption[] {
+  @property({ type: Array }) get shippingOptions(): Stripe.PaymentRequestShippingOption[] {
     const value = this.#shippingOptions;
     return Array.isArray(value) ? value : this.parseDatasets('stripe-shipping-option');
   }
@@ -292,16 +282,16 @@ export class StripePaymentRequest extends StripeBase {
   }
 
   @property({ type: String, attribute: 'button-type' })
-  buttonType: PaymentRequestButtonStyleOptions['type'] = 'default';
+  buttonType: StripePaymentRequestButtonType = 'default';
 
   @property({ type: String, attribute: 'button-theme' })
-  buttonTheme: PaymentRequestButtonStyleOptions['theme'] = 'dark';
+  buttonTheme: StripePaymentRequestButtonTheme = 'dark';
 
   /* PUBLIC API */
 
   public reset(): void {
     super.reset();
-    this.setReadOnlyProperties({ paymentIntent: null });
+    readonly.set<StripePaymentRequest>(this, { paymentIntent: null });
   }
 
   /* LIFECYCLE */
@@ -316,9 +306,9 @@ export class StripePaymentRequest extends StripeBase {
   /* PRIVATE API */
 
   /**
-   * Creates a StripePaymentRequestOptions object.
+   * Creates a PaymentRequestOptions object.
    */
-  private getStripePaymentRequestOptions(): StripePaymentRequestOptions {
+  private getStripePaymentRequestOptions(): Stripe.PaymentRequestOptions {
     const {
       country,
       currency,
@@ -362,7 +352,8 @@ export class StripePaymentRequest extends StripeBase {
     const stripePaymentRequestOptions = this.getStripePaymentRequestOptions();
     const paymentRequest = this.stripe.paymentRequest(stripePaymentRequestOptions);
     const canMakePayment = await paymentRequest.canMakePayment();
-    await this.setReadOnlyProperties({ paymentRequest, canMakePayment });
+    readonly.set<StripePaymentRequest>(this, { paymentRequest, canMakePayment });
+    await this.updateComplete;
     if (!this.canMakePayment) this.fire('unsupported');
   }
 
@@ -371,14 +362,13 @@ export class StripePaymentRequest extends StripeBase {
    */
   private async initPaymentRequestButton(): Promise<void> {
     const { buttonTheme: theme, buttonType: type, canMakePayment, paymentRequest } = this;
-    if (!canMakePayment) return;
-    const computedStyle = window.ShadyCSS ? undefined : getComputedStyle(this);
+    if (!canMakePayment || !this.elements) return;
     const propertyName = '--stripe-payment-request-button-height';
-    const height = this.getCSSCustomPropertyValue(propertyName, computedStyle) || '40px';
+    const height = this.getCSSCustomPropertyValue(propertyName) || '40px';
     const style = { paymentRequestButton: { height, theme, type } };
-    const options = { paymentRequest, style };
-    const element = this.elements.create('paymentRequestButton', options);
-    await this.setReadOnlyProperties({ element });
+    const element = this.elements.create('paymentRequestButton', { paymentRequest, style });
+    readonly.set<StripePaymentRequest>(this, { element });
+    await this.updateComplete;
   }
 
   /**
@@ -418,10 +408,10 @@ export class StripePaymentRequest extends StripeBase {
   /**
    * Completes the PaymentRequest.
    */
-  @bound private async complete(
-    paymentResponse: StripePaymentRequestResponse,
-    confirmationError?: stripe.Error
-  ): Promise<StripePaymentRequestResponse | { error: stripe.Error | null }> {
+  private complete = async (
+    paymentResponse: Stripe.PaymentRequestPaymentMethodEvent,
+    confirmationError?: Stripe.StripeError
+  ): Promise<StripePaymentRequestResponse | { error: Stripe.StripeError | null }> => {
     const { error: paymentResponseError = null } = { ...paymentResponse };
     const status = (paymentResponseError || confirmationError) ? Events.fail : Events.success;
     paymentResponse.complete(status);
@@ -432,29 +422,29 @@ export class StripePaymentRequest extends StripeBase {
   /**
    * Handle a paymentResponse from Stripe
    */
-  @bound private async onPaymentResponse(
-    paymentResponse: StripePaymentRequestResponse
-  ): Promise<void> {
-    const { clientSecret, confirmPaymentIntent, complete } = this;
+  @bound private async onPaymentResponse(event: StripePaymentRequestEvent): Promise<void> {
     const {
       error = null,
       paymentMethod = null,
       source = null,
       token = null,
-    } = { ...paymentResponse };
+    } = { ...event };
 
-    await this.setReadOnlyProperties({ error, paymentMethod, source, token });
+    readonly.set<StripePaymentRequest>(this, { error, paymentMethod, source, token });
 
-    const isPaymentIntent = clientSecret && !error;
-    if (isPaymentIntent) confirmPaymentIntent(paymentResponse);
-    else complete(paymentResponse);
+    const isPaymentIntent = this.clientSecret && !error;
+
+    if (isPaymentIntent)
+      this.confirmPaymentIntent(event as Stripe.PaymentRequestPaymentMethodEvent);
+    else
+      this.complete(event as Stripe.PaymentRequestPaymentMethodEvent);
   }
 
   /**
    * When a PaymentIntent client secret is set, confirm the payment
    */
   @bound private async confirmPaymentIntent(
-    paymentResponse: StripePaymentRequestResponse
+    paymentResponse: Stripe.PaymentRequestPaymentMethodEvent
   ): Promise<void> {
     const confirmCardData = { payment_method: this.paymentMethod.id };
     const { error = null, paymentIntent = null } =
@@ -465,37 +455,42 @@ export class StripePaymentRequest extends StripeBase {
         .then(throwResponseError)
         .catch(error => ({ error })); // catch error from first confirm
 
-    await this.setReadOnlyProperties({ error, paymentIntent });
+    readonly.set<StripePaymentRequest>(this, { error, paymentIntent });
+    await this.updateComplete;
   }
 
   /**
    * Stripe confirmCardPayment method
    */
   @bound private async confirmCardPayment(
-    data?: stripe.ConfirmCardPaymentData,
-    options?: stripe.ConfirmCardPaymentOptions
-  ): Promise<PaymentIntentResponse> {
+    data?: Stripe.ConfirmCardPaymentData,
+    options?: Stripe.ConfirmCardPaymentOptions
+  ): Promise<Stripe.PaymentIntentResult> {
     return this.stripe.confirmCardPayment(this.clientSecret, data, options);
   }
 
-  @bound private onShippingaddresschange(originalEvent: ShippingAddressChangeEvent): void {
+  @bound private onShippingaddresschange(
+    originalEvent: Stripe.PaymentRequestShippingAddressEvent
+  ): void {
     this.fire('shippingaddresschange', originalEvent);
   }
 
-  @bound private onShippingoptionchange(originalEvent: ShippingOptionChangeEvent): void {
+  @bound private onShippingoptionchange(
+    originalEvent: Stripe.PaymentRequestShippingOptionEvent
+  ): void {
     this.fire('shippingoptionchange', originalEvent);
   }
 
   /**
    * Parses an element's dataset number props from string to number
    */
-  private parseDatasets(selector: 'stripe-shipping-option'): ShippingOption[]
+  private parseDatasets(selector: 'stripe-shipping-option'): Stripe.PaymentRequestShippingOption[]
 
-  private parseDatasets(selector: 'stripe-display-item'): DisplayItem[]
+  private parseDatasets(selector: 'stripe-display-item'): Stripe.PaymentRequestItem[]
 
   private parseDatasets(
     selector: 'stripe-display-item'|'stripe-shipping-option'
-  ): (stripe.paymentRequest.DisplayItem|stripe.paymentRequest.ShippingOption)[] {
+  ): (Stripe.PaymentRequestItem|Stripe.PaymentRequestShippingOption)[] {
     const elements =
       [...this.querySelectorAll(selector)] as (StripeDisplayItem|StripeShippingOption)[];
 
@@ -504,14 +499,4 @@ export class StripePaymentRequest extends StripeBase {
       : elements.map(mapDataset)
     );
   }
-}
-
-/**
- * Allows narrowing class field type
- * @see https://dev.to/bennypowers/narrowing-the-type-of-class-accessors-bi8
- */
-function slot(proto: StripePaymentRequest, key: string) {
-  Object.defineProperty(proto, key, {
-    get() { return SlotName['stripe-payment-request']; },
-  });
 }

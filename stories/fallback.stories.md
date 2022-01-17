@@ -3,9 +3,9 @@ import '@power-elements/codesandbox-button';
 import '@power-elements/json-viewer';
 import '../index.js';
 
-import { ifDefined } from 'lit-html/directives/if-defined';
+import { ifDefined } from 'lit/directives/if-defined.js';
 
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from 'lit';
 import { publishableKey, clientSecret } from './storybook-helpers.js';
 
 export default {

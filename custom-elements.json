@@ -229,14 +229,6 @@
             },
             {
               "kind": "field",
-              "name": "slotName",
-              "type": {
-                "text": "SlotName"
-              },
-              "privacy": "protected"
-            },
-            {
-              "kind": "field",
               "name": "hideIcon",
               "type": {
                 "text": "boolean"
@@ -316,38 +308,6 @@
               "default": "false",
               "description": "Whether the form is invalid.",
               "attribute": "invalid",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "card",
-              "type": {
-                "text": "stripe.elements.Element"
-              },
-              "default": "null",
-              "description": "The Stripe card object.\n**DEPRECATED**. Will be removed in a future version. use `element` instead",
-              "attribute": "card"
-            },
-            {
-              "kind": "field",
-              "name": "isEmpty",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "true",
-              "description": "Whether the form is empty.\n**DEPRECATED**. Will be removed in a future version. use `empty` instead",
-              "attribute": "is-empty",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "isComplete",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Whether the form is complete.\n**DEPRECATED**. Will be removed in a future version. use `complete` instead",
-              "attribute": "is-complete",
               "reflects": true
             },
             {
@@ -584,33 +544,6 @@
               "default": "false",
               "description": "Whether the form is invalid.",
               "fieldName": "invalid"
-            },
-            {
-              "name": "card",
-              "type": {
-                "text": "stripe.elements.Element"
-              },
-              "default": "null",
-              "description": "The Stripe card object.\n**DEPRECATED**. Will be removed in a future version. use `element` instead",
-              "fieldName": "card"
-            },
-            {
-              "name": "is-empty",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "true",
-              "description": "Whether the form is empty.\n**DEPRECATED**. Will be removed in a future version. use `empty` instead",
-              "fieldName": "isEmpty"
-            },
-            {
-              "name": "is-complete",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Whether the form is complete.\n**DEPRECATED**. Will be removed in a future version. use `complete` instead",
-              "fieldName": "isComplete"
             }
           ],
           "superclass": {
@@ -708,14 +641,6 @@
               },
               "static": true,
               "default": "'stripe-payment-request'"
-            },
-            {
-              "kind": "field",
-              "name": "slotName",
-              "type": {
-                "text": "SlotName"
-              },
-              "privacy": "protected"
             },
             {
               "kind": "field",

@@ -1,5 +1,5 @@
 ```js script
-import { html } from 'lit-html' ;
+import { html } from 'lit' ;
 import '@power-elements/codesandbox-button';
 
 export default {
