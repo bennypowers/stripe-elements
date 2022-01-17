@@ -1,5 +1,5 @@
 ```js script
-import { html } from 'lit-html' ;
+import { html } from 'lit' ;
 import '@power-elements/codesandbox-button';
 
 export default {
@@ -24,14 +24,14 @@ export const PreactStripeElements = () => html`
 import { loadScripts } from "./loadScripts";
 import { render } from "preact";
 import { useState, useRef } from "preact/hooks";
-import { getPropOr, compose } from "crocks";
 import { PUBLISHABLE_KEY } from './config';
 import "./style";
 
+const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
 const isDisabled = ({ complete, empty }) => !complete || empty;
-const getTarget = getPropOr({}, "target");
-const getDetail = getPropOr(null, "detail");
-const getToken = getPropOr(null, "token");
+const getTarget = x => x.target ?? {};
+const getDetail = x => x.detail ?? null;
+const getToken = x => x.token ?? null;
 
 export default function App() {
   const stripeRef = useRef(null);
@@ -80,12 +80,12 @@ export const PreactStripePaymentRequest = () => html`
 import { loadScripts } from "./loadScripts";
 import { render } from "preact";
 import { useState, useRef } from "preact/hooks";
-import { getPropOr, compose } from "crocks";
 import { PUBLISHABLE_KEY } from './config';
 import "./style";
 
-const getDetail = getPropOr(null, "detail");
-const getPaymentMethod = getPropOr(null, "paymentMethod");
+const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
+const getDetail = x => x.detail ?? null;
+const getPaymentMethod = x => x.paymentMethod ?? null;
 
 export default function App() {
   const stripeRef = useRef(null);

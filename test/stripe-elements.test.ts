@@ -1,78 +1,15 @@
 /* istanbul ignore file */
-import '../src/stripe-elements';
+import type * as Stripe from '@stripe/stripe-js';
+
 import { StripeElements } from '../src/stripe-elements';
 
 import { expect, fixture, oneEvent, nextFrame } from '@open-wc/testing';
 import { match } from 'sinon';
 
-import {
-  BASE_DEFAULT_PROPS,
-  BASE_NOTIFYING_PROPS,
-  BASE_READ_ONLY_PROPS,
-  EMPTY_CC_ERROR,
-  NO_STRIPE_CREATE_PAYMENT_METHOD_ERROR,
-  NO_STRIPE_CREATE_SOURCE_ERROR,
-  NO_STRIPE_CREATE_TOKEN_ERROR,
-  NO_STRIPE_JS_ERROR,
-  appendAllBlueStyleTag,
-  assertElementErrorMessage,
-  assertEventDetail,
-  assertFired,
-  assertProps,
-  assignedNodes,
-  awaitEvent,
-  blur,
-  blurStripeElement,
-  createPaymentMethod,
-  createSource,
-  createToken,
-  element,
-  expectedLightDOM,
-  fetchStub,
-  focus,
-  focusStripeElement,
-  initialStripe,
-  initialStripeMountId,
-  listenFor,
-  mockShadyCSS,
-  mockShadyDOM,
-  mockStripe,
-  mountLightDOM,
-  noop,
-  removeAllBlueStyleTag,
-  removeStripeMount,
-  reset,
-  resetTestState,
-  restoreCardClear,
-  restoreConsoleWarn,
-  restoreFetch,
-  restoreGetComputedStyleValue,
-  restoreShadyCSS,
-  restoreShadyDOM,
-  restoreStripe,
-  restoreStripeElementBlur,
-  restoreStripeElementFocus,
-  setProps,
-  setupNoProps,
-  setupWithPublishableKey,
-  spyConsoleWarn,
-  spyGetComputedStyleValue,
-  spyStripeElementBlur,
-  spyStripeElementFocus,
-  stubFetch,
-  submit,
-  synthCardEvent,
-  synthStripeFormValues,
-  testDefaultPropEntry,
-  testReadOnlyProp,
-  testReadonlyNotifyingProp,
-  testWritableNotifyingProp,
-  updateComplete,
-  validate,
-  SecondaryHost,
-  PrimaryHost,
-  TertiaryHost,
-} from '../test/test-helpers';
+import * as Helpers from '../test/test-helpers';
+import { element } from '../test/test-helpers';
+
+import '../src/stripe-elements';
 
 import {
   CARD_DECLINED_ERROR,
@@ -85,97 +22,76 @@ import { elem, not } from '../src/lib/predicates';
 import { StripeBase } from '../src/StripeBase';
 
 const DEFAULT_PROPS = Object.freeze({
-  ...BASE_DEFAULT_PROPS,
+  ...Helpers.BASE_DEFAULT_PROPS,
   brand: null,
-  card: null,
+  complete: false,
+  empty: true,
   hideIcon: false,
   hidePostalCode: false,
   iconStyle: 'default',
-  isComplete: false,
-  isEmpty: true,
   stripe: null,
   token: null,
   value: {},
 });
 
 const READ_ONLY_PROPS = Object.freeze([
-  ...BASE_READ_ONLY_PROPS,
+  ...Helpers.BASE_READ_ONLY_PROPS,
   'brand',
-  'card',
   'complete',
   'empty',
   'error',
   'invalid',
-  'isComplete',
-  'isEmpty',
   'ready',
-  'stripeReady',
 ]);
 
 const NOTIFYING_PROPS = Object.freeze([
-  ...BASE_NOTIFYING_PROPS,
+  ...Helpers.BASE_NOTIFYING_PROPS,
   'brand',
-  'card',
   'complete',
   'empty',
   'error',
   'invalid',
-  'isComplete',
-  'isEmpty',
   'ready',
-  'stripeReady',
 ]);
 
 describe('<stripe-elements>', function() {
-  beforeEach(spyConsoleWarn);
-  afterEach(restoreConsoleWarn);
-  afterEach(resetTestState);
+  beforeEach(Helpers.spyConsoleWarn);
+  afterEach(Helpers.restoreConsoleWarn);
+  afterEach(Helpers.resetTestState);
 
   describe('simply instantiating', function() {
-    beforeEach(setupNoProps);
-    it('does not throw error', function noInitialError() {
+    beforeEach(Helpers.setupNoProps);
+    it('does not throw error', function() {
       expect(element.tagName).to.equal('STRIPE-ELEMENTS');
     });
 
-    describe('uses default for property', function defaults() {
-      beforeEach(setupNoProps);
-      Object.entries(DEFAULT_PROPS).forEach(testDefaultPropEntry);
+    describe('uses default for property', function() {
+      beforeEach(Helpers.setupNoProps);
+      Object.entries(DEFAULT_PROPS).forEach(Helpers.testDefaultPropEntry);
     });
 
-    describe('has read-only property', function readOnly() {
-      beforeEach(setupNoProps);
-      testReadOnlyProp('element');
-      READ_ONLY_PROPS.forEach(testReadOnlyProp);
+    describe('has read-only property', function() {
+      beforeEach(Helpers.setupNoProps);
+      Helpers.testReadOnlyProp('element');
+      READ_ONLY_PROPS.forEach(Helpers.testReadOnlyProp);
     });
 
-    describe('notifies when setting property', function notifying() {
-      beforeEach(setupNoProps);
-      NOTIFYING_PROPS.filter(not(elem(READ_ONLY_PROPS))).forEach(testWritableNotifyingProp);
+    describe('notifies when setting property', function() {
+      beforeEach(Helpers.setupNoProps);
+      NOTIFYING_PROPS.filter(not(elem(READ_ONLY_PROPS))).forEach(Helpers.testWritableNotifyingProp);
     });
 
-    describe('notifies when privately setting read-only property', function notifying() {
-      beforeEach(setupNoProps);
-      READ_ONLY_PROPS.filter(elem(NOTIFYING_PROPS)).forEach(testReadonlyNotifyingProp);
-    });
-  });
-
-  describe('when Mocked ShadyDOM polyfill is in use', function shadyDOM() {
-    beforeEach(mockShadyDOM);
-    beforeEach(setupNoProps);
-    afterEach(restoreShadyDOM);
-
-    describe('when connected to document', function() {
-      it('appends a shady-dom mount point', function shadyMount() {
-        expect(element).lightDom.to.equal(mountLightDOM(element));
-      });
+    describe('notifies when privately setting read-only property', function() {
+      beforeEach(Helpers.setupNoProps);
+      READ_ONLY_PROPS.filter(elem(NOTIFYING_PROPS)).forEach(Helpers.testReadonlyNotifyingProp);
     });
   });
 
-  describe('with Native Shadow DOM support', function shadowDOM() {
+  describe('in nested shadow roots', function() {
     let nestedElement: StripeBase;
-    let primaryHost: PrimaryHost;
-    let secondaryHost: SecondaryHost;
-    let tertiaryHost: TertiaryHost;
+    let primaryHost: Helpers.PrimaryHost;
+    let secondaryHost: Helpers.SecondaryHost;
+    let tertiaryHost: Helpers.TertiaryHost;
     let stripeMountId: string;
     afterEach(function() {
       nestedElement = undefined;
@@ -185,23 +101,23 @@ describe('<stripe-elements>', function() {
       stripeMountId = undefined;
     });
     describe('when nested one shadow-root deep', function() {
+      beforeEach(Helpers.mockStripe);
+      afterEach(Helpers.restoreStripe);
       beforeEach(async function setupOneRoot() {
         primaryHost = await fixture(`<primary-host tag="stripe-elements"></primary-host>`);
         ({ nestedElement } = primaryHost);
         ({ stripeMountId } = nestedElement);
       });
 
-      it('leaves one breadcrumb on its way up to the document', async function breadcrumbs() {
+      it('leaves one breadcrumb on its way up to the document', function() {
         const slot = nestedElement.querySelector('slot');
         const [slottedChild] = slot.assignedNodes();
-        // eslint-disable-next-line
-        // @ts-ignore
         expect(slottedChild).to.contain(nestedElement.stripeMount);
       });
 
       it('slots mount point in to its light DOM', function() {
         const { tagName } = nestedElement;
-        expect(primaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, tagName }));
+        expect(primaryHost).lightDom.to.equal(Helpers.expectedLightDOM({ stripeMountId, tagName }));
       });
 
       it('does not break primary host\'s internal DOM', function() {
@@ -218,27 +134,22 @@ describe('<stripe-elements>', function() {
       beforeEach(async function setupTwoRoots() {
         this.timeout(10 * 60 * 1000);
         secondaryHost = await fixture(`<secondary-host tag="stripe-elements"></secondary-host>`);
-        // await aTimeout(10 * 60 * 1000);
         ({ primaryHost } = secondaryHost);
         ({ nestedElement } = primaryHost);
         ({ stripeMountId } = nestedElement);
       });
 
-      it('forwards stripe mount deeply through slots', async function breadcrumbs() {
+      it('forwards stripe mount deeply through slots', function() {
         const [slottedChild] =
           primaryHost.shadowRoot.querySelector('slot')
             .assignedNodes()
-            // eslint-disable-next-line
-            // @ts-ignore
-            .flatMap(assignedNodes);
-        // eslint-disable-next-line
-        // @ts-ignore
+            .flatMap(Helpers.assignedNodes);
         expect(slottedChild).to.contain(nestedElement.stripeMount);
       });
 
       it('slots mount point in to the light DOM of the secondary shadow host', function() {
         const { tagName } = nestedElement;
-        expect(secondaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, tagName }));
+        expect(secondaryHost).lightDom.to.equal(Helpers.expectedLightDOM({ stripeMountId, tagName }));
       });
 
       it('appends a slot to the shadow DOM of the secondary shadow host', function() {
@@ -265,22 +176,18 @@ describe('<stripe-elements>', function() {
         ({ stripeMountId } = nestedElement);
       });
 
-      it('forwards stripe mount deeply through slots', async function breadcrumbs() {
+      it('forwards stripe mount deeply through slots', function() {
         const [slottedChild] =
           primaryHost.shadowRoot.querySelector('slot')
             .assignedNodes()
-          // eslint-disable-next-line
-          // @ts-ignore
-            .flatMap(assignedNodes)
-            .flatMap(assignedNodes);
-        // eslint-disable-next-line
-        // @ts-ignore
+            .flatMap(Helpers.assignedNodes)
+            .flatMap(Helpers.assignedNodes);
         expect(slottedChild).to.contain(nestedElement.stripeMount);
       });
 
       it('slots mount point in to the light DOM of the tertiary shadow host', function() {
         const { tagName } = nestedElement;
-        expect(tertiaryHost).lightDom.to.equal(expectedLightDOM({ stripeMountId, tagName }));
+        expect(tertiaryHost).lightDom.to.equal(Helpers.expectedLightDOM({ stripeMountId, tagName }));
       });
 
       it('appends a slot to the shadow DOM of the tertiary shadow host', function() {
@@ -307,33 +214,34 @@ describe('<stripe-elements>', function() {
     });
   });
 
-  describe('without Stripe.js', function withoutStripe() {
-    beforeEach(restoreStripe);
-    describe('with a valid publishable key', function apiKey() {
-      beforeEach(setupWithPublishableKey(Keys.PUBLISHABLE_KEY));
+  // TODO: test loading behaviour with loadStripe
+  // mock the module in test-runner config
+  describe.skip('without Stripe.js', function() {
+    beforeEach(Helpers.restoreStripe);
+    describe('with a valid publishable key', function() {
+      beforeEach(Helpers.setupWithPublishableKey(Keys.PUBLISHABLE_KEY));
 
-      it('logs a warning', async function logsWarning() {
-        expect(console.warn).to.have.been.calledWith(`<${element.tagName.toLowerCase()}>: ${NO_STRIPE_JS_ERROR}`);
+      it('logs a warning', function() {
+        expect(console.warn)
+          .to.have.been.calledWith(`<${element.tagName.toLowerCase()}>: ${Helpers.NO_STRIPE_JS_ERROR}`);
       });
 
-      it('does not initialize stripe instance', async function noStripeInit() {
+      it('does not initialize stripe instance', function() {
         expect(element.stripe).to.not.be.ok;
       });
 
-      it('does not mount element', async function noElement() {
+      it('does not mount element', function() {
         expect(element.element).to.not.be.ok;
       });
 
-      it('sets the `error` property', assertElementErrorMessage(NO_STRIPE_JS_ERROR));
+      it('sets the `error` property', Helpers.assertElementErrorMessage(Helpers.NO_STRIPE_JS_ERROR));
 
       it('throws an error when creating payment method', async function() {
         try {
           await (element as StripeElements).createPaymentMethod();
           expect.fail('Resolved source promise without Stripe.js');
         } catch (err) {
-          // eslint-disable-next-line
-          // @ts-ignore
-          expect(err.message).to.equal(`<${element.constructor.is}>: ${NO_STRIPE_CREATE_PAYMENT_METHOD_ERROR}`);
+          expect(err.message).to.equal(`<${(element.constructor as typeof StripeBase).is}>: ${Helpers.NO_STRIPE_CREATE_PAYMENT_METHOD_ERROR}`);
         }
       });
 
@@ -342,7 +250,7 @@ describe('<stripe-elements>', function() {
           await (element as StripeElements).createToken();
           expect.fail('Resolved token promise without Stripe.js');
         } catch (err) {
-          expect(err.message).to.equal(`<${element.tagName.toLowerCase()}>: ${NO_STRIPE_CREATE_TOKEN_ERROR}`);
+          expect(err.message).to.equal(`<${element.tagName.toLowerCase()}>: ${Helpers.NO_STRIPE_CREATE_TOKEN_ERROR}`);
         }
       });
 
@@ -351,9 +259,7 @@ describe('<stripe-elements>', function() {
           await (element as StripeElements).createSource();
           expect.fail('Resolved source promise without Stripe.js');
         } catch (err) {
-          // eslint-disable-next-line
-          // @ts-ignore
-          expect(err.message).to.equal(`<${element.constructor.is}>: ${NO_STRIPE_CREATE_SOURCE_ERROR}`);
+          expect(err.message).to.equal(`<${(element.constructor as typeof StripeBase).is}>: ${Helpers.NO_STRIPE_CREATE_SOURCE_ERROR}`);
         }
       });
 
@@ -362,115 +268,80 @@ describe('<stripe-elements>', function() {
           await (element as StripeElements).submit();
           expect.fail('Resolved submit promise without Stripe.js');
         } catch (err) {
-          // eslint-disable-next-line
-          // @ts-ignore
-          expect(err.message).to.equal(`<${element.constructor.is}>: ${NO_STRIPE_CREATE_SOURCE_ERROR}`);
+          expect(err.message).to.equal(`<${(element.constructor as typeof StripeBase).is}>: ${Helpers.NO_STRIPE_CREATE_SOURCE_ERROR}`);
         }
       });
     });
   });
 
-  describe('with mocked Stripe.js', function withMockedStripeJs() {
-    beforeEach(mockStripe);
-    afterEach(restoreStripe);
+  describe('with mocked Stripe.js', function() {
+    beforeEach(Helpers.mockStripe);
+    afterEach(Helpers.restoreStripe);
+
     describe('and CSS custom properties applied', function() {
-      beforeEach(appendAllBlueStyleTag);
-      afterEach(removeAllBlueStyleTag);
-      describe('with a mocked ShadyCSS shim', function() {
-        beforeEach(mockShadyCSS);
-        beforeEach(spyGetComputedStyleValue);
-        afterEach(restoreShadyCSS);
-        afterEach(restoreGetComputedStyleValue);
-        describe('with a valid publishable key', function() {
-          const formValues = {
-            cardNumber: '4242424242424242',
-            mm: '01',
-            yy: '40',
-            cvc: '000',
-          };
+      beforeEach(Helpers.appendAllBlueStyleTag);
+      afterEach(Helpers.removeAllBlueStyleTag);
 
-          beforeEach(setupWithPublishableKey(Keys.PUBLISHABLE_KEY));
-          describe('and a valid card', function() {
-            beforeEach(synthStripeFormValues(formValues));
-            it('passes CSS custom property values to stripe', function() {
-              // eslint-disable-next-line
-              // @ts-ignore
-              const allValues = Object.values(element.card.style).flatMap(Object.values);
-              // eslint-disable-next-line
-              // @ts-ignore
-              expect(allValues).to.all.equal('blue');
-            });
-          });
-        });
-      });
-
-      describe('without the ShadyCSS shim', function() {
-        describe('with a valid publishable key', function() {
-          beforeEach(setupWithPublishableKey(Keys.PUBLISHABLE_KEY));
-          describe('and a valid card', function() {
-          // eslint-disable-next-line
-            beforeEach(synthStripeFormValues({ cardNumber: '4242424242424242', mm: '01', yy: '40', cvc: '000' }));
-            it('passes CSS custom property values to stripe', function() {
-              // eslint-disable-next-line
-              // @ts-ignore
-              const allValues = Object.values(element.card.style).flatMap(Object.values);
-              // eslint-disable-next-line
-              // @ts-ignore
-              expect(allValues).to.all.equal('blue');
-            });
+      describe('with a valid publishable key', function() {
+        beforeEach(Helpers.setupWithPublishableKey(Keys.PUBLISHABLE_KEY));
+        describe('and a valid card', function() {
+          beforeEach(Helpers.synthStripeFormValues({ cardNumber: '4242424242424242', mm: '01', yy: '40', cvc: '000' }));
+          it('passes CSS custom property values to stripe', function() {
+            const allValues = Object.values(
+              // @ts-expect-error: stripe made this private?
+              element.element.style
+            ).flatMap(Object.values);
+            const noEmpties = allValues.filter(x => !(typeof x === 'object' && Object.values(x).every(x => x === undefined)));
+            expect(noEmpties).to.deep.equal(Array.from(noEmpties, () => 'blue'));
           });
         });
       });
     });
 
     describe('and no publishable key', function() {
-      beforeEach(setupNoProps);
+      beforeEach(Helpers.setupNoProps);
       describe('when stripe mount point is removed from DOM', function() {
-        beforeEach(removeStripeMount);
+        beforeEach(Helpers.removeStripeMount);
         describe('then publishable key is set', function() {
-          beforeEach(setProps({ publishableKey: Keys.PUBLISHABLE_KEY }));
+          beforeEach(Helpers.setProps({ publishableKey: Keys.PUBLISHABLE_KEY }));
           beforeEach(nextFrame);
           it('rebuilds its DOM', function() {
             const { stripeMountId, tagName } = element;
-            expect(element).lightDom.to.equal(expectedLightDOM({ stripeMountId, tagName }));
-            // eslint-disable-next-line
-            // @ts-ignore
+            expect(element).lightDom.to.equal(Helpers.expectedLightDOM({ stripeMountId, tagName }));
             expect(element.stripeMount, 'mount').to.be.ok;
           });
 
           it('uses a new id', function() {
-            // eslint-disable-next-line
-            // @ts-ignore
-            expect(element.stripeMount.id).to.not.equal(initialStripeMountId);
+            expect(element.stripeMount.id).to.not.equal(Helpers.initialStripeMountId);
           });
         });
       });
     });
 
     describe('and an invalid publishable key', function() {
-      beforeEach(setupWithPublishableKey(Keys.SHOULD_ERROR_KEY));
+      beforeEach(Helpers.setupWithPublishableKey(Keys.SHOULD_ERROR_KEY));
       describe('and a complete, valid form', function() {
-        beforeEach(synthStripeFormValues({ cardNumber: '4242424242424242', mm: '01', yy: '40', cvc: '000' }));
+        beforeEach(Helpers.synthStripeFormValues({ cardNumber: '4242424242424242', mm: '01', yy: '40', cvc: '000' }));
 
         describe('calling createPaymentMethod()', function() {
-          beforeEach(createPaymentMethod);
-          it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
+          beforeEach(Helpers.createPaymentMethod);
+          it('unsets the `paymentMethod` property', Helpers.assertProps({ paymentMethod: null }));
           it('sets the `error` property', function() {
             expect(element.error.message, 'error').to.equal(Keys.SHOULD_ERROR_KEY);
           });
         });
 
         describe('calling createSource()', function() {
-          beforeEach(createSource);
-          it('unsets the `source` property', assertProps({ source: null }));
+          beforeEach(Helpers.createSource);
+          it('unsets the `source` property', Helpers.assertProps({ source: null }));
           it('sets the `error` property', function() {
             expect(element.error.message, 'error').to.equal(Keys.SHOULD_ERROR_KEY);
           });
         });
 
         describe('calling createToken()', function() {
-          beforeEach(createToken);
-          it('unsets the `token` property', assertProps({ token: null }));
+          beforeEach(Helpers.createToken);
+          it('unsets the `token` property', Helpers.assertProps({ token: null }));
           it('sets the `error` property', function() {
             expect(element.error.message, 'error').to.equal(Keys.SHOULD_ERROR_KEY);
           });
@@ -478,9 +349,7 @@ describe('<stripe-elements>', function() {
 
         describe('calling submit()', function() {
           it('sets the `error` property', function() {
-            // eslint-disable-next-line
-            // @ts-ignore
-            return element.submit().then(expect.fail, function() {
+            return (element as StripeElements).submit().then(x => expect.fail(x.toString()), function() {
               expect(element.error.message, 'error').to.equal(Keys.SHOULD_ERROR_KEY);
               expect(element.source, 'source').to.be.null;
             });
@@ -488,32 +357,29 @@ describe('<stripe-elements>', function() {
         });
 
         describe('calling validate()', function() {
-          beforeEach(validate);
-          it('returns true', function validating() {
+          beforeEach(Helpers.validate);
+          it('returns true', function() {
             expect((element as StripeElements).validate()).to.be.true;
           });
 
-          it('unsets the `error` property', assertProps({ error: null }));
+          it('unsets the `error` property', Helpers.assertProps({ error: null }));
         });
       });
     });
 
     describe('and a valid publishable key', function() {
-      beforeEach(setupWithPublishableKey(Keys.PUBLISHABLE_KEY));
-      beforeEach(nextFrame);
+      beforeEach(Helpers.setupWithPublishableKey(Keys.PUBLISHABLE_KEY));
 
-      it('initializes stripe instance', async function stripeInit() {
+      it('initializes stripe instance', function() {
         expect(element.stripe).to.be.ok;
       });
 
-      it('initializes elements instance', async function elementsInit() {
+      it('initializes elements instance', function() {
         expect(element.elements).to.be.ok;
       });
 
-      it('mounts a card into the target', async function cardInit() {
-        expect((element as StripeElements).card).to.be.ok;
+      it('mounts a card into the target', function() {
         expect(element.element).to.be.ok;
-        expect((element as StripeElements).card).to.equal(element.element);
       });
 
       describe('removing the element', function() {
@@ -529,59 +395,51 @@ describe('<stripe-elements>', function() {
       });
 
       describe('calling blur()', function() {
-        beforeEach(spyStripeElementBlur);
-        beforeEach(blur);
-        afterEach(restoreStripeElementBlur);
+        beforeEach(Helpers.spyStripeElementBlur);
+        beforeEach(Helpers.blur);
+        afterEach(Helpers.restoreStripeElementBlur);
         it('calls StripeElement#blur', function() {
           expect(element.element.blur).to.have.been.called;
         });
       });
 
       describe('calling focus()', function() {
-        beforeEach(spyStripeElementFocus);
-        beforeEach(focus);
-        afterEach(restoreStripeElementFocus);
+        beforeEach(Helpers.spyStripeElementFocus);
+        beforeEach(Helpers.focus);
+        afterEach(Helpers.restoreStripeElementFocus);
         it('calls StripeElement#focus', function() {
           expect(element.element.focus).to.have.been.called;
         });
       });
 
       describe('when stripe element is focused', function() {
-        beforeEach(focusStripeElement);
-        beforeEach(updateComplete);
-        it('sets the `focused` property', assertProps({ focused: true }));
+        beforeEach(Helpers.focusStripeElement);
+        beforeEach(Helpers.updateComplete);
+        it('sets the `focused` property', Helpers.assertProps({ focused: true }));
       });
 
       describe('when stripe element is blurred', function() {
-        beforeEach(focusStripeElement);
-        beforeEach(updateComplete);
-        beforeEach(blurStripeElement);
-        beforeEach(updateComplete);
-        it('unsets the `focused` property', assertProps({ focused: false }));
+        beforeEach(Helpers.focusStripeElement);
+        beforeEach(Helpers.updateComplete);
+        beforeEach(Helpers.blurStripeElement);
+        beforeEach(Helpers.updateComplete);
+        it('unsets the `focused` property', Helpers.assertProps({ focused: false }));
       });
 
-      describe('when publishable key is changed', function publishableKeyReset() {
+      describe('when publishable key is changed', function() {
         let initialStripeMountId;
         beforeEach(function() { initialStripeMountId = element.stripeMountId; });
-        beforeEach(listenFor('ready'));
-        // DEPRECATED
-        beforeEach(listenFor('stripe-ready'));
-        beforeEach(setProps({ publishableKey: 'foo' }));
+        beforeEach(Helpers.listenFor('ready'));
+        beforeEach(Helpers.setProps({ publishableKey: 'foo' }));
         beforeEach(nextFrame);
         afterEach(function() { initialStripeMountId = undefined; });
-        it('reinitializes stripe', function() { expect(element.stripe).to.be.ok.and.not.equal(initialStripe); });
+        it('reinitializes stripe', function() { expect(element.stripe).to.be.ok.and.not.equal(Helpers.initialStripe); });
         it('uses a new mount point id', function() { expect(element.stripeMountId).to.be.ok.and.not.equal(initialStripeMountId); });
-        // DEPRECATED
-        it('fires `stripe-ready` event', assertFired('stripe-ready'));
-        it('fires `ready` event', assertFired('ready'));
-        describe('after `ready` event', function() {
-          beforeEach(awaitEvent('ready'));
-          it('sets `stripeReady` property', assertProps({ stripeReady: true }));
-        });
+        it('fires `ready` event', Helpers.assertFired('ready'));
       });
 
-      describe('when publishable key is unset', function pkReset() {
-        beforeEach(setProps({ publishableKey: undefined }));
+      describe('when publishable key is unset', function() {
+        beforeEach(Helpers.setProps({ publishableKey: undefined }));
         beforeEach(nextFrame);
 
         it('unsets stripe instance', function() {
@@ -591,20 +449,16 @@ describe('<stripe-elements>', function() {
         it('unsets element instance', function() {
           expect(element.elements).to.be.null;
         });
-
-        it('unsets card', function() {
-          expect((element as StripeElements).card).to.be.null;
-        });
       });
 
       describe('calling validate()', function() {
-        beforeEach(validate);
+        beforeEach(Helpers.validate);
 
         it('returns false', function() {
           expect((element as StripeElements).validate()).to.be.false;
         });
 
-        it('sets the `error` property', assertElementErrorMessage(EMPTY_CC_ERROR));
+        it('sets the `error` property', Helpers.assertElementErrorMessage(Helpers.EMPTY_CC_ERROR));
       });
 
       describe('calling isPotentiallyValid()', function() {
@@ -618,58 +472,60 @@ describe('<stripe-elements>', function() {
       });
 
       describe('calling createPaymentMethod()', function() {
-        beforeEach(createPaymentMethod);
-        it('sets the `error` property', assertProps({ error: INCOMPLETE_CARD_ERROR }));
-        it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
+        beforeEach(Helpers.createPaymentMethod);
+        it('sets the `error` property', Helpers.assertProps({ error: INCOMPLETE_CARD_ERROR }));
+        it('unsets the `paymentMethod` property', Helpers.assertProps({ paymentMethod: null }));
       });
 
       describe('calling createSource()', function callingCreateSource() {
-        beforeEach(createSource);
-        it('sets the `error` property', assertProps({ error: INCOMPLETE_CARD_ERROR }));
-        it('unsets the `source` property', assertProps({ source: null }));
+        beforeEach(Helpers.createSource);
+        it('sets the `error` property', Helpers.assertProps({ error: INCOMPLETE_CARD_ERROR }));
+        it('unsets the `source` property', Helpers.assertProps({ source: null }));
       });
 
       describe('calling createToken()', function() {
-        beforeEach(createToken);
-        it('sets the `error` property', assertProps({ error: INCOMPLETE_CARD_ERROR }));
-        it('unsets the `token` property', assertProps({ token: null }));
+        beforeEach(Helpers.createToken);
+        it('sets the `error` property', Helpers.assertProps({ error: INCOMPLETE_CARD_ERROR }));
+        it('unsets the `token` property', Helpers.assertProps({ token: null }));
       });
 
       describe('calling submit()', function() {
-        it('sets the `error` property', function() {
-          (element as StripeElements).submit().then(() => expect.fail('Response Received'), function() {
-            expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR);
+        it('sets the `error` property', async function() {
+          try {
+            await (element as StripeElements).submit();
+            expect.fail('Response Received');
+          } catch (error) {
+            expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR).and.to.equal(error);
             expect(element.source, 'source').to.be.null;
-          });
+          }
         });
       });
 
-      describe('when stripe fires `change` event', function cardChange() {
-        beforeEach(listenFor('change'));
-        beforeEach(synthCardEvent('change'));
-        describe('with a `brand` property', function brandChange() {
+      describe('when stripe fires `change` event', function() {
+        beforeEach(Helpers.listenFor('change'));
+        beforeEach(Helpers.synthCardEvent('change'));
+        describe('with a `brand` property', function() {
           const brand = 'visa';
-          beforeEach(listenFor('brand-changed'));
-          beforeEach(synthCardEvent('change', { brand }));
-          it('fires a `stripe-change` event', assertFired('change'));
-          it('fires a `brand-changed` event', assertEventDetail('brand-changed', { value: brand }));
+          beforeEach(Helpers.listenFor('brand-changed'));
+          beforeEach(Helpers.synthCardEvent('change', { brand }));
+          it('fires a `stripe-change` event', Helpers.assertFired('change'));
+          it('fires a `brand-changed` event', Helpers.assertEventDetail('brand-changed', { value: brand }));
           describe('and then', function() {
-            beforeEach(awaitEvent('brand-changed'));
-            it('sets the `brand` property', assertProps({ brand }));
+            beforeEach(Helpers.awaitEvent('brand-changed'));
+            it('sets the `brand` property', Helpers.assertProps({ brand }));
           });
         });
 
         describe('describing a non-empty, incomplete card', function() {
-          beforeEach(listenFor('is-empty-changed'));
-          beforeEach(listenFor('empty-changed'));
-          beforeEach(synthCardEvent('change', { brand: 'visa', empty: false, complete: false }));
-          it('fires `is-empty-changed` event', assertEventDetail('is-empty-changed', { value: false }));
+          beforeEach(Helpers.listenFor('empty-changed'));
+          beforeEach(Helpers.synthCardEvent('change', { brand: 'visa', empty: false, complete: false }));
+          it('fires `empty-changed` event', Helpers.assertEventDetail('empty-changed', { value: false }));
           describe('and then', function() {
-            beforeEach(awaitEvent('is-empty-changed'));
+            beforeEach(Helpers.awaitEvent('empty-changed'));
             describe('calling reset()', function() {
-              beforeEach(reset);
-              afterEach(restoreCardClear);
-              it('unsets the `error` property', assertProps({ error: null }));
+              beforeEach(Helpers.reset);
+              afterEach(Helpers.restoreCardClear);
+              it('unsets the `error` property', Helpers.assertProps({ error: null }));
               it('clears the card', function() {
                 expect(element.element.clear).to.have.been.called;
               });
@@ -678,28 +534,24 @@ describe('<stripe-elements>', function() {
         });
 
         describe('describing a complete card', function() {
-          beforeEach(listenFor('is-complete-changed'));
-          beforeEach(synthCardEvent('change', { brand: 'visa', empty: false, complete: true }));
-          it('fires `is-complete-changed` event', assertEventDetail('is-complete-changed', { value: true }));
+          beforeEach(Helpers.listenFor('complete-changed'));
+          beforeEach(Helpers.synthCardEvent('change', { brand: 'visa', empty: false, complete: true }));
+          it('fires `complete-changed` event', Helpers.assertEventDetail('complete-changed', { value: true }));
         });
       });
 
       describe('with a non-empty, incomplete form', function() {
-        beforeEach(synthStripeFormValues({ cardNumber: '4242424242424242' }));
+        beforeEach(Helpers.synthStripeFormValues({ cardNumber: '4242424242424242' }));
 
         describe('calling createPaymentMethod()', function() {
-          beforeEach(createPaymentMethod);
+          beforeEach(Helpers.createPaymentMethod);
           it('sets the `error` property', function() {
             expect(element.paymentMethod, 'paymentMethod').to.be.null;
             expect(element.error, 'error').to.eql(INCOMPLETE_CARD_ERROR);
           });
 
-          it('sets the `hasError` property', function() {
-            expect(element.hasError).to.be.true;
-          });
-
           describe('calling validate()', function() {
-            beforeEach(validate);
+            beforeEach(Helpers.validate);
             it('returns false', function() {
               expect((element as StripeElements).validate()).to.be.false;
             });
@@ -714,14 +566,10 @@ describe('<stripe-elements>', function() {
         });
 
         describe('calling createSource()', function() {
-          beforeEach(createSource);
+          beforeEach(Helpers.createSource);
           it('sets the `error` property', function() {
             expect(element.source, 'source').to.be.null;
             expect(element.error, 'error').to.eql(INCOMPLETE_CARD_ERROR);
-          });
-
-          it('sets the `hasError` property', function() {
-            expect(element.hasError).to.be.true;
           });
 
           describe('calling validate()', function() {
@@ -738,14 +586,10 @@ describe('<stripe-elements>', function() {
         });
 
         describe('calling createToken()', function() {
-          beforeEach(createToken);
+          beforeEach(Helpers.createToken);
           it('sets the `error` property', function() {
             expect(element.token, 'token').to.be.null;
             expect(element.error, 'error').to.eql(INCOMPLETE_CARD_ERROR);
-          });
-
-          it('sets the `hasError` property', function() {
-            expect(element.hasError).to.be.true;
           });
 
           describe('calling validate()', function() {
@@ -762,39 +606,42 @@ describe('<stripe-elements>', function() {
         });
 
         describe('calling submit()', function() {
-          it('sets the `error` property', function() {
-            (element as StripeElements).submit().then(() => expect.fail('Response received'), function() {
-              expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR);
+          it('sets the `error` property', async function() {
+            try {
+              await (element as StripeElements).submit();
+              expect.fail('Response Received');
+            } catch (error) {
+              expect(element.error, 'error').to.equal(INCOMPLETE_CARD_ERROR).and.to.equal(error);
               expect(element.source, 'source').to.be.null;
-            });
+            }
           });
         });
       });
 
       describe('with a valid card', function() {
-        beforeEach(stubFetch);
-        beforeEach(synthStripeFormValues({ cardNumber: '4242424242424242', mm: '01', yy: '40', cvc: '000' }));
-        afterEach(restoreFetch);
+        beforeEach(Helpers.stubFetch);
+        beforeEach(Helpers.synthStripeFormValues({ cardNumber: '4242424242424242', mm: '01', yy: '40', cvc: '000' }));
+        afterEach(Helpers.restoreFetch);
 
-        it('sets the `isEmpty` property', assertProps({ isEmpty: false }));
+        it('sets the `empty` property', Helpers.assertProps({ empty: false }));
 
-        it('sets the `isComplete` property', assertProps({ isComplete: true }));
+        it('sets the `complete` property', Helpers.assertProps({ complete: true }));
 
         describe('calling createPaymentMethod()', function() {
-          it('resolves with the payment method', function() {
-            return (element as StripeElements).createPaymentMethod()
-              .then(result => expect(result.paymentMethod).to.equal(SUCCESS_RESPONSES.paymentMethod));
+          it('resolves with the payment method', async function() {
+            const { paymentMethod } = await (element as StripeElements).createPaymentMethod();
+            expect(paymentMethod).to.equal(SUCCESS_RESPONSES.paymentMethod);
           });
 
           describe('subsequently', function() {
-            beforeEach(listenFor('payment-method'));
-            beforeEach(listenFor('payment-method-changed'));
-            beforeEach(createPaymentMethod);
-            it('fires a `payment-method` event', assertEventDetail('payment-method', SUCCESS_RESPONSES.paymentMethod));
-            it('fires a `payment-method-changed` event', assertEventDetail('payment-method-changed', { value: SUCCESS_RESPONSES.paymentMethod }));
+            beforeEach(Helpers.listenFor('payment-method'));
+            beforeEach(Helpers.listenFor('payment-method-changed'));
+            beforeEach(Helpers.createPaymentMethod);
+            it('fires a `payment-method` event', Helpers.assertEventDetail('payment-method', SUCCESS_RESPONSES.paymentMethod));
+            it('fires a `payment-method-changed` event', Helpers.assertEventDetail('payment-method-changed', { value: SUCCESS_RESPONSES.paymentMethod }));
             describe('calling validate()', function() {
-              beforeEach(validate);
-              it('unsets the `error` property', assertProps({ error: null }));
+              beforeEach(Helpers.validate);
+              it('unsets the `error` property', Helpers.assertProps({ error: null }));
               it('returns true', function() {
                 expect((element as StripeElements).validate()).to.be.true;
               });
@@ -815,15 +662,15 @@ describe('<stripe-elements>', function() {
           });
 
           describe('subsequently', function() {
-            beforeEach(listenFor('source'));
-            beforeEach(listenFor('source-changed'));
-            beforeEach(createSource);
-            it('fires a `source` event', assertEventDetail('source', SUCCESS_RESPONSES.source));
-            it('fires a `source-changed` event', assertEventDetail('source-changed', { value: SUCCESS_RESPONSES.source }));
+            beforeEach(Helpers.listenFor('source'));
+            beforeEach(Helpers.listenFor('source-changed'));
+            beforeEach(Helpers.createSource);
+            it('fires a `source` event', Helpers.assertEventDetail('source', SUCCESS_RESPONSES.source));
+            it('fires a `source-changed` event', Helpers.assertEventDetail('source-changed', { value: SUCCESS_RESPONSES.source }));
 
             describe('calling validate()', function() {
-              beforeEach(validate);
-              it('unsets the `error` property', assertProps({ error: null }));
+              beforeEach(Helpers.validate);
+              it('unsets the `error` property', Helpers.assertProps({ error: null }));
               it('returns true', function() {
                 expect((element as StripeElements).validate()).to.be.true;
               });
@@ -844,15 +691,15 @@ describe('<stripe-elements>', function() {
           });
 
           describe('subsequently', function() {
-            beforeEach(listenFor('token'));
-            beforeEach(listenFor('token-changed'));
-            beforeEach(createToken);
-            it('fires a `token` event', assertEventDetail('token', SUCCESS_RESPONSES.token));
-            it('fires a `token-changed` event', assertEventDetail('token-changed', { value: SUCCESS_RESPONSES.token }));
+            beforeEach(Helpers.listenFor('token'));
+            beforeEach(Helpers.listenFor('token-changed'));
+            beforeEach(Helpers.createToken);
+            it('fires a `token` event', Helpers.assertEventDetail('token', SUCCESS_RESPONSES.token));
+            it('fires a `token-changed` event', Helpers.assertEventDetail('token-changed', { value: SUCCESS_RESPONSES.token }));
 
             describe('calling validate()', function() {
-              beforeEach(validate);
-              it('unsets the `error` property', assertProps({ error: null }));
+              beforeEach(Helpers.validate);
+              it('unsets the `error` property', Helpers.assertProps({ error: null }));
               it('returns true', function() {
                 expect((element as StripeElements).validate()).to.be.true;
               });
@@ -869,20 +716,20 @@ describe('<stripe-elements>', function() {
         describe('and generate unset', function() {
           it('calling submit() resolves with the source', function() {
             return (element as StripeElements).submit()
-              .then(result => expect((result as stripe.SourceResponse).source).to.equal(SUCCESS_RESPONSES.source));
+              .then(result => expect((result as Stripe.SourceResult).source).to.equal(SUCCESS_RESPONSES.source));
           });
 
           describe('calling submit()', function() {
             describe('subsequently', function() {
-              beforeEach(listenFor('source'));
-              beforeEach(listenFor('source-changed'));
-              beforeEach(submit);
-              it('fires a `source` event', assertEventDetail('source', SUCCESS_RESPONSES.source));
-              it('fires a `source-changed` event', assertEventDetail('source-changed', { value: SUCCESS_RESPONSES.source }));
+              beforeEach(Helpers.listenFor('source'));
+              beforeEach(Helpers.listenFor('source-changed'));
+              beforeEach(Helpers.submit);
+              it('fires a `source` event', Helpers.assertEventDetail('source', SUCCESS_RESPONSES.source));
+              it('fires a `source-changed` event', Helpers.assertEventDetail('source-changed', { value: SUCCESS_RESPONSES.source }));
 
               describe('calling validate()', function() {
-                beforeEach(validate);
-                it('unsets the `error` property', assertProps({ error: null }));
+                beforeEach(Helpers.validate);
+                it('unsets the `error` property', Helpers.assertProps({ error: null }));
                 it('returns true', function() { expect((element as StripeElements).validate()).to.be.true; });
               });
 
@@ -896,23 +743,23 @@ describe('<stripe-elements>', function() {
         });
 
         describe('and generate set to `source`', function() {
-          beforeEach(setProps({ generate: 'source' }));
+          beforeEach(Helpers.setProps({ generate: 'source' }));
           describe('calling submit()', function() {
             it('resolves with the source', function() {
               return (element as StripeElements).submit()
-                .then(result => expect((result as stripe.SourceResponse).source).to.equal(SUCCESS_RESPONSES.source));
+                .then(result => expect((result as Stripe.SourceResult).source).to.equal(SUCCESS_RESPONSES.source));
             });
 
             describe('subsequently', function() {
-              beforeEach(listenFor('source'));
-              beforeEach(listenFor('source-changed'));
-              beforeEach(submit);
-              it('fires a `source` event', assertEventDetail('source', SUCCESS_RESPONSES.source));
-              it('fires a `source-changed` event', assertEventDetail('source-changed', { value: SUCCESS_RESPONSES.source }));
+              beforeEach(Helpers.listenFor('source'));
+              beforeEach(Helpers.listenFor('source-changed'));
+              beforeEach(Helpers.submit);
+              it('fires a `source` event', Helpers.assertEventDetail('source', SUCCESS_RESPONSES.source));
+              it('fires a `source-changed` event', Helpers.assertEventDetail('source-changed', { value: SUCCESS_RESPONSES.source }));
 
               describe('calling validate()', function() {
-                beforeEach(validate);
-                it('unsets the `error` property', assertProps({ error: null }));
+                beforeEach(Helpers.validate);
+                it('unsets the `error` property', Helpers.assertProps({ error: null }));
                 it('returns true', function() { expect((element as StripeElements).validate()).to.be.true; });
               });
 
@@ -926,23 +773,23 @@ describe('<stripe-elements>', function() {
         });
 
         describe('and generate set to `token`', function() {
-          beforeEach(setProps({ generate: 'token' }));
+          beforeEach(Helpers.setProps({ generate: 'token' }));
           describe('calling submit()', function() {
             it('resolves with the token', function() {
               return (element as StripeElements).submit()
-                .then(result => expect((result as stripe.TokenResponse).token).to.equal(SUCCESS_RESPONSES.token));
+                .then(result => expect((result as Stripe.TokenResult).token).to.equal(SUCCESS_RESPONSES.token));
             });
 
             describe('subsequently', function() {
-              beforeEach(listenFor('token'));
-              beforeEach(listenFor('token-changed'));
-              beforeEach(submit);
-              it('fires a `token` event', assertEventDetail('token', SUCCESS_RESPONSES.token));
-              it('fires a `token-changed` event', assertEventDetail('token-changed', { value: SUCCESS_RESPONSES.token }));
+              beforeEach(Helpers.listenFor('token'));
+              beforeEach(Helpers.listenFor('token-changed'));
+              beforeEach(Helpers.submit);
+              it('fires a `token` event', Helpers.assertEventDetail('token', SUCCESS_RESPONSES.token));
+              it('fires a `token-changed` event', Helpers.assertEventDetail('token-changed', { value: SUCCESS_RESPONSES.token }));
 
               describe('calling validate()', function() {
-                beforeEach(validate);
-                it('unsets the `error` property', assertProps({ error: null }));
+                beforeEach(Helpers.validate);
+                it('unsets the `error` property', Helpers.assertProps({ error: null }));
                 it('returns true', function() { expect((element as StripeElements).validate()).to.be.true; });
               });
 
@@ -956,27 +803,29 @@ describe('<stripe-elements>', function() {
         });
 
         describe('and generate set to `payment-method`', function() {
-          beforeEach(setProps({ generate: 'payment-method' }));
+          beforeEach(Helpers.setProps({ generate: 'payment-method' }));
+
           describe('calling submit()', function() {
-            it('resolves with the payment method', function() {
-              return (element as StripeElements).submit()
-                .then(result => expect((result as stripe.PaymentMethodResponse).paymentMethod).to.equal(SUCCESS_RESPONSES.paymentMethod));
+            it('resolves with the payment method', async function() {
+              const { paymentMethod } = await (element as StripeElements).submit() as Stripe.PaymentMethodResult;
+              expect(paymentMethod).to.equal(SUCCESS_RESPONSES.paymentMethod);
             });
 
             describe('subsequently', function() {
-              beforeEach(submit);
+              beforeEach(Helpers.submit);
+
               it('fires a `payment-method-changed` event', async function() {
                 const ev = await oneEvent(element, 'payment-method-changed');
                 expect(ev.detail.value).to.equal(SUCCESS_RESPONSES.paymentMethod);
               });
 
-              it('fires a `stripe-payment-method` event', async function() {
-                const ev = await oneEvent(element, 'stripe-payment-method');
+              it('fires a `payment-method` event', async function() {
+                const ev = await oneEvent(element, 'payment-method');
                 expect(ev.detail).to.equal(SUCCESS_RESPONSES.paymentMethod);
               });
 
               describe('calling validate()', function() {
-                beforeEach(validate);
+                beforeEach(Helpers.validate);
                 it('returns true', function() {
                   expect((element as StripeElements).validate()).to.be.true;
                 });
@@ -996,7 +845,7 @@ describe('<stripe-elements>', function() {
         });
 
         describe('and generate set to `something-silly`', function() {
-          beforeEach(setProps({ generate: 'something-silly' }));
+          beforeEach(Helpers.setProps({ generate: 'something-silly' }));
           describe('calling submit()', function() {
             it('rejects', function() {
               return (element as StripeElements).submit().then(() => expect.fail('Response received'), function(err) {
@@ -1005,17 +854,17 @@ describe('<stripe-elements>', function() {
             });
 
             it('does not POST anything', async function() {
-              await (element as StripeElements).submit().catch(noop);
-              expect(fetchStub).to.not.have.been.called;
+              await (element as StripeElements).submit().catch(Helpers.noop);
+              expect(Helpers.fetchStub).to.not.have.been.called;
             });
 
             describe('subsequently', function() {
-              beforeEach(() => submit().catch(noop));
+              beforeEach(() => Helpers.submit().catch(Helpers.noop));
 
-              it('sets the `error` property', assertElementErrorMessage('cannot generate something-silly'));
+              it('sets the `error` property', Helpers.assertElementErrorMessage('cannot generate something-silly'));
 
               describe('calling validate()', function() {
-                beforeEach(validate);
+                beforeEach(Helpers.validate);
                 it('returns false', function() {
                   expect((element as StripeElements).validate()).to.be.false;
                 });
@@ -1025,45 +874,45 @@ describe('<stripe-elements>', function() {
         });
 
         describe('with `action` property set', function() {
-          beforeEach(setProps({ action: '/here' }));
+          beforeEach(Helpers.setProps({ action: '/here' }));
 
           describe('calling createPaymentMethod()', function() {
-            beforeEach(createPaymentMethod);
+            beforeEach(Helpers.createPaymentMethod);
             it('POSTs the paymentMethod to the endpoint at `action`', function() {
               const { action, paymentMethod } = element;
-              expect(fetchStub).to.have.been.calledWith(action, match({ body: JSON.stringify({ paymentMethod }) }) );
+              expect(Helpers.fetchStub).to.have.been.calledWith(action, match({ body: JSON.stringify({ paymentMethod }) }) );
             });
           });
 
           describe('calling createSource()', function() {
-            beforeEach(createSource);
+            beforeEach(Helpers.createSource);
             it('POSTs the source to the endpoint at `action`', function() {
               const { action, source } = element;
-              expect(fetchStub).to.have.been.calledWith(action, match({ body: JSON.stringify({ source }) }) );
+              expect(Helpers.fetchStub).to.have.been.calledWith(action, match({ body: JSON.stringify({ source }) }) );
             });
           });
 
           describe('calling createToken()', function() {
-            beforeEach(createToken);
+            beforeEach(Helpers.createToken);
             it('POSTs the token to the endpoint at `action`', function() {
               const { action, token } = element;
-              expect(fetchStub).to.have.been.calledWith(action, match({ body: JSON.stringify({ token }) }) );
+              expect(Helpers.fetchStub).to.have.been.calledWith(action, match({ body: JSON.stringify({ token }) }) );
             });
           });
 
           describe('in case the endpoint at `action` throws', function() {
             const error = new Error('endpoint error');
             describe('calling submit()', function() {
-              beforeEach(function() { fetchStub.rejects(error); });
-              beforeEach(submit);
-              it('sets the `error` property', assertProps({ error }));
+              beforeEach(function() { Helpers.fetchStub.rejects(error); });
+              beforeEach(Helpers.submit);
+              it('sets the `error` property', Helpers.assertProps({ error }));
             });
           });
         });
       });
 
       describe('with a card that will be declined', function() {
-        beforeEach(synthStripeFormValues({ cardNumber: '4000000000000002', mm: '01', yy: '40', cvc: '000' }));
+        beforeEach(Helpers.synthStripeFormValues({ cardNumber: '4000000000000002', mm: '01', yy: '40', cvc: '000' }));
 
         describe('calling createPaymentMethod()', function() {
           it('rejects with the Stripe error', async function() {
@@ -1075,12 +924,12 @@ describe('<stripe-elements>', function() {
           });
 
           describe('subsequently', function() {
-            beforeEach(createPaymentMethod);
-            it('sets the `error` property', assertProps({ error: CARD_DECLINED_ERROR }));
-            it('unsets the `paymentMethod` property', assertProps({ paymentMethod: null }));
+            beforeEach(Helpers.createPaymentMethod);
+            it('sets the `error` property', Helpers.assertProps({ error: CARD_DECLINED_ERROR }));
+            it('unsets the `paymentMethod` property', Helpers.assertProps({ paymentMethod: null }));
 
             describe('calling validate()', function() {
-              beforeEach(validate);
+              beforeEach(Helpers.validate);
               it('returns false', function() {
                 expect((element as StripeElements).validate()).to.be.false;
               });
@@ -1102,17 +951,17 @@ describe('<stripe-elements>', function() {
           });
 
           describe('subsequently', function() {
-            beforeEach(createSource);
-            it('sets the `error` property', assertProps({ error: CARD_DECLINED_ERROR }));
-            it('unsets the `source` property', assertProps({ source: null }));
+            beforeEach(Helpers.createSource);
+            it('sets the `error` property', Helpers.assertProps({ error: CARD_DECLINED_ERROR }));
+            it('unsets the `source` property', Helpers.assertProps({ source: null }));
 
             describe('calling validate()', function() {
-              beforeEach(validate);
+              beforeEach(Helpers.validate);
               it('returns false', function() {
                 expect((element as StripeElements).validate()).to.be.false;
               });
 
-              it('retains the `error` property', assertProps({ error: CARD_DECLINED_ERROR }));
+              it('retains the `error` property', Helpers.assertProps({ error: CARD_DECLINED_ERROR }));
             });
           });
         });
@@ -1127,12 +976,12 @@ describe('<stripe-elements>', function() {
           });
 
           describe('subsequently', function() {
-            beforeEach(createToken);
-            it('sets the `error` property', assertProps({ error: CARD_DECLINED_ERROR }));
-            it('unsets the `token` property', assertProps({ token: null }));
+            beforeEach(Helpers.createToken);
+            it('sets the `error` property', Helpers.assertProps({ error: CARD_DECLINED_ERROR }));
+            it('unsets the `token` property', Helpers.assertProps({ token: null }));
 
             describe('calling validate()', function() {
-              beforeEach(validate);
+              beforeEach(Helpers.validate);
               it('returns false', function() {
                 expect((element as StripeElements).validate()).to.be.false;
               });

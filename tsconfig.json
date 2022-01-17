@@ -13,7 +13,7 @@
     "plugins": [ { "name": "typescript-lit-html-plugin" } ],
     "sourceMap": true,
     "module": "ESNext",
-    "target": "ES2018"
+    "target": "ES2020"
   },
   "lib": [ "DOM", "ES2020", "ESNext", "DOM.Iterable" ]
 }

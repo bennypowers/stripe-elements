@@ -1,23 +1,25 @@
-import type { PropertyValues } from 'lit';
-import type * as _ from '@webcomponents/webcomponentsjs';
+import type * as Stripe from '@stripe/stripe-js';
 import { property, customElement } from 'lit/decorators.js';
 
 import { bound } from './lib/bound.js';
 
-import { StripeBase, StripePaymentResponse, SlotName } from './StripeBase.js';
+import { StripeBase, StripePaymentResponse } from './StripeBase.js';
 import { dash } from './lib/strings.js';
 import { stripeMethod } from './lib/stripe-method-decorator.js';
+import { readonly } from './lib/read-only.js';
+import { notify } from './lib/notify.js';
+
 import sharedStyles from './shared.css';
 import style from './stripe-elements.css';
 
 interface StripeStyleInit {
-   base?: stripe.elements.Style;
-   complete?: stripe.elements.Style;
-   empty?: stripe.elements.Style;
-   invalid?: stripe.elements.Style;
+   base?: Stripe.StripeElementStyle;
+   complete?: Stripe.StripeElementStyle;
+   empty?: Stripe.StripeElementStyle;
+   invalid?: Stripe.StripeElementStyle;
 }
 
-const allowedStyles = [
+const ALLOWED_STYLES = [
   'color',
   'fontFamily',
   'fontSize',
@@ -30,6 +32,16 @@ const allowedStyles = [
   'textDecoration',
   'textShadow',
   'textTransform',
+];
+
+const SUB_STYLES = [
+  ':hover',
+  ':focus',
+  '::placeholder',
+  '::selection',
+  ':-webkit-autofill',
+  // available for all Elements except the paymentRequestButton Element.
+  ':disabled',
 ];
 
 /**
@@ -164,7 +176,7 @@ export class StripeElements extends StripeBase {
     style,
   ];
 
-  @slot protected slotName: SlotName;
+  declare element: Stripe.StripeCardElement;
 
   /* PUBLIC FIELDS */
 
@@ -185,78 +197,48 @@ export class StripeElements extends StripeBase {
    * Stripe icon style.
    */
   @property({ type: String, attribute: 'icon-style' })
-  iconStyle: stripe.elements.ElementsOptions['iconStyle'] = 'default';
+  iconStyle: Stripe.StripeCardElementOptions['iconStyle'] = 'default';
 
   /**
    * Prefilled values for form.
    * @example { postalCode: '90210' }
    */
   @property({ type: Object })
-  value: stripe.elements.ElementsOptions['value'] = {};
+  value: Stripe.StripeCardElementOptions['value'] = {};
 
   /* READ ONLY PROPERTIES */
 
   /**
    * The card brand detected by Stripe
    */
-  @property({ type: String, notify: true, readOnly: true })
-  readonly brand: stripe.brandType = null;
+  @notify
+  @readonly
+  @property({ type: String })
+  readonly brand: Stripe.StripeCardElementChangeEvent['brand'] = null;
 
   /**
    * Whether the form is complete.
    */
-  @property({ type: Boolean, reflect: true, notify: true, readOnly: true })
-  readonly complete = false;
+  @notify
+  @readonly
+  @property({ type: Boolean, reflect: true })
+  readonly complete: boolean = false;
 
   /**
    * If the form is empty.
    */
-  @property({ type: Boolean, reflect: true, notify: true, readOnly: true })
-  readonly empty = true;
+  @notify
+  @readonly
+  @property({ type: Boolean, reflect: true })
+  readonly empty: boolean = true;
 
   /**
    * Whether the form is invalid.
    */
-  @property({ type: Boolean, reflect: true, notify: true, readOnly: true })
-  readonly invalid = false;
-
-  // DEPRECATED
-
-  /**
-   * The Stripe card object.
-   * **DEPRECATED**. Will be removed in a future version. use `element` instead
-   * @deprecated
-   */
-  @property({ type: Object, notify: true, readOnly: true })
-  readonly card: stripe.elements.Element = null;
-
-  /**
-   * Whether the form is empty.
-   * **DEPRECATED**. Will be removed in a future version. use `empty` instead
-   * @deprecated
-   */
-  @property({ type: Boolean, attribute: 'is-empty', reflect: true, notify: true, readOnly: true })
-  isEmpty = true;
-
-  /**
-   * Whether the form is complete.
-   * **DEPRECATED**. Will be removed in a future version. use `complete` instead
-   * @deprecated
-   */
-  @property({
-    type: Boolean,
-    attribute: 'is-complete',
-    reflect: true,
-    notify: true,
-    readOnly: true,
-  })
-  isComplete = false;
-
-  protected updated(changed: PropertyValues): void {
-    super.updated(changed);
-    // DEPRECATED
-    if (changed.has('element') && !this.element) this.setReadOnlyProperties({ card: null });
-  }
+  @notify
+  @readonly
+  @property({ type: Boolean, reflect: true })
+  readonly invalid: boolean = false;
 
   /* PUBLIC API */
 
@@ -264,8 +246,8 @@ export class StripeElements extends StripeBase {
    * Submit payment information to generate a paymentMethod
    */
   @stripeMethod public async createPaymentMethod(
-    paymentMethodData: stripe.PaymentMethodData = this.getPaymentMethodData()
-  ): Promise<stripe.PaymentMethodResponse> {
+    paymentMethodData: Stripe.CreatePaymentMethodData = this.getPaymentMethodData()
+  ): Promise<Stripe.PaymentMethodResult> {
     return this.stripe.createPaymentMethod(paymentMethodData);
   }
 
@@ -273,8 +255,8 @@ export class StripeElements extends StripeBase {
    * Submit payment information to generate a source
    */
   @stripeMethod public async createSource(
-    sourceData: stripe.SourceOptions = this.sourceData
-  ): Promise<stripe.SourceResponse> {
+    sourceData: Stripe.CreateSourceData = this.sourceData
+  ): Promise<Stripe.SourceResult> {
     return this.stripe.createSource(this.element, sourceData);
   }
 
@@ -282,8 +264,8 @@ export class StripeElements extends StripeBase {
    * Submit payment information to generate a token
    */
   @stripeMethod public async createToken(
-    tokenData: stripe.TokenOptions = this.tokenData
-  ): Promise<stripe.TokenResponse> {
+    tokenData = this.tokenData
+  ): Promise<Stripe.TokenResult> {
     return this.stripe.createToken(this.element, tokenData);
   }
 
@@ -313,7 +295,8 @@ export class StripeElements extends StripeBase {
       case 'token': return this.createToken();
       default: {
         const error = this.createError(`cannot generate ${this.generate}`);
-        await this.setReadOnlyProperties({ error });
+        readonly.set<StripeElements>(this, { error });
+        await this.updateComplete;
         throw error;
       }
     }
@@ -326,8 +309,14 @@ export class StripeElements extends StripeBase {
     const { complete, empty, error } = this;
     const isValid = !error && complete && !empty;
     if (empty && !error)
-      this.setReadOnlyProperties({ error: this.createError('Your card number is empty.') });
+      readonly.set<StripeElements>(this, { error: this.createError('Your card number is empty.') });
     return isValid;
+  }
+
+  public updateStyle() {
+    this.element?.update({
+      style: this.getStripeElementsStyles(),
+    });
   }
 
   /* PRIVATE METHODS */
@@ -335,90 +324,81 @@ export class StripeElements extends StripeBase {
   /**
    * Generates PaymentMethodData from the element.
    */
-  private getPaymentMethodData(): stripe.PaymentMethodData {
+  private getPaymentMethodData(): Stripe.CreatePaymentMethodData {
     const type = 'card';
-    const { billingDetails, element: card, paymentMethodData } = this;
+    const { billingDetails, paymentMethodData } = this;
     return ({
       billing_details: billingDetails,
       ...paymentMethodData,
       type,
-      card,
+      card: this.element as Stripe.StripeCardElement,
     });
   }
 
   /**
    * Returns a Stripe-friendly style object computed from CSS custom properties
    */
-  private getStripeElementsStyles(): StripeStyleInit {
-    const computedStyle = window.ShadyCSS ? undefined : getComputedStyle(this);
-    const getStyle = (prop: string): string =>
-      this.getCSSCustomPropertyValue(prop, computedStyle) || undefined;
-    const styleReducer = ({
-      base = {},
-      complete = {},
-      empty = {},
-      invalid = {},
-    }: StripeStyleInit, camelCase: string): StripeStyleInit => ({
-      base: { ...base, [camelCase]: getStyle(`--stripe-elements-base-${dash(camelCase)}`) },
-      complete: { ...complete, [camelCase]: getStyle(`--stripe-elements-complete-${dash(camelCase)}`) },
-      empty: { ...empty, [camelCase]: getStyle(`--stripe-elements-empty-${dash(camelCase)}`) },
-      invalid: { ...invalid, [camelCase]: getStyle(`--stripe-elements-invalid-${dash(camelCase)}`) },
-    });
-    return allowedStyles.reduce(styleReducer, {});
+  private getStripeElementsStyles(): Stripe.StripeElementStyle {
+    const getStyle = (prop: string): string => this.getCSSCustomPropertyValue(prop) || undefined;
+
+    const STATES = ['base', 'complete', 'empty', 'invalid'];
+    const subReducer = (state: string) => (acc: StripeStyleInit, sub: string) => {
+      if (state.includes('-')) return acc;
+      const subProp = sub.split(':').pop();
+      return {
+        ...acc,
+        [sub]: ALLOWED_STYLES.reduce(styleReducer(`${state}-${subProp}`), {}),
+      };
+    };
+
+    const styleReducer = (state: string) => (init: StripeStyleInit, p: string): StripeStyleInit => {
+      const prop = `--stripe-elements-${state}-${dash(p)}`;
+      return ({
+        ...init,
+        [p]: getStyle(prop),
+        ...SUB_STYLES.reduce(subReducer(state), {}),
+      });
+    };
+
+    return STATES.reduce((acc, state) => ({
+      ...acc,
+      [state]: ALLOWED_STYLES.reduce(styleReducer(state), {}),
+    }), {});
   }
 
   protected async initElement(): Promise<void> {
     if (!this.stripe) return;
     const { hidePostalCode, hideIcon, iconStyle, value } = this;
     const style = this.getStripeElementsStyles();
-    const options: stripe.elements.ElementsOptions = {
+
+    await this.updateComplete;
+
+    const element = this.createElement({
       hideIcon,
       hidePostalCode,
       iconStyle,
       style,
       value,
-    };
-
-    const element = this.elements.create('card', options);
-
-    element.addEventListener('change', this.onChange);
-
-    await this.setReadOnlyProperties({
-      element,
-      // DEPRECATED
-      card: element,
     });
+
+    element.on('change', this.onChange);
+    readonly.set<StripeElements>(this, { element });
+    await this.updateComplete;
+  }
+
+  private createElement(options: Stripe.StripeCardElementOptions) {
+    const element = this.elements.create('card', options);
+    return element;
   }
 
   /**
    * Updates the element's state.
    */
-  @bound private async onChange(event: stripe.elements.ElementChangeResponse): Promise<void> {
+  @bound private async onChange(event: Stripe.StripeCardElementChangeEvent): Promise<void> {
     const { brand, complete, empty, error = null } = event;
-    const invalid = error || (!empty && !complete);
-    await this.setReadOnlyProperties({
-      brand,
-      complete,
-      empty,
-      error,
-      invalid,
-
-      // DEPRECATED
-      isComplete: complete,
-      isEmpty: empty,
-    });
+    const invalid = !(error || (!empty && !complete));
+    readonly.set<StripeElements>(this, { brand, complete, empty, error, invalid });
+    await this.updateComplete;
     this.fire('change', event);
-    // DEPRECATED
-    this.fire('stripe-change', event);
   }
-}
-
-/**
- * Allows narrowing class field type
- * @see https://dev.to/bennypowers/narrowing-the-type-of-class-accessors-bi8
- */
-function slot(proto: StripeElements, key: string) {
-  Object.defineProperty(proto, key, {
-    get() { return SlotName['stripe-elements']; },
-  });
 }

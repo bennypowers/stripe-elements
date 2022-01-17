@@ -1,5 +1,5 @@
 ```js script
-import { html } from 'lit-html' ;
+import { html } from 'lit' ;
 import '@power-elements/codesandbox-button';
 
 export default {
@@ -23,7 +23,7 @@ export const LitStripeElements = () => html`
 ```js
 import '@power-elements/stripe-elements';
 import '@power-elements/json-viewer';
-import { LitElement, html } from 'lit-element';
+import { LitElement, html } from 'lit';
 import { PUBLISHABLE_KEY } from './config.js';
 
 class PaymentForm extends LitElement {
@@ -79,8 +79,8 @@ export const LitStripePaymentRequest = () => html`
 
 ```js
 import '@power-elements/json-viewer';
-import { LitElement, html } from 'lit-element';
-import { ifDefined } from 'lit-html/directives/if-defined';
+import { LitElement, html } from 'lit';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { PUBLISHABLE_KEY } from './config';
 
 const displayItems = [
