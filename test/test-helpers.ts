@@ -25,6 +25,7 @@ import { dash } from '../src/lib/strings';
 import { StripeBase } from '../src/StripeBase';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { readonly } from '../src/lib/read-only';
+import { StripeCardElement, StripeConstructor, StripeConstructorOptions, StripePaymentRequestButtonElement } from '@stripe/stripe-js';
 
 declare global {
   interface Node {
@@ -183,7 +184,7 @@ export let fetchStub: sinon.SinonStub;
 
 export let element: StripeElements|StripePaymentRequest;
 export let initialStripeMountId: string;
-export let initialStripe: stripe.Stripe;
+export let initialStripe: typeof Stripe;
 export const events = new Map();
 
 export function resetTestState(): void {
@@ -251,10 +252,10 @@ export function restoreCanMakePayment(): void {
 
 export function mockStripe(): void {
   const stripeStatic =
-    (key: Keys, opts: stripe.StripeOptions): stripe.Stripe =>
-      ((new Stripe(key, opts)) as unknown as stripe.Stripe);
+    (key: Keys, opts: StripeConstructorOptions): StripeConstructor =>
+      new Stripe(key, opts) as unknown as StripeConstructor;
   stripeStatic.version = 0;
-  window.Stripe = stripeStatic;
+  window.Stripe = stripeStatic as unknown as StripeConstructor;
 }
 
 export function restoreStripe(): void {
@@ -326,7 +327,7 @@ export function setupWithPublishableKey(publishableKey: string) {
     const tagName = unsafeStatic(describeTitle.replace(/<(.*)>/, '$1'));
     element = await fixture(getTemplate(tagName, { publishableKey }));
     await element.updateComplete;
-    initialStripe = element.stripe;
+    initialStripe = element.stripe as any;
     await nextFrame();
   };
 }
@@ -469,11 +470,11 @@ export async function focus(): Promise<void> {
 }
 
 export async function blurStripeElement(): Promise<void> {
-  element.element.synthEvent('blur');
+  (element.element as any).synthEvent('blur');
 }
 
 export async function focusStripeElement(): Promise<void> {
-  element.element.synthEvent('focus');
+  (element.element as any).synthEvent('focus');
 }
 
 export async function submit(): Promise<void> {
@@ -492,7 +493,7 @@ export async function reset(): Promise<void> {
 
 async function swallowCallError(p: Promise<any>) {
   // swallow the errors, we're not testing that right now.
-  p.catch(() => {});
+  p.catch(() => void 0);
   // don't await result if we need to set up a listener
   if (!this?.currentTest?.title.startsWith('fires'))
     return nextFrame();
@@ -503,19 +504,19 @@ async function swallowCallError(p: Promise<any>) {
 export async function createPaymentMethod(): Promise<void> {
   if (!(element instanceof StripeElements))
     throw new Error(`TEST HELPERS: can't create a payment method on ${element.constructor.name}`);
-  await swallowCallError.call(this, element.createPaymentMethod())
+  await swallowCallError.call(this, element.createPaymentMethod());
 }
 
 export async function createSource(): Promise<void> {
   if (!(element instanceof StripeElements))
     throw new Error(`TEST HELPERS: can't create a source on ${element.constructor.name}`);
-  await swallowCallError.call(this, element.createSource())
+  await swallowCallError.call(this, element.createSource());
 }
 
 export async function createToken(): Promise<void> {
   if (!(element instanceof StripeElements))
     throw new Error(`TEST HELPERS: can't create a token on ${element.constructor.name}`);
-  await swallowCallError.call(this, element.createToken())
+  await swallowCallError.call(this, element.createToken());
 }
 
 export async function validate(): Promise<void> {
@@ -535,21 +536,21 @@ export function setProps(props) {
 
 export function synthCardEvent(...args) {
   return function(): void {
-    element.element.synthEvent(...args);
+    (element.element as any).synthEvent(...args);
   };
 }
 
 export function synthPaymentRequestEvent(...args) {
   return function(): void {
     if (element instanceof StripePaymentRequest)
-      element.paymentRequest.synthEvent(...args);
+      (element.paymentRequest as any).synthEvent(...args);
   };
 }
 
 export function synthStripeFormValues(inputs) {
   return async function(): Promise<void> {
     if (element instanceof StripeElements) {
-      element?.element?.setState(inputs);
+      (element?.element as any)?.setState(inputs);
       await oneEvent(element, 'change');
       await element.updateComplete;
     }

@@ -6,10 +6,11 @@ import { bound } from './lib/bound.js';
 import { StripeBase, StripePaymentResponse } from './StripeBase.js';
 import { dash } from './lib/strings.js';
 import { stripeMethod } from './lib/stripe-method-decorator.js';
-import sharedStyles from './shared.css';
-import style from './stripe-elements.css';
 import { readonly } from './lib/read-only.js';
 import { notify } from './lib/notify.js';
+
+import sharedStyles from './shared.css';
+import style from './stripe-elements.css';
 
 interface StripeStyleInit {
    base?: Stripe.StripeElementStyle;
@@ -395,7 +396,7 @@ export class StripeElements extends StripeBase {
    */
   @bound private async onChange(event: Stripe.StripeCardElementChangeEvent): Promise<void> {
     const { brand, complete, empty, error = null } = event;
-    const invalid = error || (!empty && !complete);
+    const invalid = !(error || (!empty && !complete));
     readonly.set<StripeElements>(this, { brand, complete, empty, error, invalid });
     await this.updateComplete;
     this.fire('change', event);

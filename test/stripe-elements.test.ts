@@ -1,12 +1,15 @@
 /* istanbul ignore file */
-import '../src/stripe-elements';
+import type * as Stripe from '@stripe/stripe-js';
+
 import { StripeElements } from '../src/stripe-elements';
 
 import { expect, fixture, oneEvent, nextFrame } from '@open-wc/testing';
-import { match, SinonSpy } from 'sinon';
+import { match } from 'sinon';
 
 import * as Helpers from '../test/test-helpers';
 import { element } from '../test/test-helpers';
+
+import '../src/stripe-elements';
 
 import {
   CARD_DECLINED_ERROR,
@@ -713,7 +716,7 @@ describe('<stripe-elements>', function() {
         describe('and generate unset', function() {
           it('calling submit() resolves with the source', function() {
             return (element as StripeElements).submit()
-              .then(result => expect((result as stripe.SourceResponse).source).to.equal(SUCCESS_RESPONSES.source));
+              .then(result => expect((result as Stripe.SourceResult).source).to.equal(SUCCESS_RESPONSES.source));
           });
 
           describe('calling submit()', function() {
@@ -744,7 +747,7 @@ describe('<stripe-elements>', function() {
           describe('calling submit()', function() {
             it('resolves with the source', function() {
               return (element as StripeElements).submit()
-                .then(result => expect((result as stripe.SourceResponse).source).to.equal(SUCCESS_RESPONSES.source));
+                .then(result => expect((result as Stripe.SourceResult).source).to.equal(SUCCESS_RESPONSES.source));
             });
 
             describe('subsequently', function() {
@@ -774,7 +777,7 @@ describe('<stripe-elements>', function() {
           describe('calling submit()', function() {
             it('resolves with the token', function() {
               return (element as StripeElements).submit()
-                .then(result => expect((result as stripe.TokenResponse).token).to.equal(SUCCESS_RESPONSES.token));
+                .then(result => expect((result as Stripe.TokenResult).token).to.equal(SUCCESS_RESPONSES.token));
             });
 
             describe('subsequently', function() {
@@ -804,7 +807,7 @@ describe('<stripe-elements>', function() {
 
           describe('calling submit()', function() {
             it('resolves with the payment method', async function() {
-              const { paymentMethod } = await (element as StripeElements).submit() as stripe.PaymentMethodResponse;
+              const { paymentMethod } = await (element as StripeElements).submit() as Stripe.PaymentMethodResult;
               expect(paymentMethod).to.equal(SUCCESS_RESPONSES.paymentMethod);
             });
 

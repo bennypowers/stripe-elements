@@ -364,7 +364,10 @@ describe('<stripe-payment-request>', function() {
             beforeEach(Helpers.setProps({ publishableKey: 'foo' }));
             beforeEach(nextFrame);
             it('passes CSS custom property values to stripe', function() {
-              expect(element.element.style.paymentRequestButton.height).to.equal('1000px');
+              expect(
+                // @ts-expect-error: stripe made this private?
+                element.element.style
+                  .paymentRequestButton.height).to.equal('1000px');
             });
           });
         });
@@ -402,7 +405,10 @@ describe('<stripe-payment-request>', function() {
           beforeEach(Helpers.setProps({ country: 'CA', currency: 'cad' }));
 
           it('uses default element height value', function() {
-            expect(element.element.style.paymentRequestButton.height).to.equal('40px');
+            expect(
+              // @ts-expect-error: stripe made this private?
+              element.element.style
+                .paymentRequestButton.height).to.equal('40px');
           });
 
           describe('with `generate` set to "source"', function() {
