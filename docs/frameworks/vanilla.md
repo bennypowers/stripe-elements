@@ -1,24 +1,13 @@
-```js script
-import { html } from 'lit' ;
-import '@power-elements/codesandbox-button';
+---
+layout: layout-framework.njk
+framework: vanilla
+tags:
+  - framework
+---
 
-export default {
-  title: 'Framework Examples/Vanilla',
-  parameters: {
-    options: {
-      selectedPanel: 'storybookjs/docs/panel'
-    }
-  }
-}
-```
+## `<stripe-elements>`
 
-# `<stripe-elements>`
-
-```js story
-export const VanillaStripeElements = () => html`
-  <codesandbox-button sandbox-id="y4h9n"></codesandbox-button>
-`
-```
+{% sandbox "y4h9n" %}
 
 ```html
 <script type="module" src="https://unpkg.com/@power-elements/stripe-elements?module"></script>
@@ -66,11 +55,7 @@ export const VanillaStripeElements = () => html`
 
 # `<stripe-payment-request>`
 
-```js story
-export const VanillaStripePaymentRequest = () => html`
- <codesandbox-button sandbox-id="5h7uy"></codesandbox-button>
-`
-```
+{% sandbox "5h7uy" %}
 
 ```html
 <stripe-payment-request

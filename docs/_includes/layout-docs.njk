@@ -1,0 +1,51 @@
+{% if framework %}
+  {% set computedTitle = 'Stripe Elements Web Components in ' + (framework | trim | capitalize) %}
+{% else %}
+  {% set computedTitle = 'Stripe Elements Web Components' %}
+{% endif %}
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ computedTitle }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://ga.jspm.io"/>
+  <link rel="preconnect" href="https://unpkg.com"/>
+
+  <link rel="preload" as="style" href="https://ga.jspm.io/npm:open-props@1.1.3/open-props.min.css">
+  <link rel="preload" as="style" href="https://unpkg.com/prism-themes@1.9.0/themes/prism-one-dark.min.css" media="(prefers-color-scheme: dark)">
+  <link rel="preload" as="style" href="https://unpkg.com/prism-themes@1.9.0/themes/prism-one-light.min.css" media="(prefers-color-scheme: light)">
+
+  {% for frame in collections.frame %}
+  <link rel="preload" as="document" href="{{ frame.url }}" type="text/html">
+  {% endfor %}
+
+  {% include "preloads/stripe.njk" %}
+  {% include "preloads/fonts.njk" %}
+  {% include "preloads/material.njk" %}
+
+  {%- for key, value in args -%}
+    <meta data-arg="{{ key }}" data-value="{{ value }}"/>
+  {%- endfor -%}
+
+  {%- for key, value in parameters -%}
+    <meta data-parameter="{{ key }}" data-value="{{ value }}"/>
+  {%- endfor -%}
+
+  <script async src="https://ga.jspm.io/npm:es-module-shims@0.12.8/dist/es-module-shims.min.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/prism-themes@1.9.0/themes/prism-one-dark.min.css" media="(prefers-color-scheme: dark)">
+  <link rel="stylesheet" href="https://unpkg.com/prism-themes@1.9.0/themes/prism-one-light.min.css" media="(prefers-color-scheme: light)">
+
+  <script type="importmap">{{ importMap | dump | safe }}</script>
+</head>
+<body>
+  <header><h1>{{ computedTitle }}</h1></header>
+  <aside>{{- content | toc | safe -}}</aside>
+  <main>{{- content | safe -}}</main>
+  <script type="module" src="/main.js"></script>
+</body>
+</html>

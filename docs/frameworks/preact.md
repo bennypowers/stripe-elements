@@ -1,24 +1,13 @@
-```js script
-import { html } from 'lit' ;
-import '@power-elements/codesandbox-button';
+---
+layout: layout-framework.njk
+framework: preact
+tags:
+  - framework
+---
 
-export default {
-  title: 'Framework Examples/Preact',
-  parameters: {
-    options: {
-      selectedPanel: 'storybookjs/docs/panel'
-    }
-  }
-}
-```
+## `<stripe-elements>`
 
-# `<stripe-elements>`
-
-```js story
-export const PreactStripeElements = () => html`
-  <codesandbox-button sandbox-id="mqskb"> </codesandbox-button>
-`
-```
+{% sandbox "mqskb" %}
 
 ```jsx
 import { loadScripts } from "./loadScripts";
@@ -68,13 +57,9 @@ if (typeof window !== "undefined") {
 }
 ```
 
-# `<stripe-payment-request>`
+# `<stripe-payment-request>` in Preact
 
-```js story
-export const PreactStripePaymentRequest = () => html`
-  <codesandbox-button sandbox-id="6og3s"> </codesandbox-button>
-`
-```
+{% sandbox "6og3s" %}
 
 ```jsx
 import { loadScripts } from "./loadScripts";

@@ -1,24 +1,13 @@
-```js script
-import { html } from 'lit' ;
-import '@power-elements/codesandbox-button';
+---
+layout: layout-framework.njk
+framework: lit
+tags:
+  - framework
+---
 
-export default {
-  title: 'Framework Examples/LitElement',
-  parameters: {
-    options: {
-      selectedPanel: 'storybookjs/docs/panel'
-    }
-  }
-}
-```
+## `<stripe-elements>`
 
-# `<stripe-elements>`
-
-```js story
-export const LitStripeElements = () => html`
-  <codesandbox-button sandbox-id="8m7uk"></codesandbox-button>
-`;
-```
+{% sandbox "8m7uk" %}
 
 ```js
 import '@power-elements/stripe-elements';
@@ -69,13 +58,9 @@ class PaymentForm extends LitElement {
 }
 ```
 
-# `<stripe-payment-request>`
+## `<stripe-payment-request>`
 
-```js story
-export const LitStripePaymentRequest = () => html`
-  <codesandbox-button sandbox-id="8m7uk"></codesandbox-button>
-`
-```
+{% sandbox "8m7uk" %}
 
 ```js
 import '@power-elements/json-viewer';

@@ -1,0 +1,15 @@
+---
+layout: layout-frame.njk
+---
+<stripe-payment-request
+    generate="payment-method"
+    publishable-key="{{ publishableKey }}"
+    client-secret="{{ clientSecret }}"
+    request-payer-name
+    request-payer-email
+    request-payer-phone
+    amount="326"
+    label="Double Double"
+    country="CA"
+    currency="cad">
+</stripe-payment-request>

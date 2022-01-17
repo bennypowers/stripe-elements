@@ -1,0 +1,13 @@
+---
+layout: layout-frame.njk
+---
+<stripe-payment-request
+    publishable-key="{{ publishableKey }}"
+    generate="token"
+    amount="326"
+    label="Double Double"
+    country="CA"
+    currency="cad">
+  <stripe-display-item data-amount="125" data-label="Double Double"></stripe-display-item>
+  <stripe-display-item data-amount="199" data-label="Box of 10 Timbits"></stripe-display-item>
+</stripe-payment-request>

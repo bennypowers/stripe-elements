@@ -1,0 +1,82 @@
+{
+  "imports": {
+    "@stripe/stripe-js": "https://ga.jspm.io/npm:@stripe/stripe-js@1.22.0/",
+    "@power-elements/stripe-elements": "/stripe-elements/index.js",
+    "@lavadrop/camel-case": "https://ga.jspm.io/npm:@lavadrop/camel-case@0.4.0/camelCase.js",
+    "@lavadrop/kebab-case": "https://ga.jspm.io/npm:@lavadrop/kebab-case@3.0.0/kebabCase.js",
+    "@material/mwc-button": "https://ga.jspm.io/npm:@material/mwc-button@0.26.0-canary.f3e28323.0/mwc-button.js",
+    "@material/mwc-dialog": "https://ga.jspm.io/npm:@material/mwc-dialog@1.0.0-canary.66f6244e.0/mwc-dialog.js",
+    "@material/mwc-textfield": "https://ga.jspm.io/npm:@material/mwc-textfield@0.26.0-canary.f3e28323.0/mwc-textfield.js",
+    "@pacote/memoize": "https://ga.jspm.io/npm:@pacote/memoize@1.1.6/lib/esm/index.js",
+    "@power-elements/json-viewer": "https://ga.jspm.io/npm:@power-elements/json-viewer@2.1.1/json-viewer.js",
+    "lit": "https://ga.jspm.io/npm:lit@2.0.2/index.js",
+    "lit/decorators.js": "https://ga.jspm.io/npm:lit@2.0.2/decorators.js",
+    "lit/directives/if-defined.js": "https://ga.jspm.io/npm:lit@2.0.2/directives/if-defined.js",
+    "tslib": "https://ga.jspm.io/npm:tslib@2.3.1/tslib.es6.js"
+  },
+  "scopes": {
+    "https://ga.jspm.io/": {
+      "@lit/reactive-element": "https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/reactive-element.js",
+      "@lit/reactive-element/decorators/custom-element.js": "https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/custom-element.js",
+      "@lit/reactive-element/decorators/event-options.js": "https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/event-options.js",
+      "@lit/reactive-element/decorators/property.js": "https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/property.js",
+      "@lit/reactive-element/decorators/query-all.js": "https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query-all.js",
+      "@lit/reactive-element/decorators/query-assigned-elements.js": "https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query-assigned-elements.js",
+      "@lit/reactive-element/decorators/query-assigned-nodes.js": "https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query-assigned-nodes.js",
+      "@lit/reactive-element/decorators/query-async.js": "https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query-async.js",
+      "@lit/reactive-element/decorators/query.js": "https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query.js",
+      "@lit/reactive-element/decorators/state.js": "https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/state.js",
+      "@material/base/foundation": "https://ga.jspm.io/npm:@material/base@14.0.0-canary.a986df922.0/foundation.js",
+      "@material/dialog/constants.js": "https://ga.jspm.io/npm:@material/dialog@6.0.0-canary.781434a92.0/constants.js",
+      "@material/dialog/foundation.js": "https://ga.jspm.io/npm:@material/dialog@6.0.0-canary.781434a92.0/foundation.js",
+      "@material/dom/events": "https://ga.jspm.io/npm:@material/dom@6.0.0-canary.781434a92.0/events.js",
+      "@material/dom/ponyfill": "https://ga.jspm.io/npm:@material/dom@14.0.0-canary.a986df922.0/ponyfill.js",
+      "@material/floating-label/foundation": "https://ga.jspm.io/npm:@material/floating-label@14.0.0-canary.a986df922.0/foundation.js",
+      "@material/line-ripple/foundation": "https://ga.jspm.io/npm:@material/line-ripple@14.0.0-canary.a986df922.0/foundation.js",
+      "@material/mwc-base/aria-property": "https://ga.jspm.io/npm:@material/mwc-base@0.25.3/aria-property.js",
+      "@material/mwc-base/base-element": "https://ga.jspm.io/npm:@material/mwc-base@0.26.0-canary.f3e28323.0/base-element.js",
+      "@material/mwc-base/base-element.js": "https://ga.jspm.io/npm:@material/mwc-base@1.0.0-canary.66f6244e.0/base-element.js",
+      "@material/mwc-base/form-element": "https://ga.jspm.io/npm:@material/mwc-base@0.26.0-canary.f3e28323.0/form-element.js",
+      "@material/mwc-base/observer": "https://ga.jspm.io/npm:@material/mwc-base@0.26.0-canary.f3e28323.0/observer.js",
+      "@material/mwc-floating-label": "https://ga.jspm.io/npm:@material/mwc-floating-label@0.26.0-canary.f3e28323.0/mwc-floating-label-directive.js",
+      "@material/mwc-icon/mwc-icon": "https://ga.jspm.io/npm:@material/mwc-icon@0.26.0-canary.f3e28323.0/mwc-icon.js",
+      "@material/mwc-line-ripple": "https://ga.jspm.io/npm:@material/mwc-line-ripple@0.26.0-canary.f3e28323.0/mwc-line-ripple-directive.js",
+      "@material/mwc-notched-outline": "https://ga.jspm.io/npm:@material/mwc-notched-outline@0.26.0-canary.f3e28323.0/mwc-notched-outline.js",
+      "@material/mwc-ripple/mwc-ripple": "https://ga.jspm.io/npm:@material/mwc-ripple@0.26.0-canary.f3e28323.0/mwc-ripple.js",
+      "@material/mwc-ripple/ripple-handlers": "https://ga.jspm.io/npm:@material/mwc-ripple@0.26.0-canary.f3e28323.0/ripple-handlers.js",
+      "@material/notched-outline/foundation": "https://ga.jspm.io/npm:@material/notched-outline@14.0.0-canary.a986df922.0/foundation.js",
+      "@material/ripple/foundation": "https://ga.jspm.io/npm:@material/ripple@14.0.0-canary.a986df922.0/foundation.js",
+      "@material/textfield/foundation": "https://ga.jspm.io/npm:@material/textfield@14.0.0-canary.a986df922.0/foundation.js",
+      "blocking-elements": "https://ga.jspm.io/npm:blocking-elements@0.1.1/dist/blocking-elements.js",
+      "lit": "https://ga.jspm.io/npm:lit@2.1.1/index.js",
+      "lit-element": "https://ga.jspm.io/npm:lit-element@2.5.1/lit-element.js",
+      "lit-element/lit-element.js": "https://ga.jspm.io/npm:lit-element@3.1.1/development/lit-element.js",
+      "lit-html": "https://ga.jspm.io/npm:lit-html@2.1.1/development/lit-html.js",
+      "lit-html/directive.js": "https://ga.jspm.io/npm:lit-html@2.1.1/development/directive.js",
+      "lit-html/directives/class-map": "https://ga.jspm.io/npm:lit-html@1.4.1/directives/class-map.js",
+      "lit-html/directives/class-map.js": "https://ga.jspm.io/npm:lit-html@2.1.1/development/directives/class-map.js",
+      "lit-html/directives/if-defined.js": "https://ga.jspm.io/npm:lit-html@2.1.1/development/directives/if-defined.js",
+      "lit-html/directives/live.js": "https://ga.jspm.io/npm:lit-html@2.1.1/development/directives/live.js",
+      "lit-html/directives/style-map.js": "https://ga.jspm.io/npm:lit-html@2.1.1/development/directives/style-map.js",
+      "lit-html/lib/shady-render.js": "https://ga.jspm.io/npm:lit-html@1.4.1/lib/shady-render.js",
+      "lit-html/lit-html.js": "https://ga.jspm.io/npm:lit-html@1.4.1/lit-html.js",
+      "lit/decorators.js": "https://ga.jspm.io/npm:lit@2.1.1/decorators.js",
+      "lit/directive.js": "https://ga.jspm.io/npm:lit@2.1.1/directive.js",
+      "lit/directives/class-map.js": "https://ga.jspm.io/npm:lit@2.1.1/directives/class-map.js",
+      "lit/directives/if-defined.js": "https://ga.jspm.io/npm:lit@2.1.1/directives/if-defined.js",
+      "lit/directives/live.js": "https://ga.jspm.io/npm:lit@2.1.1/directives/live.js",
+      "lit/directives/style-map.js": "https://ga.jspm.io/npm:lit@2.1.1/directives/style-map.js",
+      "tslib": "https://ga.jspm.io/npm:tslib@1.14.1/tslib.es6.js",
+      "wicg-inert": "https://ga.jspm.io/npm:wicg-inert@3.1.1/dist/inert.js"
+    },
+    "https://ga.jspm.io/npm:@material/dialog@6.0.0-canary.781434a92.0/": {
+      "@material/base/foundation": "https://ga.jspm.io/npm:@material/base@6.0.0-canary.781434a92.0/foundation.js"
+    },
+    "https://ga.jspm.io/npm:@material/mwc-base@1.0.0-canary.66f6244e.0/": {
+      "@material/dom/ponyfill": "https://ga.jspm.io/npm:@material/dom@6.0.0-canary.781434a92.0/ponyfill.js"
+    },
+    "https://ga.jspm.io/npm:@material/mwc-dialog@1.0.0-canary.66f6244e.0/": {
+      "@material/dom/ponyfill": "https://ga.jspm.io/npm:@material/dom@6.0.0-canary.781434a92.0/ponyfill.js"
+    }
+  }
+}
