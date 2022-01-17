@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - next
 
 jobs:
   test:
@@ -54,7 +55,6 @@ jobs:
         uses: cycjimmy/semantic-release-action@v2
         id: semantic   # Need an `id` for output variables
         with:
-          branch: master
           extra_plugins: |
             @semantic-release/changelog
             @semantic-release/git
