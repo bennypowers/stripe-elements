@@ -1,24 +1,14 @@
-```js script
-import { html } from 'lit' ;
-import '@power-elements/codesandbox-button';
+---
+layout: layout-framework.njk
+templateEngineOverride: njk,md
+framework: vue
+tags:
+  - framework
+---
 
-export default {
-  title: 'Framework Examples/Vue',
-  parameters: {
-    options: {
-      selectedPanel: 'storybookjs/docs/panel'
-    }
-  }
-}
-```
+## `<stripe-elements>`
 
-# `<stripe-elements>`
-
-```js story
-export const VueStripeElements = () => html`
-  <codesandbox-button sandbox-id="06ulb" module="/src/Payment.vue"></codesandbox-button>
-`
-```
+{% sandbox "06ulb", module="/src/Payment.vue" %}
 
 ```html
 <template>
@@ -73,14 +63,9 @@ export default {
 </script>
 ```
 
-# `<stripe-payment-request>`
+## `<stripe-payment-request>`
 
-```js story
-export const VueStripePaymentRequest = () => html`
-  <codesandbox-button sandbox-id="23edw" module="/src/Payment.vue"></codesandbox-button>
-`
-```
-
+{% sandbox "23edw", module="/src/Payment.vue" %}
 
 ```html
 <template>

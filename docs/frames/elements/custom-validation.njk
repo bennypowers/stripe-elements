@@ -1,0 +1,46 @@
+---
+layout: layout-frame.njk
+---
+<style>
+  body {
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    gap: 12px;
+  }
+
+  stripe-elements::part(stripe) {
+    border-radius: 4px;
+    border: 1px solid var(--theme-primary);
+    box-shadow: none;
+    height: 36px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+  }
+
+  stripe-elements[complete]::part(stripe) {
+    border-color: var(--success);
+  }
+
+  stripe-elements[invalid]::part(stripe) {
+    border-color: var(--warning);
+  }
+
+  stripe-elements[error]::part(stripe) {
+    border-color: var(--error);
+  }
+
+  stripe-elements::part(error) {
+    text-align: right;
+    color: var(--text);
+  }
+</style>
+
+<stripe-elements show-error></stripe-elements>
+
+<mwc-button outlined>Validate</mwc-button>
+
+<script type="module">
+  import '@material/mwc-button';
+  $('mwc-button').addEventListener('click', event => $('stripe-elements').validate());
+</script>

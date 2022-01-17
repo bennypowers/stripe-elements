@@ -1,0 +1,130 @@
+---
+layout: layout-frame.njk
+---
+<fallback-element></fallback-element>
+
+<script type="module">
+import { LitElement, html, css } from 'lit';
+import { ifDefined } from 'lit/directives/if-defined.js';
+
+import '@material/mwc-button';
+import '@power-elements/json-viewer';
+
+class FallbackElement extends LitElement {
+  static get properties() {
+    return {
+      error: { type: Object },
+      output: { type: Object },
+      unsupported: { type: Boolean, reflect: true },
+      publishableKey: { type: String, attribute: 'publishable-key', reflect: true },
+      submitDisabled: { type: Boolean },
+    }
+  }
+
+  static get styles() {
+    return css`
+      [hidden] { display: none !important; }
+
+      :host {
+        align-items: center;
+        display: grid;
+        grid-gap: 12px;
+        grid-template-areas:
+          'support support'
+          'stripe submit'
+          'output output';
+      }
+
+      stripe-elements { grid-area: stripe; }
+
+      stripe-payment-request { grid-area: submit/stripe/stripe/submit; }
+
+      mwc-button { grid-area: submit; }
+
+      json-viewer { grid-area: output; }
+    `;
+  }
+
+  constructor() {
+    super();
+    this.submitDisabled = true;
+  }
+
+  render() {
+    return html`
+      <output ?hidden="${this.unsupported === undefined}">
+        Payment Request is ${this.unsupported ? 'un' : ''}supported on this Browser
+      </output>
+
+      <stripe-payment-request
+          ?hidden="${this.output || this.unsupported}"
+          @success="${this.onSuccess}"
+          @fail="${this.onFail}"
+          @error="${this.onError}"
+          @unsupported="${this.onUnsupported}"
+          @ready="${this.onReady}"
+          publishable-key="${ifDefined(this.publishableKey)}"
+          generate="source"
+          request-payer-name
+          request-payer-email
+          request-payer-phone
+          amount="326"
+          label="Double Double"
+          country="CA"
+          currency="cad">
+        <stripe-display-item data-amount="125" data-label="Double Double"></stripe-display-item>
+        <stripe-display-item data-amount="199" data-label="Box of 10 Timbits"></stripe-display-item>
+        <stripe-shipping-option data-id="pick-up" data-label="Pick Up" data-detail="Pick Up at Your Local Timmy's" data-amount="0"></stripe-shipping-option>
+        <stripe-shipping-option data-id="delivery" data-label="Delivery" data-detail="Timbits to Your Door" data-amount="200"></stripe-shipping-option>
+      </stripe-payment-request>
+
+      <stripe-elements
+          ?hidden="${this.output || !this.unsupported}"
+          generate="source"
+          publishable-key="${ifDefined(this.unsupported ? this.publishableKey : undefined)}"
+          @change="${this.onChange}"
+          @source="${this.onSuccess}"
+          @error="${this.onError}"
+      ></stripe-elements>
+
+      <mwc-button
+          ?hidden="${this.output || !this.unsupported}"
+          ?disabled="${this.submitDisabled}"
+          @click="${this.onClick}"
+      >Submit</mwc-button>
+
+      <json-viewer .object="${this.output}"></json-viewer>
+    `;
+  }
+
+  onChange({ target: { complete, error } }) {
+    this.submitDisabled = !(complete && !error);
+  }
+
+  onClick() {
+    this.shadowRoot.querySelector('stripe-elements').submit();
+  }
+
+  onError({ target: { error } }) {
+    this.error = error;
+  }
+
+  onFail(event) {
+    this.output = event.detail;
+  }
+
+  onReady() {
+    this.unsupported = false;
+  }
+
+  onSuccess(event) {
+    this.output = event.detail;
+  }
+
+  onUnsupported(e) {
+    this.unsupported = true;
+  }
+}
+
+customElements.define('fallback-element', FallbackElement);
+</script>

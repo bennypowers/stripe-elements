@@ -1,0 +1,31 @@
+---
+layout: layout-frame.njk
+---
+<stripe-payment-request
+    publishable-key="{{ publishableKey }}"
+    generate="payment-method"
+    request-payer-name
+    request-payer-email
+    request-payer-phone
+    country="CA"
+    currency="cad">
+</stripe-payment-request>
+
+<mwc-textfield label="Amount (CAD)" type="number" data-prop="amount"></mwc-textfield>
+<mwc-textfield label="Label" data-prop="label"></mwc-textfield>
+
+<script type="module">
+const spr = document.querySelector("stripe-payment-request");
+for (const textfield of document.querySelectorAll('mwc-textfield')) {
+  textfield.addEventListener('input', event => {
+    switch (event.target.dataset.prop) {
+      case 'amount':
+        spr.amount = parseFloat(event.target.value) * 100;
+        break;
+      case 'label':
+        spr.label = event.target.value;
+        break;
+    }
+  })
+}
+</script>

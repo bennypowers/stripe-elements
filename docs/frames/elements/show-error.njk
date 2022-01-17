@@ -1,0 +1,18 @@
+---
+layout: layout-frame.njk
+---
+<style>
+  body {
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    gap: 12px;
+  }
+</style>
+
+<stripe-elements publishable-key="should-error-use-bad-key" show-error></stripe-elements>
+<mwc-button slot="actions" outlined>Validate</mwc-button>
+
+<script type="module">
+  import '@material/mwc-button';
+  $("mwc-button").addEventListener('click', event => $('stripe-elements').validate())
+</script>
