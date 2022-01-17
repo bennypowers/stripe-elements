@@ -1,5 +1,5 @@
 ```js script
-import { html } from 'lit-html' ;
+import { html } from 'lit' ;
 import '@power-elements/codesandbox-button';
 
 export default {
@@ -23,14 +23,14 @@ export const ReactStripeElements = () => html`
 ```jsx
 import React, { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom";
-import { getPropOr, compose } from "crocks";
 import { PUBLISHABLE_KEY } from './config';
 import "./styles.css";
 
+const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
 const isDisabled = ({ complete, empty }) => !complete || empty;
-const getTarget = getPropOr({}, "target");
-const getDetail = getPropOr(null, "detail");
-const getToken = getPropOr(null, "token");
+const getTarget = x => x.target ?? {};
+const getDetail = x => x.detail ?? null;
+const getToken = x => x.token ?? null;
 
 function App() {
   const stripeRef = useRef(null);
@@ -83,12 +83,12 @@ export const ReactStripePaymentRequest = () => html`
 ```jsx
 import React, { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom";
-import { getPropOr, compose } from "crocks";
 import { PUBLISHABLE_KEY } from './config';
 import "./styles.css";
 
-const getDetail = getPropOr(null, "detail");
-const getPaymentMethod = getPropOr(null, "paymentMethod");
+const compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)));
+const getDetail = x => x.detail ?? null;
+const getPaymentMethod = x => x.paymentMethod ?? null;
 
 function App() {
   const stripeRef = useRef(null);

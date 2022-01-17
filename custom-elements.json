@@ -229,11 +229,10 @@
             },
             {
               "kind": "field",
-              "name": "slotName",
+              "name": "element",
               "type": {
-                "text": "SlotName"
-              },
-              "privacy": "protected"
+                "text": "Stripe.StripeCardElement"
+              }
             },
             {
               "kind": "field",
@@ -259,7 +258,7 @@
               "kind": "field",
               "name": "iconStyle",
               "type": {
-                "text": "stripe.elements.ElementsOptions['iconStyle']"
+                "text": "Stripe.StripeCardElementOptions['iconStyle']"
               },
               "default": "'default'",
               "description": "Stripe icon style.",
@@ -269,7 +268,7 @@
               "kind": "field",
               "name": "value",
               "type": {
-                "text": "stripe.elements.ElementsOptions['value']"
+                "text": "Stripe.StripeCardElementOptions['value']"
               },
               "default": "{}",
               "description": "Prefilled values for form.",
@@ -279,7 +278,7 @@
               "kind": "field",
               "name": "brand",
               "type": {
-                "text": "stripe.brandType"
+                "text": "Stripe.StripeCardElementChangeEvent['brand']"
               },
               "default": "null",
               "description": "The card brand detected by Stripe",
@@ -319,44 +318,12 @@
               "reflects": true
             },
             {
-              "kind": "field",
-              "name": "card",
-              "type": {
-                "text": "stripe.elements.Element"
-              },
-              "default": "null",
-              "description": "The Stripe card object.\n**DEPRECATED**. Will be removed in a future version. use `element` instead",
-              "attribute": "card"
-            },
-            {
-              "kind": "field",
-              "name": "isEmpty",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "true",
-              "description": "Whether the form is empty.\n**DEPRECATED**. Will be removed in a future version. use `empty` instead",
-              "attribute": "is-empty",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "isComplete",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Whether the form is complete.\n**DEPRECATED**. Will be removed in a future version. use `complete` instead",
-              "attribute": "is-complete",
-              "reflects": true
-            },
-            {
               "kind": "method",
               "name": "createPaymentMethod",
               "privacy": "public",
               "return": {
                 "type": {
-                  "text": "Promise<stripe.PaymentMethodResponse>"
+                  "text": "Promise<Stripe.PaymentMethodResult>"
                 }
               },
               "parameters": [
@@ -364,7 +331,7 @@
                   "name": "paymentMethodData",
                   "default": "this.getPaymentMethodData()",
                   "type": {
-                    "text": "stripe.PaymentMethodData"
+                    "text": "Stripe.CreatePaymentMethodData"
                   }
                 }
               ],
@@ -376,7 +343,7 @@
               "privacy": "public",
               "return": {
                 "type": {
-                  "text": "Promise<stripe.SourceResponse>"
+                  "text": "Promise<Stripe.SourceResult>"
                 }
               },
               "parameters": [
@@ -384,7 +351,7 @@
                   "name": "sourceData",
                   "default": "this.sourceData",
                   "type": {
-                    "text": "stripe.SourceOptions"
+                    "text": "Stripe.CreateSourceData"
                   }
                 }
               ],
@@ -396,16 +363,13 @@
               "privacy": "public",
               "return": {
                 "type": {
-                  "text": "Promise<stripe.TokenResponse>"
+                  "text": "Promise<Stripe.TokenResult>"
                 }
               },
               "parameters": [
                 {
                   "name": "tokenData",
-                  "default": "this.tokenData",
-                  "type": {
-                    "text": "stripe.TokenOptions"
-                  }
+                  "default": "this.tokenData"
                 }
               ],
               "description": "Submit payment information to generate a token"
@@ -456,11 +420,16 @@
             },
             {
               "kind": "method",
+              "name": "updateStyle",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
               "name": "getPaymentMethodData",
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "stripe.PaymentMethodData"
+                  "text": "Stripe.CreatePaymentMethodData"
                 }
               },
               "description": "Generates PaymentMethodData from the element."
@@ -471,7 +440,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "StripeStyleInit"
+                  "text": "Stripe.StripeElementStyle"
                 }
               },
               "description": "Returns a Stripe-friendly style object computed from CSS custom properties"
@@ -488,6 +457,19 @@
             },
             {
               "kind": "method",
+              "name": "createElement",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "options",
+                  "type": {
+                    "text": "Stripe.StripeCardElementOptions"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
               "name": "onChange",
               "privacy": "private",
               "return": {
@@ -499,7 +481,7 @@
                 {
                   "name": "event",
                   "type": {
-                    "text": "stripe.elements.ElementChangeResponse"
+                    "text": "Stripe.StripeCardElementChangeEvent"
                   }
                 }
               ],
@@ -534,7 +516,7 @@
             {
               "name": "icon-style",
               "type": {
-                "text": "stripe.elements.ElementsOptions['iconStyle']"
+                "text": "Stripe.StripeCardElementOptions['iconStyle']"
               },
               "default": "'default'",
               "description": "Stripe icon style.",
@@ -543,7 +525,7 @@
             {
               "name": "value",
               "type": {
-                "text": "stripe.elements.ElementsOptions['value']"
+                "text": "Stripe.StripeCardElementOptions['value']"
               },
               "default": "{}",
               "description": "Prefilled values for form.",
@@ -552,7 +534,7 @@
             {
               "name": "brand",
               "type": {
-                "text": "stripe.brandType"
+                "text": "Stripe.StripeCardElementChangeEvent['brand']"
               },
               "default": "null",
               "description": "The card brand detected by Stripe",
@@ -584,33 +566,6 @@
               "default": "false",
               "description": "Whether the form is invalid.",
               "fieldName": "invalid"
-            },
-            {
-              "name": "card",
-              "type": {
-                "text": "stripe.elements.Element"
-              },
-              "default": "null",
-              "description": "The Stripe card object.\n**DEPRECATED**. Will be removed in a future version. use `element` instead",
-              "fieldName": "card"
-            },
-            {
-              "name": "is-empty",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "true",
-              "description": "Whether the form is empty.\n**DEPRECATED**. Will be removed in a future version. use `empty` instead",
-              "fieldName": "isEmpty"
-            },
-            {
-              "name": "is-complete",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Whether the form is complete.\n**DEPRECATED**. Will be removed in a future version. use `complete` instead",
-              "fieldName": "isComplete"
             }
           ],
           "superclass": {
@@ -711,14 +666,6 @@
             },
             {
               "kind": "field",
-              "name": "slotName",
-              "type": {
-                "text": "SlotName"
-              },
-              "privacy": "protected"
-            },
-            {
-              "kind": "field",
               "name": "amount",
               "type": {
                 "text": "number"
@@ -731,7 +678,7 @@
               "kind": "field",
               "name": "canMakePayment",
               "type": {
-                "text": "CanMakePaymentType"
+                "text": "Stripe.CanMakePaymentResult"
               },
               "default": "null",
               "description": "Whether or not the device can make the payment request.",
@@ -751,7 +698,7 @@
               "kind": "field",
               "name": "currency",
               "type": {
-                "text": "StripePaymentRequestOptions['currency']"
+                "text": "Stripe.PaymentRequestOptions['currency']"
               },
               "description": "Three character currency code",
               "attribute": "currency"
@@ -761,16 +708,16 @@
               "name": "#displayItems",
               "privacy": "private",
               "type": {
-                "text": "DisplayItem[]"
+                "text": "Stripe.PaymentRequestItem[]"
               }
             },
             {
               "kind": "field",
               "name": "displayItems",
               "type": {
-                "text": "DisplayItem[]"
+                "text": "Stripe.PaymentRequestItem[]"
               },
-              "description": "An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.",
+              "description": "An array of PaymentRequestItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.",
               "attribute": "displayItems"
             },
             {
@@ -787,7 +734,7 @@
               "kind": "field",
               "name": "paymentIntent",
               "type": {
-                "text": "PaymentIntent"
+                "text": "Stripe.PaymentIntent"
               },
               "default": "null",
               "description": "Stripe PaymentIntent",
@@ -797,7 +744,7 @@
               "kind": "field",
               "name": "paymentRequest",
               "type": {
-                "text": "stripe.paymentRequest.StripePaymentRequest"
+                "text": "Stripe.PaymentRequest"
               },
               "default": "null",
               "description": "Stripe PaymentRequest",
@@ -855,23 +802,23 @@
               "name": "#shippingOptions",
               "privacy": "private",
               "type": {
-                "text": "ShippingOption[]"
+                "text": "Stripe.PaymentRequestShippingOption[]"
               }
             },
             {
               "kind": "field",
               "name": "shippingOptions",
               "type": {
-                "text": "ShippingOption[]"
+                "text": "Stripe.PaymentRequestShippingOption[]"
               },
-              "description": "An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.",
+              "description": "An array of PaymentRequestShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.",
               "attribute": "shippingOptions"
             },
             {
               "kind": "field",
               "name": "buttonType",
               "type": {
-                "text": "PaymentRequestButtonStyleOptions['type']"
+                "text": "StripePaymentRequestButtonType"
               },
               "default": "'default'",
               "attribute": "button-type"
@@ -880,7 +827,7 @@
               "kind": "field",
               "name": "buttonTheme",
               "type": {
-                "text": "PaymentRequestButtonStyleOptions['theme']"
+                "text": "StripePaymentRequestButtonTheme"
               },
               "default": "'dark'",
               "attribute": "button-theme"
@@ -901,10 +848,10 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "StripePaymentRequestOptions"
+                  "text": "Stripe.PaymentRequestOptions"
                 }
               },
-              "description": "Creates a StripePaymentRequestOptions object."
+              "description": "Creates a PaymentRequestOptions object."
             },
             {
               "kind": "method",
@@ -968,29 +915,9 @@
               "description": "Handle a `cancel` event"
             },
             {
-              "kind": "method",
+              "kind": "field",
               "name": "complete",
               "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "Promise<StripePaymentRequestResponse | { error: stripe.Error | null }>"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "paymentResponse",
-                  "type": {
-                    "text": "StripePaymentRequestResponse"
-                  }
-                },
-                {
-                  "name": "confirmationError",
-                  "optional": true,
-                  "type": {
-                    "text": "stripe.Error"
-                  }
-                }
-              ],
               "description": "Completes the PaymentRequest."
             },
             {
@@ -1004,9 +931,9 @@
               },
               "parameters": [
                 {
-                  "name": "paymentResponse",
+                  "name": "event",
                   "type": {
-                    "text": "StripePaymentRequestResponse"
+                    "text": "StripePaymentRequestEvent"
                   }
                 }
               ],
@@ -1025,7 +952,7 @@
                 {
                   "name": "paymentResponse",
                   "type": {
-                    "text": "StripePaymentRequestResponse"
+                    "text": "Stripe.PaymentRequestPaymentMethodEvent"
                   }
                 }
               ],
@@ -1037,7 +964,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "Promise<PaymentIntentResponse>"
+                  "text": "Promise<Stripe.PaymentIntentResult>"
                 }
               },
               "parameters": [
@@ -1045,14 +972,14 @@
                   "name": "data",
                   "optional": true,
                   "type": {
-                    "text": "stripe.ConfirmCardPaymentData"
+                    "text": "Stripe.ConfirmCardPaymentData"
                   }
                 },
                 {
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "stripe.ConfirmCardPaymentOptions"
+                    "text": "Stripe.ConfirmCardPaymentOptions"
                   }
                 }
               ],
@@ -1071,7 +998,7 @@
                 {
                   "name": "originalEvent",
                   "type": {
-                    "text": "ShippingAddressChangeEvent"
+                    "text": "Stripe.PaymentRequestShippingAddressEvent"
                   }
                 }
               ]
@@ -1089,7 +1016,7 @@
                 {
                   "name": "originalEvent",
                   "type": {
-                    "text": "ShippingOptionChangeEvent"
+                    "text": "Stripe.PaymentRequestShippingOptionEvent"
                   }
                 }
               ]
@@ -1100,7 +1027,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "ShippingOption[]"
+                  "text": "Stripe.PaymentRequestShippingOption[]"
                 }
               },
               "parameters": [
@@ -1119,7 +1046,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "DisplayItem[]"
+                  "text": "Stripe.PaymentRequestItem[]"
                 }
               },
               "parameters": [
@@ -1137,7 +1064,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "(stripe.paymentRequest.DisplayItem|stripe.paymentRequest.ShippingOption)[]"
+                  "text": "(Stripe.PaymentRequestItem|Stripe.PaymentRequestShippingOption)[]"
                 }
               },
               "parameters": [
@@ -1184,7 +1111,7 @@
             {
               "name": "can-make-payment",
               "type": {
-                "text": "CanMakePaymentType"
+                "text": "Stripe.CanMakePaymentResult"
               },
               "default": "null",
               "description": "Whether or not the device can make the payment request.",
@@ -1201,7 +1128,7 @@
             {
               "name": "currency",
               "type": {
-                "text": "StripePaymentRequestOptions['currency']"
+                "text": "Stripe.PaymentRequestOptions['currency']"
               },
               "description": "Three character currency code",
               "fieldName": "currency"
@@ -1209,9 +1136,9 @@
             {
               "name": "displayItems",
               "type": {
-                "text": "DisplayItem[]"
+                "text": "Stripe.PaymentRequestItem[]"
               },
-              "description": "An array of DisplayItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.",
+              "description": "An array of PaymentRequestItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.",
               "fieldName": "displayItems"
             },
             {
@@ -1225,7 +1152,7 @@
             {
               "name": "payment-intent",
               "type": {
-                "text": "PaymentIntent"
+                "text": "Stripe.PaymentIntent"
               },
               "default": "null",
               "description": "Stripe PaymentIntent",
@@ -1234,7 +1161,7 @@
             {
               "name": "payment-request",
               "type": {
-                "text": "stripe.paymentRequest.StripePaymentRequest"
+                "text": "Stripe.PaymentRequest"
               },
               "default": "null",
               "description": "Stripe PaymentRequest",
@@ -1284,15 +1211,15 @@
             {
               "name": "shippingOptions",
               "type": {
-                "text": "ShippingOption[]"
+                "text": "Stripe.PaymentRequestShippingOption[]"
               },
-              "description": "An array of ShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.",
+              "description": "An array of PaymentRequestShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.",
               "fieldName": "shippingOptions"
             },
             {
               "name": "button-type",
               "type": {
-                "text": "PaymentRequestButtonStyleOptions['type']"
+                "text": "StripePaymentRequestButtonType"
               },
               "default": "'default'",
               "fieldName": "buttonType"
@@ -1300,7 +1227,7 @@
             {
               "name": "button-theme",
               "type": {
-                "text": "PaymentRequestButtonStyleOptions['theme']"
+                "text": "StripePaymentRequestButtonTheme"
               },
               "default": "'dark'",
               "fieldName": "buttonTheme"

@@ -2,7 +2,7 @@
   display: none !important;
 }
 
-:host {
+:host:not([hidden]) {
   display: block;
   box-sizing: border-box;
 }

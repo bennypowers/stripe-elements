@@ -1,12 +1,9 @@
 import { StripeElements } from '../src/stripe-elements';
 import { StripePaymentRequest } from '../src/stripe-payment-request';
-import type * as _ from '@webcomponents/webcomponentsjs';
 
-import 'chai-things';
-import 'sinon-chai';
-
-import { LitElement, customElement, property, TemplateResult } from 'lit-element';
-import { spreadProps } from '@open-wc/lit-helpers';
+import { LitElement, TemplateResult } from 'lit';
+import { unsafeStatic } from 'lit/static-html.js';
+import { customElement, property } from 'lit/decorators.js';
 
 import {
   aTimeout,
@@ -15,9 +12,8 @@ import {
   html,
   nextFrame,
   oneEvent,
-  unsafeStatic,
 } from '@open-wc/testing';
-import { spy, stub } from 'sinon';
+import { SinonSpy, spy, stub } from 'sinon';
 
 import {
   Stripe,
@@ -27,6 +23,9 @@ import {
 } from './mock-stripe';
 import { dash } from '../src/lib/strings';
 import { StripeBase } from '../src/StripeBase';
+import { ifDefined } from 'lit/directives/if-defined.js';
+import { readonly } from '../src/lib/read-only';
+import { StripeCardElement, StripeConstructor, StripeConstructorOptions, StripePaymentRequestButtonElement } from '@stripe/stripe-js';
 
 declare global {
   interface Node {
@@ -52,8 +51,8 @@ declare global {
 
 }
 
-const getTemplate = (tagName: ReturnType<typeof unsafeStatic>, props = {}): TemplateResult =>
-  html`<${tagName} ...="${spreadProps(props)}"></${tagName}>`;
+const getTemplate = (tagName: ReturnType<typeof unsafeStatic>, { publishableKey = undefined } = {}) =>
+  html`<${tagName} publishable-key="${ifDefined(publishableKey)}"></${tagName}>`;
 
 class Host extends LitElement {
   @property({ type: String }) tag: string;
@@ -81,7 +80,7 @@ export class SecondaryHost extends Host {
     return this.shadowRoot.querySelector(PrimaryHost.is);
   }
 
-  render(): TemplateResult {
+  render() {
     return html`<primary-host tag="${this.tag}"></primary-host>`;
   }
 }
@@ -92,14 +91,14 @@ export class TertiaryHost extends Host {
     return this.shadowRoot.querySelector('secondary-host');
   }
 
-  render(): TemplateResult {
+  render() {
     return html`<secondary-host tag="${this.tag}"></secondary-host>`;
   }
 }
 
 /* CONSTANTS */
 export const NO_STRIPE_JS_ERROR =
-  `requires Stripe.js to be loaded first.`;
+  `Stripe.js must be loaded first.`;
 
 export const NO_STRIPE_CONFIRM_CARD_ERROR =
   'Stripe must be initialized before calling confirmCardPayment.';
@@ -127,7 +126,6 @@ export const BASE_DEFAULT_PROPS = Object.freeze({
   element: null,
   elements: null,
   error: null,
-  hasError: false,
   publishableKey: undefined,
   paymentMethod: null,
   showError: false,
@@ -140,7 +138,6 @@ export const BASE_READ_ONLY_PROPS = Object.freeze([
   'element',
   'stripe',
   'error',
-  'hasError',
   'paymentMethod',
   'source',
   'token',
@@ -148,7 +145,6 @@ export const BASE_READ_ONLY_PROPS = Object.freeze([
 
 export const BASE_NOTIFYING_PROPS = Object.freeze([
   'error',
-  'hasError',
   'paymentMethod',
   'publishableKey',
   'source',
@@ -178,12 +174,9 @@ export const STYLE_PREFIXES = Object.freeze([
 ]);
 
 export const ALL_BLUE_STYLES =
-  ALLOWED_STYLES
-  // eslint-disable-next-line
-  // @ts-ignore
-    .flatMap(
-      (camelCase: string) => STYLE_PREFIXES.map(prefix => `--stripe-elements-${prefix}-${dash(camelCase)}:blue;`)
-    );
+  ALLOWED_STYLES.flatMap((camelCase: string) =>
+    STYLE_PREFIXES.map(prefix =>
+      `--stripe-elements-${prefix}-${dash(camelCase)}:blue;`));
 
 /* TEST STATE */
 
@@ -191,7 +184,7 @@ export let fetchStub: sinon.SinonStub;
 
 export let element: StripeElements|StripePaymentRequest;
 export let initialStripeMountId: string;
-export let initialStripe: stripe.Stripe;
+export let initialStripe: typeof Stripe;
 export const events = new Map();
 
 export function resetTestState(): void {
@@ -234,26 +227,6 @@ export const expectedLightDOM = ({ stripeMountId, tagName }): string =>
 
 /* MOCKS, STUBS, AND SPIES */
 
-class MockScopingShim {
-  adoptedCssTextMap = {}
-
-  prepareAdoptedCssText(cssTextArray, elementName): void {
-    this.adoptedCssTextMap[elementName] = cssTextArray.join(' ');
-  }
-}
-
-class MockShadyCSS {
-  getComputedStyleValue(el, name): string {
-    return getComputedStyle(el).getPropertyValue(name);
-  }
-
-  ScopingShim = new MockScopingShim();
-
-  restore(): void {
-    this.ScopingShim.adoptedCssTextMap = {};
-  }
-}
-
 export function mockCanMakePayment(): void {
   addUserAgentCreditCard({
     cardNumber: '4242424242424242',
@@ -277,41 +250,12 @@ export function restoreCanMakePayment(): void {
   resetUserAgentCreditCards();
 }
 
-export function mockShadyCSS(): void {
-  // @ts-expect-error: just mocks
-  window.ShadyCSS = new MockShadyCSS();
-}
-
-export function restoreShadyCSS(): void {
-  // @ts-expect-error: just mocks
-  window.ShadyCSS.restore();
-  window.ShadyCSS = undefined;
-}
-
-export function spyGetComputedStyleValue(): void {
-  spy(window.ShadyCSS, 'getComputedStyleValue');
-}
-
-export function restoreGetComputedStyleValue(): void {
-  // @ts-expect-error: just mocks
-  window.ShadyCSS?.getComputedStyleValue?.restore();
-}
-
-export function mockShadyDOM(): void {
-  // @ts-expect-error: just mocks
-  window.ShadyDOM = new (class MockShadyDOM { })();
-}
-
-export function restoreShadyDOM(): void {
-  window.ShadyDOM = undefined;
-}
-
 export function mockStripe(): void {
   const stripeStatic =
-    (key: Keys, opts: stripe.StripeOptions): stripe.Stripe =>
-      ((new Stripe(key, opts)) as unknown as stripe.Stripe);
+    (key: Keys, opts: StripeConstructorOptions): StripeConstructor =>
+      new Stripe(key, opts) as unknown as StripeConstructor;
   stripeStatic.version = 0;
-  window.Stripe = stripeStatic;
+  window.Stripe = stripeStatic as unknown as StripeConstructor;
 }
 
 export function restoreStripe(): void {
@@ -319,7 +263,7 @@ export function restoreStripe(): void {
 }
 
 export function spyCardClear(): void {
-  if (element instanceof StripeElements && element?.card?.clear) spy(element.card, 'clear');
+  if (element instanceof StripeElements && element?.element?.clear) spy(element.element, 'clear');
 }
 
 export function spyStripeElementBlur(): void {
@@ -327,10 +271,7 @@ export function spyStripeElementBlur(): void {
 }
 
 export function restoreStripeElementBlur(): void {
-  element.element.blur
-  // eslint-disable-next-line
-  // @ts-ignore
-    ?.restore?.();
+  (element.element.blur as SinonSpy)?.restore?.();
 }
 
 export function spyStripeElementFocus(): void {
@@ -338,15 +279,11 @@ export function spyStripeElementFocus(): void {
 }
 
 export function restoreStripeElementFocus(): void {
-  // eslint-disable-next-line
-  // @ts-ignore
-  element.element.focus?.restore?.();
+  (element.element.focus as SinonSpy)?.restore?.();
 }
 
 export function restoreCardClear(): void {
-  // eslint-disable-next-line
-  // @ts-ignore
-  element?.card?.clear?.restore();
+  (element?.element?.clear as SinonSpy)?.restore();
 }
 
 export function spyConsoleWarn(): void {
@@ -384,22 +321,19 @@ export async function updateComplete(): Promise<unknown> {
   return await element.updateComplete;
 }
 
-export function setupWithPublishableKey(publishableKey) {
+export function setupWithPublishableKey(publishableKey: string) {
   return async function setup(): Promise<void> {
     const [describeTitle] = this.test.titlePath();
     const tagName = unsafeStatic(describeTitle.replace(/<(.*)>/, '$1'));
     element = await fixture(getTemplate(tagName, { publishableKey }));
     await element.updateComplete;
-    initialStripe = element.stripe;
+    initialStripe = element.stripe as any;
+    await nextFrame();
   };
 }
 
 export async function removeStripeMount() {
-  // eslint-disable-next-line
-  // @ts-ignore
-  initialStripeMountId = element.stripeMount.id;
-  // eslint-disable-next-line
-  // @ts-ignore
+  initialStripeMountId = element.stripeMountId;
   element?.stripeMount?.remove();
 }
 
@@ -493,13 +427,9 @@ export function testDefaultPropEntry([name, value]): Mocha.Test {
 
 export function testReadOnlyProp(name: string): void {
   it(name, function() {
-    // this.timeout(10 * 60 * 1000)
     const init = element[name];
     element[name] = Math.random();
     expect(element[name], name).to.equal(init);
-    // return aTimeout(10 * 60 * 1000).then(() => {
-    //   expect(element[name], name).to.equal(init);
-    // })
   });
 }
 
@@ -517,7 +447,7 @@ export function testReadonlyNotifyingProp(name: string): void {
   it(name, async function() {
     const synth = `${Math.random()}`;
     const eventName = `${dash(name)}-changed`;
-    setTimeout(function setProp() { element.setReadOnlyProperties({ [name]: synth }); });
+    setTimeout(function setProp() { readonly.set(element, { [name]: synth }); });
     const { detail: { value } } = await oneEvent(element, eventName);
     expect(value, name).to.eql(synth);
   });
@@ -540,11 +470,11 @@ export async function focus(): Promise<void> {
 }
 
 export async function blurStripeElement(): Promise<void> {
-  element.element.synthEvent('blur');
+  (element.element as any).synthEvent('blur');
 }
 
 export async function focusStripeElement(): Promise<void> {
-  element.element.synthEvent('focus');
+  (element.element as any).synthEvent('focus');
 }
 
 export async function submit(): Promise<void> {
@@ -561,25 +491,32 @@ export async function reset(): Promise<void> {
   await element.updateComplete;
 }
 
-export async function createPaymentMethod(): Promise<void> {
-  if (element instanceof StripeElements)
-    element.createPaymentMethod();
+async function swallowCallError(p: Promise<any>) {
+  // swallow the errors, we're not testing that right now.
+  p.catch(() => void 0);
   // don't await result if we need to set up a listener
-  if (!this?.currentTest?.title.startsWith('fires')) await nextFrame();
+  if (!this?.currentTest?.title.startsWith('fires'))
+    return nextFrame();
+  else
+    return p;
+}
+
+export async function createPaymentMethod(): Promise<void> {
+  if (!(element instanceof StripeElements))
+    throw new Error(`TEST HELPERS: can't create a payment method on ${element.constructor.name}`);
+  await swallowCallError.call(this, element.createPaymentMethod());
 }
 
 export async function createSource(): Promise<void> {
-  if (element instanceof StripeElements)
-    element.createSource();
-  // don't await result if we need to set up a listener
-  if (!this?.currentTest?.title.startsWith('fires')) await nextFrame();
+  if (!(element instanceof StripeElements))
+    throw new Error(`TEST HELPERS: can't create a source on ${element.constructor.name}`);
+  await swallowCallError.call(this, element.createSource());
 }
 
 export async function createToken(): Promise<void> {
-  if (element instanceof StripeElements)
-    element.createToken();
-  // don't await result if we need to set up a listener
-  if (!this?.currentTest?.title.startsWith('fires')) await nextFrame();
+  if (!(element instanceof StripeElements))
+    throw new Error(`TEST HELPERS: can't create a token on ${element.constructor.name}`);
+  await swallowCallError.call(this, element.createToken());
 }
 
 export async function validate(): Promise<void> {
@@ -599,22 +536,22 @@ export function setProps(props) {
 
 export function synthCardEvent(...args) {
   return function(): void {
-    element.element.synthEvent(...args);
+    (element.element as any).synthEvent(...args);
   };
 }
 
 export function synthPaymentRequestEvent(...args) {
   return function(): void {
     if (element instanceof StripePaymentRequest)
-      element.paymentRequest.synthEvent(...args);
+      (element.paymentRequest as any).synthEvent(...args);
   };
 }
 
 export function synthStripeFormValues(inputs) {
   return async function(): Promise<void> {
     if (element instanceof StripeElements) {
-      element?.card?.setState(inputs);
-      await oneEvent(element, 'stripe-change');
+      (element?.element as any)?.setState(inputs);
+      await oneEvent(element, 'change');
       await element.updateComplete;
     }
   };
