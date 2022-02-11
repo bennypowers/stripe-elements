@@ -1,3 +1,34 @@
+# [3.0.0-next.1](https://github.com/bennypowers/stripe-elements/compare/v2.3.12...v3.0.0-next.1) (2022-02-11)
+
+
+* feat!: load stripe automatically ([eee9c53](https://github.com/bennypowers/stripe-elements/commit/eee9c5335dfa7884a82fcab50cd693bed5e7701b))
+
+
+### BREAKING CHANGES
+
+* migrate to stripe npm, with `window.Stripe` fallback
+
+remove ShadyDOM support
+
+remove `ReadOnlyMixin` and `LitNotifyMixin` in favour of decorators
+  - private `setReadonlyProperties` removed
+
+move breadcrumb code to a controller.
+
+remove deprecated properties
+  - `isComplete` => `complete
+  - `isEmpty` => `empty`
+  - `card` => `element`
+  - `stripeReady` => `ready`
+  - `hasError` => `error`
+
+remove deprecated events
+  - `stripe-ready` => `ready`
+  - `stripe-error` => `error`
+  - `stripe-payment-method` => `payment-method`
+  - `stripe-source` => `source`
+  - `stripe-token` => `token`
+
 ## [2.3.12](https://github.com/bennypowers/stripe-elements/compare/v2.3.11...v2.3.12) (2021-10-03)
 
 
