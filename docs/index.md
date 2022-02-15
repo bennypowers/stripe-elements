@@ -138,10 +138,6 @@ For simple integrations, you can automatically post the source or token to your 
 ```
 <iframe data-update="publishableKey" loading="lazy" src="/frames/elements/automatically-posting/"></iframe>
 
-### API
-
-<sb-props of="stripe-payment-request"></sb-props>
-
 ## `<stripe-payment-request>` Web Component
 
 The `<stripe-payment-request>` custom element is an easy way to use stripe.js in your web app,
@@ -437,14 +433,6 @@ class PaymentForm extends LitElement {
 }
 ```
 
-<div hidden>
-
-### API
-
-TODO: Generate API Table
-
-</div>
-
 ## Usage in Frameworks
 
 <ul>
@@ -456,3 +444,9 @@ TODO: Generate API Table
 <template id="PR_UNSUPPORTED">
   <p>This browser does not support <a href="https://developer.mozilla.org/en-US/docs/Web/API/Payment_Request_API" target="_blank">Payment Request API</a></p>
 </template>
+
+## API
+
+The following API tables are automatically generated.
+
+{% cem %}
