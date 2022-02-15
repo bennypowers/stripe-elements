@@ -2,7 +2,7 @@
 
 body {
   display: grid;
-  grid-template: 1fr / minmax(900px, 1000px) minmax(300px, 600px);
+  grid-template: 1fr / 1fr;
   gap: 20px;
   place-content: center;
 }
@@ -19,7 +19,7 @@ header {
   aside { order: 1; }
 
   body {
-    grid-template: 1fr / 900px 300px;
+    grid-template: 1fr / minmax(900px, 1000px) minmax(300px, 600px);
   }
 
   aside > nav.toc {
@@ -28,8 +28,7 @@ header {
 }
 
 main {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: block;
   margin: 0 auto;
   max-width: 1000px;
 }
