@@ -95,6 +95,7 @@
     "@types/express-serve-static-core": "^4.17.28",
     "@types/sinon": "^10.0.11",
     "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@web/dev-server-esbuild": "^0.2.16",
     "@web/test-runner": "^0.13.27",
     "cem-plugin-module-file-extensions": "^0.0.2",
     "cem-plugin-readme": "^0.1.4",
