@@ -1,10 +1,7 @@
 @import "./theme.css";
 
 body {
-  display: grid;
-  grid-template: 1fr / 1fr;
-  gap: 20px;
-  place-content: center;
+  display: block;
 }
 
 aside {
@@ -19,7 +16,10 @@ header {
   aside { order: 1; }
 
   body {
+    display: grid;
+    gap: 20px;
     grid-template: 1fr / minmax(900px, 1000px) minmax(300px, 600px);
+    place-content: center;
   }
 
   aside > nav.toc {
