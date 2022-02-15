@@ -437,9 +437,13 @@ class PaymentForm extends LitElement {
 }
 ```
 
+<div hidden>
+
 ### API
 
-<sb-props of="stripe-elements"></sb-props>
+TODO: Generate API Table
+
+</div>
 
 ## Usage in Frameworks
 
