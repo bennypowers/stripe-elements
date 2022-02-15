@@ -8,7 +8,7 @@
     "@semantic-release/git"
   ],
   "branches": [
-    "master",
+    "main",
     {
       "name": "next",
       "prerelease": true
