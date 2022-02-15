@@ -1,8 +1,8 @@
-@import './theme.css';
+@import "./theme.css";
 
 body {
   display: grid;
-  grid-template: auto / auto;
+  grid-template: 1fr / minmax(900px, 1000px) minmax(300px, 600px);
   gap: 20px;
   place-content: center;
 }
@@ -17,9 +17,11 @@ header {
 
 @media (min-width: 1260px) {
   aside { order: 1; }
+
   body {
     grid-template: 1fr / 900px 300px;
   }
+
   aside > nav.toc {
     position: fixed;
   }
