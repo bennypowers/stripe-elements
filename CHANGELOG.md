@@ -1,3 +1,10 @@
+# [3.0.0-next.2](https://github.com/bennypowers/stripe-elements/compare/v3.0.0-next.1...v3.0.0-next.2) (2022-02-15)
+
+
+### Bug Fixes
+
+* update deps ([2c34c91](https://github.com/bennypowers/stripe-elements/commit/2c34c9140f54dd4beb2fca4ca508c4a92c8a742f))
+
 # [3.0.0-next.1](https://github.com/bennypowers/stripe-elements/compare/v2.3.12...v3.0.0-next.1) (2022-02-11)
 
 
