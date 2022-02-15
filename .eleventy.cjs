@@ -2,6 +2,8 @@ const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const toc = require('eleventy-plugin-toc');
 const markdownIt = require('markdown-it')
 const markdownItAnchor = require('markdown-it-anchor')
+const fs = require('fs/promises');
+const path = require('path');
 
 // const litLabsSSR11ty = require('./lit-labs-ssr-11ty.cjs');
 
@@ -22,10 +24,18 @@ module.exports = function(eleventyConfig) {
     'lib/*.{js,d.ts,map}': 'stripe-elements/lib'
   });
 
+  eleventyConfig.addShortcode('cem', async function() {
+    const { customElementsManifestToMarkdown } = await import('@custom-elements-manifest/to-markdown');
+    const customElementsManifest = JSON.parse(await fs.readFile(path.join(__dirname, 'custom-elements.json')))
+    return customElementsManifestToMarkdown(customElementsManifest, {
+      headingOffset: 2,
+      private: 'details',
+    });
+  })
 
   eleventyConfig.on('eleventy.before', async function () {
-    const { build } = await import('./scripts/build.js');
-    await build();
+    const { execaCommand } = await import('execa');
+    await execaCommand('npm run build:esbuild');
   });
 
   eleventyConfig.addShortcode('sandbox', function(id, args) {

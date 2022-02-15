@@ -1,8 +1,8 @@
 // @ts-check
-import { readmePlugin } from 'cem-plugin-readme';
 import { moduleFileExtensionsPlugin } from 'cem-plugin-module-file-extensions';
 
 export default {
+  litelement: true,
   globs: ['src/stripe-*.ts', 'src/index.ts'],
   exclude: ['**/*.d.ts'],
   plugins: [
@@ -10,9 +10,6 @@ export default {
       from: /(?:\.?\/)?src\/(?<pathname>.*)\.(?:t|j)sx?$/,
       to: './$<pathname>.js',
     }),
-    readmePlugin({
-      head: 'src/README.template.md',
-      headerLevel: 3,
-    }),
   ],
 };
+
