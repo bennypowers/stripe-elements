@@ -78,7 +78,7 @@ This is useful for simple validation in cases where you don't need to build your
                  show-error></stripe-elements>
 ```
 
-<iframe loading="lazy" src="/frames/elements/show-error/"></iframe>
+<iframe loading="lazy" src="{{ '/frames/elements/show-error/' | url }}"></iframe>
 
 #### Custom Validation
 
@@ -122,7 +122,7 @@ stripe-elements::part(error) {
 }
 ```
 
-<iframe data-update="publishableKey" loading="lazy" src="/frames/elements/custom-validation/" height="120px"></iframe>
+<iframe data-update="publishableKey" loading="lazy" src="{{ '/frames/elements/custom-validation/' | url }}" height="120px"></iframe>
 
 ### Automatically Posting the Payment Info
 
@@ -136,7 +136,7 @@ For simple integrations, you can automatically post the source or token to your 
     action="/my-endpoint"
 ></stripe-elements>
 ```
-<iframe data-update="publishableKey" loading="lazy" src="/frames/elements/automatically-posting/"></iframe>
+<iframe data-update="publishableKey" loading="lazy" src="{{ '/frames/elements/automatically-posting/' | url }}"></iframe>
 
 ## `<stripe-payment-request>` Web Component
 
@@ -195,7 +195,7 @@ You can also display multiple line-items with the `<stripe-payment-item>` elemen
 </stripe-payment-request>
 ```
 
-<iframe data-update="publishableKey,clientSecret" loading="lazy" src="/frames/payment-request/with-display-items/"></iframe>
+<iframe data-update="publishableKey,clientSecret" loading="lazy" src="{{ '/frames/payment-request/with-display-items/' | url }}"></iframe>
 
 To add multiple shipping options, you can use the `<stripe-shipping-option>` element:
 
@@ -217,7 +217,7 @@ To add multiple shipping options, you can use the `<stripe-shipping-option>` ele
 </stripe-payment-request>
 ```
 
-<iframe data-update="publishableKey,clientSecret" loading="lazy" src="/frames/payment-request/with-display-items-and-shipping-options/"></iframe>
+<iframe data-update="publishableKey,clientSecret" loading="lazy" src="{{ '/frames/payment-request/with-display-items-and-shipping-options/' | url }}"></iframe>
 
 You may also set the payment request options using JavaScript:
 
@@ -267,7 +267,7 @@ for (const textfield of document.querySelectorAll('mwc-textfield')) {
 </script>
 ```
 
-<iframe data-update="publishableKey,clientSecret" loading="lazy" src="/frames/payment-request/updating-options/"></iframe>
+<iframe data-update="publishableKey,clientSecret" loading="lazy" src="{{ '/frames/payment-request/updating-options/' | url }}"></iframe>
 
 ### Payment Intents
 
@@ -296,7 +296,7 @@ stripe payment_intents create --amount=326 --currency=cad | jq -r '.client_secre
 </stripe-payment-request>
 ```
 
-<iframe data-update="publishableKey,clientSecret" loading="lazy" src="/frames/payment-request/with-payment-intent/"></iframe>
+<iframe data-update="publishableKey,clientSecret" loading="lazy" src="{{ '/frames/payment-request/with-payment-intent/' | url }}"></iframe>
 
 ### Fallback to Stripe Elements
 
@@ -313,7 +313,7 @@ We recommend that you don't set `publishable-key` on `<stripe-elements>` until
 key will kick off the element's initialization, even if payment request is
 supported.
 
-<iframe data-update="publishableKey,clientSecret" loading="lazy" src="/frames/payment-request/fallback-to-elements/"></iframe>
+<iframe data-update="publishableKey,clientSecret" loading="lazy" src="{{ '/frames/payment-request/fallback-to-elements/' | url }}"></iframe>
 
 ``` js
 class PaymentForm extends LitElement {
