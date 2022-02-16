@@ -15,16 +15,13 @@ jobs:
         with:
           node-version: 16
           cache: npm
-
-      - name: Install Dependencies
-        run: npm ci
+      - run: npm ci
       - name: Install Coverage Reporter
         run: |
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
           ./cc-test-reporter before-build
-      - name: Run Tests
-        run: npm test
+      - run: npm test
       - name: Format Coverage
         run: ./cc-test-reporter format-coverage -t lcov -o coverage/coverage.json coverage/lcov.info
       - name: Upload Coverage
@@ -47,10 +44,8 @@ jobs:
     needs: Test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Install dependencies
-        run: npm ci
+      - uses: actions/checkout@v1
+      - run: npm ci
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v2
         id: semantic   # Need an `id` for output variables
@@ -69,10 +64,8 @@ jobs:
       - Test
       - Release
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
         with:
           node-version: 12
       - name: Download coverage
@@ -87,3 +80,19 @@ jobs:
         run: ./cc-test-reporter upload-coverage -i coverage/coverage.json
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+
+  docs-deploy:
+    runs-on: ubuntu-latest
+    needs: Release
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: npm ci
+      - run: npm run docs
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
