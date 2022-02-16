@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/lib/object.ts"],
+  "sourcesContent": ["export const objectOf = key => x => ({ [key]: x });\n"],
+  "mappings": ";AAAO,IAAM,WAAW,SAAO,OAAM,IAAG,MAAM;",
+  "names": []
+}

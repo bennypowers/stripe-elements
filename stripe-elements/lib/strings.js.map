@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/lib/strings.ts", "../node_modules/@pacote/memoize/lib/esm/index.js"],
+  "sourcesContent": ["import eagerDash from '@lavadrop/kebab-case';\nimport eagerCamel from '@lavadrop/camel-case';\nimport { memoize } from '@pacote/memoize';\n\nconst identity = x => x;\n\n/** camelCase a string */\nexport const camel = memoize(identity, eagerCamel);\n\n/** dash-case a string */\nexport const dash = memoize(identity, eagerDash);\n", "function createCache() {\n    const cache = {};\n    return {\n        has: (key) => Object.hasOwnProperty.call(cache, key),\n        get: (key) => cache[key],\n        set: (key, value) => {\n            cache[key] = value;\n        },\n    };\n}\nexport function memoize(cacheKeyFn, fn) {\n    const cache = createCache();\n    return (...args) => {\n        const key = cacheKeyFn(...args);\n        if (!cache.has(key)) {\n            cache.set(key, fn(...args));\n        }\n        return cache.get(key);\n    };\n}\n"],
+  "mappings": ";AAAA;AACA;;;ACDA,uBAAuB;AACnB,QAAM,QAAQ;AACd,SAAO;AAAA,IACH,KAAK,CAAC,QAAQ,OAAO,eAAe,KAAK,OAAO;AAAA,IAChD,KAAK,CAAC,QAAQ,MAAM;AAAA,IACpB,KAAK,CAAC,KAAK,UAAU;AACjB,YAAM,OAAO;AAAA;AAAA;AAAA;AAIlB,iBAAiB,YAAY,IAAI;AACpC,QAAM,QAAQ;AACd,SAAO,IAAI,SAAS;AAChB,UAAM,MAAM,WAAW,GAAG;AAC1B,QAAI,CAAC,MAAM,IAAI,MAAM;AACjB,YAAM,IAAI,KAAK,GAAG,GAAG;AAAA;AAEzB,WAAO,MAAM,IAAI;AAAA;AAAA;;;ADbzB,IAAM,WAAW,OAAK;AAGf,IAAM,QAAQ,QAAQ,UAAU;AAGhC,IAAM,OAAO,QAAQ,UAAU;",
+  "names": []
+}

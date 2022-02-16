@@ -1,1 +1,1529 @@
-<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Storybook</title><style>body,html{overflow:hidden;height:100%;width:100%;margin:0;padding:0}</style><style>#docs-root[hidden],#root[hidden]{display:none!important}</style><script>document.addEventListener("DOMContentLoaded",(function(){"use strict";const t="allowpaymentrequest";function e(e){if(!e||"true"===e.getAttribute(t))return;const{src:r}=e;e.src="",e.setAttribute(t,"true"),e.src=r}function r(){const t=document.getElementById("storybook-preview-iframe");t&&e(t)}new MutationObserver(t=>t.forEach(r)).observe(document.getElementById("root"),{childList:!0,attributes:!0,subtree:!0}),e(document.getElementById("storybook-preview-iframe"))}));</script><link rel="preload" href="./7ef862da.js" as="script" crossorigin="anonymous"></head><body><div id="root"></div><div id="docs-root"></div><script>!function(){function e(){function e(e,o){return new Promise((function(t){var n=document.createElement("script");function r(){n.parentElement&&n.parentElement.removeChild(n),t()}n.src=e,n.onload=r,n.onerror=function(){console.error("[polyfills-loader] failed to load: "+e+" check the network tab for HTTP status."),r()},o&&(n.type=o),document.head.appendChild(n)}))}var o=[];function t(){System.import("./7ef862da.js")}o.push(e("./polyfills/regenerator-runtime.d99d2cb71e0e87af5cdffc8601a0d4d5.js")),"fetch"in window&&"Request"in window&&"signal"in window.Request.prototype||o.push(e("./polyfills/fetch.a030f3e3353d6a5594af9f9be3692d53.js")),o.push(e("./polyfills/systemjs.47c33e8694e875e78e943ea002f3b2e2.js")),"IntersectionObserver"in window&&"IntersectionObserverEntry"in window&&"intersectionRatio"in window.IntersectionObserverEntry.prototype||o.push(e("./polyfills/intersection-observer.e74248e871a636a1e4053930daa62784.js")),"ResizeObserver"in window||o.push(e("./polyfills/resize-observer.c66e75decd4adba0d63c03d136370195.js")),(!("attachShadow"in Element.prototype)||!("getRootNode"in Element.prototype)||window.ShadyDOM&&window.ShadyDOM.force)&&o.push(e("./polyfills/webcomponents.06b4c3b88cf074d8d957bbee7eaf7012.js")),!("noModule"in HTMLScriptElement.prototype)&&"getRootNode"in Element.prototype&&o.push(e("./polyfills/custom-elements-es5-adapter.3342b468203af1a14ca005e80d14148f.js")),o.length?Promise.all(o).then(t):t()}if("noModule"in HTMLScriptElement.prototype)e();else{var o=document.createElement("script");function t(){document.head.removeChild(o),e()}o.src="polyfills/core-js.a8ea21cd3f54f879f981d1dccc3c2a0c.js",o.onload=t,o.onerror=function(){console.error("[polyfills-loader] failed to load: "+o.src+" check the network tab for HTTP status."),t()},document.head.appendChild(o)}}();</script></body></html>
+
+  
+
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Stripe Elements Web Components</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://ga.jspm.io"/>
+  <link rel="preconnect" href="https://unpkg.com"/>
+
+  <link rel="preload" as="style" href="https://ga.jspm.io/npm:open-props@1.1.3/open-props.min.css">
+  <link rel="preload" as="style" href="https://unpkg.com/prism-themes@1.9.0/themes/prism-one-dark.min.css" media="(prefers-color-scheme: dark)">
+  <link rel="preload" as="style" href="https://unpkg.com/prism-themes@1.9.0/themes/prism-one-light.min.css" media="(prefers-color-scheme: light)">
+
+  
+  <link rel="preload" as="document" href="/frames/elements/automatically-posting/" type="text/html">
+  
+  <link rel="preload" as="document" href="/frames/elements/custom-validation/" type="text/html">
+  
+  <link rel="preload" as="document" href="/frames/elements/show-error/" type="text/html">
+  
+  <link rel="preload" as="document" href="/frames/payment-request/fallback-to-elements/" type="text/html">
+  
+  <link rel="preload" as="document" href="/frames/payment-request/updating-options/" type="text/html">
+  
+  <link rel="preload" as="document" href="/frames/payment-request/with-display-items-and-shipping-options/" type="text/html">
+  
+  <link rel="preload" as="document" href="/frames/payment-request/with-display-items/" type="text/html">
+  
+  <link rel="preload" as="document" href="/frames/payment-request/with-payment-intent/" type="text/html">
+  
+
+  <link rel="preconnect" href="https://ga.jspm.io"/>
+<link rel="preconnect" href="https://js.stripe.com"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lavadrop/camel-case@0.4.0/camelCase.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lavadrop/kebab-case@3.0.0/kebabCase.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/css-tag.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/base.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/custom-element.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/event-options.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/property.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query-all.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query-assigned-elements.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query-assigned-nodes.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query-async.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/state.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/reactive-element.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@pacote/memoize@1.1.6/lib/esm/index.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit-element@3.1.1/development/lit-element.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit-html@2.1.1/development/directive-helpers.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit-html@2.1.1/development/directive.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit-html@2.1.1/development/directives/class-map.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit-html@2.1.1/development/directives/if-defined.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit-html@2.1.1/development/directives/live.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit-html@2.1.1/development/directives/style-map.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit-html@2.1.1/development/lit-html.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit@2.0.2/directives/if-defined.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit@2.0.2/index.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit@2.1.1/decorators.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit@2.1.1/directive.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit@2.1.1/directives/class-map.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit@2.1.1/directives/if-defined.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit@2.1.1/directives/live.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit@2.1.1/directives/style-map.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:lit@2.1.1/index.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:tslib@2.3.1/tslib.es6.js"/>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="modulepreload" href="https://ga.jspm.io/npm:@material/base@14.0.0-canary.a986df922.0/foundation.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/dom@14.0.0-canary.a986df922.0/_/92eae367.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/dom@14.0.0-canary.a986df922.0/ponyfill.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/floating-label@14.0.0-canary.a986df922.0/constants.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/floating-label@14.0.0-canary.a986df922.0/foundation.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/line-ripple@14.0.0-canary.a986df922.0/_/47170644.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/line-ripple@14.0.0-canary.a986df922.0/foundation.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-base@0.25.3/aria-property.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-base@0.26.0-canary.f3e28323.0/base-element.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-base@0.26.0-canary.f3e28323.0/form-element.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-base@0.26.0-canary.f3e28323.0/observer.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-base@0.26.0-canary.f3e28323.0/utils.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-button@0.26.0-canary.f3e28323.0/mwc-button-base.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-button@0.26.0-canary.f3e28323.0/mwc-button.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-button@0.26.0-canary.f3e28323.0/styles.css.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-floating-label@0.26.0-canary.f3e28323.0/mwc-floating-label-directive.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-icon@0.26.0-canary.f3e28323.0/mwc-icon.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-line-ripple@0.26.0-canary.f3e28323.0/mwc-line-ripple-directive.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-notched-outline@0.26.0-canary.f3e28323.0/mwc-notched-outline.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-ripple@0.26.0-canary.f3e28323.0/mwc-ripple-base.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-ripple@0.26.0-canary.f3e28323.0/mwc-ripple.css.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-ripple@0.26.0-canary.f3e28323.0/mwc-ripple.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-ripple@0.26.0-canary.f3e28323.0/ripple-handlers.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-textfield@0.26.0-canary.f3e28323.0/mwc-textfield-base.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-textfield@0.26.0-canary.f3e28323.0/mwc-textfield.css.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/mwc-textfield@0.26.0-canary.f3e28323.0/mwc-textfield.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/notched-outline@14.0.0-canary.a986df922.0/_/ef628a99.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/notched-outline@14.0.0-canary.a986df922.0/foundation.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/ripple@14.0.0-canary.a986df922.0/_/5d3a0e48.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/ripple@14.0.0-canary.a986df922.0/_/d4100ec8.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/ripple@14.0.0-canary.a986df922.0/foundation.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/textfield@14.0.0-canary.a986df922.0/constants.js"/>
+<link rel="modulepreload" href="https://ga.jspm.io/npm:@material/textfield@14.0.0-canary.a986df922.0/foundation.js"/>
+<meta data-parameter="component" data-value="stripe-elements"/><script async src="https://ga.jspm.io/npm:es-module-shims@0.12.8/dist/es-module-shims.min.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/prism-themes@1.9.0/themes/prism-one-dark.min.css" media="(prefers-color-scheme: dark)">
+  <link rel="stylesheet" href="https://unpkg.com/prism-themes@1.9.0/themes/prism-one-light.min.css" media="(prefers-color-scheme: light)">
+
+  <script type="importmap">{"imports":{"@stripe/stripe-js":"https://ga.jspm.io/npm:@stripe/stripe-js@1.22.0/","@power-elements/stripe-elements":"/stripe-elements/index.js","@lavadrop/camel-case":"https://ga.jspm.io/npm:@lavadrop/camel-case@0.4.0/camelCase.js","@lavadrop/kebab-case":"https://ga.jspm.io/npm:@lavadrop/kebab-case@3.0.0/kebabCase.js","@material/mwc-button":"https://ga.jspm.io/npm:@material/mwc-button@0.26.0-canary.f3e28323.0/mwc-button.js","@material/mwc-dialog":"https://ga.jspm.io/npm:@material/mwc-dialog@1.0.0-canary.66f6244e.0/mwc-dialog.js","@material/mwc-textfield":"https://ga.jspm.io/npm:@material/mwc-textfield@0.26.0-canary.f3e28323.0/mwc-textfield.js","@pacote/memoize":"https://ga.jspm.io/npm:@pacote/memoize@1.1.6/lib/esm/index.js","@power-elements/json-viewer":"https://ga.jspm.io/npm:@power-elements/json-viewer@2.1.1/json-viewer.js","lit":"https://ga.jspm.io/npm:lit@2.0.2/index.js","lit/decorators.js":"https://ga.jspm.io/npm:lit@2.0.2/decorators.js","lit/directives/if-defined.js":"https://ga.jspm.io/npm:lit@2.0.2/directives/if-defined.js","tslib":"https://ga.jspm.io/npm:tslib@2.3.1/tslib.es6.js"},"scopes":{"https://ga.jspm.io/":{"@lit/reactive-element":"https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/reactive-element.js","@lit/reactive-element/decorators/custom-element.js":"https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/custom-element.js","@lit/reactive-element/decorators/event-options.js":"https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/event-options.js","@lit/reactive-element/decorators/property.js":"https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/property.js","@lit/reactive-element/decorators/query-all.js":"https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query-all.js","@lit/reactive-element/decorators/query-assigned-elements.js":"https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query-assigned-elements.js","@lit/reactive-element/decorators/query-assigned-nodes.js":"https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query-assigned-nodes.js","@lit/reactive-element/decorators/query-async.js":"https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query-async.js","@lit/reactive-element/decorators/query.js":"https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/query.js","@lit/reactive-element/decorators/state.js":"https://ga.jspm.io/npm:@lit/reactive-element@1.1.2/development/decorators/state.js","@material/base/foundation":"https://ga.jspm.io/npm:@material/base@14.0.0-canary.a986df922.0/foundation.js","@material/dialog/constants.js":"https://ga.jspm.io/npm:@material/dialog@6.0.0-canary.781434a92.0/constants.js","@material/dialog/foundation.js":"https://ga.jspm.io/npm:@material/dialog@6.0.0-canary.781434a92.0/foundation.js","@material/dom/events":"https://ga.jspm.io/npm:@material/dom@6.0.0-canary.781434a92.0/events.js","@material/dom/ponyfill":"https://ga.jspm.io/npm:@material/dom@14.0.0-canary.a986df922.0/ponyfill.js","@material/floating-label/foundation":"https://ga.jspm.io/npm:@material/floating-label@14.0.0-canary.a986df922.0/foundation.js","@material/line-ripple/foundation":"https://ga.jspm.io/npm:@material/line-ripple@14.0.0-canary.a986df922.0/foundation.js","@material/mwc-base/aria-property":"https://ga.jspm.io/npm:@material/mwc-base@0.25.3/aria-property.js","@material/mwc-base/base-element":"https://ga.jspm.io/npm:@material/mwc-base@0.26.0-canary.f3e28323.0/base-element.js","@material/mwc-base/base-element.js":"https://ga.jspm.io/npm:@material/mwc-base@1.0.0-canary.66f6244e.0/base-element.js","@material/mwc-base/form-element":"https://ga.jspm.io/npm:@material/mwc-base@0.26.0-canary.f3e28323.0/form-element.js","@material/mwc-base/observer":"https://ga.jspm.io/npm:@material/mwc-base@0.26.0-canary.f3e28323.0/observer.js","@material/mwc-floating-label":"https://ga.jspm.io/npm:@material/mwc-floating-label@0.26.0-canary.f3e28323.0/mwc-floating-label-directive.js","@material/mwc-icon/mwc-icon":"https://ga.jspm.io/npm:@material/mwc-icon@0.26.0-canary.f3e28323.0/mwc-icon.js","@material/mwc-line-ripple":"https://ga.jspm.io/npm:@material/mwc-line-ripple@0.26.0-canary.f3e28323.0/mwc-line-ripple-directive.js","@material/mwc-notched-outline":"https://ga.jspm.io/npm:@material/mwc-notched-outline@0.26.0-canary.f3e28323.0/mwc-notched-outline.js","@material/mwc-ripple/mwc-ripple":"https://ga.jspm.io/npm:@material/mwc-ripple@0.26.0-canary.f3e28323.0/mwc-ripple.js","@material/mwc-ripple/ripple-handlers":"https://ga.jspm.io/npm:@material/mwc-ripple@0.26.0-canary.f3e28323.0/ripple-handlers.js","@material/notched-outline/foundation":"https://ga.jspm.io/npm:@material/notched-outline@14.0.0-canary.a986df922.0/foundation.js","@material/ripple/foundation":"https://ga.jspm.io/npm:@material/ripple@14.0.0-canary.a986df922.0/foundation.js","@material/textfield/foundation":"https://ga.jspm.io/npm:@material/textfield@14.0.0-canary.a986df922.0/foundation.js","blocking-elements":"https://ga.jspm.io/npm:blocking-elements@0.1.1/dist/blocking-elements.js","lit":"https://ga.jspm.io/npm:lit@2.1.1/index.js","lit-element":"https://ga.jspm.io/npm:lit-element@2.5.1/lit-element.js","lit-element/lit-element.js":"https://ga.jspm.io/npm:lit-element@3.1.1/development/lit-element.js","lit-html":"https://ga.jspm.io/npm:lit-html@2.1.1/development/lit-html.js","lit-html/directive.js":"https://ga.jspm.io/npm:lit-html@2.1.1/development/directive.js","lit-html/directives/class-map":"https://ga.jspm.io/npm:lit-html@1.4.1/directives/class-map.js","lit-html/directives/class-map.js":"https://ga.jspm.io/npm:lit-html@2.1.1/development/directives/class-map.js","lit-html/directives/if-defined.js":"https://ga.jspm.io/npm:lit-html@2.1.1/development/directives/if-defined.js","lit-html/directives/live.js":"https://ga.jspm.io/npm:lit-html@2.1.1/development/directives/live.js","lit-html/directives/style-map.js":"https://ga.jspm.io/npm:lit-html@2.1.1/development/directives/style-map.js","lit-html/lib/shady-render.js":"https://ga.jspm.io/npm:lit-html@1.4.1/lib/shady-render.js","lit-html/lit-html.js":"https://ga.jspm.io/npm:lit-html@1.4.1/lit-html.js","lit/decorators.js":"https://ga.jspm.io/npm:lit@2.1.1/decorators.js","lit/directive.js":"https://ga.jspm.io/npm:lit@2.1.1/directive.js","lit/directives/class-map.js":"https://ga.jspm.io/npm:lit@2.1.1/directives/class-map.js","lit/directives/if-defined.js":"https://ga.jspm.io/npm:lit@2.1.1/directives/if-defined.js","lit/directives/live.js":"https://ga.jspm.io/npm:lit@2.1.1/directives/live.js","lit/directives/style-map.js":"https://ga.jspm.io/npm:lit@2.1.1/directives/style-map.js","tslib":"https://ga.jspm.io/npm:tslib@1.14.1/tslib.es6.js","wicg-inert":"https://ga.jspm.io/npm:wicg-inert@3.1.1/dist/inert.js"},"https://ga.jspm.io/npm:@material/dialog@6.0.0-canary.781434a92.0/":{"@material/base/foundation":"https://ga.jspm.io/npm:@material/base@6.0.0-canary.781434a92.0/foundation.js"},"https://ga.jspm.io/npm:@material/mwc-base@1.0.0-canary.66f6244e.0/":{"@material/dom/ponyfill":"https://ga.jspm.io/npm:@material/dom@6.0.0-canary.781434a92.0/ponyfill.js"},"https://ga.jspm.io/npm:@material/mwc-dialog@1.0.0-canary.66f6244e.0/":{"@material/dom/ponyfill":"https://ga.jspm.io/npm:@material/dom@6.0.0-canary.781434a92.0/ponyfill.js"}}}</script>
+</head>
+<body>
+  <header><h1>Stripe Elements Web Components</h1></header>
+  <aside><nav class="toc" >
+        <ol><li><a href="#installation">Installation</a></li><li><a href="#%3Cstripe-elements%3E-web-component">&lt;stripe-elements&gt; Web Component</a><ol><li><a href="#usage">Usage</a></li><li><a href="#accepting-payments">Accepting Payments</a></li><li><a href="#validation-and-styling">Validation and Styling</a><ol><li><a href="#custom-validation">Custom Validation</a></li></ol></li><li><a href="#automatically-posting-the-payment-info">Automatically Posting the Payment Info</a></li></ol></li><li><a href="#%3Cstripe-payment-request%3E-web-component">&lt;stripe-payment-request&gt; Web Component</a><ol><li><a href="#payment-intents">Payment Intents</a></li><li><a href="#fallback-to-stripe-elements">Fallback to Stripe Elements</a></li></ol></li><li><a href="#usage-in-frameworks">Usage in Frameworks</a></li><li><a href="#api">API</a><ol><li><a href="#.%2Fstripe-elements.js%3A">./stripe-elements.js:</a><ol><li><a href="#class%3A-stripeelements%2C-stripe-elements">class: StripeElements, stripe-elements</a></li><li><a href="#exports">Exports</a></li></ol></li><li><a href="#.%2Fstripe-payment-request.js%3A">./stripe-payment-request.js:</a><ol><li><a href="#class%3A-stripepaymentrequest%2C-stripe-payment-request">class: StripePaymentRequest, stripe-payment-request</a></li><li><a href="#functions">Functions</a></li><li><a href="#exports-1">Exports</a></li></ol></li><li><a href="#.%2Findex.js%3A">./index.js:</a><ol><li><a href="#exports-2">Exports</a></li></ol></li></ol></li></ol>
+      </nav></aside>
+  <main><p>The <code>&lt;stripe-elements&gt;</code> custom element is an easy way to use stripe.js in your web app,
+across <a href="/?path=/docs/framework-examples-angular--stripe-elements">frameworks</a>,
+or inside <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM">shadow roots</a>.</p>
+<h2 id="installation" tabindex="-1">Installation</h2>
+<p>You don't need to set up node and npm to use stripe elements web components. You can simply load the definitions directly in HTML via a CDN.</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>module<span class="token punctuation">"</span></span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://unpkg.com/@power-elements/stripe-elements?module<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
+<p>If you would like to bundle the components, install using NPM and import as usual:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">npm</span> i @power-elements/stripe-elements</code></pre>
+<pre class="language-js"><code class="language-js"><span class="token keyword">import</span> <span class="token string">'@power-elements/stripe-elements'</span><span class="token punctuation">;</span></code></pre>
+<h2 id="%3Cstripe-elements%3E-web-component" tabindex="-1"><code>&lt;stripe-elements&gt;</code> Web Component</h2>
+<h3 id="usage" tabindex="-1">Usage</h3>
+<p>Add the element to your page with the <code>publishable-key</code> attribute set to your
+<a href="https://dashboard.stripe.com/account/apikeys">Stripe publishable key</a>.
+You can also set the <code>publishableKey</code> DOM property using JavaScript.</p>
+<p>Enter a valid <em>testing</em> publishable key in the input below to activate the examples on this page.</p>
+<div id="inputs">
+  <mwc-textfield id="set-publishable-key" outlined data-arg="publishableKey" label="Publishable Key" value="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"></mwc-textfield>
+  <mwc-textfield id="set-client-secret" outlined data-arg="clientSecret" label="Client Secret" value="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"></mwc-textfield>
+</div>
+<blockquote>
+<p><strong>Careful!</strong> never add your <strong>secret key</strong> to an HTML page, only publish your <strong>publishable key</strong>.</p>
+</blockquote>
+<p>Once you've set the <code>publishable-key</code> attribute (or the <code>publishableKey</code> DOM property), Stripe will create a Stripe Card Element on your page.</p>
+<h3 id="accepting-payments" tabindex="-1">Accepting Payments</h3>
+<p>Fill out some payment information here, then choose the type of payment object you'd like to generate.</p>
+<p>Once you're set your publishable key and Stripe has instantiated (listen for the <code>ready</code> event if you need to know exactly when this happens),
+you may generate a token from the filled-out form by calling the <code>createToken()</code> method.</p>
+<p><mwc-textfield outlined label="Cardholder Name" value="Mr. Man"></mwc-textfield>
+<mwc-textfield outlined label="Cardholder Email" value="mr@man.email"></mwc-textfield>
+<mwc-textfield outlined label="Cardholder Phone" value="555 555 5555"></mwc-textfield></p>
+<p><stripe-elements publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"></stripe-elements></p>
+<p><mwc-button data-generate="payment-method" label="Generate a PaymentMethod"></mwc-button>
+<mwc-button data-generate="source" label="Generate a Source"></mwc-button>
+<mwc-button data-generate="token" label="Generate a Token"></mwc-button></p>
+<mwc-dialog>
+  <json-viewer></json-viewer>
+  <mwc-button slot="primaryAction" dialogAction="cancel">OK</mwc-button>
+</mwc-dialog>
+<h3 id="validation-and-styling" tabindex="-1">Validation and Styling</h3>
+<p><code>&lt;stripe-elements&gt;</code> has a <code>show-error</code> boolean attribute which will display the error message for you.
+This is useful for simple validation in cases where you don't need to build your own validation UI.</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stripe-elements</span> <span class="token attr-name">publishable-key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>should-error-use-bad-key<span class="token punctuation">"</span></span><br>                 <span class="token attr-name">show-error</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stripe-elements</span><span class="token punctuation">></span></span></code></pre>
+<iframe loading="lazy" src="/frames/elements/show-error/"></iframe>
+<h4 id="custom-validation" tabindex="-1">Custom Validation</h4>
+<p><code>&lt;stripe-elements&gt;</code> comes with several properties, events, and methods for validation.
+Listen for the <code>change</code> and <code>error</code> events and check the <code>complete</code>, <code>empty</code>, <code>error</code>, and <code>invalid</code>
+properties to react to validation changes.</p>
+<p>These states reflect as attributes, so you can use CSS to style your element in its various states.</p>
+<p>Use the <code>stripe</code> and <code>error</code> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/::part">CSS Shadow Parts</a>
+to style the element as needed. If your target browsers don't yet support shadow parts,
+You can still configure the element somewhat using the exposed CSS Custom Properties,
+see the README for more information.</p>
+<pre class="language-css"><code class="language-css"><span class="token selector">stripe-elements::part(stripe)</span> <span class="token punctuation">{</span><br>  <span class="token property">border-radius</span><span class="token punctuation">:</span> 4px<span class="token punctuation">;</span><br>  <span class="token property">border</span><span class="token punctuation">:</span> 1px solid <span class="token function">var</span><span class="token punctuation">(</span>--theme-primary<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token property">box-shadow</span><span class="token punctuation">:</span> none<span class="token punctuation">;</span><br>  <span class="token property">height</span><span class="token punctuation">:</span> 36px<span class="token punctuation">;</span><br>  <span class="token property">display</span><span class="token punctuation">:</span> flex<span class="token punctuation">;</span><br>  <span class="token property">flex-flow</span><span class="token punctuation">:</span> column<span class="token punctuation">;</span><br>  <span class="token property">justify-content</span><span class="token punctuation">:</span> center<span class="token punctuation">;</span><br><span class="token punctuation">}</span><br><br><span class="token selector">stripe-elements[complete]::part(stripe)</span> <span class="token punctuation">{</span><br>  <span class="token property">border-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--success<span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><br><br><span class="token selector">stripe-elements[invalid]::part(stripe)</span> <span class="token punctuation">{</span><br>  <span class="token property">border-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--warning<span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><br><br><span class="token selector">stripe-elements[error]::part(stripe)</span> <span class="token punctuation">{</span><br>  <span class="token property">border-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--error<span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><br><br><span class="token selector">stripe-elements::part(error)</span> <span class="token punctuation">{</span><br>  <span class="token property">text-align</span><span class="token punctuation">:</span> right<span class="token punctuation">;</span><br>  <span class="token property">color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--text<span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
+<iframe data-update="publishableKey" loading="lazy" src="/frames/elements/custom-validation/" height="120px"></iframe>
+<h3 id="automatically-posting-the-payment-info" tabindex="-1">Automatically Posting the Payment Info</h3>
+<p>For simple integrations, you can automatically post the source or token to your backend by setting the <code>action</code> property</p>
+<p><strong>NOTE</strong>: For this demo, we've overridden <code>window.fetch</code> to return a mocked response with the text body &quot;A-OK!&quot;.</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stripe-elements</span> <span class="token attr-name">publishable-key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pk_test_XXXXXXXXXXXXXXXXXXXXXXXX<span class="token punctuation">"</span></span><br>    <span class="token attr-name">generate</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>token<span class="token punctuation">"</span></span><br>    <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/my-endpoint<span class="token punctuation">"</span></span><br><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stripe-elements</span><span class="token punctuation">></span></span></code></pre>
+<iframe data-update="publishableKey" loading="lazy" src="/frames/elements/automatically-posting/"></iframe>
+<h2 id="%3Cstripe-payment-request%3E-web-component" tabindex="-1"><code>&lt;stripe-payment-request&gt;</code> Web Component</h2>
+<p>The <code>&lt;stripe-payment-request&gt;</code> custom element is an easy way to use stripe.js in your web app,
+across <a href="/?path=/docs/framework-examples-angular--stripe-elements">frameworks</a>, or inside shadow roots.
+Add the element to your page with the <code>publishable-key</code> attribute set to your
+<a href="https://dashboard.stripe.com/account/apikeys">Stripe publishable key</a>.
+You can also set the <code>publishableKey</code> DOM property using JavaScript.</p>
+<p>Unlike the <code>&lt;stripe-elements&gt;</code> element, <code>&lt;stripe-payment-request&gt;</code> has a number of up-front requirements.
+The first of those is browser support.
+Listen for the <code>unsupported</code> event to handle the case when the user agent cannot make the payment.
+Listen for the <code>ready</code> event to be sure that the browser is able to make payment.</p>
+<p>You also need to preload the element with information about the payment request in order for it to render to the page.
+Like with the <code>publishable-key</code> attribute, paste a valid <em>testing</em> client secret into the
+<a href="#inputs">input above</a> to activate the payment-request demos on this page.</p>
+<p>For example, to display a payment request button to request a payment to a Canadian Stripe account
+for a purchase labelled &quot;Double Double&quot; that costs $1.25 Canadian, add this element to your page:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stripe-payment-request</span><br>    <span class="token attr-name">publishable-key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pk_test_XXXXXXXXXXXXXXXXXXXXXXXX<span class="token punctuation">"</span></span><br>    <span class="token attr-name">client-secret</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pk_test_XXXXXXXXXXXXXXXXXXXXXXXX<span class="token punctuation">"</span></span><br>    <span class="token attr-name">generate</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>source<span class="token punctuation">"</span></span><br>    <span class="token attr-name">amount</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>125<span class="token punctuation">"</span></span><br>    <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Double Double<span class="token punctuation">"</span></span><br>    <span class="token attr-name">country</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>CA<span class="token punctuation">"</span></span><br>    <span class="token attr-name">currency</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>cad<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stripe-payment-request</span><span class="token punctuation">></span></span></code></pre>
+<p><stripe-payment-request
+    publishable-key="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"
+    client-secret="pk_test_XXXXXXXXXXXXXXXXXXXXXXXX"
+    generate="source"
+    amount="125"
+    label="Double Double"
+    country="CA"
+    currency="cad">
+</stripe-payment-request></p>
+<p>You can also display multiple line-items with the <code>&lt;stripe-payment-item&gt;</code> element:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stripe-payment-request</span><br>    <span class="token attr-name">publishable-key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pk_test_XXXXXXXXXXXXXXXXXXXXXXXX<span class="token punctuation">"</span></span><br>    <span class="token attr-name">generate</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>token<span class="token punctuation">"</span></span><br>    <span class="token attr-name">amount</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>326<span class="token punctuation">"</span></span><br>    <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Double Double<span class="token punctuation">"</span></span><br>    <span class="token attr-name">country</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>CA<span class="token punctuation">"</span></span><br>    <span class="token attr-name">currency</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>cad<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stripe-display-item</span> <span class="token attr-name">data-amount</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>125<span class="token punctuation">"</span></span> <span class="token attr-name">data-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Double Double<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stripe-display-item</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stripe-display-item</span> <span class="token attr-name">data-amount</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>199<span class="token punctuation">"</span></span> <span class="token attr-name">data-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Box of 10 Timbits<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stripe-display-item</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stripe-payment-request</span><span class="token punctuation">></span></span></code></pre>
+<iframe data-update="publishableKey,clientSecret" loading="lazy" src="/frames/payment-request/with-display-items/"></iframe>
+<p>To add multiple shipping options, you can use the <code>&lt;stripe-shipping-option&gt;</code> element:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stripe-payment-request</span><br>    <span class="token attr-name">publishable-key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pk_test_XXXXXXXXXXXXXXXXXXXXXXXX<span class="token punctuation">"</span></span><br>    <span class="token attr-name">generate</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>payment-method<span class="token punctuation">"</span></span><br>    <span class="token attr-name">request-payer-name</span><br>    <span class="token attr-name">request-payer-email</span><br>    <span class="token attr-name">request-payer-phone</span><br>    <span class="token attr-name">amount</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>326<span class="token punctuation">"</span></span><br>    <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Double Double<span class="token punctuation">"</span></span><br>    <span class="token attr-name">country</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>CA<span class="token punctuation">"</span></span><br>    <span class="token attr-name">currency</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>cad<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stripe-display-item</span> <span class="token attr-name">data-amount</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>125<span class="token punctuation">"</span></span> <span class="token attr-name">data-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Double Double<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stripe-display-item</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stripe-display-item</span> <span class="token attr-name">data-amount</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>199<span class="token punctuation">"</span></span> <span class="token attr-name">data-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Box of 10 Timbits<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stripe-display-item</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stripe-shipping-option</span> <span class="token attr-name">data-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pick-up<span class="token punctuation">"</span></span> <span class="token attr-name">data-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Pick Up<span class="token punctuation">"</span></span> <span class="token attr-name">data-detail</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Pick Up at Your Local Timmy<span class="token punctuation">'</span>s<span class="token punctuation">"</span></span> <span class="token attr-name">data-amount</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>0<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stripe-shipping-option</span><span class="token punctuation">></span></span><br>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stripe-shipping-option</span> <span class="token attr-name">data-id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>delivery<span class="token punctuation">"</span></span> <span class="token attr-name">data-label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Delivery<span class="token punctuation">"</span></span> <span class="token attr-name">data-detail</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Timbits to Your Door<span class="token punctuation">"</span></span> <span class="token attr-name">data-amount</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>200<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stripe-shipping-option</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stripe-payment-request</span><span class="token punctuation">></span></span></code></pre>
+<iframe data-update="publishableKey,clientSecret" loading="lazy" src="/frames/payment-request/with-display-items-and-shipping-options/"></iframe>
+<p>You may also set the payment request options using JavaScript:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">const</span> el <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">'stripe-payment-request'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>el<span class="token punctuation">.</span>displayItems <span class="token operator">=</span> <span class="token punctuation">[</span><br>  <span class="token punctuation">{</span> <span class="token literal-property property">amount</span><span class="token operator">:</span> <span class="token string">'125'</span><span class="token punctuation">,</span> <span class="token literal-property property">label</span><span class="token operator">:</span> <span class="token string">'Double Double'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span> <span class="token literal-property property">amount</span><span class="token operator">:</span> <span class="token string">'199'</span><span class="token punctuation">,</span> <span class="token literal-property property">label</span><span class="token operator">:</span> <span class="token string">'Box of 10 Timbits'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">]</span><br><br>el<span class="token punctuation">.</span>shippingOptions <span class="token operator">=</span> <span class="token punctuation">[</span><br>  <span class="token punctuation">{</span> <span class="token literal-property property">id</span><span class="token operator">:</span> <span class="token string">'pick-up'</span><span class="token punctuation">,</span>  <span class="token literal-property property">amount</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>   <span class="token literal-property property">label</span><span class="token operator">:</span> <span class="token string">'Pick Up'</span><span class="token punctuation">,</span>  <span class="token literal-property property">detail</span><span class="token operator">:</span> <span class="token string">"Pick Up at Your Local Timmy's"</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span> <span class="token literal-property property">id</span><span class="token operator">:</span> <span class="token string">'delivery'</span><span class="token punctuation">,</span> <span class="token literal-property property">amount</span><span class="token operator">:</span> <span class="token number">200</span><span class="token punctuation">,</span> <span class="token literal-property property">label</span><span class="token operator">:</span> <span class="token string">'Delivery'</span><span class="token punctuation">,</span> <span class="token literal-property property">detail</span><span class="token operator">:</span> <span class="token string">'Timbits to Your Door'</span> <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre>
+<p>If you update the element's <code>amount</code> or <code>label</code> properties, it will update the payment requestUpdate</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stripe-payment-request</span><br>    <span class="token attr-name">publishable-key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pk_test_XXXXXXXXXXXXXXXXXXXXXXXX<span class="token punctuation">"</span></span><br>    <span class="token attr-name">generate</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>payment-method<span class="token punctuation">"</span></span><br>    <span class="token attr-name">request-payer-name</span><br>    <span class="token attr-name">request-payer-email</span><br>    <span class="token attr-name">request-payer-phone</span><br>    <span class="token attr-name">country</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>CA<span class="token punctuation">"</span></span><br>    <span class="token attr-name">currency</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>cad<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stripe-payment-request</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mwc-textfield</span> <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Amount (CAD)<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>number<span class="token punctuation">"</span></span> <span class="token attr-name">data-prop</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>amount<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mwc-textfield</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mwc-textfield</span> <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Label<span class="token punctuation">"</span></span> <span class="token attr-name">data-prop</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>label<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mwc-textfield</span><span class="token punctuation">></span></span><br><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>module<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript"><br><span class="token keyword">const</span> spr <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">"stripe-payment-request"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> textfield <span class="token keyword">of</span> document<span class="token punctuation">.</span><span class="token function">querySelectorAll</span><span class="token punctuation">(</span><span class="token string">'mwc-textfield'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  textfield<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">'input'</span><span class="token punctuation">,</span> <span class="token parameter">event</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>    <span class="token keyword">switch</span> <span class="token punctuation">(</span>event<span class="token punctuation">.</span>target<span class="token punctuation">.</span>dataset<span class="token punctuation">.</span>prop<span class="token punctuation">)</span> <span class="token punctuation">{</span><br>      <span class="token keyword">case</span> <span class="token string">'amount'</span><span class="token operator">:</span><br>        spr<span class="token punctuation">.</span>amount <span class="token operator">=</span> <span class="token function">parseFloat</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>target<span class="token punctuation">.</span>value<span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">100</span><span class="token punctuation">;</span><br>        <span class="token keyword">break</span><span class="token punctuation">;</span><br>      <span class="token keyword">case</span> <span class="token string">'label'</span><span class="token operator">:</span><br>        spr<span class="token punctuation">.</span>label <span class="token operator">=</span> event<span class="token punctuation">.</span>target<span class="token punctuation">.</span>value<span class="token punctuation">;</span><br>        <span class="token keyword">break</span><span class="token punctuation">;</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><br><span class="token punctuation">}</span><br></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></code></pre>
+<iframe data-update="publishableKey,clientSecret" loading="lazy" src="/frames/payment-request/updating-options/"></iframe>
+<h3 id="payment-intents" tabindex="-1">Payment Intents</h3>
+<p>Stripe provides a PaymentIntent API which is both more secure and more compatible with EU regulations.
+To take advantage of those features, generate a <code>PaymentIntent</code> object on your server and
+pass it's <code>client_secret</code> property to the <code>&lt;stripe-payment-request&gt;</code> element.</p>
+<p>You can generate one quickly using the stripe cli:</p>
+<pre class="language-bash"><code class="language-bash">stripe payment_intents create --amount<span class="token operator">=</span><span class="token number">326</span> --currency<span class="token operator">=</span>cad <span class="token operator">|</span> jq -r <span class="token string">'.client_secret'</span></code></pre>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>stripe-payment-request</span><br>    <span class="token attr-name">generate</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>payment-method<span class="token punctuation">"</span></span><br>    <span class="token attr-name">publishable-key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pk_test_XXXXXXXXXXXXXXXXXXXXXXXX<span class="token punctuation">"</span></span><br>    <span class="token attr-name">client-secret</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pk_test_XXXXXXXXXXXXXXXXXXXXXXXX<span class="token punctuation">"</span></span><br>    <span class="token attr-name">request-payer-name</span><br>    <span class="token attr-name">request-payer-email</span><br>    <span class="token attr-name">request-payer-phone</span><br>    <span class="token attr-name">amount</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>326<span class="token punctuation">"</span></span><br>    <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Double Double<span class="token punctuation">"</span></span><br>    <span class="token attr-name">country</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>CA<span class="token punctuation">"</span></span><br>    <span class="token attr-name">currency</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>cad<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>stripe-payment-request</span><span class="token punctuation">></span></span></code></pre>
+<iframe data-update="publishableKey,clientSecret" loading="lazy" src="/frames/payment-request/with-payment-intent/"></iframe>
+<h3 id="fallback-to-stripe-elements" tabindex="-1">Fallback to Stripe Elements</h3>
+<p>You might often want to show users a <code>&lt;stripe-payment-request&gt;</code> button if they
+are able (i.e. if <code>canMakePayment</code> is true), but fall back to a
+<code>&lt;stripe-elements&gt;</code> card form if they are not.</p>
+<p>To accomplish this, listen for the <code>unsupported</code> and <code>ready</code> events on
+<code>&lt;stripe-payment-request&gt;</code>, which fire when the element is finally unable or
+able to display a Payment Request button, respectively.</p>
+<p>We recommend that you don't set <code>publishable-key</code> on <code>&lt;stripe-elements&gt;</code> until
+<code>unsupported</code> fires from <code>&lt;stripe-payment-request&gt;</code>, as setting the publishable
+key will kick off the element's initialization, even if payment request is
+supported.</p>
+<iframe data-update="publishableKey,clientSecret" loading="lazy" src="/frames/payment-request/fallback-to-elements/"></iframe>
+<pre class="language-js"><code class="language-js"><span class="token keyword">class</span> <span class="token class-name">PaymentForm</span> <span class="token keyword">extends</span> <span class="token class-name">LitElement</span> <span class="token punctuation">{</span><br>  <span class="token keyword">static</span> <span class="token keyword">get</span> <span class="token function">properties</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">return</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">error</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">type</span><span class="token operator">:</span> Object <span class="token punctuation">}</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">output</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">type</span><span class="token operator">:</span> Object <span class="token punctuation">}</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">unsupported</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">type</span><span class="token operator">:</span> Boolean<span class="token punctuation">,</span> <span class="token literal-property property">reflect</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">publishableKey</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">type</span><span class="token operator">:</span> String<span class="token punctuation">,</span> <span class="token literal-property property">attribute</span><span class="token operator">:</span> <span class="token string">'publishable-key'</span><span class="token punctuation">,</span> <span class="token literal-property property">reflect</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>      <span class="token literal-property property">submitDisabled</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">type</span><span class="token operator">:</span> Boolean <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><br><br>  <span class="token keyword">static</span> <span class="token keyword">get</span> <span class="token function">styles</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">return</span> css<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"><br>      [hidden] { display: none !important; }<br><br>      :host {<br>        align-items: center;<br>        display: grid;<br>        grid-gap: 12px;<br>        grid-template-areas:<br>          'support support'<br>          'stripe submit'<br>          'output output';<br>      }<br><br>      stripe-elements { grid-area: stripe; }<br><br>      stripe-payment-request { grid-area: submit/stripe/stripe/submit; }<br><br>      mwc-button { grid-area: submit; }<br><br>      json-viewer { grid-area: output; }<br>    </span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><br>  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>    <span class="token keyword">this</span><span class="token punctuation">.</span>submitDisabled <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><br>  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">return</span> html<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"><br>      &lt;output ?hidden="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>unsupported <span class="token operator">===</span> <span class="token keyword">undefined</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"><br>        Payment Request is </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>unsupported <span class="token operator">?</span> <span class="token string">'un'</span> <span class="token operator">:</span> <span class="token string">''</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">supported on this Browser<br>      &lt;/output><br><br>      &lt;stripe-payment-request<br>          ?hidden="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>output <span class="token operator">||</span> <span class="token keyword">this</span><span class="token punctuation">.</span>unsupported<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>          @success="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>onSuccess<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>          @fail="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>onFail<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>          @error="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>onError<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>          @unsupported="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>onUnsupported<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>          @ready="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>onReady<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>          publishable-key="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token function">ifDefined</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>publishableKey<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>          generate="source"<br>          request-payer-name<br>          request-payer-email<br>          request-payer-phone<br>          amount="326"<br>          label="Double Double"<br>          country="CA"<br>          currency="cad"><br>        &lt;stripe-display-item data-amount="125" data-label="Double Double">&lt;/stripe-display-item><br>        &lt;stripe-display-item data-amount="199" data-label="Box of 10 Timbits">&lt;/stripe-display-item><br>        &lt;stripe-shipping-option data-id="pick-up" data-label="Pick Up" data-detail="Pick Up at Your Local Timmy's" data-amount="0">&lt;/stripe-shipping-option><br>        &lt;stripe-shipping-option data-id="delivery" data-label="Delivery" data-detail="Timbits to Your Door" data-amount="200">&lt;/stripe-shipping-option><br>      &lt;/stripe-payment-request><br><br>      &lt;stripe-elements<br>          ?hidden="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>output <span class="token operator">||</span> <span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>unsupported<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>          generate="source"<br>          publishable-key="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token function">ifDefined</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>unsupported <span class="token operator">?</span> <span class="token keyword">this</span><span class="token punctuation">.</span>publishableKey <span class="token operator">:</span> <span class="token keyword">undefined</span><span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>          @change="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>onChange<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>          @source="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>onSuccess<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>          @error="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>onError<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>      >&lt;/stripe-elements><br><br>      &lt;mwc-button<br>          ?hidden="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>output <span class="token operator">||</span> <span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>unsupported<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>          ?disabled="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>submitDisabled<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>          @click="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>onClick<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"<br>      >Submit&lt;/mwc-button><br><br>      &lt;json-viewer .object="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>output<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">">&lt;/json-viewer><br>    </span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><br>  <span class="token function">onChange</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token punctuation">{</span> complete<span class="token punctuation">,</span> hasError <span class="token punctuation">}</span> <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">this</span><span class="token punctuation">.</span>submitDisabled <span class="token operator">=</span> <span class="token operator">!</span><span class="token punctuation">(</span>complete <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>hasError<span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><br>  <span class="token function">onClick</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">this</span><span class="token punctuation">.</span>shadowRoot<span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">'stripe-elements'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">submit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><br>  <span class="token function">onError</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token punctuation">{</span> error <span class="token punctuation">}</span> <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">this</span><span class="token punctuation">.</span>error <span class="token operator">=</span> error<span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><br>  <span class="token function">onFail</span><span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">this</span><span class="token punctuation">.</span>output <span class="token operator">=</span> event<span class="token punctuation">.</span>detail<span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><br>  <span class="token function">onReady</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">this</span><span class="token punctuation">.</span>unsupported <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><br>  <span class="token function">onSuccess</span><span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">this</span><span class="token punctuation">.</span>output <span class="token operator">=</span> event<span class="token punctuation">.</span>detail<span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><br>  <span class="token function">onUnsupported</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token keyword">this</span><span class="token punctuation">.</span>unsupported <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span></code></pre>
+<h2 id="usage-in-frameworks" tabindex="-1">Usage in Frameworks</h2>
+<ul>
+  <li><a href="/frameworks/angular/">Angular</a></li>
+  <li><a href="/frameworks/lit/">Lit</a></li>
+  <li><a href="/frameworks/preact/">Preact</a></li>
+  <li><a href="/frameworks/react/">React</a></li>
+  <li><a href="/frameworks/vanilla/">Vanilla</a></li>
+  <li><a href="/frameworks/vue/">Vue</a></li>
+</ul>
+<template id="PR_UNSUPPORTED">
+  <p>This browser does not support <a href="https://developer.mozilla.org/en-US/docs/Web/API/Payment_Request_API" target="_blank">Payment Request API</a></p>
+</template>
+<h2 id="api" tabindex="-1">API</h2>
+<p>The following API tables are automatically generated.</p>
+<h3 id=".%2Fstripe-elements.js%3A" tabindex="-1"><code>./stripe-elements.js</code>:</h3>
+<h4 id="class%3A-stripeelements%2C-stripe-elements" tabindex="-1">class: <code>StripeElements</code>, <code>stripe-elements</code></h4>
+<h5 id="superclass" tabindex="-1">Superclass</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Module</th>
+<th>Package</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>StripeBase</code></td>
+<td>/src/StripeBase.js</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="static-fields" tabindex="-1">Static Fields</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Privacy</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+<th>Inherited From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is</code></td>
+<td></td>
+<td><code>string</code></td>
+<td><code>'stripe-elements'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>elementType</code></td>
+<td></td>
+<td><code>string</code></td>
+<td><code>'card'</code></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="fields" tabindex="-1">Fields</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Privacy</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+<th>Inherited From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>element</code></td>
+<td></td>
+<td><code>Stripe.StripeCardElement</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>hideIcon</code></td>
+<td></td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>Whether to hide icons in the Stripe form.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>hidePostalCode</code></td>
+<td></td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>Whether or not to hide the postal code field.
+Useful when you gather shipping info elsewhere.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>iconStyle</code></td>
+<td></td>
+<td><code>Stripe.StripeCardElementOptions['iconStyle']</code></td>
+<td><code>'default'</code></td>
+<td>Stripe icon style.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td></td>
+<td><code>Stripe.StripeCardElementOptions['value']</code></td>
+<td><code>{}</code></td>
+<td>Prefilled values for form.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>brand</code></td>
+<td></td>
+<td><code>Stripe.StripeCardElementChangeEvent['brand']</code></td>
+<td><code>null</code></td>
+<td>The card brand detected by Stripe</td>
+<td></td>
+</tr>
+<tr>
+<td><code>complete</code></td>
+<td></td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>Whether the form is complete.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>empty</code></td>
+<td></td>
+<td><code>boolean</code></td>
+<td><code>true</code></td>
+<td>If the form is empty.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>invalid</code></td>
+<td></td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>Whether the form is invalid.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="methods" tabindex="-1">Methods</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Privacy</th>
+<th>Description</th>
+<th>Parameters</th>
+<th>Return</th>
+<th>Inherited From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>createPaymentMethod</code></td>
+<td>public</td>
+<td>Submit payment information to generate a paymentMethod</td>
+<td><code>paymentMethodData: Stripe.CreatePaymentMethodData</code></td>
+<td><code>Promise&lt;Stripe.PaymentMethodResult&gt;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>createSource</code></td>
+<td>public</td>
+<td>Submit payment information to generate a source</td>
+<td><code>sourceData: Stripe.CreateSourceData</code></td>
+<td><code>Promise&lt;Stripe.SourceResult&gt;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>createToken</code></td>
+<td>public</td>
+<td>Submit payment information to generate a token</td>
+<td><code>tokenData</code></td>
+<td><code>Promise&lt;Stripe.TokenResult&gt;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>isPotentiallyValid</code></td>
+<td>public</td>
+<td>Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid.</td>
+<td></td>
+<td><code>boolean</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>reset</code></td>
+<td>public</td>
+<td>Resets the Stripe card.</td>
+<td></td>
+<td><code>void</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>submit</code></td>
+<td>public</td>
+<td>Generates a payment representation of the type specified by `generate`.</td>
+<td></td>
+<td><code>Promise&lt;StripePaymentResponse&gt;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>validate</code></td>
+<td>public</td>
+<td>Checks if the Stripe form is valid.</td>
+<td></td>
+<td><code>boolean</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>updateStyle</code></td>
+<td>public</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="events" tabindex="-1">Events</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Inherited From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>'change'</code></td>
+<td></td>
+<td>Stripe Element change event</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="attributes" tabindex="-1">Attributes</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Field</th>
+<th>Inherited From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hide-icon</code></td>
+<td>hideIcon</td>
+<td></td>
+</tr>
+<tr>
+<td><code>hide-postal-code</code></td>
+<td>hidePostalCode</td>
+<td></td>
+</tr>
+<tr>
+<td><code>icon-style</code></td>
+<td>iconStyle</td>
+<td></td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td>value</td>
+<td></td>
+</tr>
+<tr>
+<td><code>brand</code></td>
+<td>brand</td>
+<td></td>
+</tr>
+<tr>
+<td><code>complete</code></td>
+<td>complete</td>
+<td></td>
+</tr>
+<tr>
+<td><code>empty</code></td>
+<td>empty</td>
+<td></td>
+</tr>
+<tr>
+<td><code>invalid</code></td>
+<td>invalid</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="css-properties" tabindex="-1">CSS Properties</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--stripe-elements-border-radius</code></td>
+<td><code>`4px`</code></td>
+<td>border radius of the element container</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-border</code></td>
+<td><code>`1px solid transparent`</code></td>
+<td>border property of the element container</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-box-shadow</code></td>
+<td><code>`0 1px 3px 0 #e6ebf1`</code></td>
+<td>box shadow for the element container</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-transition</code></td>
+<td><code>`box-shadow 150ms ease`</code></td>
+<td>transition property for the element container</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-base-color</code></td>
+<td></td>
+<td>`color` property for the element in its base state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-base-font-family</code></td>
+<td></td>
+<td>`font-family` property for the element in its base state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-base-font-size</code></td>
+<td></td>
+<td>`font-size` property for the element in its base state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-base-font-smoothing</code></td>
+<td></td>
+<td>`font-smoothing` property for the element in its base state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-base-font-variant</code></td>
+<td></td>
+<td>`font-variant` property for the element in its base state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-base-icon-color</code></td>
+<td></td>
+<td>`icon-color` property for the element in its base state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-base-line-height</code></td>
+<td></td>
+<td>`line-height` property for the element in its base state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-base-letter-spacing</code></td>
+<td></td>
+<td>`letter-spacing` property for the element in its base state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-base-text-decoration</code></td>
+<td></td>
+<td>`text-decoration` property for the element in its base state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-base-text-shadow</code></td>
+<td></td>
+<td>`text-shadow` property for the element in its base state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-base-text-transform</code></td>
+<td></td>
+<td>`text-transform` property for the element in its base state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-complete-color</code></td>
+<td></td>
+<td>`color` property for the element in its complete state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-complete-font-family</code></td>
+<td></td>
+<td>`font-family` property for the element in its complete state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-complete-font-size</code></td>
+<td></td>
+<td>`font-size` property for the element in its complete state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-complete-font-smoothing</code></td>
+<td></td>
+<td>`font-smoothing` property for the element in its complete state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-complete-font-variant</code></td>
+<td></td>
+<td>`font-variant` property for the element in its complete state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-complete-icon-color</code></td>
+<td></td>
+<td>`icon-color` property for the element in its complete state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-complete-line-height</code></td>
+<td></td>
+<td>`line-height` property for the element in its complete state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-complete-letter-spacing</code></td>
+<td></td>
+<td>`letter-spacing` property for the element in its complete state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-complete-text-decoration</code></td>
+<td></td>
+<td>`text-decoration` property for the element in its complete state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-complete-text-shadow</code></td>
+<td></td>
+<td>`text-shadow` property for the element in its complete state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-complete-text-transform</code></td>
+<td></td>
+<td>`text-transform` property for the element in its complete state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-empty-color</code></td>
+<td></td>
+<td>`color` property for the element in its empty state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-empty-font-family</code></td>
+<td></td>
+<td>`font-family` property for the element in its empty state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-empty-font-size</code></td>
+<td></td>
+<td>`font-size` property for the element in its empty state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-empty-font-smoothing</code></td>
+<td></td>
+<td>`font-smoothing` property for the element in its empty state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-empty-font-variant</code></td>
+<td></td>
+<td>`font-variant` property for the element in its empty state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-empty-icon-color</code></td>
+<td></td>
+<td>`icon-color` property for the element in its empty state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-empty-line-height</code></td>
+<td></td>
+<td>`line-height` property for the element in its empty state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-empty-letter-spacing</code></td>
+<td></td>
+<td>`letter-spacing` property for the element in its empty state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-empty-text-decoration</code></td>
+<td></td>
+<td>`text-decoration` property for the element in its empty state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-empty-text-shadow</code></td>
+<td></td>
+<td>`text-shadow` property for the element in its empty state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-empty-text-transform</code></td>
+<td></td>
+<td>`text-transform` property for the element in its empty state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-invalid-color</code></td>
+<td></td>
+<td>`color` property for the element in its invalid state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-invalid-font-family</code></td>
+<td></td>
+<td>`font-family` property for the element in its invalid state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-invalid-font-size</code></td>
+<td></td>
+<td>`font-size` property for the element in its invalid state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-invalid-font-smoothing</code></td>
+<td></td>
+<td>`font-smoothing` property for the element in its invalid state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-invalid-font-variant</code></td>
+<td></td>
+<td>`font-variant` property for the element in its invalid state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-invalid-icon-color</code></td>
+<td></td>
+<td>`icon-color` property for the element in its invalid state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-invalid-line-height</code></td>
+<td></td>
+<td>`line-height` property for the element in its invalid state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-invalid-letter-spacing</code></td>
+<td></td>
+<td>`letter-spacing` property for the element in its invalid state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-invalid-text-decoration</code></td>
+<td></td>
+<td>`text-decoration` property for the element in its invalid state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-invalid-text-shadow</code></td>
+<td></td>
+<td>`text-shadow` property for the element in its invalid state</td>
+</tr>
+<tr>
+<td><code>--stripe-elements-invalid-text-transform</code></td>
+<td></td>
+<td>`text-transform` property for the element in its invalid state</td>
+</tr>
+</tbody>
+</table>
+<details><summary>Private API</summary>
+<h5 id="methods-1" tabindex="-1">Methods</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Privacy</th>
+<th>Description</th>
+<th>Parameters</th>
+<th>Return</th>
+<th>Inherited From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>getPaymentMethodData</code></td>
+<td>private</td>
+<td>Generates PaymentMethodData from the element.</td>
+<td></td>
+<td><code>Stripe.CreatePaymentMethodData</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>getStripeElementsStyles</code></td>
+<td>private</td>
+<td>Returns a Stripe-friendly style object computed from CSS custom properties</td>
+<td></td>
+<td><code>Stripe.StripeElementStyle</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>initElement</code></td>
+<td>protected</td>
+<td></td>
+<td></td>
+<td><code>Promise&lt;void&gt;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>createElement</code></td>
+<td>private</td>
+<td></td>
+<td><code>options: Stripe.StripeCardElementOptions</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>onChange</code></td>
+<td>private</td>
+<td>Updates the element's state.</td>
+<td><code>event: Stripe.StripeCardElementChangeEvent</code></td>
+<td><code>Promise&lt;void&gt;</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</details>
+<hr/>
+<h4 id="exports" tabindex="-1">Exports</h4>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Name</th>
+<th>Declaration</th>
+<th>Module</th>
+<th>Package</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>js</code></td>
+<td><code>StripeElements</code></td>
+<td>StripeElements</td>
+<td>./stripe-elements.js</td>
+<td></td>
+</tr>
+<tr>
+<td><code>custom-element-definition</code></td>
+<td><code>stripe-elements</code></td>
+<td>StripeElements</td>
+<td>./stripe-elements.js</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id=".%2Fstripe-payment-request.js%3A" tabindex="-1"><code>./stripe-payment-request.js</code>:</h3>
+<h4 id="class%3A-stripepaymentrequest%2C-stripe-payment-request" tabindex="-1">class: <code>StripePaymentRequest</code>, <code>stripe-payment-request</code></h4>
+<h5 id="superclass-1" tabindex="-1">Superclass</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Module</th>
+<th>Package</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>StripeBase</code></td>
+<td>/src/StripeBase.js</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="static-fields-1" tabindex="-1">Static Fields</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Privacy</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+<th>Inherited From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is</code></td>
+<td></td>
+<td><code>string</code></td>
+<td><code>'stripe-payment-request'</code></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="fields-1" tabindex="-1">Fields</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Privacy</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+<th>Inherited From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>amount</code></td>
+<td></td>
+<td><code>number</code></td>
+<td></td>
+<td>The amount in the currency's subunit (e.g. cents, yen, etc.)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>canMakePayment</code></td>
+<td></td>
+<td><code>Stripe.CanMakePaymentResult</code></td>
+<td><code>null</code></td>
+<td>Whether or not the device can make the payment request.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>country</code></td>
+<td></td>
+<td><code>CountryCode</code></td>
+<td></td>
+<td>The two-letter country code of your Stripe account</td>
+<td></td>
+</tr>
+<tr>
+<td><code>currency</code></td>
+<td></td>
+<td><code>Stripe.PaymentRequestOptions['currency']</code></td>
+<td></td>
+<td>Three character currency code</td>
+<td></td>
+</tr>
+<tr>
+<td><code>displayItems</code></td>
+<td></td>
+<td><code>Stripe.PaymentRequestItem[]</code></td>
+<td></td>
+<td>An array of PaymentRequestItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>label</code></td>
+<td></td>
+<td><code>string</code></td>
+<td></td>
+<td>A name that the browser shows the customer in the payment interface.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>paymentIntent</code></td>
+<td></td>
+<td><code>Stripe.PaymentIntent</code></td>
+<td><code>null</code></td>
+<td>Stripe PaymentIntent</td>
+<td></td>
+</tr>
+<tr>
+<td><code>paymentRequest</code></td>
+<td></td>
+<td><code>Stripe.PaymentRequest</code></td>
+<td><code>null</code></td>
+<td>Stripe PaymentRequest</td>
+<td></td>
+</tr>
+<tr>
+<td><code>pending</code></td>
+<td></td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>If you might change the payment amount later (for example, after you have calcluated shipping costs), set this to true. Note that browsers treat this as a hint for how to display things, and not necessarily as something that will prevent submission.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>requestPayerEmail</code></td>
+<td></td>
+<td><code>boolean</code></td>
+<td></td>
+<td>See the requestPayerName option.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>requestPayerName</code></td>
+<td></td>
+<td><code>boolean</code></td>
+<td></td>
+<td>By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.
+
+We highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>requestPayerPhone</code></td>
+<td></td>
+<td><code>boolean</code></td>
+<td></td>
+<td>See the requestPayerName option.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>requestShipping</code></td>
+<td></td>
+<td><code>boolean</code></td>
+<td></td>
+<td>Collect shipping address by setting this option to true. The address appears in the PaymentResponse.
+You must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>shippingOptions</code></td>
+<td></td>
+<td><code>Stripe.PaymentRequestShippingOption[]</code></td>
+<td></td>
+<td>An array of PaymentRequestShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>buttonType</code></td>
+<td></td>
+<td><code>StripePaymentRequestButtonType</code></td>
+<td><code>'default'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>buttonTheme</code></td>
+<td></td>
+<td><code>StripePaymentRequestButtonTheme</code></td>
+<td><code>'dark'</code></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="methods-2" tabindex="-1">Methods</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Privacy</th>
+<th>Description</th>
+<th>Parameters</th>
+<th>Return</th>
+<th>Inherited From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reset</code></td>
+<td>public</td>
+<td></td>
+<td></td>
+<td><code>void</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="events-1" tabindex="-1">Events</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Inherited From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>'unsupported'</code></td>
+<td></td>
+<td>When the element detects that the user agent cannot make a payment</td>
+<td></td>
+</tr>
+<tr>
+<td><code>'fail'</code></td>
+<td></td>
+<td>When a payment request fails</td>
+<td></td>
+</tr>
+<tr>
+<td><code>'cancel'</code></td>
+<td></td>
+<td>When a payment request is cancelled</td>
+<td></td>
+</tr>
+<tr>
+<td><code>'shippingaddresschange'</code></td>
+<td></td>
+<td>When the user chooses a different shipping address</td>
+<td></td>
+</tr>
+<tr>
+<td><code>'shippingoptionchange'</code></td>
+<td></td>
+<td>When the user chooses a different shipping option</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="attributes-1" tabindex="-1">Attributes</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Field</th>
+<th>Inherited From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>amount</code></td>
+<td>amount</td>
+<td></td>
+</tr>
+<tr>
+<td><code>can-make-payment</code></td>
+<td>canMakePayment</td>
+<td></td>
+</tr>
+<tr>
+<td><code>country</code></td>
+<td>country</td>
+<td></td>
+</tr>
+<tr>
+<td><code>currency</code></td>
+<td>currency</td>
+<td></td>
+</tr>
+<tr>
+<td><code>displayItems</code></td>
+<td>displayItems</td>
+<td></td>
+</tr>
+<tr>
+<td><code>label</code></td>
+<td>label</td>
+<td></td>
+</tr>
+<tr>
+<td><code>payment-intent</code></td>
+<td>paymentIntent</td>
+<td></td>
+</tr>
+<tr>
+<td><code>payment-request</code></td>
+<td>paymentRequest</td>
+<td></td>
+</tr>
+<tr>
+<td><code>pending</code></td>
+<td>pending</td>
+<td></td>
+</tr>
+<tr>
+<td><code>request-payer-email</code></td>
+<td>requestPayerEmail</td>
+<td></td>
+</tr>
+<tr>
+<td><code>request-payer-name</code></td>
+<td>requestPayerName</td>
+<td></td>
+</tr>
+<tr>
+<td><code>request-payer-phone</code></td>
+<td>requestPayerPhone</td>
+<td></td>
+</tr>
+<tr>
+<td><code>request-shipping</code></td>
+<td>requestShipping</td>
+<td></td>
+</tr>
+<tr>
+<td><code>shippingOptions</code></td>
+<td>shippingOptions</td>
+<td></td>
+</tr>
+<tr>
+<td><code>button-type</code></td>
+<td>buttonType</td>
+<td></td>
+</tr>
+<tr>
+<td><code>button-theme</code></td>
+<td>buttonTheme</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="css-properties-1" tabindex="-1">CSS Properties</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--stripe-payment-request-element-min-width</code></td>
+<td><code>`300px`</code></td>
+<td>min-width property of the container element</td>
+</tr>
+<tr>
+<td><code>--stripe-payment-request-element-padding</code></td>
+<td><code>`8px 12px`</code></td>
+<td>padding property of the container element</td>
+</tr>
+<tr>
+<td><code>--stripe-payment-request-element-background</code></td>
+<td><code>`white`</code></td>
+<td>background property of the container element</td>
+</tr>
+</tbody>
+</table>
+<details><summary>Private API</summary>
+<h5 id="fields-2" tabindex="-1">Fields</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Privacy</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+<th>Inherited From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>#displayItems</code></td>
+<td>private</td>
+<td><code>Stripe.PaymentRequestItem[]</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>#shippingOptions</code></td>
+<td>private</td>
+<td><code>Stripe.PaymentRequestShippingOption[]</code></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>complete</code></td>
+<td>private</td>
+<td></td>
+<td></td>
+<td>Completes the PaymentRequest.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="methods-3" tabindex="-1">Methods</h5>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Privacy</th>
+<th>Description</th>
+<th>Parameters</th>
+<th>Return</th>
+<th>Inherited From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>getStripePaymentRequestOptions</code></td>
+<td>private</td>
+<td>Creates a PaymentRequestOptions object.</td>
+<td></td>
+<td><code>Stripe.PaymentRequestOptions</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>initElement</code></td>
+<td>protected</td>
+<td>Initializes the PaymentRequest Object.</td>
+<td></td>
+<td><code>Promise&lt;void&gt;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>initPaymentRequest</code></td>
+<td>private</td>
+<td>Initialized the `PaymentRequest` object.</td>
+<td></td>
+<td><code>Promise&lt;void&gt;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>initPaymentRequestButton</code></td>
+<td>private</td>
+<td>Creates Stripe Payment Request Element.</td>
+<td></td>
+<td><code>Promise&lt;void&gt;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>initPaymentRequestListeners</code></td>
+<td>private</td>
+<td>Attaches listeners to the `PaymentRequest` object.</td>
+<td></td>
+<td><code>Promise&lt;void&gt;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>updatePaymentRequest</code></td>
+<td>private</td>
+<td>Updates the PaymentRequests's values</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>onCancel</code></td>
+<td>private</td>
+<td>Handle a `cancel` event</td>
+<td></td>
+<td><code>void</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>onPaymentResponse</code></td>
+<td>private</td>
+<td>Handle a paymentResponse from Stripe</td>
+<td><code>event: StripePaymentRequestEvent</code></td>
+<td><code>Promise&lt;void&gt;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>confirmPaymentIntent</code></td>
+<td>private</td>
+<td>When a PaymentIntent client secret is set, confirm the payment</td>
+<td><code>paymentResponse: Stripe.PaymentRequestPaymentMethodEvent</code></td>
+<td><code>Promise&lt;void&gt;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>confirmCardPayment</code></td>
+<td>private</td>
+<td>Stripe confirmCardPayment method</td>
+<td><code>data: Stripe.ConfirmCardPaymentData, options: Stripe.ConfirmCardPaymentOptions</code></td>
+<td><code>Promise&lt;Stripe.PaymentIntentResult&gt;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>onShippingaddresschange</code></td>
+<td>private</td>
+<td></td>
+<td><code>originalEvent: Stripe.PaymentRequestShippingAddressEvent</code></td>
+<td><code>void</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>onShippingoptionchange</code></td>
+<td>private</td>
+<td></td>
+<td><code>originalEvent: Stripe.PaymentRequestShippingOptionEvent</code></td>
+<td><code>void</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>parseDatasets</code></td>
+<td>private</td>
+<td>Parses an element's dataset number props from string to number</td>
+<td><code>selector: 'stripe-shipping-option'</code></td>
+<td><code>Stripe.PaymentRequestShippingOption[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>parseDatasets</code></td>
+<td>private</td>
+<td></td>
+<td><code>selector: 'stripe-display-item'</code></td>
+<td><code>Stripe.PaymentRequestItem[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>parseDatasets</code></td>
+<td>private</td>
+<td></td>
+<td><code>selector: 'stripe-display-item'|'stripe-shipping-option'</code></td>
+<td><code>(Stripe.PaymentRequestItem|Stripe.PaymentRequestShippingOption)[]</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</details>
+<hr/>
+<h4 id="functions" tabindex="-1">Functions</h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Parameters</th>
+<th>Return</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>isStripeDisplayItem</code></td>
+<td></td>
+<td><code>el: Element</code></td>
+<td><code>el is StripeDisplayItem</code></td>
+</tr>
+<tr>
+<td><code>isStripeShippingOption</code></td>
+<td></td>
+<td><code>el: Element</code></td>
+<td><code>el is StripeShippingOption</code></td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h4 id="exports-1" tabindex="-1">Exports</h4>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Name</th>
+<th>Declaration</th>
+<th>Module</th>
+<th>Package</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>js</code></td>
+<td><code>isStripeDisplayItem</code></td>
+<td>isStripeDisplayItem</td>
+<td>./stripe-payment-request.js</td>
+<td></td>
+</tr>
+<tr>
+<td><code>js</code></td>
+<td><code>isStripeShippingOption</code></td>
+<td>isStripeShippingOption</td>
+<td>./stripe-payment-request.js</td>
+<td></td>
+</tr>
+<tr>
+<td><code>js</code></td>
+<td><code>StripePaymentRequest</code></td>
+<td>StripePaymentRequest</td>
+<td>./stripe-payment-request.js</td>
+<td></td>
+</tr>
+<tr>
+<td><code>custom-element-definition</code></td>
+<td><code>stripe-payment-request</code></td>
+<td>StripePaymentRequest</td>
+<td>./stripe-payment-request.js</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id=".%2Findex.js%3A" tabindex="-1"><code>./index.js</code>:</h3>
+<h4 id="exports-2" tabindex="-1">Exports</h4>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Name</th>
+<th>Declaration</th>
+<th>Module</th>
+<th>Package</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>js</code></td>
+<td><code>StripeElements</code></td>
+<td>StripeElements</td>
+<td>./stripe-elements.js</td>
+<td></td>
+</tr>
+<tr>
+<td><code>js</code></td>
+<td><code>StripePaymentRequest</code></td>
+<td>StripePaymentRequest</td>
+<td>./stripe-payment-request.js</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</main>
+  <script type="module" src="/main.js"></script>
+</body>
+</html>

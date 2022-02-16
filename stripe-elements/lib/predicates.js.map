@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/lib/predicates.ts"],
+  "sourcesContent": ["export const elem = xs => x => xs.includes(x);\n\nexport const not = p => x => !p(x);\n\nexport const isRepresentation = elem(['paymentMethod', 'source', 'token']);\n"],
+  "mappings": ";AAAO,IAAM,OAAO,QAAM,OAAK,GAAG,SAAS;AAEpC,IAAM,MAAM,OAAK,OAAK,CAAC,EAAE;AAEzB,IAAM,mBAAmB,KAAK,CAAC,iBAAiB,UAAU;",
+  "names": []
+}
