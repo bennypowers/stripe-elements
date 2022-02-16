@@ -1,6 +1,10 @@
-@import 'https://ga.jspm.io/npm:open-props@1.1.3/open-props.min.css';
+@import "https://ga.jspm.io/npm:open-props@1.1.3/open-props.min.css";
 
 :root {
+  font-family: "Fira Code", monospace;
+  background: var(--background);
+  color: var(--text);
+
   --background: var(--gray-0);
   --background-2: var(--gray-2);
   --text: black;
@@ -8,10 +12,12 @@
   --link-visited: var(--pink-9);
   --link-hover: var(--red-7);
 
+  /* states */
   --success: var(--green-9);
   --warning: var(--orange-9);
   --error: var(--red-9);
 
+  /* theme */
   --theme-primary: var(--link);
 
   /* stripe-elements */
@@ -45,19 +51,14 @@
     --link-hover: var(--red-2);
     --stripe-shadow-color: var(--gray-8);
 
+    /* state */
     --success: var(--green-3);
     --warning: var(--orange-3);
     --error: var(--red-3);
 
-
+    /* stripe */
     --stripe-elements-base-icon-color: var(--text);
   }
-}
-
-:root {
-  font-family: 'Fira Code';
-  background: var(--background);
-  color: var(--text);
 }
 
 a {
