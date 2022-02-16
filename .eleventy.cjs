@@ -54,6 +54,7 @@ module.exports = function(eleventyConfig) {
   // Return your Object options:
   return {
     templateEngineOverride: 'njk,md',
+    pathPrefix: '/stripe-elements/',
     dir: {
       input: "docs",
       output: "_site"

@@ -11,13 +11,13 @@ tags:
 
     <link rel="preconnect" href="https://ga.jspm.io"/>
 
-    <link rel="stylesheet" href="/frames.css">
+    <link rel="stylesheet" href="{{ '/frames.css' | url }}">
 
     <script async src="https://ga.jspm.io/npm:es-module-shims@0.12.8/dist/es-module-shims.min.js" crossorigin="anonymous"></script>
 
     <script type="importmap">{{ importMap | dump | safe }}</script>
 
-    <script type="module" src="/frame.js"></script>
+    <script type="module" src="{{ '/frame.js' | url }}"></script>
   </head>
   <body>
     {{ (content or 'hi') | safe }}
