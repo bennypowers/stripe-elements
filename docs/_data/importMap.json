@@ -1,7 +1,7 @@
 {
   "imports": {
     "@stripe/stripe-js": "https://ga.jspm.io/npm:@stripe/stripe-js@1.22.0/",
-    "@power-elements/stripe-elements": "/stripe-elements/index.js",
+    "@power-elements/stripe-elements": "/stripe-elements/stripe-elements/index.js",
     "@lavadrop/camel-case": "https://ga.jspm.io/npm:@lavadrop/camel-case@0.4.0/camelCase.js",
     "@lavadrop/kebab-case": "https://ga.jspm.io/npm:@lavadrop/kebab-case@3.0.0/kebabCase.js",
     "@material/mwc-button": "https://ga.jspm.io/npm:@material/mwc-button@0.26.0-canary.f3e28323.0/mwc-button.js",
