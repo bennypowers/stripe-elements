@@ -4,7 +4,7 @@ title: Stripe Elements Web Components
 publishableKey: pk_test_XXXXXXXXXXXXXXXXXXXXXXXX
 clientSecret: pk_test_XXXXXXXXXXXXXXXXXXXXXXXX
 parameters:
-  component: stripe-elements
+component: stripe-elements
 ---
 
 The `<stripe-elements>` custom element is an easy way to use stripe.js in your web app,
@@ -45,6 +45,8 @@ Enter a valid _testing_ publishable key in the input below to activate the examp
 > **Careful!** never add your **secret key** to an HTML page, only publish your **publishable key**.
 
 Once you've set the `publishable-key` attribute (or the `publishableKey` DOM property), Stripe will create a Stripe Card Element on your page.
+
+For use with Stripe Connect, you can provide the optional `stripe-account` attribute set to the account ID of the connected account.
 
 ### Accepting Payments
 
@@ -132,8 +134,8 @@ For simple integrations, you can automatically post the source or token to your 
 
 ```html
 <stripe-elements publishable-key="{{ publishableKey }}"
-    generate="token"
-    action="/my-endpoint"
+                 generate="token"
+                 action="/my-endpoint"
 ></stripe-elements>
 ```
 <iframe data-update="publishableKey" loading="lazy" src="{{ '/frames/elements/automatically-posting/' | url }}"></iframe>
@@ -171,13 +173,13 @@ for a purchase labelled "Double Double" that costs $1.25 Canadian, add this elem
 ```
 
 <stripe-payment-request
-    publishable-key="{{ publishableKey }}"
-    client-secret="{{ clientSecret }}"
-    generate="source"
-    amount="125"
-    label="Double Double"
-    country="CA"
-    currency="cad">
+publishable-key="{{ publishableKey }}"
+client-secret="{{ clientSecret }}"
+generate="source"
+amount="125"
+label="Double Double"
+country="CA"
+currency="cad">
 </stripe-payment-request>
 
 You can also display multiple line-items with the `<stripe-payment-item>` element:
@@ -225,13 +227,13 @@ You may also set the payment request options using JavaScript:
 const el = document.querySelector('stripe-payment-request');
 
 el.displayItems = [
-  { amount: '125', label: 'Double Double' },
-  { amount: '199', label: 'Box of 10 Timbits' },
+    { amount: '125', label: 'Double Double' },
+    { amount: '199', label: 'Box of 10 Timbits' },
 ]
 
 el.shippingOptions = [
-  { id: 'pick-up',  amount: 0,   label: 'Pick Up',  detail: "Pick Up at Your Local Timmy's" },
-  { id: 'delivery', amount: 200, label: 'Delivery', detail: 'Timbits to Your Door' }
+    { id: 'pick-up',  amount: 0,   label: 'Pick Up',  detail: "Pick Up at Your Local Timmy's" },
+    { id: 'delivery', amount: 200, label: 'Delivery', detail: 'Timbits to Your Door' }
 ]
 ```
 
