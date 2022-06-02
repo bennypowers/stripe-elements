@@ -251,7 +251,7 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Whether or not to hide the postal code field.\r\nUseful when you gather shipping info elsewhere.",
+              "description": "Whether or not to hide the postal code field.\nUseful when you gather shipping info elsewhere.",
               "attribute": "hide-postal-code"
             },
             {
@@ -510,7 +510,7 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Whether or not to hide the postal code field.\r\nUseful when you gather shipping info elsewhere.",
+              "description": "Whether or not to hide the postal code field.\nUseful when you gather shipping info elsewhere.",
               "fieldName": "hidePostalCode"
             },
             {
@@ -635,7 +635,7 @@
         },
         {
           "kind": "class",
-          "description": "Custom element wrapper for Stripe.js v3 Payment Request Buttons.\r\n\r\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--enter-a-stripe-publishable-key) 👀\r\n\r\n### 🧙‍♂️ Usage\r\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\r\n\r\n```html\r\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-payment-request.js\"></script>\r\n```\r\n\r\nAlternatively, load the module from the unpkg CDN\r\n```html\r\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-payment-request.js?module\"></script>\r\n```\r\n\r\nThen you can add the element to your page.\r\n\r\n```html\r\n\r\n<stripe-payment-request id=\"payment-request\"\r\n    publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\r\n    generate=\"token\"\r\n    action=\"/charges\"\r\n    country=\"CA\"\r\n    currency=\"cad\"\r\n    amount=\"1000\"\r\n    label=\"Ten Bones\"\r\n    request-payer-name\r\n    request-payer-email\r\n    request-payer-phone\r\n></stripe-payment-request>\r\n```\r\n\r\nSee the demos for more comprehensive examples.\r\n  - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vanilla--stripe-payment-request).\r\n  - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-litelement--stripe-payment-request).\r\n  - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vue--stripe-payment-request).\r\n  - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-angular--stripe-payment-request).\r\n  - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-react--stripe-payment-request).\r\n  - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-preact--stripe-payment-request).",
+          "description": "Custom element wrapper for Stripe.js v3 Payment Request Buttons.\n\n👨‍🎨 [Live Demo](https://bennypowers.dev/stripe-elements/?path=/docs/stripe-payment-request--enter-a-stripe-publishable-key) 👀\n\n### 🧙‍♂️ Usage\nIf you prebuilt with Snowpack, load the module from your `web_modules` directory\n\n```html\n<script type=\"module\" src=\"/web_modules/@power-elements/stripe-elements/stripe-payment-request.js\"></script>\n```\n\nAlternatively, load the module from the unpkg CDN\n```html\n<script type=\"module\" src=\"https://unpkg.com/@power-elements/stripe-elements/stripe-payment-request.js?module\"></script>\n```\n\nThen you can add the element to your page.\n\n```html\n\n<stripe-payment-request id=\"payment-request\"\n    publishable-key=\"pk_test_XXXXXXXXXXXXXXXXXXXXXXXX\"\n    generate=\"token\"\n    action=\"/charges\"\n    country=\"CA\"\n    currency=\"cad\"\n    amount=\"1000\"\n    label=\"Ten Bones\"\n    request-payer-name\n    request-payer-email\n    request-payer-phone\n></stripe-payment-request>\n```\n\nSee the demos for more comprehensive examples.\n  - Using `<stripe-payment-request>` with [plain HTML and JavaScript](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vanilla--stripe-payment-request).\n  - Using `<stripe-payment-request>` in a [LitElement](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-litelement--stripe-payment-request).\n  - Using `<stripe-payment-request>` in a [Vue Component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-vue--stripe-payment-request).\n  - Using `<stripe-payment-request>` in an [Angular component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-angular--stripe-payment-request).\n  - Using `<stripe-payment-request>` in a [React component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-react--stripe-payment-request).\n  - Using `<stripe-payment-request>` in a [Preact component](https://bennypowers.dev/stripe-elements/?path=/docs/framework-examples-preact--stripe-payment-request).",
           "name": "StripePaymentRequest",
           "cssProperties": [
             {
@@ -776,7 +776,7 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.\r\n\r\nWe highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available.",
+              "description": "By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.\n\nWe highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available.",
               "attribute": "request-payer-name"
             },
             {
@@ -794,7 +794,7 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "Collect shipping address by setting this option to true. The address appears in the PaymentResponse.\r\nYou must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback.",
+              "description": "Collect shipping address by setting this option to true. The address appears in the PaymentResponse.\nYou must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback.",
               "attribute": "request-shipping"
             },
             {
@@ -1189,7 +1189,7 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.\r\n\r\nWe highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available.",
+              "description": "By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.\n\nWe highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available.",
               "fieldName": "requestPayerName"
             },
             {
@@ -1205,7 +1205,7 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "Collect shipping address by setting this option to true. The address appears in the PaymentResponse.\r\nYou must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback.",
+              "description": "Collect shipping address by setting this option to true. The address appears in the PaymentResponse.\nYou must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback.",
               "fieldName": "requestShipping"
             },
             {
