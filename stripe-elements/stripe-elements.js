@@ -357,12 +357,13 @@ var StripeBase = class extends LitElement {
     this.element.on("blur", this.onBlur);
   }
   async initStripe() {
-    const { publishableKey } = this;
+    const { publishableKey, stripeAccount } = this;
     if (!publishableKey)
       readonly.set(this, { elements: null, element: null, stripe: null });
     else {
       try {
-        const stripe = window.Stripe ? window.Stripe(publishableKey) : await loadStripe(publishableKey);
+        const options = { stripeAccount };
+        const stripe = window.Stripe ? window.Stripe(publishableKey, options) : await loadStripe(publishableKey, options);
         const elements = stripe?.elements();
         readonly.set(this, { elements, error: null, stripe });
       } catch (e) {
@@ -442,6 +443,9 @@ __decorateClass([
 __decorateClass([
   property({ type: Boolean, attribute: "show-error", reflect: true })
 ], StripeBase.prototype, "showError", 2);
+__decorateClass([
+  property({ type: String, attribute: "stripe-account" })
+], StripeBase.prototype, "stripeAccount", 2);
 __decorateClass([
   readonly,
   notify,

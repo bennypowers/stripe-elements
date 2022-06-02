@@ -143,6 +143,7 @@ You can also set the <code>publishableKey</code> DOM property using JavaScript.<
 <p><strong>Careful!</strong> never add your <strong>secret key</strong> to an HTML page, only publish your <strong>publishable key</strong>.</p>
 </blockquote>
 <p>Once you've set the <code>publishable-key</code> attribute (or the <code>publishableKey</code> DOM property), Stripe will create a Stripe Card Element on your page.</p>
+<p>For use with <a href="https://stripe.com/docs/js/initializing#init_stripe_js-options-stripeAccount">Stripe Connect</a>, you can provide the optional <code>stripe-account</code> attribute set to the account ID of the connected account.</p>
 <h3 id="accepting-payments" tabindex="-1">Accepting Payments</h3>
 <p>Fill out some payment information here, then choose the type of payment object you'd like to generate.</p>
 <p>Once you're set your publishable key and Stripe has instantiated (listen for the <code>ready</code> event if you need to know exactly when this happens),
