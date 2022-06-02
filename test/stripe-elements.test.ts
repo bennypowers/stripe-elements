@@ -283,7 +283,7 @@ describe('<stripe-elements>', function() {
       afterEach(Helpers.removeAllBlueStyleTag);
 
       describe('with a valid publishable key', function() {
-        beforeEach(Helpers.setupWithPublishableKey(Keys.PUBLISHABLE_KEY));
+        beforeEach(Helpers.setupWithPublishableKeyAndStripeAccount(Keys.PUBLISHABLE_KEY, undefined));
         describe('and a valid card', function() {
           beforeEach(Helpers.synthStripeFormValues({ cardNumber: '4242424242424242', mm: '01', yy: '40', cvc: '000' }));
           it('passes CSS custom property values to stripe', function() {
@@ -293,6 +293,17 @@ describe('<stripe-elements>', function() {
             ).flatMap(Object.values);
             const noEmpties = allValues.filter(x => !(typeof x === 'object' && Object.values(x).every(x => x === undefined)));
             expect(noEmpties).to.deep.equal(Array.from(noEmpties, () => 'blue'));
+          });
+        });
+      });
+
+      describe('with a valid stripe account', function() {
+        beforeEach(Helpers.setupWithPublishableKeyAndStripeAccount(Keys.PUBLISHABLE_KEY, Keys.STRIPE_ACCOOUNT));
+        describe('and a stripe account set', function() {
+          it('Stripe has the Account setting in its options', function() {
+            const { stripe } = element as StripeElements;
+            const { opts } = stripe as any;
+            expect(opts).to.have.property('stripeAccount');
           });
         });
       });

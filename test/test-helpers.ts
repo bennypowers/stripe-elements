@@ -51,8 +51,11 @@ declare global {
 
 }
 
-const getTemplate = (tagName: ReturnType<typeof unsafeStatic>, { publishableKey = undefined } = {}) =>
-  html`<${tagName} publishable-key="${ifDefined(publishableKey)}"></${tagName}>`;
+const getTemplate = (
+  tagName: ReturnType<typeof unsafeStatic>,
+  { publishableKey = undefined, stripeAccount = undefined } = {}
+) =>
+  html`<${tagName} publishable-key="${ifDefined(publishableKey)}" stripe-account="${ifDefined(stripeAccount)}"></${tagName}>`;
 
 class Host extends LitElement {
   @property({ type: String }) tag: string;
@@ -326,6 +329,20 @@ export function setupWithPublishableKey(publishableKey: string) {
     const [describeTitle] = this.test.titlePath();
     const tagName = unsafeStatic(describeTitle.replace(/<(.*)>/, '$1'));
     element = await fixture(getTemplate(tagName, { publishableKey }));
+    await element.updateComplete;
+    initialStripe = element.stripe as any;
+    await nextFrame();
+  };
+}
+
+export function setupWithPublishableKeyAndStripeAccount(
+  publishableKey: string,
+  stripeAccount: string
+) {
+  return async function setup(): Promise<void> {
+    const [describeTitle] = this.test.titlePath();
+    const tagName = unsafeStatic(describeTitle.replace(/<(.*)>/, '$1'));
+    element = await fixture(getTemplate(tagName, { publishableKey, stripeAccount }));
     await element.updateComplete;
     initialStripe = element.stripe as any;
     await nextFrame();
