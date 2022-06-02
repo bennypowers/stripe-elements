@@ -46,7 +46,7 @@ Enter a valid _testing_ publishable key in the input below to activate the examp
 
 Once you've set the `publishable-key` attribute (or the `publishableKey` DOM property), Stripe will create a Stripe Card Element on your page.
 
-For use with Stripe Connect, you can provide the optional `stripe-account` attribute set to the account ID of the connected account.
+For use with [Stripe Connect](https://stripe.com/docs/js/initializing#init_stripe_js-options-stripeAccount), you can provide the optional `stripe-account` attribute set to the account ID of the connected account.
 
 ### Accepting Payments
 
