@@ -399,7 +399,7 @@ export class StripeBase extends LitElement {
       try {
         const options = stripeAccount ? { 'stripeAccount': stripeAccount } : {};
         const stripe =
-            (window.Stripe) ? window.Stripe(publishableKey, options) : await loadStripe(publishableKey, options);
+          (window.Stripe) ? window.Stripe(publishableKey, options) : await loadStripe(publishableKey, options);
         const elements = stripe?.elements();
         readonly.set<StripeBase>(this, { elements, error: null, stripe });
       } catch (e) {
