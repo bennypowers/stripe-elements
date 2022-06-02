@@ -20,6 +20,7 @@ import {
 
 import { elem, not } from '../src/lib/predicates';
 import { isStripeShippingOption, StripePaymentRequest } from '../src/stripe-payment-request';
+import {StripeElements} from "../src";
 
 const DEFAULT_PROPS = Object.freeze({
   ...Helpers.BASE_DEFAULT_PROPS,
@@ -452,6 +453,17 @@ describe('<stripe-payment-request>', function() {
               it('unsets the `paymentMethod` property', Helpers.assertProps({ paymentMethod: null }));
               it('calls the complete function', Helpers.assertCalled(complete));
             });
+          });
+        });
+
+        describe('when stripe account is changed', function stripeAccountSet() {
+          beforeEach(Helpers.setProps({ publishableKey: 'foo', stripeAccount: 'bar' }));
+          beforeEach(nextFrame);
+          it('reinitializes stripe', function() { expect(element.stripe).to.be.ok.and.not.deep.equal(Helpers.initialStripe); });
+          it('has stripeAccount in its options', function() {
+            const { stripe } = element as StripeElements;
+            const { opts } = stripe as any;
+            expect(opts).to.have.property('stripeAccount');
           });
         });
 

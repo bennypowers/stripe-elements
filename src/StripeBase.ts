@@ -139,6 +139,10 @@ export class StripeBase extends LitElement {
   @property({ type: Boolean, attribute: 'show-error', reflect: true })
   showError = false;
 
+  /** Stripe account to use (connect) */
+  @property({ type: String, attribute: 'stripe-account' })
+  stripeAccount: string;
+
   /* READ-ONLY FIELDS */
 
   /* PAYMENT REPRESENTATIONS */
@@ -388,13 +392,14 @@ export class StripeBase extends LitElement {
    * Initializes Stripe and elements.
    */
   private async initStripe(): Promise<void> {
-    const { publishableKey } = this;
+    const { publishableKey, stripeAccount } = this;
     if (!publishableKey)
       readonly.set<StripeBase>(this, { elements: null, element: null, stripe: null });
     else {
       try {
+        const options = { stripeAccount };
         const stripe =
-          (window.Stripe) ? window.Stripe(publishableKey) : await loadStripe(publishableKey);
+          (window.Stripe) ? window.Stripe(publishableKey, options) : await loadStripe(publishableKey, options);
         const elements = stripe?.elements();
         readonly.set<StripeBase>(this, { elements, error: null, stripe });
       } catch (e) {

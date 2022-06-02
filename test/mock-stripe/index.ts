@@ -6,6 +6,7 @@ import { spy } from 'sinon';
 const assign = (target: object) => ([k, v]: [string, unknown]): unknown => target[k] = v;
 
 export enum Keys {
+  STRIPE_ACCOUNT = 'acct_XXXXXXXXXXX',
   PUBLISHABLE_KEY = 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX',
   SHOULD_ERROR_KEY = 'SHOULD_ERROR_KEY',
   TOKEN_ERROR_KEY = 'TOKEN_ERROR_KEY',
