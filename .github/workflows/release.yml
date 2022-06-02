@@ -10,12 +10,12 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
           cache: npm
-      - run: npm ci
+      - run: npm ci --prefer-offline
       - name: Install Coverage Reporter
         run: |
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -25,12 +25,12 @@ jobs:
       - name: Format Coverage
         run: ./cc-test-reporter format-coverage -t lcov -o coverage/coverage.json coverage/lcov.info
       - name: Upload Coverage
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: coverage
           path: coverage
       - name: Cache dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -44,8 +44,8 @@ jobs:
     needs: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - run: npm ci
+      - uses: actions/checkout@v3
+      - run: npm ci --prefer-offline
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v2
         id: semantic   # Need an `id` for output variables
@@ -64,12 +64,12 @@ jobs:
       - Test
       - Release
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 12
       - name: Download coverage
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v3
         with:
           name: coverage
       - name: Install Coverage Reporter
@@ -85,11 +85,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: Release
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: npm ci
+      - run: npm ci --prefer-offline
       - run: npm run docs
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
