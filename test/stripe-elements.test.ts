@@ -298,7 +298,7 @@ describe('<stripe-elements>', function() {
       });
 
       describe('with a valid stripe account', function() {
-        beforeEach(Helpers.setupWithPublishableKeyAndStripeAccount(Keys.PUBLISHABLE_KEY, Keys.STRIPE_ACCOOUNT));
+        beforeEach(Helpers.setupWithPublishableKeyAndStripeAccount(Keys.PUBLISHABLE_KEY, Keys.STRIPE_ACCOUNT));
         describe('and a stripe account set', function() {
           it('Stripe has the Account setting in its options', function() {
             const { stripe } = element as StripeElements;
