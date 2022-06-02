@@ -397,7 +397,7 @@ export class StripeBase extends LitElement {
       readonly.set<StripeBase>(this, { elements: null, element: null, stripe: null });
     else {
       try {
-        const options = stripeAccount ? { 'stripeAccount': stripeAccount } : {};
+        const options = { stripeAccount };
         const stripe =
           (window.Stripe) ? window.Stripe(publishableKey, options) : await loadStripe(publishableKey, options);
         const elements = stripe?.elements();
