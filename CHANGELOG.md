@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/bennypowers/stripe-elements/compare/v3.0.0...v3.1.0) (2022-06-02)
+
+
+### Features
+
+* `stripe-account` attr ([929edb0](https://github.com/bennypowers/stripe-elements/commit/929edb0ec1beefdd6b7806f6c3f0dae49bf464e0))
+
 # [3.0.0](https://github.com/bennypowers/stripe-elements/compare/v2.3.12...v3.0.0) (2022-02-15)
 
 
