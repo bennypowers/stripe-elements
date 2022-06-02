@@ -283,7 +283,7 @@ describe('<stripe-elements>', function() {
       afterEach(Helpers.removeAllBlueStyleTag);
 
       describe('with a valid publishable key', function() {
-        beforeEach(Helpers.setupWithPublishableKeyAndStripeAccount(Keys.PUBLISHABLE_KEY, undefined));
+        beforeEach(Helpers.setupWithPublishableKey(Keys.PUBLISHABLE_KEY));
         describe('and a valid card', function() {
           beforeEach(Helpers.synthStripeFormValues({ cardNumber: '4242424242424242', mm: '01', yy: '40', cvc: '000' }));
           it('passes CSS custom property values to stripe', function() {
