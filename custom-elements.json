@@ -321,9 +321,9 @@
               "kind": "field",
               "name": "locale",
               "type": {
-                "text": "StripeElementLocale"
+                "text": "Stripe.StripeElementLocale"
               },
-              "default": "null",
+              "default": "auto",
               "description": "Stripe locale to use (use browser locale by default)",
               "attribute": "locale",
               "reflects": true

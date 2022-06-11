@@ -146,7 +146,7 @@ export class StripeBase extends LitElement {
 
   /** Stripe locale to use */
   @property({ type: String, attribute: 'locale' })
-    locale: StripeElementLocale;
+    locale: StripeElementLocale = 'auto';
 
   /* READ-ONLY FIELDS */
 

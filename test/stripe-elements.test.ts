@@ -920,6 +920,20 @@ describe('<stripe-elements>', function() {
             });
           });
         });
+
+        describe('with no `locale` property set', function() {
+          it('should have `auto` by default', function() {
+            expect(element.locale).to.be.equal('auto');
+          });
+        });
+
+        describe('with `locale` property set', function() {
+          const LOCALE = 'en';
+          beforeEach(Helpers.setProps({ locale: LOCALE }));
+          it(`should have ${LOCALE}`, function() {
+            expect(element.locale).to.be.equal('en');
+          });
+        });
       });
 
       describe('with a card that will be declined', function() {
