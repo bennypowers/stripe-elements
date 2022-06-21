@@ -1,4 +1,5 @@
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
+const directoryOutputPlugin = require('@11ty/eleventy-plugin-directory-output');
 const toc = require('eleventy-plugin-toc');
 const markdownIt = require('markdown-it')
 const markdownItAnchor = require('markdown-it-anchor')
@@ -12,6 +13,7 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addPlugin(syntaxHighlight);
   eleventyConfig.addPlugin(toc);
+  eleventyConfig.addPlugin(directoryOutputPlugin);
 
   eleventyConfig.addWatchTarget('docs/*.css');
 

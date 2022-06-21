@@ -74,8 +74,10 @@
   "homepage": "https://bennypowers.dev/stripe-elements",
   "devDependencies": {
     "@11ty/eleventy": "^1.0.0",
+    "@11ty/eleventy-plugin-directory-output": "^1.0.1",
     "@11ty/eleventy-plugin-syntaxhighlight": "^4.0.0",
     "@custom-elements-manifest/analyzer": "^0.5.7",
+    "@custom-elements-manifest/to-markdown": "^0.1.0",
     "@lit-labs/ssr": "^2.0.2",
     "@material/mwc-button": "^0.25.3",
     "@material/mwc-dialog": "^0.25.3",
@@ -98,7 +100,6 @@
     "@web/dev-server-esbuild": "^0.2.16",
     "@web/test-runner": "^0.13.27",
     "cem-plugin-module-file-extensions": "^0.0.2",
-    "cem-plugin-readme": "^0.1.4",
     "credit-card-type": "^9.1.0",
     "eleventy-plugin-toc": "^1.1.5",
     "esbuild": "^0.14.21",

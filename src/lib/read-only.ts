@@ -55,7 +55,6 @@ export function readonly<T extends ReactiveElement>(proto: T, key: string) {
     });
 
     Klass.createProperty(key, {
-      // @ts-expect-error: https://github.com/lit/lit/pull/1963
       ...Klass.getPropertyOptions(key),
       noAccessor: true,
     });

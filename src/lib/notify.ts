@@ -30,7 +30,6 @@ class NotifyController implements ReactiveController {
     for (const [key, oldValue] of this.cache) {
       const newValue = this.host[key];
       const { attribute } = (this.host.constructor as typeof ReactiveElement)
-        // @ts-expect-error: https://github.com/lit/lit/pull/1963
         .getPropertyOptions(key) ?? {};
       const attr = typeof attribute === 'string' ? attribute : null;
       this.cache.set(key, newValue);
@@ -42,7 +41,7 @@ class NotifyController implements ReactiveController {
 
 export function notify<T extends ReactiveElement>(proto: T, key: string) {
   (proto.constructor as typeof ReactiveElement).addInitializer(x => {
-    const controller = new NotifyController(x)
+    const controller = new NotifyController(x);
     controller.cache.set(key, x[key]);
   });
 }
