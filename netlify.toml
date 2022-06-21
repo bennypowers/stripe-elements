@@ -1,3 +1,3 @@
 [build]
-  command = "npm run docs && tree _site"
+  command = "npm run docs"
   publish = "_site"
