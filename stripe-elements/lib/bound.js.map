@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["../src/lib/bound.ts"],
   "sourcesContent": ["const configurable = true;\n// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any\nexport function bound(_: any, key: string, descriptor: PropertyDescriptor): PropertyDescriptor {\n  if (typeof descriptor?.value !== 'function')\n    throw new TypeError(`Only methods can be decorated with @bound. <${key ?? _.name}> is not a method!`); /* c8 ignore next */\n  return {\n    configurable,\n    get() {\n      const value = descriptor.value.bind(this);\n      Object.defineProperty(this, key, { value, configurable, writable: true });\n      return value;\n    },\n  };\n}\n"],
-  "mappings": ";AAAA,IAAM,eAAe;AAEd,eAAe,GAAQ,KAAa,YAAoD;AAC7F,MAAI,OAAO,YAAY,UAAU;AAC/B,UAAM,IAAI,UAAU,+CAA+C,OAAO,EAAE;AAC9E,SAAO;AAAA,IACL;AAAA,IACA,MAAM;AACJ,YAAM,QAAQ,WAAW,MAAM,KAAK;AACpC,aAAO,eAAe,MAAM,KAAK,EAAE,OAAO,cAAc,UAAU;AAClE,aAAO;AAAA;AAAA;AAAA;",
+  "mappings": ";AAAA,IAAM,eAAe;AAEd,eAAe,GAAQ,KAAa,YAAoD;AAC7F,MAAI,OAAO,YAAY,UAAU;AAC/B,UAAM,IAAI,UAAU,+CAA+C,OAAO,EAAE,wBAAwB;AACtG,SAAO;AAAA,IACL;AAAA,IACA,MAAM;AACJ,YAAM,QAAQ,WAAW,MAAM,KAAK,IAAI;AACxC,aAAO,eAAe,MAAM,KAAK,EAAE,OAAO,cAAc,UAAU,KAAK,CAAC;AACxE,aAAO;AAAA,IACT;AAAA,EACF;AACF;",
   "names": []
 }

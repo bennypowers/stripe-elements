@@ -170,7 +170,7 @@ var registerWrapper = function registerWrapper2(stripe, startTime) {
   }
   stripe._registerWrapper({
     name: "stripe-js",
-    version: "1.23.0",
+    version: "1.32.0",
     startTime
   });
 };
@@ -270,6 +270,7 @@ var StripeBase = class extends LitElement {
     super(...arguments);
     this.generate = "source";
     this.showError = false;
+    this.locale = "auto";
     this.paymentMethod = null;
     this.source = null;
     this.token = null;
@@ -375,12 +376,12 @@ var StripeBase = class extends LitElement {
     this.element.on("blur", this.onBlur);
   }
   async initStripe() {
-    const { publishableKey, stripeAccount } = this;
+    const { publishableKey, stripeAccount, locale } = this;
     if (!publishableKey)
       readonly.set(this, { elements: null, element: null, stripe: null });
     else {
       try {
-        const options = { stripeAccount };
+        const options = { stripeAccount, locale };
         const stripe = window.Stripe ? window.Stripe(publishableKey, options) : await loadStripe(publishableKey, options);
         const elements = stripe?.elements();
         readonly.set(this, { elements, error: null, stripe });
@@ -464,6 +465,9 @@ __decorateClass([
 __decorateClass([
   property({ type: String, attribute: "stripe-account" })
 ], StripeBase.prototype, "stripeAccount", 2);
+__decorateClass([
+  property({ type: String, attribute: "locale" })
+], StripeBase.prototype, "locale", 2);
 __decorateClass([
   readonly,
   notify,

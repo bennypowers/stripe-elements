@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["../src/lib/fetch.ts"],
   "sourcesContent": ["/**\n * Throws an error if the response is not OK.)\n */\nexport async function throwBadResponse(response: Response): Promise<Response> {\n  const { ok, statusText } = response;\n  if (!ok) throw new Error(statusText);\n  return response;\n}\n"],
-  "mappings": ";AAGA,gCAAuC,UAAuC;AAC5E,QAAM,EAAE,IAAI,eAAe;AAC3B,MAAI,CAAC;AAAI,UAAM,IAAI,MAAM;AACzB,SAAO;AAAA;",
+  "mappings": ";AAGA,gCAAuC,UAAuC;AAC5E,QAAM,EAAE,IAAI,eAAe;AAC3B,MAAI,CAAC;AAAI,UAAM,IAAI,MAAM,UAAU;AACnC,SAAO;AACT;",
   "names": []
 }

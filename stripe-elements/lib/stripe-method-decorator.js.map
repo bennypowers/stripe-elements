@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["../src/lib/stripe-method-decorator.ts"],
   "sourcesContent": ["/* eslint-disable @typescript-eslint/ban-types, no-invalid-this, @typescript-eslint/no-explicit-any */\n\nfunction wrap(f) {\n  return (_target: Object, _property: string, descriptor: TypedPropertyDescriptor<any>) => {\n    const original = descriptor.value;\n    descriptor.value = f(original);\n    return descriptor;\n  };\n}\n\nexport const stripeMethod = wrap(function(f) {\n  const { name } = f;\n  return async function(...args: unknown[]) {\n    if (!this.stripe) throw new Error(`<${this.constructor.is}>: Stripe must be initialized before calling ${name}.`);\n    return f.call(this, ...args)\n      .then(this.handleResponse);\n  };\n});\n"],
-  "mappings": ";AAEA,cAAc,GAAG;AACf,SAAO,CAAC,SAAiB,WAAmB,eAA6C;AACvF,UAAM,WAAW,WAAW;AAC5B,eAAW,QAAQ,EAAE;AACrB,WAAO;AAAA;AAAA;AAIJ,IAAM,eAAe,KAAK,SAAS,GAAG;AAC3C,QAAM,EAAE,SAAS;AACjB,SAAO,kBAAkB,MAAiB;AACxC,QAAI,CAAC,KAAK;AAAQ,YAAM,IAAI,MAAM,IAAI,KAAK,YAAY,kDAAkD;AACzG,WAAO,EAAE,KAAK,MAAM,GAAG,MACpB,KAAK,KAAK;AAAA;AAAA;",
+  "mappings": ";AAEA,cAAc,GAAG;AACf,SAAO,CAAC,SAAiB,WAAmB,eAA6C;AACvF,UAAM,WAAW,WAAW;AAC5B,eAAW,QAAQ,EAAE,QAAQ;AAC7B,WAAO;AAAA,EACT;AACF;AAEO,IAAM,eAAe,KAAK,SAAS,GAAG;AAC3C,QAAM,EAAE,SAAS;AACjB,SAAO,kBAAkB,MAAiB;AACxC,QAAI,CAAC,KAAK;AAAQ,YAAM,IAAI,MAAM,IAAI,KAAK,YAAY,kDAAkD,OAAO;AAChH,WAAO,EAAE,KAAK,MAAM,GAAG,IAAI,EACxB,KAAK,KAAK,cAAc;AAAA,EAC7B;AACF,CAAC;",
   "names": []
 }
