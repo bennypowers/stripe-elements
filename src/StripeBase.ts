@@ -14,6 +14,7 @@ import { BreadcrumbController } from './breadcrumb-controller.js';
 import { readonly } from './lib/read-only.js';
 import { notify } from './lib/notify.js';
 import { loadStripe } from '@stripe/stripe-js/pure.js';
+import { StripeElementLocale } from '@stripe/stripe-js';
 
 export const enum SlotName {
   'stripe-elements' = 'stripe-elements-slot',
@@ -142,6 +143,10 @@ export class StripeBase extends LitElement {
   /** Stripe account to use (connect) */
   @property({ type: String, attribute: 'stripe-account' })
   stripeAccount: string;
+
+  /** Stripe locale to use */
+  @property({ type: String, attribute: 'locale' })
+    locale: StripeElementLocale = 'auto';
 
   /* READ-ONLY FIELDS */
 
@@ -392,12 +397,12 @@ export class StripeBase extends LitElement {
    * Initializes Stripe and elements.
    */
   private async initStripe(): Promise<void> {
-    const { publishableKey, stripeAccount } = this;
+    const { publishableKey, stripeAccount, locale } = this;
     if (!publishableKey)
       readonly.set<StripeBase>(this, { elements: null, element: null, stripe: null });
     else {
       try {
-        const options = { stripeAccount };
+        const options = { stripeAccount, locale };
         const stripe =
           (window.Stripe) ? window.Stripe(publishableKey, options) : await loadStripe(publishableKey, options);
         const elements = stripe?.elements();

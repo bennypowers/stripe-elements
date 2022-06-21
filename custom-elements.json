@@ -318,6 +318,17 @@
               "reflects": true
             },
             {
+              "kind": "field",
+              "name": "locale",
+              "type": {
+                "text": "Stripe.StripeElementLocale"
+              },
+              "default": "auto",
+              "description": "Stripe locale to use (use browser locale by default)",
+              "attribute": "locale",
+              "reflects": true
+            },
+            {
               "kind": "method",
               "name": "createPaymentMethod",
               "privacy": "public",

@@ -135,6 +135,7 @@ export const BASE_DEFAULT_PROPS = Object.freeze({
   source: null,
   stripe: null,
   token: null,
+  locale: 'auto',
 });
 
 export const BASE_READ_ONLY_PROPS = Object.freeze([
