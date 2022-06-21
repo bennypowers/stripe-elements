@@ -1,3 +1,16 @@
+# [3.2.0](https://github.com/bennypowers/stripe-elements/compare/v3.1.0...v3.2.0) (2022-06-21)
+
+
+### Bug Fixes
+
+* update lit version ([#90](https://github.com/bennypowers/stripe-elements/issues/90)) ([536ad46](https://github.com/bennypowers/stripe-elements/commit/536ad460cf1b125c56d071cb17c01c7dc2957076))
+* update release workflow ([fbc0fd6](https://github.com/bennypowers/stripe-elements/commit/fbc0fd6ce7b9ad2a03c9fd425f15696e8172c14b))
+
+
+### Features
+
+* add locale props for stripe initialization ([#87](https://github.com/bennypowers/stripe-elements/issues/87)) ([44317a4](https://github.com/bennypowers/stripe-elements/commit/44317a472246b42f001325668189154a80f7f5fd))
+
 # [3.1.0](https://github.com/bennypowers/stripe-elements/compare/v3.0.0...v3.1.0) (2022-06-02)
 
 
