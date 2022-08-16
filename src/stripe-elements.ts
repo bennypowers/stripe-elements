@@ -184,27 +184,27 @@ export class StripeElements extends StripeBase {
    * Whether to hide icons in the Stripe form.
    */
   @property({ type: Boolean, attribute: 'hide-icon' })
-  hideIcon = false;
+    hideIcon = false;
 
   /**
    * Whether or not to hide the postal code field.
    * Useful when you gather shipping info elsewhere.
    */
   @property({ type: Boolean, attribute: 'hide-postal-code' })
-  hidePostalCode = false;
+    hidePostalCode = false;
 
   /**
    * Stripe icon style.
    */
   @property({ type: String, attribute: 'icon-style' })
-  iconStyle: Stripe.StripeCardElementOptions['iconStyle'] = 'default';
+    iconStyle: Stripe.StripeCardElementOptions['iconStyle'] = 'default';
 
   /**
    * Prefilled values for form.
    * @example { postalCode: '90210' }
    */
   @property({ type: Object })
-  value: Stripe.StripeCardElementOptions['value'] = {};
+    value: Stripe.StripeCardElementOptions['value'] = {};
 
   /* READ ONLY PROPERTIES */
 

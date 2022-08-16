@@ -166,7 +166,7 @@ export class StripePaymentRequest extends StripeBase {
    * The amount in the currency's subunit (e.g. cents, yen, etc.)
    */
   @property({ type: Number, reflect: true })
-  amount: number;
+    amount: number;
 
   /**
    * Whether or not the device can make the payment request.
@@ -182,14 +182,14 @@ export class StripePaymentRequest extends StripeBase {
    * @example CA
    */
   @property({ type: String })
-  country: CountryCode;
+    country: CountryCode;
 
   /**
    * Three character currency code
    * @example usd
    */
   @property({ type: String })
-  currency: Stripe.PaymentRequestOptions['currency'];
+    currency: Stripe.PaymentRequestOptions['currency'];
 
   #displayItems: Stripe.PaymentRequestItem[];
 
@@ -215,7 +215,7 @@ export class StripePaymentRequest extends StripeBase {
    * A name that the browser shows the customer in the payment interface.
    */
   @property({ type: String, reflect: true })
-  label: string;
+    label: string;
 
   /**
    * Stripe PaymentIntent
@@ -236,13 +236,13 @@ export class StripePaymentRequest extends StripeBase {
    * If you might change the payment amount later (for example, after you have calcluated shipping costs), set this to true. Note that browsers treat this as a hint for how to display things, and not necessarily as something that will prevent submission.
    */
   @property({ type: Boolean, reflect: true })
-  pending = false;
+    pending = false;
 
   /**
    * See the requestPayerName option.
    */
   @property({ type: Boolean, attribute: 'request-payer-email' })
-  requestPayerEmail: boolean;
+    requestPayerEmail: boolean;
 
   /**
    * By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.
@@ -250,22 +250,22 @@ export class StripePaymentRequest extends StripeBase {
    * We highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available.
    */
   @property({ type: Boolean, attribute: 'request-payer-name' })
-  requestPayerName: boolean;
+    requestPayerName: boolean;
 
   /**
    * See the requestPayerName option.
    */
   @property({ type: Boolean, attribute: 'request-payer-phone' })
-  requestPayerPhone: boolean;
+    requestPayerPhone: boolean;
 
   /**
    * Collect shipping address by setting this option to true. The address appears in the PaymentResponse.
    * You must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback.
    */
   @property({ type: Boolean, attribute: 'request-shipping' })
-  requestShipping: boolean;
+    requestShipping: boolean;
 
-  #shippingOptions: Stripe.PaymentRequestShippingOption[]
+  #shippingOptions: Stripe.PaymentRequestShippingOption[];
 
   /**
    * An array of PaymentRequestShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.
@@ -282,10 +282,10 @@ export class StripePaymentRequest extends StripeBase {
   }
 
   @property({ type: String, attribute: 'button-type' })
-  buttonType: StripePaymentRequestButtonType = 'default';
+    buttonType: StripePaymentRequestButtonType = 'default';
 
   @property({ type: String, attribute: 'button-theme' })
-  buttonTheme: StripePaymentRequestButtonTheme = 'dark';
+    buttonTheme: StripePaymentRequestButtonTheme = 'dark';
 
   /* PUBLIC API */
 
@@ -417,7 +417,7 @@ export class StripePaymentRequest extends StripeBase {
     paymentResponse.complete(status);
     this.fire(status, paymentResponse);
     return confirmationError ? { error: confirmationError } : paymentResponse;
-  }
+  };
 
   /**
    * Handle a paymentResponse from Stripe

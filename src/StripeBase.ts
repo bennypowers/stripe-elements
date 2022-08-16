@@ -71,7 +71,7 @@ const errorConverter = {
  * @csspart 'stripe' - container for the stripe element
  */
 export class StripeBase extends LitElement {
-  static is: 'stripe-elements'|'stripe-payment-request'
+  static is: 'stripe-elements'|'stripe-payment-request';
 
   /* PAYMENT CONFIGURATION */
 
@@ -115,34 +115,34 @@ export class StripeBase extends LitElement {
    * ```
    */
   @property({ type: String })
-  action: string;
+    action: string;
 
   /**
    * The `client_secret` part of a Stripe `PaymentIntent`
    */
   @property({ type: String, attribute: 'client-secret' })
-  clientSecret: string;
+    clientSecret: string;
 
   /**
    * Type of payment representation to generate.
    */
   @property({ type: String })
-  generate: PaymentRepresentation = 'source';
+    generate: PaymentRepresentation = 'source';
 
   /**
    * Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`
    */
   @notify
   @property({ type: String, attribute: 'publishable-key', reflect: true })
-  publishableKey: string;
+    publishableKey: string;
 
   /** Whether to display the error message */
   @property({ type: Boolean, attribute: 'show-error', reflect: true })
-  showError = false;
+    showError = false;
 
   /** Stripe account to use (connect) */
   @property({ type: String, attribute: 'stripe-account' })
-  stripeAccount: string;
+    stripeAccount: string;
 
   /** Stripe locale to use */
   @property({ type: String, attribute: 'locale' })
@@ -403,10 +403,13 @@ export class StripeBase extends LitElement {
     else {
       try {
         const options = { stripeAccount, locale };
-        const stripe =
-          (window.Stripe) ? window.Stripe(publishableKey, options) : await loadStripe(publishableKey, options);
+        const stripe = (window.Stripe) ?
+          window.Stripe(publishableKey, options)
+          : await loadStripe(publishableKey, options);
+
         const elements = stripe?.elements();
-        readonly.set<StripeBase>(this, { elements, error: null, stripe });
+        if (stripe)
+          readonly.set<StripeBase>(this, { elements, error: null, stripe });
       } catch (e) {
         // eslint-disable-next-line no-console
         console.warn(e);
