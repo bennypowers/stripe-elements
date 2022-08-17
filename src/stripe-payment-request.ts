@@ -30,10 +30,16 @@ interface StripeShippingOption extends HTMLElement {
 }
 
 type StripePaymentRequestButtonType =
-  Stripe.StripePaymentRequestButtonElementOptions['style']['paymentRequestButton']['type'];
+  NonNullable<
+    NonNullable<
+      Stripe.StripePaymentRequestButtonElementOptions['style']
+    >['paymentRequestButton']>['type'];
 
 type StripePaymentRequestButtonTheme =
-  Stripe.StripePaymentRequestButtonElementOptions['style']['paymentRequestButton']['theme'];
+  NonNullable<
+    NonNullable<
+      Stripe.StripePaymentRequestButtonElementOptions['style']
+    >['paymentRequestButton']>['theme'];
 
 type StripePaymentRequestEvent =
   | Stripe.PaymentRequestPaymentMethodEvent
