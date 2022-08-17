@@ -1,3 +1,10 @@
+## [3.2.1](https://github.com/bennypowers/stripe-elements/compare/v3.2.0...v3.2.1) (2022-08-17)
+
+
+### Bug Fixes
+
+* add missing declaration files in build ([#92](https://github.com/bennypowers/stripe-elements/issues/92)) ([5cbc63b](https://github.com/bennypowers/stripe-elements/commit/5cbc63bbe6e6e635c3322f2b2a09aab97f8fc4a3))
+
 # [3.2.0](https://github.com/bennypowers/stripe-elements/compare/v3.1.0...v3.2.0) (2022-06-21)
 
 
