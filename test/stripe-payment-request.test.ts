@@ -20,7 +20,7 @@ import {
 
 import { elem, not } from '../src/lib/predicates';
 import { isStripeShippingOption, StripePaymentRequest } from '../src/stripe-payment-request';
-import {StripeElements} from "../src";
+import { StripeElements } from '../src';
 
 const DEFAULT_PROPS = Object.freeze({
   ...Helpers.BASE_DEFAULT_PROPS,
@@ -74,12 +74,10 @@ describe('<stripe-payment-request>', function() {
 
     describe('uses default for property', function defaults() {
       beforeEach(Helpers.setupNoProps);
+      // @ts-expect-error: ignoring until ts gets cleverer
       Object.entries(DEFAULT_PROPS).forEach(Helpers.testDefaultPropEntry);
-    });
-
-    describe('has read-only property', function readOnly() {
-      beforeEach(Helpers.setupNoProps);
-      READ_ONLY_PROPS.forEach(Helpers.testReadOnlyProp);
+    }); describe('has read-only property', function readOnly() {
+      beforeEach(Helpers.setupNoProps); READ_ONLY_PROPS.forEach(Helpers.testReadOnlyProp);
     });
 
     describe('notifies when setting property', function notifying() {
@@ -115,7 +113,7 @@ describe('<stripe-payment-request>', function() {
 
     describe('and `displayItems` property set', function() {
       const displayItemsProperty = [{ amount: 125, label: 'Double Double' }];
-      beforeEach(Helpers.setProps({ displayItems: displayItemsProperty }));
+      beforeEach(Helpers.setProps<StripePaymentRequest>({ displayItems: displayItemsProperty }));
       it('gets the `displayItems` property based on DOM property', Helpers.assertProps({
         displayItems: displayItemsProperty,
       }, { deep: true }));
@@ -146,11 +144,11 @@ describe('<stripe-payment-request>', function() {
   });
 
   describe('with Native Shadow DOM support', function shadowDOM() {
-    let nestedElement;
-    let primaryHost;
-    let secondaryHost;
-    let tertiaryHost;
-    let stripeMountId;
+    let nestedElement: StripePaymentRequest;
+    let primaryHost: Element & { nestedElement: StripePaymentRequest };
+    let secondaryHost: Element & { primaryHost: typeof primaryHost };
+    let tertiaryHost: Element;
+    let stripeMountId: string;
 
     describe('when nested one shadow-root deep', function() {
       beforeEach(Helpers.mockStripe);
@@ -158,11 +156,11 @@ describe('<stripe-payment-request>', function() {
       beforeEach(async function setupOneRoot() {
         primaryHost = await fixture(`<primary-host tag="stripe-payment-request"></primary-host>`);
         ({ nestedElement } = primaryHost);
-        ({ stripeMountId } = nestedElement);
+        ({ stripeMountId = '' } = nestedElement);
       });
 
       it('leaves one breadcrumb on its way up to the document', async function breadcrumbs() {
-        const [slottedChild] = nestedElement.querySelector('slot').assignedNodes();
+        const [slottedChild] = nestedElement.querySelector('slot')!.assignedNodes();
         expect(slottedChild).to.contain(nestedElement.stripeMount);
       });
 
@@ -186,14 +184,14 @@ describe('<stripe-payment-request>', function() {
         secondaryHost = await fixture(`<secondary-host tag="stripe-payment-request"></secondary-host>`);
         ({ primaryHost } = secondaryHost);
         ({ nestedElement } = primaryHost);
-        ({ stripeMountId } = nestedElement);
+        ({ stripeMountId = '' } = nestedElement);
       });
 
       it('forwards stripe mount deeply through slots', async function breadcrumbs() {
         const [slottedChild] =
-          primaryHost.shadowRoot.querySelector('slot')
-            .assignedNodes()
-            .flatMap(Helpers.assignedNodes);
+          primaryHost.shadowRoot?.querySelector('slot')
+            ?.assignedNodes()
+            ?.flatMap(Helpers.assignedNodes) ?? [];
         expect(slottedChild).to.contain(nestedElement.stripeMount);
       });
 
@@ -219,19 +217,19 @@ describe('<stripe-payment-request>', function() {
 
     describe('when nested three shadow-roots deep', function() {
       beforeEach(async function setupThreeRoots() {
-        tertiaryHost = await fixture(`<tertiary-host tag="stripe-payment-request"></tertiary-host>`);
-        ({ secondaryHost } = tertiaryHost);
+        tertiaryHost = (await fixture(`<tertiary-host tag="stripe-payment-request"></tertiary-host>`));
+        ({ secondaryHost } = tertiaryHost as Element & { secondaryHost: typeof secondaryHost });
         ({ primaryHost } = secondaryHost);
         ({ nestedElement } = primaryHost);
-        ({ stripeMountId } = nestedElement);
+        ({ stripeMountId = '' } = nestedElement);
       });
 
       it('forwards stripe mount deeply through slots', async function breadcrumbs() {
         const [slottedChild] =
-          primaryHost.shadowRoot.querySelector('slot')
-            .assignedNodes()
+          primaryHost.shadowRoot?.querySelector('slot')
+            ?.assignedNodes()
             .flatMap(Helpers.assignedNodes)
-            .flatMap(Helpers.assignedNodes);
+            .flatMap(Helpers.assignedNodes) ?? [];
         expect(slottedChild).to.contain(nestedElement.stripeMount);
       });
 
@@ -316,7 +314,7 @@ describe('<stripe-payment-request>', function() {
           beforeEach(Helpers.setProps({ publishableKey: Keys.PUBLISHABLE_KEY }));
           beforeEach(nextFrame);
           it('initializes stripe with requestShipping option', function() {
-            expect(element.stripe.paymentRequest).to.have.been.calledWithMatch({ requestShipping: true });
+            expect(element.stripe?.paymentRequest).to.have.been.calledWithMatch({ requestShipping: true });
           });
         });
       });
@@ -334,7 +332,7 @@ describe('<stripe-payment-request>', function() {
             beforeEach(Helpers.blur);
             afterEach(Helpers.restoreStripeElementBlur);
             it('calls StripeElement#blur', function() {
-              expect(element.element.blur).to.have.been.called;
+              expect(element.element?.blur).to.have.been.called;
             });
           });
 
@@ -343,7 +341,7 @@ describe('<stripe-payment-request>', function() {
             beforeEach(Helpers.focus);
             afterEach(Helpers.restoreStripeElementFocus);
             it('calls StripeElement#focus', function() {
-              expect(element.element.focus).to.have.been.called;
+              expect(element.element?.focus).to.have.been.called;
             });
           });
 
@@ -388,7 +386,7 @@ describe('<stripe-payment-request>', function() {
             });
 
             it('uses a new id', function() {
-              expect(element.stripeMount.id).to.not.equal(Helpers.initialStripeMountId);
+              expect(element.stripeMount?.id).to.not.equal(Helpers.initialStripeMountId);
             });
           });
         });
@@ -468,7 +466,7 @@ describe('<stripe-payment-request>', function() {
         });
 
         describe('when publishable key is changed', function publishableKeyReset() {
-          let initialStripeMountId;
+          let initialStripeMountId: string|void;
           beforeEach(function() { initialStripeMountId = element.stripeMountId; });
           beforeEach(Helpers.setProps({ publishableKey: 'foo' }));
           beforeEach(nextFrame);

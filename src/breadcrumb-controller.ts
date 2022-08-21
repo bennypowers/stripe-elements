@@ -10,7 +10,7 @@ type Host = Element|ShadowRoot|Document;
 
 /** Generates a random number */
 export function getRandom(): string {
-  return (Date.now() + (Math.random() * 1000)).toString(36).substr(0, 8);
+  return (Date.now() + (Math.random() * 1000)).toString(36).substring(0, 8);
 }
 
 export class BreadcrumbController implements ReactiveController {
@@ -24,14 +24,14 @@ export class BreadcrumbController implements ReactiveController {
   /**
    * Mount point element ID. This element must be connected to the document.
    */
-  public mountId: string;
+  public mountId?: string;
 
   public slotName: string;
 
   /**
    * Mount point element. This element must be connected to the document.
    */
-  public get mount(): Element { return document.getElementById(this.mountId); }
+  public get mount(): Element|null { return document.getElementById(this.mountId ?? ''); }
 
   constructor(
     private host: ReactiveControllerHost & Element,
@@ -43,7 +43,7 @@ export class BreadcrumbController implements ReactiveController {
   }
 
   hostUpdated(): void {
-    if (!this.initialized && this.options.autoInitialize !== false)
+    if (!this.initialized && this.options?.autoInitialize !== false)
       this.init();
   }
 
@@ -52,13 +52,13 @@ export class BreadcrumbController implements ReactiveController {
   }
 
   private resetMountId() {
-    const prefix = this.options.mountPrefix ?? this.host.localName;
+    const prefix = this.options?.mountPrefix ?? this.host.localName;
     this.mountId = `${prefix}-mount-point-${getRandom()}`;
   }
 
   private createMountPoint(): HTMLElement {
     const node = document.createElement('div');
-    node.id = this.mountId;
+    node.id = this.mountId ?? '';
     node.classList.add(`${this.host.tagName.toLowerCase()}-mount`);
     return node;
   }
@@ -111,16 +111,16 @@ export class BreadcrumbController implements ReactiveController {
     // Prepare the shallowest breadcrumb slot at document level
     const hosts = [...shadowHosts];
     const root = hosts.pop();
-    if (!root.querySelector(`[slot="${slotName}"]`)) {
+    if (!root?.querySelector(`[slot="${slotName}"]`)) {
       const div = document.createElement('div');
       div.slot = slotName;
-      root.appendChild(div);
+      root?.appendChild(div);
     }
 
-    const container = root.querySelector(`[slot="${slotName}"]`);
+    const container = root?.querySelector(`[slot="${slotName}"]`);
 
     // Render the form to the document, so that the slotted content can mount
-    this.appendTemplate(container);
+    this.appendTemplate(container as Element);
 
     // Append breadcrumb slots to each shadowroot in turn,
     // from the document down to the <stripe-elements> instance.

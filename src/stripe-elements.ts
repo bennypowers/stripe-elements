@@ -214,7 +214,7 @@ export class StripeElements extends StripeBase {
   @notify
   @readonly
   @property({ type: String })
-  readonly brand: Stripe.StripeCardElementChangeEvent['brand'] = null;
+  readonly brand: Stripe.StripeCardElementChangeEvent['brand'] | null = null;
 
   /**
    * Whether the form is complete.
@@ -247,17 +247,18 @@ export class StripeElements extends StripeBase {
    */
   @stripeMethod public async createPaymentMethod(
     paymentMethodData: Stripe.CreatePaymentMethodData = this.getPaymentMethodData()
-  ): Promise<Stripe.PaymentMethodResult> {
-    return this.stripe.createPaymentMethod(paymentMethodData);
+  ): Promise<Stripe.PaymentMethodResult|void> {
+    return this.stripe?.createPaymentMethod(paymentMethodData);
   }
 
   /**
    * Submit payment information to generate a source
    */
   @stripeMethod public async createSource(
-    sourceData: Stripe.CreateSourceData = this.sourceData
-  ): Promise<Stripe.SourceResult> {
-    return this.stripe.createSource(this.element, sourceData);
+    sourceData: Stripe.CreateSourceData|void = this.sourceData
+  ): Promise<Stripe.SourceResult|void> {
+    if (this.stripe && sourceData)
+      return this.stripe?.createSource(this.element, sourceData);
   }
 
   /**
@@ -265,8 +266,9 @@ export class StripeElements extends StripeBase {
    */
   @stripeMethod public async createToken(
     tokenData = this.tokenData
-  ): Promise<Stripe.TokenResult> {
-    return this.stripe.createToken(this.element, tokenData);
+  ): Promise<Stripe.TokenResult|void> {
+    if (this.stripe && tokenData)
+      return this.stripe.createToken(this.element, tokenData);
   }
 
   /**
@@ -288,7 +290,7 @@ export class StripeElements extends StripeBase {
   /**
    * Generates a payment representation of the type specified by `generate`.
    */
-  public async submit(): Promise<StripePaymentResponse> {
+  public async submit(): Promise<StripePaymentResponse|void> {
     switch (this.generate) {
       case 'payment-method': return this.createPaymentMethod();
       case 'source': return this.createSource();
@@ -328,6 +330,7 @@ export class StripeElements extends StripeBase {
     const type = 'card';
     const { billingDetails, paymentMethodData } = this;
     return ({
+      // @ts-expect-error: probably an upstream type mismatch
       billing_details: billingDetails,
       ...paymentMethodData,
       type,
@@ -339,7 +342,8 @@ export class StripeElements extends StripeBase {
    * Returns a Stripe-friendly style object computed from CSS custom properties
    */
   private getStripeElementsStyles(): Stripe.StripeElementStyle {
-    const getStyle = (prop: string): string => this.getCSSCustomPropertyValue(prop) || undefined;
+    const getStyle = (prop: string): string|undefined =>
+      this.getCSSCustomPropertyValue(prop) || undefined;
 
     const STATES = ['base', 'complete', 'empty', 'invalid'];
     const subReducer = (state: string) => (acc: StripeStyleInit, sub: string) => {
@@ -381,13 +385,13 @@ export class StripeElements extends StripeBase {
       value,
     });
 
-    element.on('change', this.onChange);
+    element?.on('change', this.onChange);
     readonly.set<StripeElements>(this, { element });
     await this.updateComplete;
   }
 
   private createElement(options: Stripe.StripeCardElementOptions) {
-    const element = this.elements.create('card', options);
+    const element = this.elements?.create('card', options);
     return element;
   }
 

@@ -1,1 +1,1 @@
-export const objectOf = key => x => ({ [key]: x });
+export const objectOf = <T>(key: keyof T) => (x: T) => ({ [key]: x });

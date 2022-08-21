@@ -1,4 +1,4 @@
-import type { TemplateResult, PropertyValues } from 'lit';
+import type { TemplateResult, PropertyValues, ComplexAttributeConverter } from 'lit';
 import type * as Stripe from '@stripe/stripe-js';
 import { LitElement, html } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -48,12 +48,12 @@ class StripeElementsError extends Error {
   }
 }
 
-function isStripeElementsError(error: AmbiguousError): error is StripeElementsError {
+function isStripeElementsError(error: AmbiguousError|null): error is StripeElementsError {
   return !!error && error instanceof StripeElementsError;
 }
 
-const errorConverter = {
-  toAttribute: (error: AmbiguousError): string =>
+const errorConverter: ComplexAttributeConverter = {
+  toAttribute: (error: AmbiguousError) =>
         !error ? null
       : isStripeElementsError(error) ? error.originalMessage
       : error.message || '',
@@ -78,22 +78,22 @@ export class StripeBase extends LitElement {
   /**
    * billing_details object sent to create the payment representation. (optional)
    */
-  billingDetails: Stripe.PaymentMethod.BillingDetails;
+  billingDetails?: Stripe.PaymentMethod.BillingDetails;
 
   /**
    * Data passed to stripe.createPaymentMethod. (optional)
    */
-  paymentMethodData: Stripe.CreatePaymentMethodData;
+  paymentMethodData?: Stripe.CreatePaymentMethodData;
 
   /**
    * Data passed to stripe.createSource. (optional)
    */
-  sourceData: Stripe.CreateSourceData;
+  sourceData?: Stripe.CreateSourceData;
 
   /**
    * Data passed to stripe.createToken. (optional)
    */
-  tokenData: Stripe.CreateTokenCardData;
+  tokenData?: Stripe.CreateTokenCardData;
 
   /* SETTINGS */
 
@@ -114,39 +114,33 @@ export class StripeBase extends LitElement {
    * stripeElements.submit();
    * ```
    */
-  @property({ type: String })
-    action: string;
+  @property({ type: String }) action?: string;
 
   /**
    * The `client_secret` part of a Stripe `PaymentIntent`
    */
-  @property({ type: String, attribute: 'client-secret' })
-    clientSecret: string;
+  @property({ type: String, attribute: 'client-secret' }) clientSecret?: string;
 
   /**
    * Type of payment representation to generate.
    */
-  @property({ type: String })
-    generate: PaymentRepresentation = 'source';
+  @property({ type: String }) generate: PaymentRepresentation = 'source';
 
   /**
    * Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`
    */
   @notify
-  @property({ type: String, attribute: 'publishable-key', reflect: true })
-    publishableKey: string;
+  @property({ type: String, attribute: 'publishable-key', reflect: true }) publishableKey?: string;
 
   /** Whether to display the error message */
   @property({ type: Boolean, attribute: 'show-error', reflect: true })
     showError = false;
 
   /** Stripe account to use (connect) */
-  @property({ type: String, attribute: 'stripe-account' })
-    stripeAccount: string;
+  @property({ type: String, attribute: 'stripe-account' }) stripeAccount?: string;
 
   /** Stripe locale to use */
-  @property({ type: String, attribute: 'locale' })
-    locale: StripeElementLocale = 'auto';
+  @property({ type: String, attribute: 'locale' }) locale: StripeElementLocale = 'auto';
 
   /* READ-ONLY FIELDS */
 
@@ -158,7 +152,7 @@ export class StripeBase extends LitElement {
   @readonly
   @notify
   @property({ type: Object, attribute: 'payment-method' })
-  readonly paymentMethod: Stripe.PaymentMethod = null;
+  readonly paymentMethod: Stripe.PaymentMethod | null = null;
 
   /**
    * Stripe Source
@@ -166,7 +160,7 @@ export class StripeBase extends LitElement {
   @readonly
   @notify
   @property({ type: Object })
-  readonly source: Stripe.Source = null;
+  readonly source: Stripe.Source | null = null;
 
   /**
    * Stripe Token
@@ -174,21 +168,21 @@ export class StripeBase extends LitElement {
   @readonly
   @notify
   @property({ type: Object })
-  readonly token: Stripe.Token = null;
+  readonly token: Stripe.Token | null = null;
 
   /**
    * Stripe element instance
    */
   @readonly
   @property({ type: Object })
-  readonly element: Stripe.StripeCardElement|Stripe.StripePaymentRequestButtonElement = null;
+  readonly element: Stripe.StripeCardElement|Stripe.StripePaymentRequestButtonElement|null = null;
 
   /**
    * Stripe Elements instance
    */
   @readonly
   @property({ type: Object })
-  readonly elements: Stripe.StripeElements = null;
+  readonly elements: Stripe.StripeElements|null = null;
 
   /**
    * Stripe or validation error
@@ -219,7 +213,7 @@ export class StripeBase extends LitElement {
    */
   @readonly
   @property({ type: Object })
-  readonly stripe: Stripe.Stripe = null;
+  readonly stripe: Stripe.Stripe|null = null;
 
   /**
    * Stripe appearance theme
@@ -337,7 +331,7 @@ export class StripeBase extends LitElement {
   /**
    * Fires an Error Event
    */
-  private fireError(error: AmbiguousError): void {
+  private fireError(error: AmbiguousError|null): void {
     this.dispatchEvent(new ErrorEvent('error', { error }));
   }
 
@@ -374,7 +368,7 @@ export class StripeBase extends LitElement {
   private async init(): Promise<void> {
     await this.unmount();
     await this.initStripe();
-    await this.initElement();
+    await this.initElement?.();
     this.initElementListeners();
     this.breadcrumb.init();
     this.mount();
@@ -478,23 +472,25 @@ export class StripeBase extends LitElement {
     const body = JSON.stringify({ token, source, paymentMethod });
     const headers = { 'Content-Type': 'application/json' };
     const method = 'POST';
-    return fetch(this.action, { body, headers, method })
-      .then(throwBadResponse)
-      .then(onSuccess)
-      .catch(onError);
+    if (this.action) {
+      return fetch(this.action, { body, headers, method })
+        .then(throwBadResponse)
+        .then(onSuccess)
+        .catch(onError);
+    }
   }
 
   /**
    * Updates the state and fires events when the token, source, or payment method is updated.
    */
-  @bound private representationChanged(name: string): void {
-    if (!isRepresentation(name))
+  @bound private representationChanged(name: PropertyKey): void {
+    if (!isRepresentation(name as string))
       return;
-    const value = this[name];
+    const value = this[name as keyof this];
     /* istanbul ignore if */
     if (!value)
       return;
-    this.fire(`${dash(name)}`, value);
+    this.fire(`${dash(name as string)}`, value);
     if (this.action)
       this.postRepresentation();
   }

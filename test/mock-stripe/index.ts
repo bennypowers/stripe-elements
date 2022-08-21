@@ -3,7 +3,9 @@ import luhn from 'luhn-js';
 import creditCardType from 'credit-card-type';
 import { spy } from 'sinon';
 
-const assign = (target: object) => ([k, v]: [string, unknown]): unknown => target[k] = v;
+const assign = <T extends object>(target: T) => ([k, v]: [keyof T, T[keyof T]]): unknown =>
+  target[k] = v;
+
 
 export enum Keys {
   STRIPE_ACCOUNT = 'acct_XXXXXXXXXXX',
@@ -40,7 +42,7 @@ export const INCOMPLETE_CARD_ERROR = Object.freeze({
 export const CARD_DECLINED_ERROR = Object.freeze({
   type: 'card_error',
   code: 'card_declined',
-  decline_code: 'generic_decline', // eslint-disable-line @typescript-eslint/camelcase
+  decline_code: 'generic_decline',
   message: 'The card has been declined.',
 });
 
@@ -50,18 +52,18 @@ const CARD_ERRORS = {
   '4000000000000002': CARD_DECLINED_ERROR,
 };
 
-const userAgentCreditCards = [];
+const userAgentCreditCards: unknown[] = [];
 
 class SynthEventTarget extends EventTarget {
-  listeners = [];
+  listeners: [string, EventListenerOrEventListenerObject][] = [];
 
-  error: Error;
+  error?: Error;
 
   synthEvent(type: string, params: any): void {
     const error = this.error ?? params?.error;
     const props = { ...params, error };
     const event = new CustomEvent(type);
-    Object.entries(props).forEach(assign(event));
+    Object.entries(props).forEach(assign(event as typeof props));
     this.dispatchEvent(event);
   }
 
@@ -83,29 +85,39 @@ class PaymentRequest extends SynthEventTarget {
     this.update(options);
   }
 
-  async canMakePayment(): Promise<{ applePay: boolean }> {
+  async canMakePayment(): Promise<{ applePay: boolean }|null> {
     return userAgentCreditCards.length ? { applePay: true } : null;
   }
 
-  update(options): void { Object.entries(options).forEach(assign(this)); }
+  update(options: Partial<this>): void {
+    Object.entries(options).forEach(
+      // @ts-expect-error: meh
+      assign(this)
+    );
+  }
 }
 
 class Element extends SynthEventTarget {
-  type: string
+  style: unknown;
 
-  constructor(type, options) {
+  constructor(public type: string, options: Partial<Element>) {
     super();
-    this.type = type;
-    Object.entries(options).forEach(assign(this));
+    Object.entries(options).forEach(
+      // @ts-expect-error: meh
+      assign(this)
+    );
   }
 
-  setState(props): void {
-    Object.entries(props).forEach(assign(this));
+  setState(props: Partial<this>): void {
+    Object.entries(props).forEach(
+      // @ts-expect-error: meh
+      assign(this)
+    );
   }
 
   // Stripe Card APIs
 
-  mount(node): void {
+  mount(node: HTMLElement): void {
     render(html`<!-- Stripe mounts here -->`, node);
     this.dispatchEvent(new CustomEvent('ready'));
   }
@@ -127,46 +139,45 @@ class Element extends SynthEventTarget {
 
   unmount(): void { null; }
 
-  update(options): void { this.setState(options); }
+  update(options: Partial<this>): void { this.setState(options); }
 }
 
 class CardElement extends Element {
-  cardNumber: string;
+  cardNumber?: string;
 
-  complete: boolean;
+  complete = false;
 
-  empty: boolean;
+  empty = true;
 
-  type: string;
+  brand?: string;
 
-  options: any;
-
-  brand: string;
+  mm?: number;
+  yy?: number;
+  cvc?: number;
+  zip?: number;
 
   // @ts-expect-error: whatever
   get error(): Error {
     const { cardNumber, complete, empty } = this;
-    const cardError = CARD_ERRORS[cardNumber?.toString()];
+    const cardError = CARD_ERRORS[cardNumber?.toString() as keyof typeof CARD_ERRORS];
     const stateError = (!complete || empty) ? INCOMPLETE_CARD_ERROR : undefined;
-    return cardError || stateError;
+    return (cardError || stateError) as unknown as Error;
   }
 
-  constructor(type, options) {
+  constructor(public type: string, public options: Partial<CardElement>) {
     super(type, options);
-    this.type = type;
-    this.options = options;
   }
 
-  setState({ cardNumber, mm, yy, cvc, zip }): void {
-    super.setState({ cardNumber, mm, yy, cvc, zip });
+  setState({ cardNumber, mm, yy, cvc, zip }: Partial<this>): void {
+    super.setState({ cardNumber, mm, yy, cvc, zip } as Partial<this>);
 
-    [{ type: this.brand }] = creditCardType(this.cardNumber);
+    [{ type: this.brand }] = creditCardType(this.cardNumber!);
 
     this.complete =
-      luhn.isValid(this.cardNumber) && mm && yy && cvc !== undefined;
+      !!(luhn.isValid(this.cardNumber!) && mm && yy && cvc !== undefined);
 
     this.empty =
-      !cardNumber && cardNumber !== 0 &&
+      !cardNumber && cardNumber !== '0' &&
       !mm && mm !== 0 &&
       !yy && yy !== 0 &&
       !cvc && cvc !== 0;
@@ -185,13 +196,15 @@ class Elements {
 
   fonts: any;
 
-  constructor({ locale, fonts }) {
+  constructor({ locale, fonts }: { locale: string, fonts: any }) {
     this.locale = locale;
     this.fonts = fonts;
-    return this;
   }
 
-  create(type: string, { style = undefined } = {}): CardElement|PaymentRequestButtonElement {
+  create(
+    type: 'card'|'paymentRequestButton',
+    { style = undefined } = {}
+  ): CardElement|PaymentRequestButtonElement {
     switch (type) {
       case 'card': return new CardElement(type, { style });
       case 'paymentRequestButton': return new PaymentRequestButtonElement(type, { style });
@@ -204,7 +217,7 @@ export class Stripe {
 
   opts: any;
 
-  keyError: Error;
+  keyError?: Error;
 
   constructor(key: Keys, opts: any) {
     this.key = key;
@@ -219,7 +232,7 @@ export class Stripe {
     return this;
   }
 
-  elements({ fonts = undefined, locale = undefined } = {}): Elements {
+  elements({ fonts = undefined, locale = '' } = {}): Elements {
     return new Elements({ fonts, locale });
   }
 
@@ -238,20 +251,20 @@ export class Stripe {
     return { error, paymentIntent };
   }
 
-  async createPaymentMethod(paymentMethodData) {
+  async createPaymentMethod(paymentMethodData: { card: { error: Error } }) {
     const { error = this.keyError } = paymentMethodData.card;
     const paymentMethod = error ? undefined : SUCCESSFUL_PAYMENT_METHOD;
     const response = { error, paymentMethod };
     return response;
   }
 
-  async createSource({ error = this.keyError }, cardData) {
+  async createSource({ error = this.keyError }: any, cardData: any) {
     const source = error ? undefined : SUCCESSFUL_SOURCE;
     const response = { error, source };
     return response;
   }
 
-  async createToken({ error = this.keyError } = {}, cardData) {
+  async createToken({ error = this.keyError } = {}, cardData: any) {
     const token = error ? undefined : SUCCESSFUL_TOKEN;
     const response = { error, token };
     return response;
@@ -264,7 +277,7 @@ export class Stripe {
   }
 }
 
-export function addUserAgentCreditCard(card) {
+export function addUserAgentCreditCard(card: unknown) {
   userAgentCreditCards.push(card);
 }
 
