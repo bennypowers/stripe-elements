@@ -1,3 +1,10 @@
+# [3.3.0](https://github.com/bennypowers/stripe-elements/compare/v3.2.1...v3.3.0) (2022-08-22)
+
+
+### Features
+
+* strict mode ([#94](https://github.com/bennypowers/stripe-elements/issues/94)) ([3b989dd](https://github.com/bennypowers/stripe-elements/commit/3b989dd7dcfcd569966b6752b6910dfc088b285a))
+
 ## [3.2.1](https://github.com/bennypowers/stripe-elements/compare/v3.2.0...v3.2.1) (2022-08-17)
 
 
