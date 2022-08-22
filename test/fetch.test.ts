@@ -10,7 +10,7 @@ describe('throwBadResponse', function() {
       await throwBadResponse(response);
       expect.fail('resolved response');
     } catch (err) {
-      expect(err.message).to.equal(statusText);
+      expect((err as Error).message).to.equal(statusText);
     }
   });
 

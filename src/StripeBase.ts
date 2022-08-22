@@ -1,4 +1,4 @@
-import type { TemplateResult, PropertyValues } from 'lit';
+import type { TemplateResult, PropertyValues, ComplexAttributeConverter } from 'lit';
 import type * as Stripe from '@stripe/stripe-js';
 import { LitElement, html } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -22,7 +22,6 @@ export const enum SlotName {
 }
 
 export type PaymentRepresentation = 'payment-method'|'source'|'token'
-
 export type StripePaymentResponse =
   | Stripe.PaymentIntentResult
   | Stripe.PaymentMethodResult
@@ -30,8 +29,8 @@ export type StripePaymentResponse =
   | Stripe.TokenResult
   | Stripe.SourceResult
 
-type AmbiguousError =
-  Error|Stripe.StripeError|StripeElementsError;
+type StripeElementType = Stripe.StripeCardElement | Stripe.StripePaymentRequestButtonElement;
+type AmbiguousError = Error|Stripe.StripeError|StripeElementsError;
 
 declare global {
   interface Node {
@@ -48,12 +47,12 @@ class StripeElementsError extends Error {
   }
 }
 
-function isStripeElementsError(error: AmbiguousError): error is StripeElementsError {
+function isStripeElementsError(error: AmbiguousError | null): error is StripeElementsError {
   return !!error && error instanceof StripeElementsError;
 }
 
-const errorConverter = {
-  toAttribute: (error: AmbiguousError): string =>
+const errorConverter: ComplexAttributeConverter = {
+  toAttribute: (error: AmbiguousError) =>
         !error ? null
       : isStripeElementsError(error) ? error.originalMessage
       : error.message || '',
@@ -71,29 +70,29 @@ const errorConverter = {
  * @csspart 'stripe' - container for the stripe element
  */
 export class StripeBase extends LitElement {
-  static is: 'stripe-elements'|'stripe-payment-request'
+  static is: 'stripe-elements'|'stripe-payment-request';
 
   /* PAYMENT CONFIGURATION */
 
   /**
    * billing_details object sent to create the payment representation. (optional)
    */
-  billingDetails: Stripe.PaymentMethod.BillingDetails;
+  billingDetails?: Stripe.CreatePaymentMethodData['billing_details'];
 
   /**
    * Data passed to stripe.createPaymentMethod. (optional)
    */
-  paymentMethodData: Stripe.CreatePaymentMethodData;
+  paymentMethodData?: Stripe.CreatePaymentMethodData;
 
   /**
    * Data passed to stripe.createSource. (optional)
    */
-  sourceData: Stripe.CreateSourceData;
+  sourceData?: Stripe.CreateSourceData;
 
   /**
    * Data passed to stripe.createToken. (optional)
    */
-  tokenData: Stripe.CreateTokenCardData;
+  tokenData?: Stripe.CreateTokenCardData;
 
   /* SETTINGS */
 
@@ -114,39 +113,32 @@ export class StripeBase extends LitElement {
    * stripeElements.submit();
    * ```
    */
-  @property({ type: String })
-  action: string;
+  @property({ type: String }) action?: string;
 
   /**
    * The `client_secret` part of a Stripe `PaymentIntent`
    */
-  @property({ type: String, attribute: 'client-secret' })
-  clientSecret: string;
+  @property({ type: String, attribute: 'client-secret' }) clientSecret?: string;
 
   /**
    * Type of payment representation to generate.
    */
-  @property({ type: String })
-  generate: PaymentRepresentation = 'source';
+  @property({ type: String }) generate: PaymentRepresentation = 'source';
 
   /**
    * Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`
    */
   @notify
-  @property({ type: String, attribute: 'publishable-key', reflect: true })
-  publishableKey: string;
+  @property({ type: String, attribute: 'publishable-key', reflect: true }) publishableKey?: string;
 
   /** Whether to display the error message */
-  @property({ type: Boolean, attribute: 'show-error', reflect: true })
-  showError = false;
+  @property({ type: Boolean, attribute: 'show-error', reflect: true }) showError = false;
 
   /** Stripe account to use (connect) */
-  @property({ type: String, attribute: 'stripe-account' })
-  stripeAccount: string;
+  @property({ type: String, attribute: 'stripe-account' }) stripeAccount?: string;
 
   /** Stripe locale to use */
-  @property({ type: String, attribute: 'locale' })
-    locale: StripeElementLocale = 'auto';
+  @property({ type: String, attribute: 'locale' }) locale: StripeElementLocale = 'auto';
 
   /* READ-ONLY FIELDS */
 
@@ -158,7 +150,7 @@ export class StripeBase extends LitElement {
   @readonly
   @notify
   @property({ type: Object, attribute: 'payment-method' })
-  readonly paymentMethod: Stripe.PaymentMethod = null;
+  readonly paymentMethod: Stripe.PaymentMethod | null = null;
 
   /**
    * Stripe Source
@@ -166,7 +158,7 @@ export class StripeBase extends LitElement {
   @readonly
   @notify
   @property({ type: Object })
-  readonly source: Stripe.Source = null;
+  readonly source: Stripe.Source | null = null;
 
   /**
    * Stripe Token
@@ -174,21 +166,21 @@ export class StripeBase extends LitElement {
   @readonly
   @notify
   @property({ type: Object })
-  readonly token: Stripe.Token = null;
+  readonly token: Stripe.Token | null = null;
 
   /**
    * Stripe element instance
    */
   @readonly
   @property({ type: Object })
-  readonly element: Stripe.StripeCardElement|Stripe.StripePaymentRequestButtonElement = null;
+  readonly element: StripeElementType | null = null;
 
   /**
    * Stripe Elements instance
    */
   @readonly
   @property({ type: Object })
-  readonly elements: Stripe.StripeElements = null;
+  readonly elements: Stripe.StripeElements | null = null;
 
   /**
    * Stripe or validation error
@@ -196,7 +188,7 @@ export class StripeBase extends LitElement {
   @readonly
   @notify
   @property({ type: Object, reflect: true, converter: errorConverter })
-  readonly error: null|AmbiguousError = null;
+  readonly error: AmbiguousError | null = null;
 
   /**
    * If the element is focused.
@@ -219,7 +211,7 @@ export class StripeBase extends LitElement {
    */
   @readonly
   @property({ type: Object })
-  readonly stripe: Stripe.Stripe = null;
+  readonly stripe: Stripe.Stripe | null = null;
 
   /**
    * Stripe appearance theme
@@ -273,7 +265,7 @@ export class StripeBase extends LitElement {
     super.updated?.(changed);
     if (changed.has('error')) this.errorChanged();
     if (changed.has('publishableKey')) this.init();
-    [...changed.keys()].forEach(this.representationChanged);
+    [...changed.keys()].forEach(k => this.representationChanged(k));
   }
 
   /** @inheritdoc */
@@ -337,7 +329,7 @@ export class StripeBase extends LitElement {
   /**
    * Fires an Error Event
    */
-  private fireError(error: AmbiguousError): void {
+  private fireError(error: AmbiguousError | null): void {
     this.dispatchEvent(new ErrorEvent('error', { error }));
   }
 
@@ -374,7 +366,7 @@ export class StripeBase extends LitElement {
   private async init(): Promise<void> {
     await this.unmount();
     await this.initStripe();
-    await this.initElement();
+    await this.initElement!();
     this.initElementListeners();
     this.breadcrumb.init();
     this.mount();
@@ -404,7 +396,8 @@ export class StripeBase extends LitElement {
       try {
         const options = { stripeAccount, locale };
         const stripe =
-          (window.Stripe) ? window.Stripe(publishableKey, options) : await loadStripe(publishableKey, options);
+            (window.Stripe) ? window.Stripe(publishableKey, options)
+          : await loadStripe(publishableKey, options);
         const elements = stripe?.elements();
         readonly.set<StripeBase>(this, { elements, error: null, stripe });
       } catch (e) {
@@ -445,10 +438,6 @@ export class StripeBase extends LitElement {
     await this.updateComplete;
   }
 
-  /**
-   * @param  {StripeFocusEvent} event
-   * @private
-   */
   @bound private async onFocus(): Promise<void> {
     readonly.set<StripeBase>(this, { focused: true });
     await this.updateComplete;
@@ -475,7 +464,7 @@ export class StripeBase extends LitElement {
     const body = JSON.stringify({ token, source, paymentMethod });
     const headers = { 'Content-Type': 'application/json' };
     const method = 'POST';
-    return fetch(this.action, { body, headers, method })
+    return fetch(this.action!, { body, headers, method })
       .then(throwBadResponse)
       .then(onSuccess)
       .catch(onError);
@@ -484,14 +473,14 @@ export class StripeBase extends LitElement {
   /**
    * Updates the state and fires events when the token, source, or payment method is updated.
    */
-  @bound private representationChanged(name: string): void {
-    if (!isRepresentation(name))
+  private representationChanged(name: PropertyKey): void {
+    if (!isRepresentation(name as string))
       return;
-    const value = this[name];
+    const value = this[name as keyof this];
     /* istanbul ignore if */
     if (!value)
       return;
-    this.fire(`${dash(name)}`, value);
+    this.fire(`${dash(name as string)}`, value);
     if (this.action)
       this.postRepresentation();
   }
