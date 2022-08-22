@@ -1,3 +1,5 @@
+"use strict";
+
 // src/lib/fetch.ts
 async function throwBadResponse(response) {
   const { ok, statusText } = response;

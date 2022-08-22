@@ -1,3 +1,5 @@
+"use strict";
+
 // src/lib/stripe-method-decorator.ts
 function wrap(f) {
   return (_target, _property, descriptor) => {

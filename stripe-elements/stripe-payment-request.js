@@ -1,3 +1,4 @@
+"use strict";
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __decorateClass = (decorators, target, key, kind) => {
@@ -52,22 +53,22 @@ var BreadcrumbController = class {
     this.initialized = false;
     this.shadowHosts = [];
     this.host.addController(this);
-    this.resetMountId();
+    this.mountId = this.resetMountId();
     this.slotName = this.options?.slotName ?? `breadcrumb-${getRandom()}`;
   }
   get mount() {
     return document.getElementById(this.mountId);
   }
   hostUpdated() {
-    if (!this.initialized && this.options.autoInitialize !== false)
+    if (!this.initialized && this.options?.autoInitialize !== false)
       this.init();
   }
   hostDisconnected() {
     this.destroyMountPoints();
   }
   resetMountId() {
-    const prefix = this.options.mountPrefix ?? this.host.localName;
-    this.mountId = `${prefix}-mount-point-${getRandom()}`;
+    const prefix = this.options?.mountPrefix ?? this.host.localName;
+    return `${prefix}-mount-point-${getRandom()}`;
   }
   createMountPoint() {
     const node = document.createElement("div");
@@ -95,7 +96,7 @@ var BreadcrumbController = class {
     }
     if (this.mount)
       this.mount.remove();
-    this.resetMountId();
+    this.mountId = this.resetMountId();
   }
   initShadowMountPoints() {
     let host = this.host;
@@ -315,7 +316,7 @@ var StripeBase = class extends LitElement {
       this.errorChanged();
     if (changed.has("publishableKey"))
       this.init();
-    [...changed.keys()].forEach(this.representationChanged);
+    [...changed.keys()].forEach((k) => this.representationChanged(k));
   }
   async disconnectedCallback() {
     super.disconnectedCallback();
@@ -546,9 +547,6 @@ __decorateClass([
 __decorateClass([
   bound
 ], StripeBase.prototype, "onReady", 1);
-__decorateClass([
-  bound
-], StripeBase.prototype, "representationChanged", 1);
 
 // src/stripe-payment-request.ts
 import { throwResponseError } from "./lib/stripe.js";
@@ -708,13 +706,16 @@ var StripePaymentRequest = class extends StripeBase {
       this.fire("unsupported");
   }
   async initPaymentRequestButton() {
-    const { buttonTheme: theme, buttonType: type, canMakePayment, paymentRequest } = this;
+    const { buttonTheme: theme, buttonType: type, canMakePayment } = this;
     if (!canMakePayment || !this.elements)
       return;
     const propertyName = "--stripe-payment-request-button-height";
     const height = this.getCSSCustomPropertyValue(propertyName) || "40px";
     const style = { paymentRequestButton: { height, theme, type } };
-    const element = this.elements.create("paymentRequestButton", { paymentRequest, style });
+    const element = this.elements.create("paymentRequestButton", {
+      paymentRequest: this.paymentRequest,
+      style
+    });
     readonly2.set(this, { element });
     await this.updateComplete;
   }
@@ -762,7 +763,9 @@ var StripePaymentRequest = class extends StripeBase {
   }
   async confirmPaymentIntent(paymentResponse) {
     const confirmCardData = { payment_method: this.paymentMethod.id };
-    const { error = null, paymentIntent = null } = await this.confirmCardPayment(confirmCardData, { handleActions: false }).then(({ error: confirmationError }) => this.complete(paymentResponse, confirmationError)).then(throwResponseError).then(() => this.confirmCardPayment()).then(throwResponseError).catch((error2) => ({ error: error2 }));
+    const response = await this.confirmCardPayment(confirmCardData, { handleActions: false }).then(({ error: confirmationError }) => this.complete(paymentResponse, confirmationError)).then(throwResponseError).then(() => this.confirmCardPayment()).then(throwResponseError).catch((error2) => ({ error: error2 }));
+    const { error = null } = response;
+    const paymentIntent = response.paymentIntent ?? null;
     readonly2.set(this, { error, paymentIntent });
     await this.updateComplete;
   }

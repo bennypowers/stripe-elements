@@ -1,5 +1,8 @@
 import type * as Stripe from '@stripe/stripe-js';
 import { StripeBase, StripePaymentResponse } from './StripeBase.js';
+declare type IconStyle = Stripe.StripeCardElementOptions['iconStyle'];
+declare type CardBrand = Stripe.StripeCardElementChangeEvent['brand'];
+declare type StripeFormValues = Stripe.StripeCardElementOptions['value'];
 /**
  * [Stripe.js v3 Card Elements](https://stripe.com/docs/elements), but it's a Web Component!
  * Supports Shadow DOM.
@@ -138,16 +141,16 @@ export declare class StripeElements extends StripeBase {
     /**
      * Stripe icon style.
      */
-    iconStyle: Stripe.StripeCardElementOptions['iconStyle'];
+    iconStyle: IconStyle;
     /**
      * Prefilled values for form.
      * @example { postalCode: '90210' }
      */
-    value: Stripe.StripeCardElementOptions['value'];
+    value: StripeFormValues;
     /**
      * The card brand detected by Stripe
      */
-    readonly brand: Stripe.StripeCardElementChangeEvent['brand'];
+    readonly brand: CardBrand | null;
     /**
      * Whether the form is complete.
      */
@@ -171,7 +174,7 @@ export declare class StripeElements extends StripeBase {
     /**
      * Submit payment information to generate a token
      */
-    createToken(tokenData?: Stripe.CreateTokenCardData): Promise<Stripe.TokenResult>;
+    createToken(tokenData?: Stripe.CreateTokenCardData | undefined): Promise<Stripe.TokenResult>;
     /**
      * Checks for potential validity. A potentially valid form is one that is not empty, not complete and has no error. A validated form also counts as potentially valid.
      */
@@ -204,3 +207,4 @@ export declare class StripeElements extends StripeBase {
      */
     private onChange;
 }
+export {};

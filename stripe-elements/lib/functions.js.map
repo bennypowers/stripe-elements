@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../src/lib/functions.ts"],
-  "sourcesContent": ["export const unary = f => x => f(x);\n"],
-  "mappings": ";AAAO,IAAM,QAAQ,OAAK,OAAK,EAAE,CAAC;",
+  "sourcesContent": ["export const unary = (f: (...args:any[]) => unknown) => (x: unknown) => f(x);\n"],
+  "mappings": ";;;AAAO,IAAM,QAAQ,CAAC,MAAkC,CAAC,MAAe,EAAE,CAAC;",
   "names": []
 }

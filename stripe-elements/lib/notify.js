@@ -1,3 +1,5 @@
+"use strict";
+
 // src/lib/notify.ts
 var ChangeEvent = class extends Event {
   constructor(key, oldValue, value, attribute) {

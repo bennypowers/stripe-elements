@@ -22,8 +22,8 @@ export declare class BreadcrumbController implements ReactiveController {
     /**
      * Mount point element. This element must be connected to the document.
      */
-    get mount(): Element;
-    constructor(host: ReactiveControllerHost & Element, options?: BreadcrumbControllerOptions);
+    get mount(): Element | null;
+    constructor(host: ReactiveControllerHost & Element, options?: BreadcrumbControllerOptions | undefined);
     hostUpdated(): void;
     hostDisconnected(): void;
     private resetMountId;

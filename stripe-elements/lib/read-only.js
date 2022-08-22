@@ -1,3 +1,5 @@
+"use strict";
+
 // src/lib/read-only.ts
 function isReactiveElement(host) {
   return "addInitializer" in host.constructor;

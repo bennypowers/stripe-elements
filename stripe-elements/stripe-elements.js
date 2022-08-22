@@ -1,3 +1,4 @@
+"use strict";
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __decorateClass = (decorators, target, key, kind) => {
@@ -34,22 +35,22 @@ var BreadcrumbController = class {
     this.initialized = false;
     this.shadowHosts = [];
     this.host.addController(this);
-    this.resetMountId();
+    this.mountId = this.resetMountId();
     this.slotName = this.options?.slotName ?? `breadcrumb-${getRandom()}`;
   }
   get mount() {
     return document.getElementById(this.mountId);
   }
   hostUpdated() {
-    if (!this.initialized && this.options.autoInitialize !== false)
+    if (!this.initialized && this.options?.autoInitialize !== false)
       this.init();
   }
   hostDisconnected() {
     this.destroyMountPoints();
   }
   resetMountId() {
-    const prefix = this.options.mountPrefix ?? this.host.localName;
-    this.mountId = `${prefix}-mount-point-${getRandom()}`;
+    const prefix = this.options?.mountPrefix ?? this.host.localName;
+    return `${prefix}-mount-point-${getRandom()}`;
   }
   createMountPoint() {
     const node = document.createElement("div");
@@ -77,7 +78,7 @@ var BreadcrumbController = class {
     }
     if (this.mount)
       this.mount.remove();
-    this.resetMountId();
+    this.mountId = this.resetMountId();
   }
   initShadowMountPoints() {
     let host = this.host;
@@ -297,7 +298,7 @@ var StripeBase = class extends LitElement {
       this.errorChanged();
     if (changed.has("publishableKey"))
       this.init();
-    [...changed.keys()].forEach(this.representationChanged);
+    [...changed.keys()].forEach((k) => this.representationChanged(k));
   }
   async disconnectedCallback() {
     super.disconnectedCallback();
@@ -528,9 +529,6 @@ __decorateClass([
 __decorateClass([
   bound
 ], StripeBase.prototype, "onReady", 1);
-__decorateClass([
-  bound
-], StripeBase.prototype, "representationChanged", 1);
 
 // src/stripe-elements.ts
 import { dash as dash2 } from "./lib/strings.js";

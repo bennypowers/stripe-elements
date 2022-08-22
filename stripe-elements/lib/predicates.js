@@ -1,3 +1,5 @@
+"use strict";
+
 // src/lib/predicates.ts
 var elem = (xs) => (x) => xs.includes(x);
 var not = (p) => (x) => !p(x);

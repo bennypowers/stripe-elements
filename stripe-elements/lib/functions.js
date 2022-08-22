@@ -1,3 +1,5 @@
+"use strict";
+
 // src/lib/functions.ts
 var unary = (f) => (x) => f(x);
 export {

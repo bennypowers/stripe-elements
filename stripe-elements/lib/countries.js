@@ -1,3 +1,5 @@
+"use strict";
+
 // src/lib/countries.ts
 var Country = /* @__PURE__ */ ((Country2) => {
   Country2["AF"] = "Afghanistan";

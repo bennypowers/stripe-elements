@@ -1,1 +1,3 @@
-export declare function throwResponseError(response: any): any;
+export declare function throwResponseError<T extends {
+    error?: unknown;
+}>(response: T): T;

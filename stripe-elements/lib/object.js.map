@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../src/lib/object.ts"],
-  "sourcesContent": ["export const objectOf = key => x => ({ [key]: x });\n"],
-  "mappings": ";AAAO,IAAM,WAAW,SAAO,OAAM,GAAE,CAAC,MAAM,EAAE;",
+  "sourcesContent": ["export const objectOf = <T extends object>(key: keyof T) => (x: T[keyof T]) => ({ [key]: x });\n"],
+  "mappings": ";;;AAAO,IAAM,WAAW,CAAmB,QAAiB,CAAC,MAAmB,GAAE,CAAC,MAAM,EAAE;",
   "names": []
 }

@@ -1,3 +1,5 @@
+"use strict";
+
 // src/lib/stripe.ts
 function throwResponseError(response) {
   if (response.error)

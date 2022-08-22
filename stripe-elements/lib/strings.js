@@ -1,3 +1,5 @@
+"use strict";
+
 // src/lib/strings.ts
 import eagerDash from "@lavadrop/kebab-case";
 import eagerCamel from "@lavadrop/camel-case";

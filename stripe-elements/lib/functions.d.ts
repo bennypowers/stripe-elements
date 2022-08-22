@@ -1,1 +1,1 @@
-export declare const unary: (f: any) => (x: any) => any;
+export declare const unary: (f: (...args: any[]) => unknown) => (x: unknown) => unknown;

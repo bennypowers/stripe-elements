@@ -1,3 +1,5 @@
+"use strict";
+
 // src/lib/object.ts
 var objectOf = (key) => (x) => ({ [key]: x });
 export {

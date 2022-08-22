@@ -13,12 +13,15 @@ interface StripeShippingOption extends HTMLElement {
     dataset: {
         id: string;
         label: string;
-        detail?: string;
+        detail: string;
         amount: string;
     };
 }
-declare type StripePaymentRequestButtonType = Stripe.StripePaymentRequestButtonElementOptions['style']['paymentRequestButton']['type'];
-declare type StripePaymentRequestButtonTheme = Stripe.StripePaymentRequestButtonElementOptions['style']['paymentRequestButton']['theme'];
+declare type PRBStyle = NonNullable<Stripe.StripePaymentRequestButtonElementOptions['style']>;
+declare type PRBStyleProps = PRBStyle['paymentRequestButton'];
+declare type StripePaymentRequestButtonType = NonNullable<PRBStyleProps['type']>;
+declare type StripePaymentRequestButtonTheme = NonNullable<PRBStyleProps['theme']>;
+declare type StripeCurrency = Stripe.PaymentRequestOptions['currency'];
 declare type PaymentResponseOrError = Stripe.StripeError | Stripe.PaymentIntentResult | Stripe.TokenResult | Stripe.SourceResult;
 export declare type PaymentResponseHandler = (x: PaymentResponseOrError) => PaymentResponseOrError;
 export declare const enum Events {
@@ -91,22 +94,22 @@ export declare class StripePaymentRequest extends StripeBase {
     /**
      * The amount in the currency's subunit (e.g. cents, yen, etc.)
      */
-    amount: number;
+    amount?: number;
     /**
      * Whether or not the device can make the payment request.
      * @readonly
      */
-    readonly canMakePayment: Stripe.CanMakePaymentResult;
+    readonly canMakePayment: Stripe.CanMakePaymentResult | null;
     /**
      * The two-letter country code of your Stripe account
      * @example CA
      */
-    country: CountryCode;
+    country?: CountryCode;
     /**
      * Three character currency code
      * @example usd
      */
-    currency: Stripe.PaymentRequestOptions['currency'];
+    currency?: StripeCurrency;
     /**
      * An array of PaymentRequestItem objects. These objects are shown as line items in the browser’s payment interface. Note that the sum of the line item amounts does not need to add up to the total amount above.
      */
@@ -115,15 +118,15 @@ export declare class StripePaymentRequest extends StripeBase {
     /**
      * A name that the browser shows the customer in the payment interface.
      */
-    label: string;
+    label?: string;
     /**
      * Stripe PaymentIntent
      */
-    readonly paymentIntent: Stripe.PaymentIntent;
+    readonly paymentIntent: Stripe.PaymentIntent | null;
     /**
      * Stripe PaymentRequest
      */
-    readonly paymentRequest: Stripe.PaymentRequest;
+    readonly paymentRequest: Stripe.PaymentRequest | null;
     /**
      * If you might change the payment amount later (for example, after you have calcluated shipping costs), set this to true. Note that browsers treat this as a hint for how to display things, and not necessarily as something that will prevent submission.
      */
@@ -131,22 +134,22 @@ export declare class StripePaymentRequest extends StripeBase {
     /**
      * See the requestPayerName option.
      */
-    requestPayerEmail: boolean;
+    requestPayerEmail?: boolean;
     /**
      * By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.
      *
      * We highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available.
      */
-    requestPayerName: boolean;
+    requestPayerName?: boolean;
     /**
      * See the requestPayerName option.
      */
-    requestPayerPhone: boolean;
+    requestPayerPhone?: boolean;
     /**
      * Collect shipping address by setting this option to true. The address appears in the PaymentResponse.
      * You must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback.
      */
-    requestShipping: boolean;
+    requestShipping?: boolean;
     /**
      * An array of PaymentRequestShippingOption objects. The first shipping option listed appears in the browser payment interface as the default option.
      */

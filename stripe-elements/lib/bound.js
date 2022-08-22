@@ -1,3 +1,5 @@
+"use strict";
+
 // src/lib/bound.ts
 var configurable = true;
 function bound(_, key, descriptor) {

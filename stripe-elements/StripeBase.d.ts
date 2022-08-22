@@ -8,6 +8,7 @@ export declare const enum SlotName {
 }
 export declare type PaymentRepresentation = 'payment-method' | 'source' | 'token';
 export declare type StripePaymentResponse = Stripe.PaymentIntentResult | Stripe.PaymentMethodResult | Stripe.SetupIntentResult | Stripe.TokenResult | Stripe.SourceResult;
+declare type StripeElementType = Stripe.StripeCardElement | Stripe.StripePaymentRequestButtonElement;
 declare type AmbiguousError = Error | Stripe.StripeError | StripeElementsError;
 declare global {
     interface Node {
@@ -34,19 +35,19 @@ export declare class StripeBase extends LitElement {
     /**
      * billing_details object sent to create the payment representation. (optional)
      */
-    billingDetails: Stripe.PaymentMethod.BillingDetails;
+    billingDetails?: Stripe.CreatePaymentMethodData['billing_details'];
     /**
      * Data passed to stripe.createPaymentMethod. (optional)
      */
-    paymentMethodData: Stripe.CreatePaymentMethodData;
+    paymentMethodData?: Stripe.CreatePaymentMethodData;
     /**
      * Data passed to stripe.createSource. (optional)
      */
-    sourceData: Stripe.CreateSourceData;
+    sourceData?: Stripe.CreateSourceData;
     /**
      * Data passed to stripe.createToken. (optional)
      */
-    tokenData: Stripe.CreateTokenCardData;
+    tokenData?: Stripe.CreateTokenCardData;
     /**
      * If set, when Stripe returns the payment info (PaymentMethod, Source, or Token),
      * the element will POST JSON data to this URL with an object containing
@@ -64,11 +65,11 @@ export declare class StripeBase extends LitElement {
      * stripeElements.submit();
      * ```
      */
-    action: string;
+    action?: string;
     /**
      * The `client_secret` part of a Stripe `PaymentIntent`
      */
-    clientSecret: string;
+    clientSecret?: string;
     /**
      * Type of payment representation to generate.
      */
@@ -76,37 +77,37 @@ export declare class StripeBase extends LitElement {
     /**
      * Stripe Publishable Key. EG. `pk_test_XXXXXXXXXXXXXXXXXXXXXXXX`
      */
-    publishableKey: string;
+    publishableKey?: string;
     /** Whether to display the error message */
     showError: boolean;
     /** Stripe account to use (connect) */
-    stripeAccount: string;
+    stripeAccount?: string;
     /** Stripe locale to use */
     locale: StripeElementLocale;
     /**
      * Stripe PaymentMethod
      */
-    readonly paymentMethod: Stripe.PaymentMethod;
+    readonly paymentMethod: Stripe.PaymentMethod | null;
     /**
      * Stripe Source
      */
-    readonly source: Stripe.Source;
+    readonly source: Stripe.Source | null;
     /**
      * Stripe Token
      */
-    readonly token: Stripe.Token;
+    readonly token: Stripe.Token | null;
     /**
      * Stripe element instance
      */
-    readonly element: Stripe.StripeCardElement | Stripe.StripePaymentRequestButtonElement;
+    readonly element: StripeElementType | null;
     /**
      * Stripe Elements instance
      */
-    readonly elements: Stripe.StripeElements;
+    readonly elements: Stripe.StripeElements | null;
     /**
      * Stripe or validation error
      */
-    readonly error: null | AmbiguousError;
+    readonly error: AmbiguousError | null;
     /**
      * If the element is focused.
      */
@@ -118,7 +119,7 @@ export declare class StripeBase extends LitElement {
     /**
      * Stripe instance
      */
-    readonly stripe: Stripe.Stripe;
+    readonly stripe: Stripe.Stripe | null;
     /**
      * Stripe appearance theme
      * @see https://stripe.com/docs/stripe-js/appearance-api#theme
@@ -134,7 +135,7 @@ export declare class StripeBase extends LitElement {
     private precomputedStyle;
     private breadcrumb;
     get stripeMountId(): string;
-    get stripeMount(): Element;
+    get stripeMount(): Element | null;
     /** @inheritdoc */
     render(): TemplateResult;
     /** @inheritdoc */
@@ -205,10 +206,6 @@ export declare class StripeBase extends LitElement {
      * Updates element state when Stripe Element is blurred.
      */
     private onBlur;
-    /**
-     * @param  {StripeFocusEvent} event
-     * @private
-     */
     private onFocus;
     /**
      * Sets the `ready` property when the stripe element is ready to receive focus.
