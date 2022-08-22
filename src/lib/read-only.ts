@@ -17,7 +17,7 @@ class ReadOnlyController implements ReactiveController {
 
   constructor(private host: ReactiveControllerHost) {
     if (ReadOnlyController.instances.has(host))
-      return ReadOnlyController.instances.get(host);
+      return ReadOnlyController.instances.get(host) as this;
     host.addController(this);
     ReadOnlyController.instances.set(host, this);
   }

@@ -3,7 +3,9 @@ import luhn from 'luhn-js';
 import creditCardType from 'credit-card-type';
 import { spy } from 'sinon';
 
-const assign = (target: object) => ([k, v]: [string, unknown]): unknown => target[k] = v;
+const assign = <T extends object>(target: T) =>
+  ([k, v]: [string, T[keyof T]]): unknown =>
+    target[k as keyof T] = v;
 
 export enum Keys {
   STRIPE_ACCOUNT = 'acct_XXXXXXXXXXX',
@@ -40,7 +42,7 @@ export const INCOMPLETE_CARD_ERROR = Object.freeze({
 export const CARD_DECLINED_ERROR = Object.freeze({
   type: 'card_error',
   code: 'card_declined',
-  decline_code: 'generic_decline', // eslint-disable-line @typescript-eslint/camelcase
+  decline_code: 'generic_decline',
   message: 'The card has been declined.',
 });
 
@@ -50,12 +52,12 @@ const CARD_ERRORS = {
   '4000000000000002': CARD_DECLINED_ERROR,
 };
 
-const userAgentCreditCards = [];
+const userAgentCreditCards: object[] = [];
 
 class SynthEventTarget extends EventTarget {
-  listeners = [];
+  listeners: [string, EventListenerOrEventListenerObject][] = [];
 
-  error: Error;
+  error?: Error;
 
   synthEvent(type: string, params: any): void {
     const error = this.error ?? params?.error;
@@ -83,29 +85,26 @@ class PaymentRequest extends SynthEventTarget {
     this.update(options);
   }
 
-  async canMakePayment(): Promise<{ applePay: boolean }> {
+  async canMakePayment(): Promise<{ applePay: boolean }|null> {
     return userAgentCreditCards.length ? { applePay: true } : null;
   }
 
-  update(options): void { Object.entries(options).forEach(assign(this)); }
+  update(options: object): void { Object.entries(options).forEach(assign(this)); }
 }
 
 class Element extends SynthEventTarget {
-  type: string
-
-  constructor(type, options) {
+  constructor(public type: string, options: object) {
     super();
-    this.type = type;
     Object.entries(options).forEach(assign(this));
   }
 
-  setState(props): void {
+  setState(props: object): void {
     Object.entries(props).forEach(assign(this));
   }
 
   // Stripe Card APIs
 
-  mount(node): void {
+  mount(node: HTMLElement): void {
     render(html`<!-- Stripe mounts here -->`, node);
     this.dispatchEvent(new CustomEvent('ready'));
   }
@@ -127,49 +126,43 @@ class Element extends SynthEventTarget {
 
   unmount(): void { null; }
 
-  update(options): void { this.setState(options); }
+  update(options: object): void { this.setState(options); }
 }
 
 class CardElement extends Element {
-  cardNumber: string;
+  cardNumber?: string;
 
-  complete: boolean;
+  complete?: boolean;
 
-  empty: boolean;
+  empty?: boolean;
 
-  type: string;
-
-  options: any;
-
-  brand: string;
+  brand?: string;
 
   // @ts-expect-error: whatever
   get error(): Error {
     const { cardNumber, complete, empty } = this;
-    const cardError = CARD_ERRORS[cardNumber?.toString()];
+    const cardError = CARD_ERRORS[cardNumber?.toString() as keyof typeof CARD_ERRORS];
     const stateError = (!complete || empty) ? INCOMPLETE_CARD_ERROR : undefined;
-    return cardError || stateError;
+    return ( cardError || stateError ) as unknown as Error;
   }
 
-  constructor(type, options) {
+  constructor(public type: string, public options: object) {
     super(type, options);
-    this.type = type;
-    this.options = options;
   }
 
-  setState({ cardNumber, mm, yy, cvc, zip }): void {
+  setState({ cardNumber, mm, yy, cvc, zip }: Record<string, string>): void {
     super.setState({ cardNumber, mm, yy, cvc, zip });
 
-    [{ type: this.brand }] = creditCardType(this.cardNumber);
+    [{ type: this.brand }] = creditCardType(this.cardNumber!);
 
     this.complete =
-      luhn.isValid(this.cardNumber) && mm && yy && cvc !== undefined;
+      !!(luhn.isValid(this.cardNumber!) && mm && yy && cvc !== undefined);
 
     this.empty =
-      !cardNumber && cardNumber !== 0 &&
-      !mm && mm !== 0 &&
-      !yy && yy !== 0 &&
-      !cvc && cvc !== 0;
+      !cardNumber && cardNumber.toString() !== '0' &&
+      !mm && mm.toString() !== '0' &&
+      !yy && yy.toString() !== '0' &&
+      !cvc && cvc.toString() !== '0';
 
     const { brand, complete, empty } = this;
 
@@ -181,17 +174,20 @@ class PaymentRequestButtonElement extends Element {
 }
 
 class Elements {
-  locale: string;
+  locale?: string;
 
-  fonts: any;
+  fonts?: any;
 
-  constructor({ locale, fonts }) {
+  constructor({ locale, fonts }: Partial<Record<string, string>>) {
     this.locale = locale;
     this.fonts = fonts;
     return this;
   }
 
-  create(type: string, { style = undefined } = {}): CardElement|PaymentRequestButtonElement {
+  create(
+    type: 'card'|'paymentRequestButton',
+    { style = undefined } = {}
+  ): CardElement|PaymentRequestButtonElement {
     switch (type) {
       case 'card': return new CardElement(type, { style });
       case 'paymentRequestButton': return new PaymentRequestButtonElement(type, { style });
@@ -204,7 +200,7 @@ export class Stripe {
 
   opts: any;
 
-  keyError: Error;
+  keyError?: Error;
 
   constructor(key: Keys, opts: any) {
     this.key = key;
@@ -238,20 +234,20 @@ export class Stripe {
     return { error, paymentIntent };
   }
 
-  async createPaymentMethod(paymentMethodData) {
+  async createPaymentMethod(paymentMethodData: { card: { error?: Error | undefined; }; }) {
     const { error = this.keyError } = paymentMethodData.card;
     const paymentMethod = error ? undefined : SUCCESSFUL_PAYMENT_METHOD;
     const response = { error, paymentMethod };
     return response;
   }
 
-  async createSource({ error = this.keyError }, cardData) {
+  async createSource({ error = this.keyError }: any, cardData: any) {
     const source = error ? undefined : SUCCESSFUL_SOURCE;
     const response = { error, source };
     return response;
   }
 
-  async createToken({ error = this.keyError } = {}, cardData) {
+  async createToken({ error = this.keyError } = {}, cardData: any) {
     const token = error ? undefined : SUCCESSFUL_TOKEN;
     const response = { error, token };
     return response;
@@ -264,7 +260,7 @@ export class Stripe {
   }
 }
 
-export function addUserAgentCreditCard(card) {
+export function addUserAgentCreditCard(card: object) {
   userAgentCreditCards.push(card);
 }
 

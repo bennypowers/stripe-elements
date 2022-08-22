@@ -1,1 +1,1 @@
-export const unary = f => x => f(x);
+export const unary = (f: (...args:any[]) => unknown) => (x: unknown) => f(x);

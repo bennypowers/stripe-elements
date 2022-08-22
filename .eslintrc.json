@@ -8,9 +8,10 @@
   },
   "overrides": [
     {
-      "files": "**/*.test.ts",
+      "files": ["**/*.test.ts", "test/test-helpers.ts"],
       "rules": {
-        "max-len": 0
+        "max-len": 0,
+        "@typescript-eslint/no-non-null-assertion": 0
       }
     },
     {

@@ -19,6 +19,10 @@ interface StripeStyleInit {
    invalid?: Stripe.StripeElementStyle;
 }
 
+type IconStyle = Stripe.StripeCardElementOptions['iconStyle'];
+type CardBrand = Stripe.StripeCardElementChangeEvent['brand'];
+type StripeFormValues = Stripe.StripeCardElementOptions['value'];
+
 const ALLOWED_STYLES = [
   'color',
   'fontFamily',
@@ -183,28 +187,24 @@ export class StripeElements extends StripeBase {
   /**
    * Whether to hide icons in the Stripe form.
    */
-  @property({ type: Boolean, attribute: 'hide-icon' })
-  hideIcon = false;
+  @property({ type: Boolean, attribute: 'hide-icon' }) hideIcon = false;
 
   /**
    * Whether or not to hide the postal code field.
    * Useful when you gather shipping info elsewhere.
    */
-  @property({ type: Boolean, attribute: 'hide-postal-code' })
-  hidePostalCode = false;
+  @property({ type: Boolean, attribute: 'hide-postal-code' }) hidePostalCode = false;
 
   /**
    * Stripe icon style.
    */
-  @property({ type: String, attribute: 'icon-style' })
-  iconStyle: Stripe.StripeCardElementOptions['iconStyle'] = 'default';
+  @property({ type: String, attribute: 'icon-style' }) iconStyle: IconStyle = 'default';
 
   /**
    * Prefilled values for form.
    * @example { postalCode: '90210' }
    */
-  @property({ type: Object })
-  value: Stripe.StripeCardElementOptions['value'] = {};
+  @property({ type: Object }) value: StripeFormValues = {};
 
   /* READ ONLY PROPERTIES */
 
@@ -214,7 +214,7 @@ export class StripeElements extends StripeBase {
   @notify
   @readonly
   @property({ type: String })
-  readonly brand: Stripe.StripeCardElementChangeEvent['brand'] = null;
+  readonly brand: CardBrand | null = null;
 
   /**
    * Whether the form is complete.
@@ -248,16 +248,16 @@ export class StripeElements extends StripeBase {
   @stripeMethod public async createPaymentMethod(
     paymentMethodData: Stripe.CreatePaymentMethodData = this.getPaymentMethodData()
   ): Promise<Stripe.PaymentMethodResult> {
-    return this.stripe.createPaymentMethod(paymentMethodData);
+    return this.stripe!.createPaymentMethod(paymentMethodData);
   }
 
   /**
    * Submit payment information to generate a source
    */
   @stripeMethod public async createSource(
-    sourceData: Stripe.CreateSourceData = this.sourceData
+    sourceData: Stripe.CreateSourceData = this.sourceData!
   ): Promise<Stripe.SourceResult> {
-    return this.stripe.createSource(this.element, sourceData);
+    return this.stripe!.createSource(this.element, sourceData);
   }
 
   /**
@@ -266,7 +266,7 @@ export class StripeElements extends StripeBase {
   @stripeMethod public async createToken(
     tokenData = this.tokenData
   ): Promise<Stripe.TokenResult> {
-    return this.stripe.createToken(this.element, tokenData);
+    return this.stripe!.createToken(this.element, tokenData);
   }
 
   /**
@@ -339,7 +339,8 @@ export class StripeElements extends StripeBase {
    * Returns a Stripe-friendly style object computed from CSS custom properties
    */
   private getStripeElementsStyles(): Stripe.StripeElementStyle {
-    const getStyle = (prop: string): string => this.getCSSCustomPropertyValue(prop) || undefined;
+    const getStyle = (prop: string): string|undefined =>
+      this.getCSSCustomPropertyValue(prop) || undefined;
 
     const STATES = ['base', 'complete', 'empty', 'invalid'];
     const subReducer = (state: string) => (acc: StripeStyleInit, sub: string) => {
@@ -387,7 +388,7 @@ export class StripeElements extends StripeBase {
   }
 
   private createElement(options: Stripe.StripeCardElementOptions) {
-    const element = this.elements.create('card', options);
+    const element = this.elements!.create('card', options);
     return element;
   }
 

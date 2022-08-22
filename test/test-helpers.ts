@@ -13,7 +13,7 @@ import {
   nextFrame,
   oneEvent,
 } from '@open-wc/testing';
-import { SinonSpy, spy, stub } from 'sinon';
+import { SinonSpy, SinonStub, spy, stub } from 'sinon';
 
 import {
   Stripe,
@@ -25,7 +25,7 @@ import { dash } from '../src/lib/strings';
 import { StripeBase } from '../src/StripeBase';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { readonly } from '../src/lib/read-only';
-import { StripeCardElement, StripeConstructor, StripeConstructorOptions, StripePaymentRequestButtonElement } from '@stripe/stripe-js';
+import { StripeConstructor, StripeConstructorOptions } from '@stripe/stripe-js';
 
 declare global {
   interface Node {
@@ -53,12 +53,15 @@ declare global {
 
 const getTemplate = (
   tagName: ReturnType<typeof unsafeStatic>,
-  { publishableKey = undefined, stripeAccount = undefined } = {}
+  { publishableKey = '', stripeAccount = '' } = {}
 ) =>
-  html`<${tagName} publishable-key="${ifDefined(publishableKey)}" stripe-account="${ifDefined(stripeAccount)}"></${tagName}>`;
+  html`<${tagName}
+    publishable-key="${ifDefined(publishableKey || undefined)}"
+    stripe-account="${ifDefined(stripeAccount || undefined)}"></${tagName}>`;
 
 class Host extends LitElement {
-  @property({ type: String }) tag: string;
+  declare shadowRoot: ShadowRoot;
+  @property({ type: String }) tag?: string;
 }
 
 @customElement('primary-host')
@@ -66,13 +69,13 @@ export class PrimaryHost extends Host {
   static is = 'primary-host';
 
   get nestedElement(): StripeBase {
-    return this.shadowRoot.querySelector(this.tag);
+    return this.shadowRoot.querySelector(this.tag!) as StripeBase;
   }
 
   render(): TemplateResult {
     return html`
       <h1>Other Primary Host Content</h1>
-      ${getTemplate(unsafeStatic(this.tag), { publishableKey: Keys.PUBLISHABLE_KEY })}
+      ${getTemplate(unsafeStatic(this.tag!), { publishableKey: Keys.PUBLISHABLE_KEY! })}
     `;
   }
 }
@@ -80,7 +83,7 @@ export class PrimaryHost extends Host {
 @customElement('secondary-host')
 export class SecondaryHost extends Host {
   get primaryHost(): PrimaryHost {
-    return this.shadowRoot.querySelector(PrimaryHost.is);
+    return this.shadowRoot.querySelector(PrimaryHost.is) as PrimaryHost;
   }
 
   render() {
@@ -91,7 +94,7 @@ export class SecondaryHost extends Host {
 @customElement('tertiary-host')
 export class TertiaryHost extends Host {
   get secondaryHost(): SecondaryHost {
-    return this.shadowRoot.querySelector('secondary-host');
+    return this.shadowRoot.querySelector('secondary-host') as SecondaryHost;
   }
 
   render() {
@@ -192,9 +195,8 @@ export let initialStripe: typeof Stripe;
 export const events = new Map();
 
 export function resetTestState(): void {
-  element = undefined;
-  initialStripeMountId = undefined;
-  initialStripe = undefined;
+  // @ts-expect-error: intended: resetting the test state;
+  element = undefined; initialStripeMountId = undefined; initialStripe = undefined;
   events.clear();
   document.getElementById('stripe-elements-custom-css-properties')?.remove();
   document.getElementById('stripe-payment-request-custom-css-properties')?.remove();
@@ -226,7 +228,7 @@ export const mountLightDOM =
   ({ stripeMountId, tagName = element.tagName.toLowerCase() }: Opts): string =>
     `<div id="${stripeMountId}" class="${`${tagName.toLowerCase()}-mount`}"></div>`;
 
-export const expectedLightDOM = ({ stripeMountId, tagName }): string =>
+export const expectedLightDOM = ({ stripeMountId, tagName }: Record<string, string>): string =>
   `<div slot="${tagName.toLowerCase()}-slot">${mountLightDOM({ stripeMountId, tagName })}</div> `;
 
 /* MOCKS, STUBS, AND SPIES */
@@ -267,23 +269,23 @@ export function restoreStripe(): void {
 }
 
 export function spyCardClear(): void {
-  if (element instanceof StripeElements && element?.element?.clear) spy(element.element, 'clear');
+  if (element instanceof StripeElements) spy(element.element, 'clear');
 }
 
 export function spyStripeElementBlur(): void {
-  spy(element.element, 'blur');
+  spy(element.element!, 'blur');
 }
 
 export function restoreStripeElementBlur(): void {
-  (element.element.blur as SinonSpy)?.restore?.();
+  (element.element!.blur as SinonSpy)?.restore?.();
 }
 
 export function spyStripeElementFocus(): void {
-  spy(element.element, 'focus');
+  spy(element.element!, 'focus');
 }
 
 export function restoreStripeElementFocus(): void {
-  (element.element.focus as SinonSpy)?.restore?.();
+  (element.element!.focus as SinonSpy)?.restore?.();
 }
 
 export function restoreCardClear(): void {
@@ -315,8 +317,8 @@ export function setupWithTemplate(template: TemplateResult|string) {
   };
 }
 
-export async function setupNoProps(): Promise<void> {
-  const [describeTitle] = this.test.titlePath();
+export async function setupNoProps(this: Mocha.Context): Promise<void> {
+  const [describeTitle] = this.test!.titlePath();
   const tagName = unsafeStatic(describeTitle.replace(/<(.*)>/, '$1'));
   element = await fixture(getTemplate(tagName));
 }
@@ -326,8 +328,8 @@ export async function updateComplete(): Promise<unknown> {
 }
 
 export function setupWithPublishableKey(publishableKey: string) {
-  return async function setup(): Promise<void> {
-    const [describeTitle] = this.test.titlePath();
+  return async function setup(this: Mocha.Context): Promise<void> {
+    const [describeTitle] = this.test!.titlePath();
     const tagName = unsafeStatic(describeTitle.replace(/<(.*)>/, '$1'));
     element = await fixture(getTemplate(tagName, { publishableKey }));
     await element.updateComplete;
@@ -340,8 +342,8 @@ export function setupWithPublishableKeyAndStripeAccount(
   publishableKey: string,
   stripeAccount: string
 ) {
-  return async function setup(): Promise<void> {
-    const [describeTitle] = this.test.titlePath();
+  return async function setup(this: Mocha.Context): Promise<void> {
+    const [describeTitle] = this.test!.titlePath();
     const tagName = unsafeStatic(describeTitle.replace(/<(.*)>/, '$1'));
     element = await fixture(getTemplate(tagName, { publishableKey, stripeAccount }));
     await element.updateComplete;
@@ -360,7 +362,7 @@ export function appendAllBlueStyleTag(): void {
 }
 
 export function removeAllBlueStyleTag(): void {
-  document.getElementById('all-blue-styles').remove();
+  document.getElementById('all-blue-styles')!.remove();
 }
 
 export function appendHeightStyleTag(): void {
@@ -368,16 +370,16 @@ export function appendHeightStyleTag(): void {
 }
 
 export function removeHeightStyleTag(): void {
-  document.getElementById('height-styles').remove();
+  document.getElementById('height-styles')!.remove();
 }
 
-export function listenFor(eventType) {
+export function listenFor(eventType: string) {
   return async function(): Promise<void> {
     events.set(eventType, oneEvent(element, eventType));
   };
 }
 
-export function awaitEvent(eventType) {
+export function awaitEvent(eventType: string) {
   return async function(): Promise<void> {
     await events.get(eventType);
   };
@@ -391,7 +393,7 @@ export function sleep(ms: number) {
 
 /* ASSERTIONS */
 
-export function assertCalled(stub) {
+export function assertCalled(stub: SinonStub) {
   return function(): void {
     expect(stub).to.have.been.called;
   };
@@ -404,20 +406,23 @@ export function assertFired(eventType: string) {
   };
 }
 
-export function assertEventDetail(eventType, expected) {
+export function assertEventDetail(eventType: string, expected: unknown) {
   return async function(): Promise<void> {
     const { detail } = await events.get(eventType);
     expect(detail, `${eventType} detail`).to.deep.equal(expected);
   };
 }
 
-export function assertProps(props, { deep = false } = {}) {
+export function assertProps<T extends object>(props: T, { deep = false } = {}) {
   return async function(): Promise<void> {
     await element.updateComplete;
-    Object.entries(props).forEach(([name, value]) => {
-      if (deep) expect(element[name]).to.deep.equal(value);
-      else expect(element[name]).to.equal(value);
-    });
+    // eslint-disable-next-line easy-loops/easy-loops
+    for (const [name, value] of Object.entries(props)) {
+      if (deep)
+        expect(element[name as keyof typeof element]).to.deep.equal(value);
+      else
+        expect(element[name as keyof typeof element]).to.equal(value);
+    }
   };
 }
 
@@ -431,23 +436,23 @@ export function assertPropsOk(props: any[], { not = false } = {}) {
   return async function(): Promise<void> {
     await element.updateComplete;
     props.forEach(prop =>
-      not ? expect(element[prop]).to.not.be.ok
-      : expect(element[prop]).to.be.ok
+      not ? expect(element[prop as keyof typeof element]).to.not.be.ok
+      : expect(element[prop as keyof typeof element]).to.be.ok
     );
   };
 }
 
-export function testDefaultPropEntry([name, value]): Mocha.Test {
+export function testDefaultPropEntry([name, value]: [string, unknown]): Mocha.Test {
   return it(name, async function() {
-    expect(element[name], name).to.eql(value);
+    expect(element[name as keyof typeof element], name).to.eql(value);
   });
 }
 
 export function testReadOnlyProp(name: string): void {
   it(name, function() {
-    const init = element[name];
-    element[name] = Math.random();
-    expect(element[name], name).to.equal(init);
+    const init = element[name as keyof typeof element];
+    (element as any)[name] = Math.random();
+    expect(element[name as keyof typeof element], name).to.equal(init);
   });
 }
 
@@ -455,7 +460,7 @@ export function testWritableNotifyingProp(name: string): void {
   it(name, async function() {
     const synth = `${Math.random()}`;
     const eventName = `${dash(name)}-changed`;
-    setTimeout(function setProp() { element[name] = synth; });
+    setTimeout(function setProp() { (element as any)[name] = synth; });
     const { detail: { value } } = await oneEvent(element, eventName);
     expect(value, name).to.eql(synth);
   });
@@ -473,7 +478,7 @@ export function testReadonlyNotifyingProp(name: string): void {
 
 export function assertElementErrorMessage(message: string) {
   return function(): void {
-    expect(element.error.message).to.equal(`<${element.tagName.toLowerCase()}>: ${message}`);
+    expect(element.error!.message).to.equal(`<${element.tagName.toLowerCase()}>: ${message}`);
   };
 }
 
@@ -495,7 +500,7 @@ export async function focusStripeElement(): Promise<void> {
   (element.element as any).synthEvent('focus');
 }
 
-export async function submit(): Promise<void> {
+export async function submit(this: Mocha.Context): Promise<void> {
   if (element instanceof StripeElements) {
     const submitPromise = element.submit();
     // don't await result if we need to set up a listener
@@ -509,7 +514,7 @@ export async function reset(): Promise<void> {
   await element.updateComplete;
 }
 
-async function swallowCallError(p: Promise<any>) {
+async function swallowCallError(this: Mocha.Context, p: Promise<any>) {
   // swallow the errors, we're not testing that right now.
   p.catch(() => void 0);
   // don't await result if we need to set up a listener
@@ -519,19 +524,19 @@ async function swallowCallError(p: Promise<any>) {
     return p;
 }
 
-export async function createPaymentMethod(): Promise<void> {
+export async function createPaymentMethod(this: Mocha.Context): Promise<void> {
   if (!(element instanceof StripeElements))
     throw new Error(`TEST HELPERS: can't create a payment method on ${element.constructor.name}`);
   await swallowCallError.call(this, element.createPaymentMethod());
 }
 
-export async function createSource(): Promise<void> {
+export async function createSource(this: Mocha.Context): Promise<void> {
   if (!(element instanceof StripeElements))
     throw new Error(`TEST HELPERS: can't create a source on ${element.constructor.name}`);
   await swallowCallError.call(this, element.createSource());
 }
 
-export async function createToken(): Promise<void> {
+export async function createToken(this: Mocha.Context): Promise<void> {
   if (!(element instanceof StripeElements))
     throw new Error(`TEST HELPERS: can't create a token on ${element.constructor.name}`);
   await swallowCallError.call(this, element.createToken());
@@ -543,29 +548,29 @@ export async function validate(): Promise<void> {
   await element.updateComplete;
 }
 
-export function setProps(props) {
+export function setProps<T extends object>(props: T) {
   return async function doSetProps(): Promise<void> {
     Object.entries(props).forEach(([name, value]) => {
-      element[name] = value;
+      (element as any)[name] = value;
     });
     await element.updateComplete;
   };
 }
 
-export function synthCardEvent(...args) {
+export function synthCardEvent(...args: unknown[]) {
   return function(): void {
     (element.element as any).synthEvent(...args);
   };
 }
 
-export function synthPaymentRequestEvent(...args) {
+export function synthPaymentRequestEvent(...args: unknown[]) {
   return function(): void {
     if (element instanceof StripePaymentRequest)
       (element.paymentRequest as any).synthEvent(...args);
   };
 }
 
-export function synthStripeFormValues(inputs) {
+export function synthStripeFormValues<T extends object>(inputs: T) {
   return async function(): Promise<void> {
     if (element instanceof StripeElements) {
       (element?.element as any)?.setState(inputs);
