@@ -29,11 +29,17 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addShortcode('cem', async function() {
     const { customElementsManifestToMarkdown } = await import('@custom-elements-manifest/to-markdown');
     const customElementsManifest = JSON.parse(await fs.readFile(path.join(__dirname, 'custom-elements.json')))
-    return customElementsManifestToMarkdown(customElementsManifest, {
+    const content = customElementsManifestToMarkdown(customElementsManifest, {
       headingOffset: 2,
       private: 'details',
     });
-  })
+
+    return `<div class="api-table">
+
+${content}
+
+</div>`;
+  });
 
   eleventyConfig.on('eleventy.before', async function () {
     const { execaCommand } = await import('execa');
