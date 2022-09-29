@@ -1,7 +1,12 @@
-{
+/* eslint-disable quotes */
+/* eslint-env node */
+
+const isDP = process.env.CONTEXT === 'deploy-preview';
+
+module.exports = {
   "imports": {
     "@stripe/stripe-js": "https://ga.jspm.io/npm:@stripe/stripe-js@1.22.0/",
-    "@power-elements/stripe-elements": "/stripe-elements/stripe-elements/index.js",
+    "@power-elements/stripe-elements": `${isDP ? '' : '/stripe-elements'}/stripe-elements/index.js`,
     "@lavadrop/camel-case": "https://ga.jspm.io/npm:@lavadrop/camel-case@0.4.0/camelCase.js",
     "@lavadrop/kebab-case": "https://ga.jspm.io/npm:@lavadrop/kebab-case@3.0.0/kebabCase.js",
     "@material/mwc-button": "https://ga.jspm.io/npm:@material/mwc-button@0.26.0-canary.f3e28323.0/mwc-button.js",
@@ -12,7 +17,7 @@
     "lit": "https://ga.jspm.io/npm:lit@2.0.2/index.js",
     "lit/decorators.js": "https://ga.jspm.io/npm:lit@2.0.2/decorators.js",
     "lit/directives/if-defined.js": "https://ga.jspm.io/npm:lit@2.0.2/directives/if-defined.js",
-    "tslib": "https://ga.jspm.io/npm:tslib@2.3.1/tslib.es6.js"
+    "tslib": "https://ga.jspm.io/npm:tslib@2.3.1/tslib.es6.js",
   },
   "scopes": {
     "https://ga.jspm.io/": {
@@ -67,16 +72,16 @@
       "lit/directives/live.js": "https://ga.jspm.io/npm:lit@2.1.1/directives/live.js",
       "lit/directives/style-map.js": "https://ga.jspm.io/npm:lit@2.1.1/directives/style-map.js",
       "tslib": "https://ga.jspm.io/npm:tslib@1.14.1/tslib.es6.js",
-      "wicg-inert": "https://ga.jspm.io/npm:wicg-inert@3.1.1/dist/inert.js"
+      "wicg-inert": "https://ga.jspm.io/npm:wicg-inert@3.1.1/dist/inert.js",
     },
     "https://ga.jspm.io/npm:@material/dialog@6.0.0-canary.781434a92.0/": {
-      "@material/base/foundation": "https://ga.jspm.io/npm:@material/base@6.0.0-canary.781434a92.0/foundation.js"
+      "@material/base/foundation": "https://ga.jspm.io/npm:@material/base@6.0.0-canary.781434a92.0/foundation.js",
     },
     "https://ga.jspm.io/npm:@material/mwc-base@1.0.0-canary.66f6244e.0/": {
-      "@material/dom/ponyfill": "https://ga.jspm.io/npm:@material/dom@6.0.0-canary.781434a92.0/ponyfill.js"
+      "@material/dom/ponyfill": "https://ga.jspm.io/npm:@material/dom@6.0.0-canary.781434a92.0/ponyfill.js",
     },
     "https://ga.jspm.io/npm:@material/mwc-dialog@1.0.0-canary.66f6244e.0/": {
-      "@material/dom/ponyfill": "https://ga.jspm.io/npm:@material/dom@6.0.0-canary.781434a92.0/ponyfill.js"
-    }
-  }
-}
+      "@material/dom/ponyfill": "https://ga.jspm.io/npm:@material/dom@6.0.0-canary.781434a92.0/ponyfill.js",
+    },
+  },
+};
