@@ -62,7 +62,7 @@ ${content}
   // Return your Object options:
   return {
     templateEngineOverride: 'njk,md',
-    pathPrefix: '/stripe-elements/',
+    pathPrefix: process.env.CONTEXT === 'deploy-preview' ? '' : '/stripe-elements/',
     dir: {
       input: "docs",
       output: "_site"
