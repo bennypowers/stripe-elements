@@ -109,7 +109,7 @@
     "husky": "^7.0.4",
     "luhn-js": "^1.1.2",
     "markdown-it-anchor": "^8.4.1",
-    "npm-check": "^5.9.2",
+    "npm-check": "^6.0.1",
     "npm-run-all": "^4.1.5",
     "rollup": "^2.67.2",
     "rollup-plugin-copy": "^3.4.0",
