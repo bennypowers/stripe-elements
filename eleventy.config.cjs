@@ -1,19 +1,16 @@
-const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
-const directoryOutputPlugin = require('@11ty/eleventy-plugin-directory-output');
-const toc = require('eleventy-plugin-toc');
-const markdownIt = require('markdown-it')
+const SyntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
+const DirectoryOutputPlugin = require('@11ty/eleventy-plugin-directory-output');
+const TableOfContentsPlugin = require('eleventy-plugin-toc');
 const markdownItAnchor = require('markdown-it-anchor')
 const fs = require('fs/promises');
 const path = require('path');
 
-// const litLabsSSR11ty = require('./lit-labs-ssr-11ty.cjs');
-
 module.exports = function(eleventyConfig) {
-  eleventyConfig.setLibrary('md', markdownIt({ html: true }).use(markdownItAnchor));
+  eleventyConfig.amendLibrary('md', md => md.use(markdownItAnchor));
 
-  eleventyConfig.addPlugin(syntaxHighlight);
-  eleventyConfig.addPlugin(toc);
-  eleventyConfig.addPlugin(directoryOutputPlugin);
+  eleventyConfig.addPlugin(SyntaxHighlight);
+  eleventyConfig.addPlugin(TableOfContentsPlugin);
+  eleventyConfig.addPlugin(DirectoryOutputPlugin);
 
   eleventyConfig.addWatchTarget('docs/*.css');
 
@@ -57,12 +54,9 @@ ${content}
     `;
   })
 
-  // eleventyConfig.addPlugin(litLabsSSR11ty);
-
   // Return your Object options:
   return {
     templateEngineOverride: 'njk,md',
-    pathPrefix: process.env.CONTEXT === 'deploy-preview' ? '' : '/stripe-elements/',
     dir: {
       input: "docs",
       output: "_site"
