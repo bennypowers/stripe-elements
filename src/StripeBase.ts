@@ -13,7 +13,7 @@ import { throwBadResponse } from './lib/fetch.js';
 import { BreadcrumbController } from './breadcrumb-controller.js';
 import { readonly } from './lib/read-only.js';
 import { notify } from './lib/notify.js';
-import { loadStripe } from '@stripe/stripe-js/pure.js';
+import { loadStripe } from '@stripe/stripe-js/dist/pure.esm.js';
 import { StripeElementLocale } from '@stripe/stripe-js';
 
 export const enum SlotName {
