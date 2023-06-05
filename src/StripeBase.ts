@@ -373,7 +373,7 @@ export class StripeBase extends LitElement {
   }
 
   /**
-   * Adds `ready`, `focus`, and `blur` listeners to the Stripe Element
+   * Adds `ready`, `focus`, `blur` and `click` listeners to the Stripe Element
    */
   private initElementListeners(): void {
     if (!this.element) return;
@@ -383,6 +383,8 @@ export class StripeBase extends LitElement {
     this.element.on('focus', this.onFocus);
     // @ts-expect-error: should still work
     this.element.on('blur', this.onBlur);
+    // @ts-expect-error: should still work
+    this.element.on('click', this.onClick);
   }
 
   /**
@@ -450,6 +452,20 @@ export class StripeBase extends LitElement {
     readonly.set<StripeBase>(this, { ready: true });
     await this.updateComplete;
     this.fire('ready', event);
+  }
+
+  /**
+   * @param  {StripeFocusEvent} event
+   * @private
+   */
+  @bound private async onClick(event: Stripe.StripePaymentRequestButtonElementClickEvent): Promise<void> {
+    // copy original props so we don't loose preventDefault and still forward event
+    // https://stripe.com/docs/js/element/events/on_click#element_on_click-handler
+    const specialEvent = Object.entries(event).reduce((e, [k,v]) => {
+      e[k] = v;
+      return e;
+    }, new Event('click'));
+    this.dispatchEvent(specialEvent);
   }
 
   /**
