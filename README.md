@@ -1,3 +1,5 @@
+![Am Yisrael Chai - עם ישראל חי](https://bennypowers.dev/assets/flag.am.yisrael.chai.png)
+
 # Stripe Elements Web Components
 
 🛡⚛️🔰 **Any** Framework - **One** Stripe Integration. 💰💵💸
