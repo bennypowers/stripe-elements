@@ -1,17 +1,5 @@
 ![Am Yisrael Chai - עם ישראל חי](https://bennypowers.dev/assets/flag.am.yisrael.chai.png)
 
-# Stripe provides financial services to terrorists 
-
-> The behemoth financial services company Stripe has resumed processing payments for a fundraiser benefiting an Israeli-designated terror group after launching an internal investigation, records show.
-> 
-> Emails obtained by the Washington Examiner confirm Stripe temporarily paused working with the Spanish Bizilur Association for Cooperation and Development of Peoples for its "StopGazaStarvation Gaza Relief Campaign" with the Union of Agricultural Work Committees, which Israel identified in 2021 as an "arm" of the Popular Front for the Liberation of Palestine, a U.S.-designated terror faction. However, Stripe began allowing its platform on Tuesday to be used again for the Gaza fundraiser, despite PayPal quietly cutting ties last week with the initiative after a watchdog raised concerns that companies linked to it could be violating federal law.
-> 
-> "We believe that Stripe has not engaged in a robust review of applicable laws and the nature of the campaign using its services," Marc Greendorfer, president of the pro-Israel Zachor Legal Institute think tank, told the Washington Examiner. "In light of this, we will ensure that all who have been harmed by Palestinian-Arab terror organizations are apprised of their rights to seek damages from those who aided and abetted the attacks."
-> 
-> Greendorfer added, "We believe that under applicable U.S. anti-terror laws, Stripe’s provision of services to the campaign organizers, even after it was informed of the campaign organizers' terror affiliations, constitutes aiding and abetting of foreign terror."
-
-[Zachor Legal Institute](https://lnkd.in/dFsvDzSE)
-
 # Stripe Elements Web Components
 
 🛡⚛️🔰 **Any** Framework - **One** Stripe Integration. 💰💵💸
