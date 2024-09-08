@@ -1,10 +1,13 @@
 // @ts-check
+/* eslint-env node */
+import { fileURLToPath } from 'node:url';
 import * as esbuild from 'esbuild';
 import glob from 'glob';
 import { litCssPlugin } from 'esbuild-plugin-lit-css';
 
 export async function build({ watch = false } = {}) {
-  await esbuild.build({
+  /** @type{import('esbuild').BuildOptions} */
+  const options = {
     entryPoints: [
       'src/stripe-elements.ts',
       'src/stripe-payment-request.ts',
@@ -12,7 +15,6 @@ export async function build({ watch = false } = {}) {
       ...glob.sync('src/lib/*.ts'),
     ],
     outdir: '.',
-    watch,
     sourcemap: true,
     bundle: true,
     external: ['lit', 'tslib', './lib/*', '@lavadrop/kebab-case', '@lavadrop/camel-case'],
@@ -20,7 +22,14 @@ export async function build({ watch = false } = {}) {
     plugins: [
       litCssPlugin(),
     ],
-  });
+  };
+  if (watch) {
+    const ctx = await esbuild.context(options);
+    await ctx.watch();
+  } else
+    await esbuild.build(options);
 }
 
-build({ watch: process.argv.includes('--watch') });
+if (process.argv[1] === fileURLToPath(import.meta.url)) { // (B)
+  await build({ watch: process.argv.includes('--watch') });
+}

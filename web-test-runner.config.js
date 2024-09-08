@@ -1,13 +1,14 @@
 // @ts-check
+import { playwrightLauncher } from '@web/test-runner-playwright';
 import { esbuildPlugin } from '@web/dev-server-esbuild';
-import { fromRollup } from '@web/dev-server-rollup';
 
-import _litcss from 'rollup-plugin-lit-css';
-
-const litcss = fromRollup(_litcss);
+import { litCss } from 'web-dev-server-plugin-lit-css';
 
 /** @type {import('@web/test-runner').TestRunnerConfig} */
 const config = {
+  browsers: [
+    playwrightLauncher({ product: 'chromium' })
+  ],
   nodeResolve: {
     exportConditions: ['esbuild', 'default', 'import'],
     extensions: ['.ts', '.mjs', '.js', '.css', '.graphql'],
@@ -23,18 +24,16 @@ const config = {
   },
 
   coverageConfig: {
-    thresholds: {
-      global: {
-        statements: 100,
-        lines: 100,
-        branches: 100,
-        functions: 100,
-      },
+    threshold: {
+      statements: 100,
+      lines: 100,
+      branches: 100,
+      functions: 100,
     },
   },
 
   plugins: [
-    litcss(),
+    litCss(),
     esbuildPlugin({ ts: true }),
   ],
 };

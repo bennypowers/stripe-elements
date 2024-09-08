@@ -258,7 +258,7 @@
               "kind": "field",
               "name": "iconStyle",
               "type": {
-                "text": "Stripe.StripeCardElementOptions['iconStyle']"
+                "text": "IconStyle"
               },
               "default": "'default'",
               "description": "Stripe icon style.",
@@ -268,7 +268,7 @@
               "kind": "field",
               "name": "value",
               "type": {
-                "text": "Stripe.StripeCardElementOptions['value']"
+                "text": "StripeFormValues"
               },
               "default": "{}",
               "description": "Prefilled values for form.",
@@ -278,7 +278,7 @@
               "kind": "field",
               "name": "brand",
               "type": {
-                "text": "Stripe.StripeCardElementChangeEvent['brand']"
+                "text": "CardBrand | null"
               },
               "default": "null",
               "description": "The card brand detected by Stripe",
@@ -349,7 +349,7 @@
               "parameters": [
                 {
                   "name": "sourceData",
-                  "default": "this.sourceData",
+                  "default": "this.sourceData!",
                   "type": {
                     "text": "Stripe.CreateSourceData"
                   }
@@ -516,7 +516,7 @@
             {
               "name": "icon-style",
               "type": {
-                "text": "Stripe.StripeCardElementOptions['iconStyle']"
+                "text": "IconStyle"
               },
               "default": "'default'",
               "description": "Stripe icon style.",
@@ -525,7 +525,7 @@
             {
               "name": "value",
               "type": {
-                "text": "Stripe.StripeCardElementOptions['value']"
+                "text": "StripeFormValues"
               },
               "default": "{}",
               "description": "Prefilled values for form.",
@@ -534,7 +534,7 @@
             {
               "name": "brand",
               "type": {
-                "text": "Stripe.StripeCardElementChangeEvent['brand']"
+                "text": "CardBrand | null"
               },
               "default": "null",
               "description": "The card brand detected by Stripe",
@@ -668,7 +668,7 @@
               "kind": "field",
               "name": "amount",
               "type": {
-                "text": "number"
+                "text": "number | undefined"
               },
               "description": "The amount in the currency's subunit (e.g. cents, yen, etc.)",
               "attribute": "amount",
@@ -678,7 +678,7 @@
               "kind": "field",
               "name": "canMakePayment",
               "type": {
-                "text": "Stripe.CanMakePaymentResult"
+                "text": "Stripe.CanMakePaymentResult | null"
               },
               "default": "null",
               "description": "Whether or not the device can make the payment request.",
@@ -689,7 +689,7 @@
               "kind": "field",
               "name": "country",
               "type": {
-                "text": "CountryCode"
+                "text": "CountryCode | undefined"
               },
               "description": "The two-letter country code of your Stripe account",
               "attribute": "country"
@@ -698,7 +698,7 @@
               "kind": "field",
               "name": "currency",
               "type": {
-                "text": "Stripe.PaymentRequestOptions['currency']"
+                "text": "StripeCurrency | undefined"
               },
               "description": "Three character currency code",
               "attribute": "currency"
@@ -708,7 +708,7 @@
               "name": "#displayItems",
               "privacy": "private",
               "type": {
-                "text": "Stripe.PaymentRequestItem[]"
+                "text": "Stripe.PaymentRequestItem[] | undefined"
               }
             },
             {
@@ -724,7 +724,7 @@
               "kind": "field",
               "name": "label",
               "type": {
-                "text": "string"
+                "text": "string | undefined"
               },
               "description": "A name that the browser shows the customer in the payment interface.",
               "attribute": "label",
@@ -734,7 +734,7 @@
               "kind": "field",
               "name": "paymentIntent",
               "type": {
-                "text": "Stripe.PaymentIntent"
+                "text": "Stripe.PaymentIntent | null"
               },
               "default": "null",
               "description": "Stripe PaymentIntent",
@@ -744,7 +744,7 @@
               "kind": "field",
               "name": "paymentRequest",
               "type": {
-                "text": "Stripe.PaymentRequest"
+                "text": "Stripe.PaymentRequest | null"
               },
               "default": "null",
               "description": "Stripe PaymentRequest",
@@ -765,7 +765,7 @@
               "kind": "field",
               "name": "requestPayerEmail",
               "type": {
-                "text": "boolean"
+                "text": "boolean | undefined"
               },
               "description": "See the requestPayerName option.",
               "attribute": "request-payer-email"
@@ -774,7 +774,7 @@
               "kind": "field",
               "name": "requestPayerName",
               "type": {
-                "text": "boolean"
+                "text": "boolean | undefined"
               },
               "description": "By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.\n\nWe highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available.",
               "attribute": "request-payer-name"
@@ -783,7 +783,7 @@
               "kind": "field",
               "name": "requestPayerPhone",
               "type": {
-                "text": "boolean"
+                "text": "boolean | undefined"
               },
               "description": "See the requestPayerName option.",
               "attribute": "request-payer-phone"
@@ -792,7 +792,7 @@
               "kind": "field",
               "name": "requestShipping",
               "type": {
-                "text": "boolean"
+                "text": "boolean | undefined"
               },
               "description": "Collect shipping address by setting this option to true. The address appears in the PaymentResponse.\nYou must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback.",
               "attribute": "request-shipping"
@@ -802,7 +802,7 @@
               "name": "#shippingOptions",
               "privacy": "private",
               "type": {
-                "text": "Stripe.PaymentRequestShippingOption[]"
+                "text": "Stripe.PaymentRequestShippingOption[] | undefined"
               }
             },
             {
@@ -1103,7 +1103,7 @@
             {
               "name": "amount",
               "type": {
-                "text": "number"
+                "text": "number | undefined"
               },
               "description": "The amount in the currency's subunit (e.g. cents, yen, etc.)",
               "fieldName": "amount"
@@ -1111,7 +1111,7 @@
             {
               "name": "can-make-payment",
               "type": {
-                "text": "Stripe.CanMakePaymentResult"
+                "text": "Stripe.CanMakePaymentResult | null"
               },
               "default": "null",
               "description": "Whether or not the device can make the payment request.",
@@ -1120,7 +1120,7 @@
             {
               "name": "country",
               "type": {
-                "text": "CountryCode"
+                "text": "CountryCode | undefined"
               },
               "description": "The two-letter country code of your Stripe account",
               "fieldName": "country"
@@ -1128,7 +1128,7 @@
             {
               "name": "currency",
               "type": {
-                "text": "Stripe.PaymentRequestOptions['currency']"
+                "text": "StripeCurrency | undefined"
               },
               "description": "Three character currency code",
               "fieldName": "currency"
@@ -1144,7 +1144,7 @@
             {
               "name": "label",
               "type": {
-                "text": "string"
+                "text": "string | undefined"
               },
               "description": "A name that the browser shows the customer in the payment interface.",
               "fieldName": "label"
@@ -1152,7 +1152,7 @@
             {
               "name": "payment-intent",
               "type": {
-                "text": "Stripe.PaymentIntent"
+                "text": "Stripe.PaymentIntent | null"
               },
               "default": "null",
               "description": "Stripe PaymentIntent",
@@ -1161,7 +1161,7 @@
             {
               "name": "payment-request",
               "type": {
-                "text": "Stripe.PaymentRequest"
+                "text": "Stripe.PaymentRequest | null"
               },
               "default": "null",
               "description": "Stripe PaymentRequest",
@@ -1179,7 +1179,7 @@
             {
               "name": "request-payer-email",
               "type": {
-                "text": "boolean"
+                "text": "boolean | undefined"
               },
               "description": "See the requestPayerName option.",
               "fieldName": "requestPayerEmail"
@@ -1187,7 +1187,7 @@
             {
               "name": "request-payer-name",
               "type": {
-                "text": "boolean"
+                "text": "boolean | undefined"
               },
               "description": "By default, the browser‘s payment interface only asks the customer for actual payment information. A customer name can be collected by setting this option to true. This collected name will appears in the PaymentResponse object.\n\nWe highly recommend you collect at least one of name, email, or phone as this also results in collection of billing address for Apple Pay. The billing address can be used to perform address verification and block fraudulent payments. For all other payment methods, the billing address is automatically collected when available.",
               "fieldName": "requestPayerName"
@@ -1195,7 +1195,7 @@
             {
               "name": "request-payer-phone",
               "type": {
-                "text": "boolean"
+                "text": "boolean | undefined"
               },
               "description": "See the requestPayerName option.",
               "fieldName": "requestPayerPhone"
@@ -1203,7 +1203,7 @@
             {
               "name": "request-shipping",
               "type": {
-                "text": "boolean"
+                "text": "boolean | undefined"
               },
               "description": "Collect shipping address by setting this option to true. The address appears in the PaymentResponse.\nYou must also supply a valid [ShippingOptions] to the shippingOptions property. This can be up front at the time stripe.paymentRequest is called, or in response to a shippingaddresschange event using the updateWith callback.",
               "fieldName": "requestShipping"

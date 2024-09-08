@@ -419,9 +419,9 @@ export function assertProps<T extends object>(props: T, { deep = false } = {}) {
     // eslint-disable-next-line easy-loops/easy-loops
     for (const [name, value] of Object.entries(props)) {
       if (deep)
-        expect(element[name as keyof typeof element]).to.deep.equal(value);
+        expect(element[name as keyof typeof element], name).to.deep.equal(value);
       else
-        expect(element[name as keyof typeof element]).to.equal(value);
+        expect(element[name as keyof typeof element], name).to.equal(value);
     }
   };
 }
